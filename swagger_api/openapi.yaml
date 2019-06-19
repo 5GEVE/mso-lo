@@ -1,0 +1,691 @@
+openapi: 3.0.0
+info:
+  title: 5G-EVE Adaptation Layer API
+  description: 5G-EVE Adaptation Layer API spec.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: https://virtserver.swaggerhub.com/zvfvrv/adaptation-layer/1.0.0
+  description: SwaggerHub API Auto Mocking
+tags:
+- name: Local Orchestrators
+- name: NSD
+  description: Network service descriptor
+paths:
+  /orchestrator:
+    get:
+      tags:
+      - Local Orchestrators
+      summary: searches Local Orchestrators
+      description: |
+        By passing in the appropriate options, you can search for
+        available Local Orchestrators
+      operationId: LocalOrchestrator.fetch
+      parameters:
+      - name: LocalOrchestrator parameters
+        in: query
+        description: site identifier
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/LocalOrchestrator parameters'
+      - name: Pagination parameters
+        in: query
+        description: The parameters are used to create pagination
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/Pagination parameters'
+      responses:
+        200:
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LocalOrchestrator'
+        400:
+          description: bad input parameter
+      security:
+      - bearerAuthentication: []
+  /orchestrator/{id}:
+    get:
+      tags:
+      - Local Orchestrators
+      summary: Get a Local Orchestrators
+      description: |
+        By passing in the appropriate options, you can search for
+        available Local Orchestrators
+      operationId: LocalOrchestrator.getById
+      parameters:
+      - name: id
+        in: path
+        description: Resource id identifier
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        200:
+          description: LocalOrchestrator found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocalOrchestrator'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: The specified resource was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+  /site/{siteId}/nsd:
+    get:
+      tags:
+      - NSD
+      summary: Retrieve list of NSDs
+      description: |
+        This operation allows to retrieve the list of onboarded NSD from a specific Site Catalogue
+      operationId: Nsd.list
+      parameters:
+      - name: siteId
+        in: path
+        description: Identifier of a Site
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: Pagination parameters
+        in: query
+        description: The parameters are used to create pagination
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/Pagination parameters'
+      responses:
+        200:
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NSD'
+        400:
+          description: bad input parameter
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+    post:
+      tags:
+      - NSD
+      summary: Onboard new NSD
+      description: This operation allows to onboard an NSD to one Site Catalogue
+      operationId: Nsd.onboard
+      parameters:
+      - name: siteId
+        in: path
+        description: Identifier of a Site
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        $ref: '#/components/requestBodies/OnboardNSDRequestBody'
+      responses:
+        200:
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NSD'
+        400:
+          description: bad input parameter
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+  /site/{siteId}/nsd/{id}:
+    get:
+      tags:
+      - NSD
+      summary: Retrieve NSD
+      description: |
+        This operation allows to retrieve an existing NSD from a specific Site Catalogue.
+      operationId: Site.Nsd.fetch
+      parameters:
+      - name: id
+        in: path
+        description: Resource id identifier
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: siteId
+        in: path
+        description: Identifier of a Site
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        200:
+          description: NSD
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NSD'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: The specified resource was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+    put:
+      tags:
+      - NSD
+      summary: Update NSD
+      description: |
+        This operation allows to modify modify an already onboarded NSD.
+      operationId: Site.Nsd.update
+      parameters:
+      - name: id
+        in: path
+        description: Resource id identifier
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: siteId
+        in: path
+        description: Identifier of a Site
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateNSDRequestBody'
+      responses:
+        200:
+          description: NSD
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NSD'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: The specified resource was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+    delete:
+      tags:
+      - NSD
+      summary: Delete NSD
+      description: |
+        This operation allows to delete an existing NSD from the Site Catalogue.
+      operationId: Site.Nsd.delete
+      parameters:
+      - name: id
+        in: path
+        description: Resource id identifier
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: siteId
+        in: path
+        description: Identifier of a Site
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        200:
+          description: NSD deleted
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: The specified resource was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+  /site/{siteId}/vnfd/:
+    get:
+      tags:
+      - VNFD
+      summary: Retrieve list of VNFDs
+      description: |
+        This operation allows to retrieve the list of onboarded VNFD from a specific Site Catalogue
+      operationId: Vnfd.list
+      parameters:
+      - name: siteId
+        in: path
+        description: Identifier of a Site
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: Pagination parameters
+        in: query
+        description: The parameters are used to create pagination
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/Pagination parameters'
+      responses:
+        200:
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VNFD'
+        400:
+          description: bad input parameter
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+  /site/{siteId}/vnfd/{id}:
+    get:
+      tags:
+      - VNFD
+      summary: Retrieve VNFD
+      description: |
+        This operation allows to retrieve an existing VNFD from a specific Site Catalogue.
+      operationId: Site.Vnfd.fetch
+      parameters:
+      - name: id
+        in: path
+        description: Resource id identifier
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: siteId
+        in: path
+        description: Identifier of a Site
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        200:
+          description: VNFD
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VNFD'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: The specified resource was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+  /site/{siteId}/pnfd/:
+    get:
+      tags:
+      - PNFD
+      summary: Retrieve list of PNFDs
+      description: |
+        This operation allows to retrieve the list of onboarded PNFD from a specific Site Catalogue
+      operationId: Pnfd.list
+      parameters:
+      - name: siteId
+        in: path
+        description: Identifier of a Site
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: Pagination parameters
+        in: query
+        description: The parameters are used to create pagination
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/Pagination parameters'
+      responses:
+        200:
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PNFD'
+        400:
+          description: bad input parameter
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+  /site/{siteId}/pnfd/{id}:
+    get:
+      tags:
+      - PNFD
+      summary: Retrieve PNFD
+      description: |
+        This operation allows to retrieve an existing PNFD from a specific Site Catalogue.
+      operationId: Site.Pnfd.fetch
+      parameters:
+      - name: id
+        in: path
+        description: Resource id identifier
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: siteId
+        in: path
+        description: Identifier of a Site
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        200:
+          description: PNFD
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PNFD'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: The specified resource was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+components:
+  schemas:
+    LocalOrchestrator:
+      required:
+      - id
+      - name
+      - nfvo_type
+      - uri
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        name:
+          type: string
+          example: OSM-Turin
+        nfvoType:
+          type: string
+          example: ONAP
+        site:
+          type: string
+          example: Italy
+        uri:
+          type: string
+          format: url
+          example: https://osm-turin.5g-eve.eu
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    NSD:
+      type: object
+      properties:
+        id:
+          type: string
+      description: NSD
+    VNFD:
+      type: object
+      properties:
+        id:
+          type: string
+      description: VNFD
+    PNFD:
+      type: object
+      properties:
+        id:
+          type: string
+      description: PNFD
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          description: human-readable  (es. 'PageNotFound', 'BadArguments')
+        message:
+          type: string
+        target:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorResponse_details'
+      description: Error rappresentation
+    LocalOrchestrator parameters:
+      type: object
+      properties:
+        site_id:
+          type: integer
+          description: site identifier
+    Pagination parameters:
+      type: object
+      properties:
+        offset:
+          type: integer
+          description: FROM pagination
+        limit:
+          type: integer
+          description: COUNT pagination
+    ErrorResponse_details:
+      type: object
+      properties:
+        code:
+          type: string
+        target:
+          type: string
+        message:
+          type: string
+  responses:
+    SuccessResponse:
+      description: The request is successfull
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+    DeleteResponse:
+      description: The resource has been deleted
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+    BadRequestResponse:
+      description: The request is malformed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFoundResponse:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    UnauthorizedResponse:
+      description: Unauthorized, Invalid credentials (client or user)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ServerErrorResponse:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  parameters:
+    ResourceIdPathParameter:
+      name: id
+      in: path
+      description: Resource id identifier
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: integer
+    SiteIdPathParameter:
+      name: siteId
+      in: path
+      description: Identifier of a Site
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: integer
+    NsdIdPathParameter:
+      name: nsdInfoId
+      in: path
+      description: Identifier of the NSD information object associated with the NSD
+        to be fetched
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: integer
+    LocalOrchestratorSearchQueryParameters:
+      name: LocalOrchestrator parameters
+      in: query
+      description: site identifier
+      required: false
+      style: form
+      explode: true
+      schema:
+        $ref: '#/components/schemas/LocalOrchestrator parameters'
+    PaginationQueryParameters:
+      name: Pagination parameters
+      in: query
+      description: The parameters are used to create pagination
+      required: false
+      style: form
+      explode: true
+      schema:
+        $ref: '#/components/schemas/Pagination parameters'
+  requestBodies:
+    UpdateNSDRequestBody:
+      description: Update NSD put request body
+      content:
+        application/json:
+          schema:
+            type: object
+    UpdateVNFDRequestBody:
+      description: Update VNFD put request body
+      content:
+        application/json:
+          schema:
+            type: object
+    OnboardNSDRequestBody:
+      description: Onboarding new NSD post request body
+      content:
+        application/json:
+          schema:
+            required:
+            - nsd
+            type: object
+            properties:
+              nsd:
+                type: object
+                description: Nome
