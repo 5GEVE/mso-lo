@@ -332,6 +332,60 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
       security:
       - bearerAuthentication: []
+  /site/{siteId}/nsd/{id}/notification:
+    post:
+      tags:
+      - NSD
+      summary: Subscription to notification NSD
+      description: |
+        This operation allows to subscribe to notification changes on a local orchestrator catalogue
+      operationId: Site.Nsd.notification.subscribe
+      parameters:
+      - name: id
+        in: path
+        description: Resource id identifier
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: siteId
+        in: path
+        description: Identifier of a Site
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        $ref: '#/components/requestBodies/SubscribeNotificationNSDRequestBody'
+      responses:
+        200:
+          description: NSD
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NSD'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: The specified resource was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
   /site/{siteId}/vnfd/:
     get:
       tags:
@@ -412,6 +466,60 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/VNFD'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: The specified resource was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+  /site/{siteId}/vnfd/{id}/notification:
+    post:
+      tags:
+      - VNFD
+      summary: Subscription to notification VNFD
+      description: |
+        This operation allows to subscribe to notification changes on a local orchestrator catalogue
+      operationId: Site.Vnfd.notification.subscribe
+      parameters:
+      - name: id
+        in: path
+        description: Resource id identifier
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: siteId
+        in: path
+        description: Identifier of a Site
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        $ref: '#/components/requestBodies/SubscribeNotificationVNFDRequestBody'
+      responses:
+        200:
+          description: NSD
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NSD'
         400:
           description: The request is malformed
           content:
@@ -539,7 +647,7 @@ paths:
       summary: Retrieve list of NS
       description: |
         This operation allows to retrieve the list of NS from a specific Site
-      operationId: NS.list
+      operationId: Site.NS.list
       parameters:
       - name: siteId
         in: path
@@ -585,7 +693,7 @@ paths:
       - NS
       summary: Create a new NS
       description: This operation allows to create NS in a Site
-      operationId: NS.onboard
+      operationId: Site.NS.onboard
       parameters:
       - name: siteId
         in: path
@@ -625,7 +733,7 @@ paths:
       summary: Retrieve NS
       description: |
         This operation allows to retrieve an existing NS from a specific Site.
-      operationId: Site.Ns.fetch
+      operationId: Site.NS.fetch
       parameters:
       - name: id
         in: path
@@ -676,7 +784,7 @@ paths:
       summary: Terminate NS
       description: |
         This operation allows to delete an existing NS from the Site.
-      operationId: Site.Ns.terminate
+      operationId: Site.NS.terminate
       parameters:
       - name: id
         in: path
@@ -724,7 +832,7 @@ paths:
       summary: Scale NS
       description: |
         This operation allows to retrieve an existing NS from a specific Site.
-      operationId: Site.Ns.scale
+      operationId: Site.NS.scale
       parameters:
       - name: id
         in: path
@@ -765,6 +873,106 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         404:
           description: The specified resource was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+  /site/{siteId}/vnf/{id}:
+    get:
+      tags:
+      - VNF
+      summary: Retrieve VNF info
+      description: |
+        This operation allows to retrieve information about a VNF instance from a specific Site.
+      operationId: Site.VNF.fetch
+      parameters:
+      - name: id
+        in: path
+        description: Resource id identifier
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: siteId
+        in: path
+        description: Identifier of a Site
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        200:
+          description: VNF
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VNF'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: The specified resource was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+  /site/{siteId}/vnf:
+    get:
+      tags:
+      - VNF
+      summary: Retrieve list of VNFs
+      description: |
+        This operation allows to retrieve the list of VNFs from a specific Site
+      operationId: Site.VNF.list
+      parameters:
+      - name: siteId
+        in: path
+        description: Identifier of a Site
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: Pagination parameters
+        in: query
+        description: The parameters are used to create pagination
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/Pagination parameters'
+      responses:
+        200:
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NS'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
           content:
             application/json:
               schema:
@@ -828,6 +1036,12 @@ components:
         id:
           type: string
       description: NS
+    VNF:
+      type: object
+      properties:
+        id:
+          type: string
+      description: VNF
     ErrorResponse:
       type: object
       properties:
@@ -990,6 +1204,34 @@ components:
                 type: string
               scaleTime:
                 type: string
+    SubscribeNotificationNSDRequestBody:
+      description: Create subscription to NSD
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              filter:
+                type: object
+                description: Input filter for selecting the NSD(s)/PNFD(s) and the
+                  related change notifications to subscribe to. This filter can contain
+                  information about specific types of changes to subscribe to, or
+                  attributes of the NsdInfo/PnfdInfo.
+    SubscribeNotificationVNFDRequestBody:
+      description: Create subscription to VNFD
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              filter:
+                type: object
+                description: Filter defining the VNF Packages on which the query applies,
+                  based on attributes of VnfPkgInfo
+              attributeSelector:
+                type: array
+                items:
+                  type: object
     UpdateNSDRequestBody:
       description: Update NSD put request body
       content:
