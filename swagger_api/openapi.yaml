@@ -50,7 +50,11 @@ paths:
                 items:
                   $ref: '#/components/schemas/LocalOrchestrator'
         400:
-          description: bad input parameter
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
       security:
       - bearerAuthentication: []
   /orchestrator/{id}:
@@ -78,6 +82,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LocalOrchestrator'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         401:
           description: Unauthorized, Invalid credentials (client or user)
           content:
@@ -202,6 +212,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NSD'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         401:
           description: Unauthorized, Invalid credentials (client or user)
           content:
@@ -249,6 +265,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NSD'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         401:
           description: Unauthorized, Invalid credentials (client or user)
           content:
@@ -290,6 +312,12 @@ paths:
       responses:
         200:
           description: NSD deleted
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         401:
           description: Unauthorized, Invalid credentials (client or user)
           content:
@@ -339,7 +367,11 @@ paths:
                 items:
                   $ref: '#/components/schemas/VNFD'
         400:
-          description: bad input parameter
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         401:
           description: Unauthorized, Invalid credentials (client or user)
           content:
@@ -380,6 +412,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/VNFD'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         401:
           description: Unauthorized, Invalid credentials (client or user)
           content:
@@ -429,7 +467,11 @@ paths:
                 items:
                   $ref: '#/components/schemas/PNFD'
         400:
-          description: bad input parameter
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         401:
           description: Unauthorized, Invalid credentials (client or user)
           content:
@@ -470,6 +512,251 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PNFD'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: The specified resource was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+  /site/{siteId}/ns:
+    get:
+      tags:
+      - NS
+      summary: Retrieve list of NS
+      description: |
+        This operation allows to retrieve the list of NS from a specific Site
+      operationId: NS.list
+      parameters:
+      - name: siteId
+        in: path
+        description: Identifier of a Site
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: Pagination parameters
+        in: query
+        description: The parameters are used to create pagination
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/Pagination parameters'
+      responses:
+        200:
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NS'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+    post:
+      tags:
+      - NS
+      summary: Create a new NS
+      description: This operation allows to create NS in a Site
+      operationId: NS.onboard
+      parameters:
+      - name: siteId
+        in: path
+        description: Identifier of a Site
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        $ref: '#/components/requestBodies/CreateNSRequestBody'
+      responses:
+        200:
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NS'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+  /site/{siteId}/ns/{id}:
+    get:
+      tags:
+      - NS
+      summary: Retrieve NS
+      description: |
+        This operation allows to retrieve an existing NS from a specific Site.
+      operationId: Site.Ns.fetch
+      parameters:
+      - name: id
+        in: path
+        description: Resource id identifier
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: siteId
+        in: path
+        description: Identifier of a Site
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        200:
+          description: NS
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NS'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: The specified resource was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+    delete:
+      tags:
+      - NS
+      summary: Terminate NS
+      description: |
+        This operation allows to delete an existing NS from the Site.
+      operationId: Site.Ns.terminate
+      parameters:
+      - name: id
+        in: path
+        description: Resource id identifier
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: siteId
+        in: path
+        description: Identifier of a Site
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        200:
+          description: NS deleted
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: The specified resource was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+  /site/{siteId}/ns/{id}/scale:
+    post:
+      tags:
+      - NS
+      summary: Scale NS
+      description: |
+        This operation allows to retrieve an existing NS from a specific Site.
+      operationId: Site.Ns.scale
+      parameters:
+      - name: id
+        in: path
+        description: Resource id identifier
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: siteId
+        in: path
+        description: Identifier of a Site
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        $ref: '#/components/requestBodies/ScaleNSRequestBody'
+      responses:
+        200:
+          description: NS
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NS'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         401:
           description: Unauthorized, Invalid credentials (client or user)
           content:
@@ -535,6 +822,12 @@ components:
         id:
           type: string
       description: PNFD
+    NS:
+      type: object
+      properties:
+        id:
+          type: string
+      description: NS
     ErrorResponse:
       type: object
       properties:
@@ -665,6 +958,38 @@ components:
       schema:
         $ref: '#/components/schemas/Pagination parameters'
   requestBodies:
+    CreateNSRequestBody:
+      description: Create NS request body
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              nsName:
+                type: string
+              nsdId:
+                format: uuid
+                example: d290f1ee-6c54-4b01-90e6-d701748f0851
+              nsDescription:
+                type: string
+    ScaleNSRequestBody:
+      description: Scale NS request body
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              scaleType:
+                type: string
+                enum:
+                - SCALE_NS
+                - SCALE_VNF
+              scaleVnfData:
+                type: string
+              scaleNsData:
+                type: string
+              scaleTime:
+                type: string
     UpdateNSDRequestBody:
       description: Update NSD put request body
       content:
