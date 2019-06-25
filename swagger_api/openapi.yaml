@@ -14,7 +14,7 @@ tags:
 - name: NSD
   description: Network service descriptor
 paths:
-  /orchestrator:
+  /nfvo:
     get:
       tags:
       - Local Orchestrators
@@ -22,16 +22,16 @@ paths:
       description: |
         By passing in the appropriate options, you can search for
         available Local Orchestrators
-      operationId: LocalOrchestrator.fetch
+      operationId: NFVO.fetch
       parameters:
-      - name: LocalOrchestrator parameters
+      - name: NFVO parameters
         in: query
-        description: site identifier
+        description: nfvo identifier
         required: false
         style: form
         explode: true
         schema:
-          $ref: '#/components/schemas/LocalOrchestrator parameters'
+          $ref: '#/components/schemas/NFVO parameters'
       - name: Pagination parameters
         in: query
         description: The parameters are used to create pagination
@@ -48,7 +48,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/LocalOrchestrator'
+                  $ref: '#/components/schemas/NFVO'
         400:
           description: The request is malformed
           content:
@@ -57,7 +57,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
       security:
       - bearerAuthentication: []
-  /orchestrator/{id}:
+  /nfvo/{id}:
     get:
       tags:
       - Local Orchestrators
@@ -65,7 +65,7 @@ paths:
       description: |
         By passing in the appropriate options, you can search for
         available Local Orchestrators
-      operationId: LocalOrchestrator.getById
+      operationId: NFVO.getById
       parameters:
       - name: id
         in: path
@@ -77,11 +77,11 @@ paths:
           type: integer
       responses:
         200:
-          description: LocalOrchestrator found
+          description: NFVO found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LocalOrchestrator'
+                $ref: '#/components/schemas/NFVO'
         400:
           description: The request is malformed
           content:
@@ -102,18 +102,18 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
       security:
       - bearerAuthentication: []
-  /site/{siteId}/nsd:
+  /nfvo/{nfvoId}/nsd:
     get:
       tags:
       - NSD
       summary: Retrieve list of NSDs
       description: |
-        This operation allows to retrieve the list of onboarded NSD from a specific Site Catalogue
+        This operation allows to retrieve the list of onboarded NSD from a specific Nfvo Catalogue
       operationId: Nsd.list
       parameters:
-      - name: siteId
+      - name: nfvoId
         in: path
-        description: Identifier of a Site
+        description: Identifier of a Nfvo
         required: true
         style: simple
         explode: false
@@ -150,12 +150,12 @@ paths:
       tags:
       - NSD
       summary: Onboard new NSD
-      description: This operation allows to onboard an NSD to one Site Catalogue
+      description: This operation allows to onboard an NSD to one Nfvo Catalogue
       operationId: Nsd.onboard
       parameters:
-      - name: siteId
+      - name: nfvoId
         in: path
-        description: Identifier of a Site
+        description: Identifier of a Nfvo
         required: true
         style: simple
         explode: false
@@ -180,14 +180,14 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
       security:
       - bearerAuthentication: []
-  /site/{siteId}/nsd/{id}:
+  /nfvo/{nfvoId}/nsd/{id}:
     get:
       tags:
       - NSD
       summary: Retrieve NSD
       description: |
-        This operation allows to retrieve an existing NSD from a specific Site Catalogue.
-      operationId: Site.Nsd.fetch
+        This operation allows to retrieve an existing NSD from a specific Nfvo Catalogue.
+      operationId: Nfvo.Nsd.fetch
       parameters:
       - name: id
         in: path
@@ -197,9 +197,9 @@ paths:
         explode: false
         schema:
           type: integer
-      - name: siteId
+      - name: nfvoId
         in: path
-        description: Identifier of a Site
+        description: Identifier of a Nfvo
         required: true
         style: simple
         explode: false
@@ -238,7 +238,7 @@ paths:
       summary: Update NSD
       description: |
         This operation allows to modify modify an already onboarded NSD.
-      operationId: Site.Nsd.update
+      operationId: Nfvo.Nsd.update
       parameters:
       - name: id
         in: path
@@ -248,9 +248,9 @@ paths:
         explode: false
         schema:
           type: integer
-      - name: siteId
+      - name: nfvoId
         in: path
-        description: Identifier of a Site
+        description: Identifier of a Nfvo
         required: true
         style: simple
         explode: false
@@ -290,8 +290,8 @@ paths:
       - NSD
       summary: Delete NSD
       description: |
-        This operation allows to delete an existing NSD from the Site Catalogue.
-      operationId: Site.Nsd.delete
+        This operation allows to delete an existing NSD from the Nfvo Catalogue.
+      operationId: Nfvo.Nsd.delete
       parameters:
       - name: id
         in: path
@@ -301,9 +301,9 @@ paths:
         explode: false
         schema:
           type: integer
-      - name: siteId
+      - name: nfvoId
         in: path
-        description: Identifier of a Site
+        description: Identifier of a Nfvo
         required: true
         style: simple
         explode: false
@@ -332,14 +332,14 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
       security:
       - bearerAuthentication: []
-  /site/{siteId}/nsd/{id}/notification:
+  /nfvo/{nfvoId}/nsd/{id}/notification:
     post:
       tags:
       - NSD
       summary: Subscription to notification NSD
       description: |
-        This operation allows to subscribe to notification changes on a local orchestrator catalogue
-      operationId: Site.Nsd.notification.subscribe
+        This operation allows to subscribe to notification changes on a local nfvo catalogue
+      operationId: Nfvo.Nsd.notification.subscribe
       parameters:
       - name: id
         in: path
@@ -349,9 +349,9 @@ paths:
         explode: false
         schema:
           type: integer
-      - name: siteId
+      - name: nfvoId
         in: path
-        description: Identifier of a Site
+        description: Identifier of a Nfvo
         required: true
         style: simple
         explode: false
@@ -386,18 +386,18 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
       security:
       - bearerAuthentication: []
-  /site/{siteId}/vnfd/:
+  /nfvo/{nfvoId}/vnfd/:
     get:
       tags:
       - VNFD
       summary: Retrieve list of VNFDs
       description: |
-        This operation allows to retrieve the list of onboarded VNFD from a specific Site Catalogue
+        This operation allows to retrieve the list of onboarded VNFD from a specific Nfvo Catalogue
       operationId: Vnfd.list
       parameters:
-      - name: siteId
+      - name: nfvoId
         in: path
-        description: Identifier of a Site
+        description: Identifier of a Nfvo
         required: true
         style: simple
         explode: false
@@ -434,14 +434,14 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
       security:
       - bearerAuthentication: []
-  /site/{siteId}/vnfd/{id}:
+  /nfvo/{nfvoId}/vnfd/{id}:
     get:
       tags:
       - VNFD
       summary: Retrieve VNFD
       description: |
-        This operation allows to retrieve an existing VNFD from a specific Site Catalogue.
-      operationId: Site.Vnfd.fetch
+        This operation allows to retrieve an existing VNFD from a specific Nfvo Catalogue.
+      operationId: Nfvo.Vnfd.fetch
       parameters:
       - name: id
         in: path
@@ -451,9 +451,9 @@ paths:
         explode: false
         schema:
           type: integer
-      - name: siteId
+      - name: nfvoId
         in: path
-        description: Identifier of a Site
+        description: Identifier of a Nfvo
         required: true
         style: simple
         explode: false
@@ -486,14 +486,14 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
       security:
       - bearerAuthentication: []
-  /site/{siteId}/vnfd/{id}/notification:
+  /nfvo/{nfvoId}/vnfd/{id}/notification:
     post:
       tags:
       - VNFD
       summary: Subscription to notification VNFD
       description: |
-        This operation allows to subscribe to notification changes on a local orchestrator catalogue
-      operationId: Site.Vnfd.notification.subscribe
+        This operation allows to subscribe to notification changes on a local nfvo catalogue
+      operationId: Nfvo.Vnfd.notification.subscribe
       parameters:
       - name: id
         in: path
@@ -503,9 +503,9 @@ paths:
         explode: false
         schema:
           type: integer
-      - name: siteId
+      - name: nfvoId
         in: path
-        description: Identifier of a Site
+        description: Identifier of a Nfvo
         required: true
         style: simple
         explode: false
@@ -540,18 +540,18 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
       security:
       - bearerAuthentication: []
-  /site/{siteId}/pnfd/:
+  /nfvo/{nfvoId}/pnfd/:
     get:
       tags:
       - PNFD
       summary: Retrieve list of PNFDs
       description: |
-        This operation allows to retrieve the list of onboarded PNFD from a specific Site Catalogue
+        This operation allows to retrieve the list of onboarded PNFD from a specific Nfvo Catalogue
       operationId: Pnfd.list
       parameters:
-      - name: siteId
+      - name: nfvoId
         in: path
-        description: Identifier of a Site
+        description: Identifier of a Nfvo
         required: true
         style: simple
         explode: false
@@ -588,14 +588,14 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
       security:
       - bearerAuthentication: []
-  /site/{siteId}/pnfd/{id}:
+  /nfvo/{nfvoId}/pnfd/{id}:
     get:
       tags:
       - PNFD
       summary: Retrieve PNFD
       description: |
-        This operation allows to retrieve an existing PNFD from a specific Site Catalogue.
-      operationId: Site.Pnfd.fetch
+        This operation allows to retrieve an existing PNFD from a specific Nfvo Catalogue.
+      operationId: Nfvo.Pnfd.fetch
       parameters:
       - name: id
         in: path
@@ -605,9 +605,9 @@ paths:
         explode: false
         schema:
           type: integer
-      - name: siteId
+      - name: nfvoId
         in: path
-        description: Identifier of a Site
+        description: Identifier of a Nfvo
         required: true
         style: simple
         explode: false
@@ -640,18 +640,18 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
       security:
       - bearerAuthentication: []
-  /site/{siteId}/ns:
+  /nfvo/{nfvoId}/ns:
     get:
       tags:
       - NS
       summary: Retrieve list of NS
       description: |
-        This operation allows to retrieve the list of NS from a specific Site
-      operationId: Site.NS.list
+        This operation allows to retrieve the list of NS from a specific Nfvo
+      operationId: Nfvo.NS.list
       parameters:
-      - name: siteId
+      - name: nfvoId
         in: path
-        description: Identifier of a Site
+        description: Identifier of a Nfvo
         required: true
         style: simple
         explode: false
@@ -692,12 +692,12 @@ paths:
       tags:
       - NS
       summary: Create a new NS
-      description: This operation allows to create NS in a Site
-      operationId: Site.NS.onboard
+      description: This operation allows to create NS in a Nfvo
+      operationId: Nfvo.NS.onboard
       parameters:
-      - name: siteId
+      - name: nfvoId
         in: path
-        description: Identifier of a Site
+        description: Identifier of a Nfvo
         required: true
         style: simple
         explode: false
@@ -726,14 +726,14 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
       security:
       - bearerAuthentication: []
-  /site/{siteId}/ns/{id}:
+  /nfvo/{nfvoId}/ns/{id}:
     get:
       tags:
       - NS
       summary: Retrieve NS
       description: |
-        This operation allows to retrieve an existing NS from a specific Site.
-      operationId: Site.NS.fetch
+        This operation allows to retrieve an existing NS from a specific Nfvo.
+      operationId: Nfvo.NS.fetch
       parameters:
       - name: id
         in: path
@@ -743,9 +743,9 @@ paths:
         explode: false
         schema:
           type: integer
-      - name: siteId
+      - name: nfvoId
         in: path
-        description: Identifier of a Site
+        description: Identifier of a Nfvo
         required: true
         style: simple
         explode: false
@@ -783,8 +783,8 @@ paths:
       - NS
       summary: Terminate NS
       description: |
-        This operation allows to delete an existing NS from the Site.
-      operationId: Site.NS.terminate
+        This operation allows to delete an existing NS from the Nfvo.
+      operationId: Nfvo.NS.terminate
       parameters:
       - name: id
         in: path
@@ -794,9 +794,9 @@ paths:
         explode: false
         schema:
           type: integer
-      - name: siteId
+      - name: nfvoId
         in: path
-        description: Identifier of a Site
+        description: Identifier of a Nfvo
         required: true
         style: simple
         explode: false
@@ -825,14 +825,14 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
       security:
       - bearerAuthentication: []
-  /site/{siteId}/ns/{id}/scale:
+  /nfvo/{nfvoId}/ns/{id}/scale:
     post:
       tags:
       - NS
       summary: Scale NS
       description: |
-        This operation allows to retrieve an existing NS from a specific Site.
-      operationId: Site.NS.scale
+        This operation allows to retrieve an existing NS from a specific Nfvo.
+      operationId: Nfvo.NS.scale
       parameters:
       - name: id
         in: path
@@ -842,9 +842,9 @@ paths:
         explode: false
         schema:
           type: integer
-      - name: siteId
+      - name: nfvoId
         in: path
-        description: Identifier of a Site
+        description: Identifier of a Nfvo
         required: true
         style: simple
         explode: false
@@ -879,14 +879,14 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
       security:
       - bearerAuthentication: []
-  /site/{siteId}/vnf/{id}:
+  /nfvo/{nfvoId}/vnf/{id}:
     get:
       tags:
       - VNF
       summary: Retrieve VNF info
       description: |
-        This operation allows to retrieve information about a VNF instance from a specific Site.
-      operationId: Site.VNF.fetch
+        This operation allows to retrieve information about a VNF instance from a specific Nfvo.
+      operationId: Nfvo.VNF.fetch
       parameters:
       - name: id
         in: path
@@ -896,9 +896,9 @@ paths:
         explode: false
         schema:
           type: integer
-      - name: siteId
+      - name: nfvoId
         in: path
-        description: Identifier of a Site
+        description: Identifier of a Nfvo
         required: true
         style: simple
         explode: false
@@ -931,18 +931,18 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
       security:
       - bearerAuthentication: []
-  /site/{siteId}/vnf:
+  /nfvo/{nfvoId}/vnf:
     get:
       tags:
       - VNF
       summary: Retrieve list of VNFs
       description: |
-        This operation allows to retrieve the list of VNFs from a specific Site
-      operationId: Site.VNF.list
+        This operation allows to retrieve the list of VNFs from a specific Nfvo
+      operationId: Nfvo.VNF.list
       parameters:
-      - name: siteId
+      - name: nfvoId
         in: path
-        description: Identifier of a Site
+        description: Identifier of a Nfvo
         required: true
         style: simple
         explode: false
@@ -981,7 +981,7 @@ paths:
       - bearerAuthentication: []
 components:
   schemas:
-    LocalOrchestrator:
+    NFVO:
       required:
       - id
       - name
@@ -999,7 +999,7 @@ components:
         nfvoType:
           type: string
           example: ONAP
-        site:
+        location:
           type: string
           example: Italy
         uri:
@@ -1057,12 +1057,12 @@ components:
           items:
             $ref: '#/components/schemas/ErrorResponse_details'
       description: Error rappresentation
-    LocalOrchestrator parameters:
+    NFVO parameters:
       type: object
       properties:
-        site_id:
+        nfvo_id:
           type: integer
-          description: site identifier
+          description: nfvo identifier
     Pagination parameters:
       type: object
       properties:
@@ -1134,10 +1134,10 @@ components:
       explode: false
       schema:
         type: integer
-    SiteIdPathParameter:
-      name: siteId
+    NfvoIdPathParameter:
+      name: nfvoId
       in: path
-      description: Identifier of a Site
+      description: Identifier of a Nfvo
       required: true
       style: simple
       explode: false
@@ -1153,15 +1153,15 @@ components:
       explode: false
       schema:
         type: integer
-    LocalOrchestratorSearchQueryParameters:
-      name: LocalOrchestrator parameters
+    NFVOSearchQueryParameters:
+      name: NFVO parameters
       in: query
-      description: site identifier
+      description: nfvo identifier
       required: false
       style: form
       explode: true
       schema:
-        $ref: '#/components/schemas/LocalOrchestrator parameters'
+        $ref: '#/components/schemas/NFVO parameters'
     PaginationQueryParameters:
       name: Pagination parameters
       in: query
