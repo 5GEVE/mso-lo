@@ -74,7 +74,7 @@ paths:
         style: simple
         explode: false
         schema:
-          type: integer
+          type: string
       responses:
         200:
           description: NFVO found
@@ -118,7 +118,7 @@ paths:
         style: simple
         explode: false
         schema:
-          type: integer
+          type: string
       - name: Pagination parameters
         in: query
         description: The parameters are used to create pagination
@@ -160,16 +160,16 @@ paths:
         style: simple
         explode: false
         schema:
-          type: integer
+          type: string
       requestBody:
         $ref: '#/components/requestBodies/OnboardNSDRequestBody'
       responses:
-        200:
-          description: search results matching criteria
+        201:
+          description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NSD'
+                $ref: '#/components/schemas/nsId'
         400:
           description: bad input parameter
         401:
@@ -180,7 +180,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
       security:
       - bearerAuthentication: []
-  /nfvo/{nfvoId}/nsd/{id}:
+  /nfvo/{nfvoId}/nsd/{nsdInfoId}:
     get:
       tags:
       - NSD
@@ -189,14 +189,15 @@ paths:
         This operation allows to retrieve an existing NSD from a specific Nfvo Catalogue.
       operationId: Nfvo.Nsd.fetch
       parameters:
-      - name: id
+      - name: nsdInfoId
         in: path
-        description: Resource id identifier
+        description: Identifier of the NSD information object associated with the
+          NSD to be fetched
         required: true
         style: simple
         explode: false
         schema:
-          type: integer
+          type: string
       - name: nfvoId
         in: path
         description: Identifier of a Nfvo
@@ -204,7 +205,7 @@ paths:
         style: simple
         explode: false
         schema:
-          type: integer
+          type: string
       responses:
         200:
           description: NSD
@@ -240,14 +241,15 @@ paths:
         This operation allows to modify modify an already onboarded NSD.
       operationId: Nfvo.Nsd.update
       parameters:
-      - name: id
+      - name: nsdInfoId
         in: path
-        description: Resource id identifier
+        description: Identifier of the NSD information object associated with the
+          NSD to be fetched
         required: true
         style: simple
         explode: false
         schema:
-          type: integer
+          type: string
       - name: nfvoId
         in: path
         description: Identifier of a Nfvo
@@ -255,7 +257,7 @@ paths:
         style: simple
         explode: false
         schema:
-          type: integer
+          type: string
       requestBody:
         $ref: '#/components/requestBodies/UpdateNSDRequestBody'
       responses:
@@ -293,14 +295,15 @@ paths:
         This operation allows to delete an existing NSD from the Nfvo Catalogue.
       operationId: Nfvo.Nsd.delete
       parameters:
-      - name: id
+      - name: nsdInfoId
         in: path
-        description: Resource id identifier
+        description: Identifier of the NSD information object associated with the
+          NSD to be fetched
         required: true
         style: simple
         explode: false
         schema:
-          type: integer
+          type: string
       - name: nfvoId
         in: path
         description: Identifier of a Nfvo
@@ -308,7 +311,7 @@ paths:
         style: simple
         explode: false
         schema:
-          type: integer
+          type: string
       responses:
         200:
           description: NSD deleted
@@ -348,7 +351,7 @@ paths:
         style: simple
         explode: false
         schema:
-          type: integer
+          type: string
       - name: nfvoId
         in: path
         description: Identifier of a Nfvo
@@ -356,7 +359,7 @@ paths:
         style: simple
         explode: false
         schema:
-          type: integer
+          type: string
       requestBody:
         $ref: '#/components/requestBodies/SubscribeNotificationNSDRequestBody'
       responses:
@@ -402,7 +405,7 @@ paths:
         style: simple
         explode: false
         schema:
-          type: integer
+          type: string
       - name: Pagination parameters
         in: query
         description: The parameters are used to create pagination
@@ -450,7 +453,7 @@ paths:
         style: simple
         explode: false
         schema:
-          type: integer
+          type: string
       - name: nfvoId
         in: path
         description: Identifier of a Nfvo
@@ -458,7 +461,7 @@ paths:
         style: simple
         explode: false
         schema:
-          type: integer
+          type: string
       responses:
         200:
           description: VNFD
@@ -502,7 +505,7 @@ paths:
         style: simple
         explode: false
         schema:
-          type: integer
+          type: string
       - name: nfvoId
         in: path
         description: Identifier of a Nfvo
@@ -510,7 +513,7 @@ paths:
         style: simple
         explode: false
         schema:
-          type: integer
+          type: string
       requestBody:
         $ref: '#/components/requestBodies/SubscribeNotificationVNFDRequestBody'
       responses:
@@ -556,7 +559,7 @@ paths:
         style: simple
         explode: false
         schema:
-          type: integer
+          type: string
       - name: Pagination parameters
         in: query
         description: The parameters are used to create pagination
@@ -604,7 +607,7 @@ paths:
         style: simple
         explode: false
         schema:
-          type: integer
+          type: string
       - name: nfvoId
         in: path
         description: Identifier of a Nfvo
@@ -612,7 +615,7 @@ paths:
         style: simple
         explode: false
         schema:
-          type: integer
+          type: string
       responses:
         200:
           description: PNFD
@@ -656,7 +659,7 @@ paths:
         style: simple
         explode: false
         schema:
-          type: integer
+          type: string
       - name: Pagination parameters
         in: query
         description: The parameters are used to create pagination
@@ -691,8 +694,8 @@ paths:
     post:
       tags:
       - NS
-      summary: Create a new NS
-      description: This operation allows to create NS in a Nfvo
+      summary: Create a new nsId
+      description: Creates and returns a Network Service identifier (nsId) in a Nfvo
       operationId: Nfvo.NS.onboard
       parameters:
       - name: nfvoId
@@ -702,7 +705,7 @@ paths:
         style: simple
         explode: false
         schema:
-          type: integer
+          type: string
       requestBody:
         $ref: '#/components/requestBodies/CreateNSRequestBody'
       responses:
@@ -726,7 +729,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
       security:
       - bearerAuthentication: []
-  /nfvo/{nfvoId}/ns/{id}:
+  /nfvo/{nfvoId}/ns/{nsId}:
     get:
       tags:
       - NS
@@ -735,14 +738,14 @@ paths:
         This operation allows to retrieve an existing NS from a specific Nfvo.
       operationId: Nfvo.NS.fetch
       parameters:
-      - name: id
+      - name: nsId
         in: path
-        description: Resource id identifier
+        description: Identifier of the network service
         required: true
         style: simple
         explode: false
         schema:
-          type: integer
+          type: string
       - name: nfvoId
         in: path
         description: Identifier of a Nfvo
@@ -750,7 +753,7 @@ paths:
         style: simple
         explode: false
         schema:
-          type: integer
+          type: string
       responses:
         200:
           description: NS
@@ -778,54 +781,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
       security:
       - bearerAuthentication: []
-    delete:
-      tags:
-      - NS
-      summary: Terminate NS
-      description: |
-        This operation allows to delete an existing NS from the Nfvo.
-      operationId: Nfvo.NS.terminate
-      parameters:
-      - name: id
-        in: path
-        description: Resource id identifier
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: integer
-      - name: nfvoId
-        in: path
-        description: Identifier of a Nfvo
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: integer
-      responses:
-        200:
-          description: NS deleted
-        400:
-          description: The request is malformed
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        401:
-          description: Unauthorized, Invalid credentials (client or user)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        404:
-          description: The specified resource was not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-      - bearerAuthentication: []
-  /nfvo/{nfvoId}/ns/{id}/scale:
+  /nfvo/{nfvoId}/ns/{nsId}/scale:
     post:
       tags:
       - NS
@@ -834,14 +790,14 @@ paths:
         This operation allows to retrieve an existing NS from a specific Nfvo.
       operationId: Nfvo.NS.scale
       parameters:
-      - name: id
+      - name: nsId
         in: path
-        description: Resource id identifier
+        description: Identifier of the network service
         required: true
         style: simple
         explode: false
         schema:
-          type: integer
+          type: string
       - name: nfvoId
         in: path
         description: Identifier of a Nfvo
@@ -849,16 +805,120 @@ paths:
         style: simple
         explode: false
         schema:
-          type: integer
+          type: string
       requestBody:
         $ref: '#/components/requestBodies/ScaleNSRequestBody'
       responses:
         200:
-          description: NS
+          description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NS'
+                $ref: '#/components/schemas/OperationSuccessful'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: The specified resource was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+  /nfvo/{nfvoId}/ns/{nsId}/instantiate:
+    put:
+      tags:
+      - NS
+      summary: Instantiate the NS
+      description: |
+        This operation allows to retrieve an existing NS from a specific Nfvo.
+      operationId: Nfvo.NS.instantiate
+      parameters:
+      - name: nsId
+        in: path
+        description: Identifier of the network service
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationSuccessful'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: The specified resource was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+  /nfvo/{nfvoId}/ns/{nsId}/terminate:
+    delete:
+      tags:
+      - NS
+      summary: Terminate NS
+      description: |
+        This operation allows to delete an existing NS from the Nfvo.
+      operationId: Nfvo.NS.terminate
+      parameters:
+      - name: nsId
+        in: path
+        description: Identifier of the network service
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationSuccessful'
         400:
           description: The request is malformed
           content:
@@ -895,7 +955,7 @@ paths:
         style: simple
         explode: false
         schema:
-          type: integer
+          type: string
       - name: nfvoId
         in: path
         description: Identifier of a Nfvo
@@ -903,7 +963,7 @@ paths:
         style: simple
         explode: false
         schema:
-          type: integer
+          type: string
       responses:
         200:
           description: VNF
@@ -947,7 +1007,7 @@ paths:
         style: simple
         explode: false
         schema:
-          type: integer
+          type: string
       - name: Pagination parameters
         in: query
         description: The parameters are used to create pagination
@@ -1030,10 +1090,16 @@ components:
         id:
           type: string
       description: PNFD
+    nsId:
+      type: object
+      properties:
+        nsId:
+          type: string
+      description: nsid
     NS:
       type: object
       properties:
-        id:
+        nsId:
           type: string
       description: NS
     VNF:
@@ -1042,6 +1108,12 @@ components:
         id:
           type: string
       description: VNF
+    OperationSuccessful:
+      type: object
+      properties:
+        operationId:
+          type: string
+      description: Successful operation
     ErrorResponse:
       type: object
       properties:
@@ -1133,7 +1205,7 @@ components:
       style: simple
       explode: false
       schema:
-        type: integer
+        type: string
     NfvoIdPathParameter:
       name: nfvoId
       in: path
@@ -1142,7 +1214,16 @@ components:
       style: simple
       explode: false
       schema:
-        type: integer
+        type: string
+    nsIdPathParameter:
+      name: nsId
+      in: path
+      description: Identifier of the network service
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
     NsdIdPathParameter:
       name: nsdInfoId
       in: path
@@ -1152,7 +1233,7 @@ components:
       style: simple
       explode: false
       schema:
-        type: integer
+        type: string
     NFVOSearchQueryParameters:
       name: NFVO parameters
       in: query
