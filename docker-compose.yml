@@ -8,7 +8,7 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
     networks:
-      - my-network
+      - al-network
     ports:
       - 80:80
   flask:
@@ -16,15 +16,11 @@ services:
       context: ./
       dockerfile: Dockerfile
     container_name: adaptation-layer
-    command: flask run --host=0.0.0.0
     networks:
-      my-network:
+      al-network:
         aliases:
-          - flask-app
-    volumes:
-      - ./:/app
-    environment:
-      - FLASK_APP=app.py
-      - FLASK_ENV=development
+          - flask-app 
+    ports:
+      - 5000:5000
 networks:
-    my-network:
+    al-network:

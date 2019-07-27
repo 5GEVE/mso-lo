@@ -6,16 +6,15 @@
 
 ## Installation
 
-### Docker installation
+### Docker-compose
 
-1) clone the project
-2) Build the image drom the project's root directory:
+1) Clone the project
+2) Move to the project directory
+3) Build the stack:
     
-        $ docker build -t adaptation-layer .
-
-#### To launch:
-
-    $ docker run -p 5000:5000 --name adl0 adaptation-layer
+        $ docker-compose build
+4) Start the stack
+        $ docker-compose up
 
 
 ## Credits
