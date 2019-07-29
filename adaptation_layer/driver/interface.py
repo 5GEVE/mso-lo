@@ -6,99 +6,82 @@ class Driver(ABC):
     """
     methods related to Network Service Descriptor
     """
-    @staticmethod
     @abstractmethod
-    def get_nsd_list(nfvo_id: str, args) -> list:
+    def get_nsd_list(args=None) -> list:
         raise NotImplementedError("The method is not implemented")
 
-    @staticmethod
     @abstractmethod
-    def onboard_nsd(nfvo_id: str, args) -> dict:
+    def onboard_nsd(args=None) -> dict:
         raise NotImplementedError("The method is not implemented")
 
-    @staticmethod
     @abstractmethod
-    def get_nsd(nfvo_id, nsd_info_id: str, args) -> dict:
+    def get_nsd(nsd_info_id: str, args=None) -> dict:
         raise NotImplementedError("The method is not implemented")
 
-    @staticmethod
     @abstractmethod
-    def update_nsd(nfvo_id, nsd_info_id: str, args) -> dict:
+    def update_nsd(nsd_info_id: str, args=None) -> dict:
         raise NotImplementedError("The method is not implemented")
 
-    @staticmethod
     @abstractmethod
-    def delete_nsd(nfvo_id, nsd_info_id: str, args) -> dict:
+    def delete_nsd(nsd_info_id: str, args=None) -> dict:
         raise NotImplementedError("The method is not implemented")
 
     """
     methods related to Virtual Network Function Descriptor
     """
-    @staticmethod
     @abstractmethod
-    def get_vnfd_list(nfvo_id: str, args) -> dict:
+    def get_vnfd_list(args=None) -> dict:
         raise NotImplementedError("The method is not implemented")
 
-    @staticmethod
     @abstractmethod
-    def get_vnfd(nfvo_id, vnfd_id: str, args) -> dict:
+    def get_vnfd(vnfd_id: str, args=None) -> dict:
         raise NotImplementedError("The method is not implemented")
 
     """
     methods related to Physical Network Function Descriptor
     """
-    @staticmethod
     @abstractmethod
-    def get_pnfd_list(nfvo_id: str, args) -> dict:
+    def get_pnfd_list(args=None) -> dict:
         raise NotImplementedError("The method is not implemented")
 
-    @staticmethod
     @abstractmethod
-    def get_pnfd(nfvo_id, pnfd_id: str, args) -> dict:
+    def get_pnfd(pnfd_id: str, args=None) -> dict:
         raise NotImplementedError("The method is not implemented")
 
     """
     methods related to Virtual Network Function
     """
-    @staticmethod
     @abstractmethod
-    def get_vnf_list(nfvo_id: str, args) -> list:
+    def get_vnf_list(args=None) -> list:
         raise NotImplementedError("The method is not implemented")
 
-    @staticmethod
     @abstractmethod
-    def get_vnf(nfvo_id: str, vnfId: str, args) -> list:
+    def get_vnf(vnfId: str, args=None) -> list:
         raise NotImplementedError("The method is not implemented")
 
     """
     methods related to Network Service Descriptor
     """
-    @staticmethod
     @abstractmethod
-    def get_ns_list(nfvo_id: str, args) -> list:
+    def get_ns_list(args=None) -> list:
         raise NotImplementedError("The method is not implemented")
 
-    @staticmethod
     @abstractmethod
-    def create_ns(nfvo_id: str, args) -> list:
+    def create_ns(args=None) -> list:
         raise NotImplementedError("The method is not implemented")
 
-    @staticmethod
     @abstractmethod
-    def get_ns(nfvo_id: str, nsId: str, args) -> list:
+    def get_ns(nsId: str, args=None) -> list:
         raise NotImplementedError("The method is not implemented")
 
-    @staticmethod
     @abstractmethod
-    def instantiate_ns(nfvo_id: str, nsId: str, args) -> list:
+    def instantiate_ns(nsId: str, args=None) -> list:
         raise NotImplementedError("The method is not implemented")
 
-    @staticmethod
     @abstractmethod
-    def terminate_ns(nfvo_id: str, nsId: str, args) -> list:
+    def terminate_ns(nsId: str, args=None) -> list:
         raise NotImplementedError("The method is not implemented")
 
-    @staticmethod
     @abstractmethod
-    def scale_ns(nfvo_id: str, nsId: str, args) -> list:
+    def scale_ns(nsId: str, args=None) -> list:
         raise NotImplementedError("The method is not implemented")
