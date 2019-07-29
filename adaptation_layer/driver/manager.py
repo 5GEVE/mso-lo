@@ -15,17 +15,25 @@ nfvo_list = [
     }
 ]
 
+nfvo_mock_osm = {
+    'host': 'localhost',
+    'user': 'admin',
+    'password': 'admin',
+    'project': 'admin'
+}
+
 
 def get_driver(nfvo_id) -> Driver:
     # checks the nfvo_id against the database and gets the type
     type = 'osm'
 
     if type == 'osm':
-        return OSM()
+        return OSM(nfvo_mock_osm)
     elif type == 'onap':
         return ONAP()
     else:
-        raise NotImplementedError('Driver type: {} is not implemented'.format(type))
+        raise NotImplementedError(
+            'Driver type: {} is not implemented'.format(type))
 
 
 def get_nfvo_list() -> list:
