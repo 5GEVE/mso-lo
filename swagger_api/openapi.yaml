@@ -1,0 +1,1339 @@
+openapi: 3.0.0
+info:
+  title: 5G-EVE Adaptation Layer API
+  description: 5G-EVE Adaptation Layer API spec.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: https://virtserver.swaggerhub.com/zvfvrv/adaptation-layer/1.0.0
+  description: SwaggerHub API Auto Mocking
+tags:
+- name: Local Orchestrators
+- name: NSD
+  description: Network service descriptor
+paths:
+  /nfvo:
+    get:
+      tags:
+      - Local Orchestrators
+      summary: searches Local Orchestrators
+      description: |
+        By passing in the appropriate options, you can search for
+        available Local Orchestrators
+      operationId: NFVO.fetch
+      parameters:
+      - name: NFVO parameters
+        in: query
+        description: nfvo identifier
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/NFVO parameters'
+      - name: Pagination parameters
+        in: query
+        description: The parameters are used to create pagination
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/Pagination parameters'
+      responses:
+        200:
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NFVO'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+  /nfvo/{id}:
+    get:
+      tags:
+      - Local Orchestrators
+      summary: Get a Local Orchestrators
+      description: |
+        By passing in the appropriate options, you can search for
+        available Local Orchestrators
+      operationId: NFVO.getById
+      parameters:
+      - name: id
+        in: path
+        description: Resource id identifier
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        200:
+          description: NFVO found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NFVO'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: The specified resource was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+  /nfvo/{nfvoId}/nsd:
+    get:
+      tags:
+      - NSD
+      summary: Retrieve list of NSDs
+      description: |
+        This operation allows to retrieve the list of onboarded NSD from a specific Nfvo Catalogue
+      operationId: Nsd.list
+      parameters:
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: Pagination parameters
+        in: query
+        description: The parameters are used to create pagination
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/Pagination parameters'
+      responses:
+        200:
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NSD'
+        400:
+          description: bad input parameter
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+    post:
+      tags:
+      - NSD
+      summary: Onboard new NSD
+      description: This operation allows to onboard an NSD to one Nfvo Catalogue
+      operationId: Nsd.onboard
+      parameters:
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        $ref: '#/components/requestBodies/OnboardNSDRequestBody'
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/nsId'
+        400:
+          description: bad input parameter
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+  /nfvo/{nfvoId}/nsd/{nsdInfoId}:
+    get:
+      tags:
+      - NSD
+      summary: Retrieve NSD
+      description: |
+        This operation allows to retrieve an existing NSD from a specific Nfvo Catalogue.
+      operationId: Nfvo.Nsd.fetch
+      parameters:
+      - name: nsdInfoId
+        in: path
+        description: Identifier of the NSD information object associated with the
+          NSD to be fetched
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        200:
+          description: NSD
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NSD'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: The specified resource was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+    put:
+      tags:
+      - NSD
+      summary: Update NSD
+      description: |
+        This operation allows to modify modify an already onboarded NSD.
+      operationId: Nfvo.Nsd.update
+      parameters:
+      - name: nsdInfoId
+        in: path
+        description: Identifier of the NSD information object associated with the
+          NSD to be fetched
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateNSDRequestBody'
+      responses:
+        200:
+          description: NSD
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NSD'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: The specified resource was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+    delete:
+      tags:
+      - NSD
+      summary: Delete NSD
+      description: |
+        This operation allows to delete an existing NSD from the Nfvo Catalogue.
+      operationId: Nfvo.Nsd.delete
+      parameters:
+      - name: nsdInfoId
+        in: path
+        description: Identifier of the NSD information object associated with the
+          NSD to be fetched
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        200:
+          description: NSD deleted
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: The specified resource was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+  /nfvo/{nfvoId}/nsd/{id}/notification:
+    post:
+      tags:
+      - NSD
+      summary: Subscription to notification NSD
+      description: |
+        This operation allows to subscribe to notification changes on a local nfvo catalogue
+      operationId: Nfvo.Nsd.notification.subscribe
+      parameters:
+      - name: id
+        in: path
+        description: Resource id identifier
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        $ref: '#/components/requestBodies/SubscribeNotificationNSDRequestBody'
+      responses:
+        200:
+          description: NSD
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NSD'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: The specified resource was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+  /nfvo/{nfvoId}/vnfd/:
+    get:
+      tags:
+      - VNFD
+      summary: Retrieve list of VNFDs
+      description: |
+        This operation allows to retrieve the list of onboarded VNFD from a specific Nfvo Catalogue
+      operationId: Vnfd.list
+      parameters:
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: Pagination parameters
+        in: query
+        description: The parameters are used to create pagination
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/Pagination parameters'
+      responses:
+        200:
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VNFD'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+  /nfvo/{nfvoId}/vnfd/{id}:
+    get:
+      tags:
+      - VNFD
+      summary: Retrieve VNFD
+      description: |
+        This operation allows to retrieve an existing VNFD from a specific Nfvo Catalogue.
+      operationId: Nfvo.Vnfd.fetch
+      parameters:
+      - name: id
+        in: path
+        description: Resource id identifier
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        200:
+          description: VNFD
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VNFD'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: The specified resource was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+  /nfvo/{nfvoId}/vnfd/{id}/notification:
+    post:
+      tags:
+      - VNFD
+      summary: Subscription to notification VNFD
+      description: |
+        This operation allows to subscribe to notification changes on a local nfvo catalogue
+      operationId: Nfvo.Vnfd.notification.subscribe
+      parameters:
+      - name: id
+        in: path
+        description: Resource id identifier
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        $ref: '#/components/requestBodies/SubscribeNotificationVNFDRequestBody'
+      responses:
+        200:
+          description: NSD
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NSD'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: The specified resource was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+  /nfvo/{nfvoId}/pnfd/:
+    get:
+      tags:
+      - PNFD
+      summary: Retrieve list of PNFDs
+      description: |
+        This operation allows to retrieve the list of onboarded PNFD from a specific Nfvo Catalogue
+      operationId: Pnfd.list
+      parameters:
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: Pagination parameters
+        in: query
+        description: The parameters are used to create pagination
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/Pagination parameters'
+      responses:
+        200:
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PNFD'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+  /nfvo/{nfvoId}/pnfd/{id}:
+    get:
+      tags:
+      - PNFD
+      summary: Retrieve PNFD
+      description: |
+        This operation allows to retrieve an existing PNFD from a specific Nfvo Catalogue.
+      operationId: Nfvo.Pnfd.fetch
+      parameters:
+      - name: id
+        in: path
+        description: Resource id identifier
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        200:
+          description: PNFD
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PNFD'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: The specified resource was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+  /nfvo/{nfvoId}/ns:
+    get:
+      tags:
+      - NS
+      summary: Retrieve list of NS
+      description: |
+        This operation allows to retrieve the list of NS from a specific Nfvo
+      operationId: Nfvo.NS.list
+      parameters:
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: Pagination parameters
+        in: query
+        description: The parameters are used to create pagination
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/Pagination parameters'
+      responses:
+        200:
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NS'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+    post:
+      tags:
+      - NS
+      summary: Create a new nsId
+      description: Creates and returns a Network Service identifier (nsId) in a Nfvo
+      operationId: Nfvo.NS.onboard
+      parameters:
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        $ref: '#/components/requestBodies/CreateNSRequestBody'
+      responses:
+        200:
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NS'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+  /nfvo/{nfvoId}/ns/{nsId}:
+    get:
+      tags:
+      - NS
+      summary: Retrieve NS
+      description: |
+        This operation allows to retrieve an existing NS from a specific Nfvo.
+      operationId: Nfvo.NS.fetch
+      parameters:
+      - name: nsId
+        in: path
+        description: Identifier of the network service
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        200:
+          description: NS
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NS'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: The specified resource was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+  /nfvo/{nfvoId}/ns/{nsId}/scale:
+    post:
+      tags:
+      - NS
+      summary: Scale NS
+      description: |
+        This operation allows to retrieve an existing NS from a specific Nfvo.
+      operationId: Nfvo.NS.scale
+      parameters:
+      - name: nsId
+        in: path
+        description: Identifier of the network service
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        $ref: '#/components/requestBodies/ScaleNSRequestBody'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationSuccessful'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: The specified resource was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+  /nfvo/{nfvoId}/ns/{nsId}/instantiate:
+    put:
+      tags:
+      - NS
+      summary: Instantiate the NS
+      description: |
+        This operation allows to retrieve an existing NS from a specific Nfvo.
+      operationId: Nfvo.NS.instantiate
+      parameters:
+      - name: nsId
+        in: path
+        description: Identifier of the network service
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationSuccessful'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: The specified resource was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+  /nfvo/{nfvoId}/ns/{nsId}/terminate:
+    delete:
+      tags:
+      - NS
+      summary: Terminate NS
+      description: |
+        This operation allows to delete an existing NS from the Nfvo.
+      operationId: Nfvo.NS.terminate
+      parameters:
+      - name: nsId
+        in: path
+        description: Identifier of the network service
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationSuccessful'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: The specified resource was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+  /nfvo/{nfvoId}/vnf/{id}:
+    get:
+      tags:
+      - VNF
+      summary: Retrieve VNF info
+      description: |
+        This operation allows to retrieve information about a VNF instance from a specific Nfvo.
+      operationId: Nfvo.VNF.fetch
+      parameters:
+      - name: id
+        in: path
+        description: Resource id identifier
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        200:
+          description: VNF
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VNF'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: The specified resource was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+  /nfvo/{nfvoId}/vnf:
+    get:
+      tags:
+      - VNF
+      summary: Retrieve list of VNFs
+      description: |
+        This operation allows to retrieve the list of VNFs from a specific Nfvo
+      operationId: Nfvo.VNF.list
+      parameters:
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: Pagination parameters
+        in: query
+        description: The parameters are used to create pagination
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/Pagination parameters'
+      responses:
+        200:
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NS'
+        400:
+          description: The request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuthentication: []
+components:
+  schemas:
+    NFVO:
+      required:
+      - id
+      - name
+      - nfvo_type
+      - uri
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        name:
+          type: string
+          example: OSM-Turin
+        nfvoType:
+          type: string
+          example: ONAP
+        location:
+          type: string
+          example: Italy
+        uri:
+          type: string
+          format: url
+          example: https://osm-turin.5g-eve.eu
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    NSD:
+      type: object
+      properties:
+        id:
+          type: string
+      description: NSD
+    VNFD:
+      type: object
+      properties:
+        id:
+          type: string
+      description: VNFD
+    PNFD:
+      type: object
+      properties:
+        id:
+          type: string
+      description: PNFD
+    nsId:
+      type: object
+      properties:
+        nsId:
+          type: string
+      description: nsid
+    NS:
+      type: object
+      properties:
+        nsId:
+          type: string
+      description: NS
+    VNF:
+      type: object
+      properties:
+        id:
+          type: string
+      description: VNF
+    OperationSuccessful:
+      type: object
+      properties:
+        operationId:
+          type: string
+      description: Successful operation
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          description: human-readable  (es. 'PageNotFound', 'BadArguments')
+        message:
+          type: string
+        target:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorResponse_details'
+      description: Error rappresentation
+    NFVO parameters:
+      type: object
+      properties:
+        nfvo_id:
+          type: integer
+          description: nfvo identifier
+    Pagination parameters:
+      type: object
+      properties:
+        offset:
+          type: integer
+          description: FROM pagination
+        limit:
+          type: integer
+          description: COUNT pagination
+    ErrorResponse_details:
+      type: object
+      properties:
+        code:
+          type: string
+        target:
+          type: string
+        message:
+          type: string
+  responses:
+    SuccessResponse:
+      description: The request is successfull
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+    DeleteResponse:
+      description: The resource has been deleted
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+    BadRequestResponse:
+      description: The request is malformed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFoundResponse:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    UnauthorizedResponse:
+      description: Unauthorized, Invalid credentials (client or user)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ServerErrorResponse:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  parameters:
+    ResourceIdPathParameter:
+      name: id
+      in: path
+      description: Resource id identifier
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
+    NfvoIdPathParameter:
+      name: nfvoId
+      in: path
+      description: Identifier of a Nfvo
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
+    nsIdPathParameter:
+      name: nsId
+      in: path
+      description: Identifier of the network service
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
+    NsdIdPathParameter:
+      name: nsdInfoId
+      in: path
+      description: Identifier of the NSD information object associated with the NSD
+        to be fetched
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
+    NFVOSearchQueryParameters:
+      name: NFVO parameters
+      in: query
+      description: nfvo identifier
+      required: false
+      style: form
+      explode: true
+      schema:
+        $ref: '#/components/schemas/NFVO parameters'
+    PaginationQueryParameters:
+      name: Pagination parameters
+      in: query
+      description: The parameters are used to create pagination
+      required: false
+      style: form
+      explode: true
+      schema:
+        $ref: '#/components/schemas/Pagination parameters'
+  requestBodies:
+    CreateNSRequestBody:
+      description: Create NS request body
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              nsName:
+                type: string
+              nsdId:
+                format: uuid
+                example: d290f1ee-6c54-4b01-90e6-d701748f0851
+              nsDescription:
+                type: string
+    ScaleNSRequestBody:
+      description: Scale NS request body
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              scaleType:
+                type: string
+                enum:
+                - SCALE_NS
+                - SCALE_VNF
+              scaleVnfData:
+                type: string
+              scaleNsData:
+                type: string
+              scaleTime:
+                type: string
+    SubscribeNotificationNSDRequestBody:
+      description: Create subscription to NSD
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              filter:
+                type: object
+                description: Input filter for selecting the NSD(s)/PNFD(s) and the
+                  related change notifications to subscribe to. This filter can contain
+                  information about specific types of changes to subscribe to, or
+                  attributes of the NsdInfo/PnfdInfo.
+    SubscribeNotificationVNFDRequestBody:
+      description: Create subscription to VNFD
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              filter:
+                type: object
+                description: Filter defining the VNF Packages on which the query applies,
+                  based on attributes of VnfPkgInfo
+              attributeSelector:
+                type: array
+                items:
+                  type: object
+    UpdateNSDRequestBody:
+      description: Update NSD put request body
+      content:
+        application/json:
+          schema:
+            type: object
+    UpdateVNFDRequestBody:
+      description: Update VNFD put request body
+      content:
+        application/json:
+          schema:
+            type: object
+    OnboardNSDRequestBody:
+      description: Onboarding new NSD post request body
+      content:
+        application/json:
+          schema:
+            required:
+            - nsd
+            type: object
+            properties:
+              nsd:
+                type: object
+                description: Nome
