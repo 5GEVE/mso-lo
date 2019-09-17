@@ -5,6 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 flake8 = "*"
+nodeenv = "*"
 
 [packages]
 flask = "==1.0.2"
