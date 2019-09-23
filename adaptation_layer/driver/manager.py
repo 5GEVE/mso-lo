@@ -16,7 +16,8 @@ nfvo_list = [
 ]
 
 nfvo_mock_osm = {
-    'host': 'localhost',
+    'host': '127.0.0.1',
+    'so_port': '4010',
     'user': 'admin',
     'password': 'admin',
     'project': 'admin'

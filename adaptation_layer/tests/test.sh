@@ -1,5 +1,6 @@
 #!/bin/bash
 
+export PIPENV_VENV_IN_PROJECT=1
 pipenv install --dev &&
 source .venv/bin/activate &&
 nodeenv -p &&
