@@ -1,6 +1,6 @@
-# Paste into https://dbdiagram.io/
+// Paste into https://dbdiagram.io/
 
-Table NFVO {
+Table NFVO_INFO {
   id int [pk]
   name varchar
   type varchar [not null]
@@ -8,22 +8,21 @@ Table NFVO {
   created_at datetime
   updated_at datetime
   uri varchar
+}
+
+Table NFVO_CREDENTIALS {
+  id int [pk]
+  nfvo_id varchar [ref: - NFVO_INFO.id]
   host varchar [not null]
+  project varchar [not null]
   user varchar [not null]
   password varchar [not null]
-  project varchar [not null]
 }
 
-Table CatalogueSubscription as csub {
+Table NS_SUBSCRIPTION {
   id int [pk]
+  nfvo_id varchar [ref: > NFVO_INFO.id]
   hostReport varchar [not null]
-  nfvo_id varchar [ref: > NFVO.id]
-}
-
-Table NSSubscription as nsub {
-  id int [pk]
-  hostReport varchar [not null]
-  nfvo_id varchar [ref: > NFVO.id]
   ns_id varchar [not null]
 }
 
