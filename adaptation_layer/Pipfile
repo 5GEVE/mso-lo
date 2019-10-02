@@ -9,8 +9,8 @@ nodeenv = "*"
 
 [packages]
 flask = "==1.0.2"
-osmclient = {editable = true,git = "https://osm.etsi.org/gerrit/osm/osmclient"}
 pycurl = "*"
+requests = "*"
 
 [requires]
 python_version = "3"
