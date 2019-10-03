@@ -11,6 +11,7 @@ nodeenv = "*"
 flask = "==1.0.2"
 pycurl = "*"
 requests = "*"
+yaml = "*"
 
 [requires]
 python_version = "3"
