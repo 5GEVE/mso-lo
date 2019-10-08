@@ -10,7 +10,7 @@ nodeenv = "*"
 [packages]
 flask = "==1.0.2"
 pycurl = "*"
-requests = "*"
+requests = "==2.11.1"
 yaml = "*"
 
 [requires]

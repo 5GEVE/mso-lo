@@ -32,4 +32,5 @@ class OSM(Driver):
         return self._client.ns_delete(nsId)
 
     def scale_ns(self, nsId: str, args=None) -> list:
-        raise NotImplementedError("The method is not implemented")
+        return self._client.ns_scale(nsId, args)
+

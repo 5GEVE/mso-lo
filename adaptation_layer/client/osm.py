@@ -38,7 +38,7 @@ class Client(object):
         except Exception as e:
             result['error'] = str(e)
             return result
-        
+
         if r.status_code in (200, 201, 202, 204):
             if 'application/json' == r.headers['content-type']:
                 result['data'] = r.json()
@@ -105,6 +105,10 @@ class Client(object):
     def ns_action(self, ns_id, action_payload):
         _url = "{0}/nslcm/v1/ns_instances/{1}/action".format(self._base_path, ns_id)
         return self._exec_post(_url, json=action_payload, headers=self._headers)
+
+    def ns_scale(self, ns_id, scale_payload):
+        _url = "{0}/nslcm/v1/ns_instances/{1}/scale".format(self._base_path, ns_id)
+        return self._exec_post(_url, json=scale_payload, headers=self._headers)
 
     def ns_delete(self, ns_id, force=None):
         result = {}
