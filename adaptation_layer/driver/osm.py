@@ -9,28 +9,28 @@ class OSM(Driver):
     def __init__(self, nfvo_auth):
         self._nfvo_auth = nfvo_auth
         self._client = Osmclient(**self._nfvo_auth)
+        print('end init osm')
 
     def get_vnf_list(self, args=None) -> list:
-        return self._client.vnf_list()
+        return self._client.vnf_list(args=args)
 
     def get_vnf(self, vnfId: str, args=None) -> list:
-        return self._client.vnf_get(vnfId)
+        return self._client.vnf_get(vnfId, args=args)
 
     def get_ns_list(self, args=None) -> list:
-        return self._client.ns_list()
+        return self._client.ns_list(args=args)
 
     def create_ns(self, args=None) -> list:
-        raise NotImplementedError("The method is not implemented")
+        return self._client.ns_create(args=args)
 
     def get_ns(self, nsId: str, args=None) -> list:
-        return self._client.ns_get(nsId)
+        return self._client.ns_get(nsId, args=args)
 
     def instantiate_ns(self, nsId: str, args=None) -> list:
-        raise NotImplementedError("The method is not implemented")
+        return self._client.ns_instantiate(nsId, args=args)
 
     def terminate_ns(self, nsId: str, args=None) -> list:
-        return self._client.ns_delete(nsId)
+        return self._client.ns_terminate(nsId, args=args)
 
     def scale_ns(self, nsId: str, args=None) -> list:
-        return self._client.ns_scale(nsId, args)
-
+        return self._client.ns_scale(nsId, args=args)
