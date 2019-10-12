@@ -2,9 +2,12 @@ import requests
 import json as JSON
 import yaml as YAML
 import os
+from urllib.parse import urlencode
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
+TESTING = os.environ.get("TESTING", False)
 
 
 class Client(object):
@@ -26,12 +29,13 @@ class Client(object):
         self._base_path = 'https://{0}:{1}/osm'.format(self._host, so_port)
         self._headers = {"Content-Type": "application/yaml",
                          "accept": "application/json"}
-        token = self.authenticate()
-        if 'error' in token:
-            raise Exception(token['error'])
-        print(type(token['data']['id']))
-        self._headers['Authorization'] = 'Bearer {}'.format(
-            token['data']['id'])
+        if TESTING is False:
+            token = self.authenticate()
+            if 'error' in token:
+                raise Exception(token['error'])
+            print(type(token['data']['id']))
+            self._headers['Authorization'] = 'Bearer {}'.format(
+                token['data']['id'])
 
     def _exec_get(self, url=None, params=None, headers=None):
         result = {}
@@ -85,58 +89,66 @@ class Client(object):
 
     def authenticate(self):
         auth_payload = {'username': self._user,
-                        'password': self._password, 'project_id': self._project}
+                        'password': self._password,
+                        'project_id': self._project}
         token_url = "{0}/{1}".format(self._base_path, self._token_endpoint)
         return self._exec_post(token_url, json=auth_payload)
 
     def ns_list(self, args=None):
         _url = "{0}/nslcm/v1/ns_instances_content".format(self._base_path)
+        _url = _build_testing_url(_url, args)
         return self._exec_get(_url, headers=self._headers)
 
     def vnf_list(self, args=None):
         _url = "{0}/nslcm/v1/vnfrs".format(self._base_path)
+        _url = _build_testing_url(_url, args)
         return self._exec_get(_url, headers=self._headers)
 
     def ns_create(self, args=None):
         _url = "{0}/nslcm/v1/ns_instances".format(self._base_path)
+        _url = _build_testing_url(_url, args)
         return self._exec_post(_url, json=args['payload'], headers=self._headers)
 
     def ns_instantiate(self, id, args=None):
         _url = "{0}/nslcm/v1/ns_instances/{1}/instantiate".format(
             self._base_path, id)
+        _url = _build_testing_url(_url, args)
         return self._exec_post(_url, json=args['payload'], headers=self._headers)
 
     def ns_op_list(self, id, args=None):
         _url = "{0}/nslcm/v1/ns_lcm_op_occs/?nsInstanceId={1}".format(
             self._base_path, id)
+        _url = _build_testing_url(_url, args)
         return self._exec_get(_url, headers=self._headers)
 
     def ns_op(self, id, args=None):
         _url = "{0}/nslcm/v1/ns_lcm_op_occs/{1}".format(self._base_path, id)
+        _url = _build_testing_url(_url, args)
         return self._exec_get(_url, headers=self._headers)
 
     def ns_action(self, ns_id, args=None):
         _url = "{0}/nslcm/v1/ns_instances/{1}/action".format(
             self._base_path, ns_id)
+        _url = _build_testing_url(_url, args)
         return self._exec_post(_url, json=args['payload'], headers=self._headers)
 
     def ns_scale(self, ns_id, args=None):
         _url = "{0}/nslcm/v1/ns_instances/{1}/scale".format(
             self._base_path, ns_id)
+        _url = _build_testing_url(_url, args)
         return self._exec_post(_url, json=args['payload'], headers=self._headers)
 
     def ns_terminate(self, ns_id, args=None):
         _url = "{0}/nslcm/v1/ns_instances/{1}/terminate".format(
             self._base_path, ns_id)
+        _url = _build_testing_url(_url, args)
         return self._exec_post(_url, json=args['payload'], headers=self._headers)
 
-    def ns_delete(self, ns_id, args=None, force=None):
+    def ns_delete(self, ns_id, args=None):
         result = {}
-        query_path = ''
-        if force:
-            query_path = '?FORCE=true'
-        _url = "{0}/nslcm/v1/ns_instances/{1}{2}".format(
-            self._base_path, ns_id, query_path)
+        _url = "{0}/nslcm/v1/ns_instances/{1}".format(
+            self._base_path, ns_id)
+        _url = _build_testing_url(_url, args)
         try:
             r = requests.delete(_url, params=None,
                                 verify=False, headers=self._headers)
@@ -152,8 +164,17 @@ class Client(object):
     def ns_get(self, id, args=None):
         _url = "{0}/nslcm/v1/ns_instances/{1}".format(
             self._base_path, id)
+        _url = _build_testing_url(_url, args)
         return self._exec_get(_url, headers=self._headers)
 
     def vnf_get(self, id, args=None):
         _url = "{0}/nslcm/v1/vnfrs/{1}".format(self._base_path, id)
+        _url = _build_testing_url(_url, args)
         return self._exec_get(_url, headers=self._headers)
+
+def _build_testing_url(base, args):
+    if TESTING is False:
+        return base
+    elif args['args']:
+        url_query = urlencode(args['args'])
+        return "{0}?{1}".format(base, url_query)
