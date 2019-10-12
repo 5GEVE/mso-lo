@@ -26,16 +26,18 @@ class Client(object):
         self._user = user
         self._password = password
         self._project = project
-        self._base_path = 'https://{0}:{1}/osm'.format(self._host, so_port)
         self._headers = {"Content-Type": "application/yaml",
                          "accept": "application/json"}
         if TESTING is False:
+            self._base_path = 'https://{0}:{1}/osm'.format(self._host, so_port)
             token = self.authenticate()
             if 'error' in token:
                 raise Exception(token['error'])
             print(type(token['data']['id']))
             self._headers['Authorization'] = 'Bearer {}'.format(
                 token['data']['id'])
+        else:
+            self._base_path = 'http://{0}:{1}/osm'.format(self._host, so_port)
 
     def _exec_get(self, url=None, params=None, headers=None):
         result = {}
