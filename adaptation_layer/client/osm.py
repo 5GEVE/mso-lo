@@ -174,6 +174,7 @@ class Client(object):
         _url = _build_testing_url(_url, args)
         return self._exec_get(_url, headers=self._headers)
 
+
 def _build_testing_url(base, args):
     if TESTING is False:
         return base

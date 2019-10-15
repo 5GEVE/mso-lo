@@ -9,7 +9,6 @@ class OSM(Driver):
     def __init__(self, nfvo_auth):
         self._nfvo_auth = nfvo_auth
         self._client = Osmclient(**self._nfvo_auth)
-        print('end init osm')
 
     def get_vnf_list(self, args=None) -> list:
         return self._client.vnf_list(args=args)

@@ -1,7 +1,9 @@
 from flask import Flask, jsonify, abort, request, make_response
 import driver.manager as manager
+from error_handler import init_errorhandler
 
 app = Flask(__name__)
+init_errorhandler(app)
 
 
 @app.route('/nfvo', methods=['GET'])
@@ -14,7 +16,7 @@ def get_nfvo_list():
 def get_nfvo(nfvo_id):
     nfvo = manager.get_nfvo(nfvo_id, args={'args': request.args.to_dict()})
     if not nfvo:
-        abort(404)
+        abort(404, description='NFVO {0} not found'.format(nfvo_id))
     return jsonify(nfvo)
 
 
@@ -26,8 +28,6 @@ def get_ns_list(nfvo_id):
 
 @app.route('/nfvo/<nfvo_id>/ns', methods=['POST'])
 def create_ns(nfvo_id):
-    print('dio')
-    print(request.get_json())
     ns = manager.get_driver(nfvo_id).create_ns(args={'payload': request.json, 'args': request.args.to_dict()})
     return jsonify(ns)
 
@@ -35,16 +35,12 @@ def create_ns(nfvo_id):
 @app.route('/nfvo/<nfvo_id>/ns/<ns_id>/instantiate', methods=['post'])
 def instantiate_ns(nfvo_id, ns_id):
     ns = manager.get_driver(nfvo_id).instantiate_ns(ns_id, args={'payload': request.json, 'args': request.args.to_dict()})
-    if not ns:
-        abort(404)
     return jsonify(ns)
 
 
 @app.route('/nfvo/<nfvo_id>/ns/<ns_id>/terminate', methods=['post'])
 def terminate_ns(nfvo_id, ns_id):
     ns = manager.get_driver(nfvo_id).terminate_ns(ns_id, args={'payload': request.json, 'args': request.args.to_dict()})
-    if not ns:
-        abort(404)
     return jsonify(ns)
 
 
@@ -52,7 +48,7 @@ def terminate_ns(nfvo_id, ns_id):
 def get_ns(nfvo_id, ns_id):
     ns = manager.get_driver(nfvo_id).get_ns(ns_id, args={'args': request.args.to_dict()})
     if not ns:
-        abort(404)
+        abort(404, description='NS {0} not found'.format(ns_id))
     return jsonify(ns)
 
 
