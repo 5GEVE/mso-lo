@@ -36,11 +36,12 @@ def get_driver(nfvo_id) -> Driver:
             'Driver type: {} is not implemented'.format(type))
 
 
-def get_nfvo_list() -> list:
+def get_nfvo_list(args=None) -> list:
     # return a mock list
     return nfvo_list
 
 
-def get_nfvo(nfvo_id) -> dict:
+def get_nfvo(nfvo_id, args=None) -> dict:
+    print(args)
     # return a mock nvfo data
     return nfvo_list[0]

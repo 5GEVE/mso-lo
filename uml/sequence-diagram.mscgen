@@ -1,0 +1,22 @@
+# Paste into https://mscgen.js.org/
+msc {
+
+  hscale="1.2";
+
+  api [label="REST API"],
+  app [label="app"],
+  man [label="manager"],
+  driver [label="<<interface>> Driver"],
+  osm [label="osm_driver: OSM"];
+
+  api => app [label="1. GET /nfvo/osm_1/nsd"];
+  app box app [label="2. get_nsd_list('osm_1')"];
+  app => man [label="3. get_driver('osm_1')"];
+  man box man[label="4. Interacts with database to select driver"];
+  man => osm [label="5. <<create>>"];
+  man >> app [label="6. osm_driver: Driver"];
+  app => driver [label="7. get_nsd_list()"];
+  driver >> app [label="8. result"];
+
+}
+

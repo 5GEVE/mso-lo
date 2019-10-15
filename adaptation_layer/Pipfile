@@ -5,11 +5,13 @@ verify_ssl = true
 
 [dev-packages]
 flake8 = "*"
+nodeenv = "*"
 
 [packages]
 flask = "==1.0.2"
-osmclient = {editable = true,git = "https://osm.etsi.org/gerrit/osm/osmclient"}
 pycurl = "*"
+requests = "==2.11.1"
+pyaml = "*"
 
 [requires]
 python_version = "3"

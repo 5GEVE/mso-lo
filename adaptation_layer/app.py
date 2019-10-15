@@ -1,84 +1,77 @@
-from flask import Flask, jsonify, abort
+from flask import Flask, jsonify, abort, request, make_response
 import driver.manager as manager
+from error_handler import init_errorhandler
 
 app = Flask(__name__)
+init_errorhandler(app)
 
 
 @app.route('/nfvo', methods=['GET'])
 def get_nfvo_list():
-    nfvo_list = manager.get_nfvo_list()
+    nfvo_list = manager.get_nfvo_list(args={'args': request.args.to_dict()})
     return jsonify(nfvo_list)
 
 
 @app.route('/nfvo/<nfvo_id>', methods=['GET'])
 def get_nfvo(nfvo_id):
-    nfvo = manager.get_nfvo(nfvo_id)
+    nfvo = manager.get_nfvo(nfvo_id, args={'args': request.args.to_dict()})
+    if not nfvo:
+        abort(404, description='NFVO {0} not found'.format(nfvo_id))
     return jsonify(nfvo)
 
 
-@app.route('/nfvo/<nfvo_id>/nsd', methods=['GET'])
-def get_nsd_list(nfvo_id):
-    nsds = manager.get_driver(nfvo_id).get_nsd_list()
-    return jsonify(nsds)
+@app.route('/nfvo/<nfvo_id>/ns', methods=['GET'])
+def get_ns_list(nfvo_id):
+    ns = manager.get_driver(nfvo_id).get_ns_list(args={'args': request.args.to_dict()})
+    return jsonify(ns)
 
 
-@app.route('/nfvo/<nfvo_id>/nsd', methods=['POST'])
-def onboard_nsd(nfvo_id):
-    nsd = manager.get_driver(nfvo_id).onboard_nsd()
-    return jsonify(nsd)
+@app.route('/nfvo/<nfvo_id>/ns', methods=['POST'])
+def create_ns(nfvo_id):
+    ns = manager.get_driver(nfvo_id).create_ns(args={'payload': request.json, 'args': request.args.to_dict()})
+    return jsonify(ns)
 
 
-@app.route('/nfvo/<nfvo_id>/nsd/<nsd_info_id>', methods=['GET'])
-def get_nsd(nfvo_id, nsd_info_id):
-    nsd = manager.get_driver(nfvo_id).get_nsd(nsd_info_id)
-    if not nsd:
+@app.route('/nfvo/<nfvo_id>/ns/<ns_id>/instantiate', methods=['post'])
+def instantiate_ns(nfvo_id, ns_id):
+    ns = manager.get_driver(nfvo_id).instantiate_ns(ns_id, args={'payload': request.json, 'args': request.args.to_dict()})
+    return jsonify(ns)
+
+
+@app.route('/nfvo/<nfvo_id>/ns/<ns_id>/terminate', methods=['post'])
+def terminate_ns(nfvo_id, ns_id):
+    ns = manager.get_driver(nfvo_id).terminate_ns(ns_id, args={'payload': request.json, 'args': request.args.to_dict()})
+    return jsonify(ns)
+
+
+@app.route('/nfvo/<nfvo_id>/ns/<ns_id>', methods=['GET'])
+def get_ns(nfvo_id, ns_id):
+    ns = manager.get_driver(nfvo_id).get_ns(ns_id, args={'args': request.args.to_dict()})
+    if not ns:
+        abort(404, description='NS {0} not found'.format(ns_id))
+    return jsonify(ns)
+
+
+@app.route('/nfvo/<nfvo_id>/ns/<ns_id>/scale', methods=['POST'])
+def scale_ns(nfvo_id, ns_id):
+    ns = manager.get_driver(nfvo_id).scale_ns(ns_id, args={'payload': request.json, 'args': request.args.to_dict()})
+    if not ns:
         abort(404)
-    return jsonify(nsd)
+    return jsonify(ns)
 
 
-@app.route('/nfvo/<nfvo_id>/nsd/<nsd_info_id>', methods=['PUT'])
-def update_nsd(nfvo_id, nsd_info_id):
-    # TODO missing nsd data
-    nsd = manager.get_driver(nfvo_id).update_nsd(nsd_info_id)
-    if not nsd:
+@app.route('/nfvo/<nfvo_id>/vnf', methods=['GET'])
+def get_vnf_list(nfvo_id):
+    vnf_list = manager.get_driver(nfvo_id).get_vnf_list(args={'args': request.args.to_dict()})
+    return jsonify(vnf_list)
+
+
+@app.route('/nfvo/<nfvo_id>/vnf/<vnf_id>', methods=['GET'])
+def get_vnf(nfvo_id, vnf_id):
+    vnf = manager.get_driver(nfvo_id).get_vnf(vnf_id, args={'args': request.args.to_dict()})
+    if not vnf:
         abort(404)
-    return jsonify(nsd)
-
-
-@app.route('/nfvo/<nfvo_id>/nsd/<nsd_info_id>', methods=['DELETE'])
-def delete_nsd(nfvo_id, nsd_info_id):
-    nsd = manager.get_driver(nfvo_id).update_nsd(nsd_info_id)
-    if not nsd:
-        abort(404)
-    return jsonify(nsd)
-
-
-@app.route('/nfvo/<nfvo_id>/vnfd', methods=['GET'])
-def get_vnfd_list(nfvo_id):
-    vnfd_list = manager.get_driver(nfvo_id).get_vnfd_list()
-    return jsonify(vnfd_list)
-
-
-@app.route('/nfvo/<nfvo_id>/vnfd/<vnfd_id>', methods=['GET'])
-def get_vnfd(nfvo_id, vnfd_id):
-    vnfd = manager.get_driver(nfvo_id).get_vnfd(vnfd_id)
-    if not vnfd:
-        abort(404)
-    return jsonify(vnfd)
-
-
-@app.route('/nfvo/<nfvo_id>/pnfd', methods=['GET'])
-def get_pnfd_list(nfvo_id):
-    pnfd_list = manager.get_driver(nfvo_id).get_pnfd_list()
-    return jsonify(pnfd_list)
-
-
-@app.route('/nfvo/<nfvo_id>/pnfd/<pnfd_id>', methods=['GET'])
-def get_pnfd(nfvo_id, pnfd_id):
-    pnfd = manager.get_driver(nfvo_id).get_pnfd(pnfd_id)
-    if not pnfd:
-        abort(404)
-    return jsonify(pnfd)
+    return jsonify(vnf)
 
 
 if __name__ == '__main__':
