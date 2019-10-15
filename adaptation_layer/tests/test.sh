@@ -8,6 +8,6 @@ deactivate &&
 source .venv/bin/activate &&
 npm install -g @stoplight/prism-cli &&
 prism mock tests/osm_fixed.yaml --port 9999 &
-
+export TESTING=True
 # run pytest
 
