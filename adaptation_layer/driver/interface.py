@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Dict
 
 
 class Driver(ABC):
@@ -20,25 +20,25 @@ class Driver(ABC):
     """
 
     @abstractmethod
-    def get_ns_list(args=None) -> List[dict]:
+    def get_ns_list(args=None) -> List[Dict]:
         raise NotImplementedError("The method is not implemented")
 
     @abstractmethod
-    def create_ns(args=None) -> List[dict]:
+    def create_ns(args=None) -> List[Dict]:
         raise NotImplementedError("The method is not implemented")
 
     @abstractmethod
-    def get_ns(nsId: str, args=None) -> List[dict]:
+    def get_ns(nsId: str, args=None) -> List[Dict]:
         raise NotImplementedError("The method is not implemented")
 
     @abstractmethod
-    def instantiate_ns(nsId: str, args=None) -> List[dict]:
+    def instantiate_ns(nsId: str, args=None) -> List[Dict]:
         raise NotImplementedError("The method is not implemented")
 
     @abstractmethod
-    def terminate_ns(nsId: str, args=None) -> List[dict]:
+    def terminate_ns(nsId: str, args=None) -> List[Dict]:
         raise NotImplementedError("The method is not implemented")
 
     @abstractmethod
-    def scale_ns(nsId: str, args=None) -> List[dict]:
+    def scale_ns(nsId: str, args=None) -> List[Dict]:
         raise NotImplementedError("The method is not implemented")
