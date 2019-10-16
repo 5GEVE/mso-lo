@@ -14,20 +14,20 @@ CREATE TABLE "NFVO_CREDENTIALS" (
   "project" varchar NOT NULL,
   "user" varchar NOT NULL,
   "password" varchar NOT NULL,
-  FOREIGN KEY ("nfvo_id") REFERENCES "NFVO" ("id")
+  FOREIGN KEY ("nfvo_id") REFERENCES "NFVO" ("id") ON UPDATE CASCADE
 );
 
 CREATE TABLE "NS_SUBSCRIPTION" (
   "id" int PRIMARY KEY,
   "nfvo_id" varchar,
   "callbackUri" varchar NOT NULL,
-  FOREIGN KEY ("nfvo_id") REFERENCES "NFVO" ("id")
+  FOREIGN KEY ("nfvo_id") REFERENCES "NFVO" ("id") ON UPDATE CASCADE
 );
 
 CREATE TABLE "NS_INSTANCE" (
   "ns_id" varchar,
   "sub_id" varchar,
   PRIMARY KEY ("ns_id", "sub_id"),
-  FOREIGN KEY ("sub_id") REFERENCES "NS_SUBSCRIPTION" ("id")
+  FOREIGN KEY ("sub_id") REFERENCES "NS_SUBSCRIPTION" ("id") ON DELETE CASCADE
 );
 
