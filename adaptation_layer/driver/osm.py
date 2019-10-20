@@ -1,6 +1,4 @@
 from .interface import Driver
-# from osmclient.sol005.client import Client as Osmclient
-# from osmclient.common.exceptions import ClientException
 from client.osm import Client as Osmclient
 
 

@@ -25,9 +25,19 @@ class NfvoNotFound(Error):
         self.description = 'NFVO {0} not found.'.format(nfvo_id)
 
 
+class ResourceNotFound(Error):
+    def __init__(self):
+        self.description = 'Resource not found.'
+
+
 class NsNotFound(Error):
     def __init__(self, ns_id=None):
         self.description = 'NS instance {0} not found.'.format(ns_id)
+
+
+class VnfNotFound(Error):
+    def __init__(self, vnf_id=None):
+        self.description = 'VNF instance {0} not found.'.format(vnf_id)
 
 
 class Unauthorized(Error):
@@ -41,3 +51,11 @@ class BadRequest(Error):
             self.description = description
         else:
             self.description = 'Malformed request'
+
+
+class ServerError(Error):
+    def __init__(self, description=None):
+        if description is not None:
+            self.description = description
+        else:
+            self.description = 'Server Error'
