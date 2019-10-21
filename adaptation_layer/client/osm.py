@@ -27,7 +27,7 @@ class Client(object):
         self._user = user
         self._password = password
         self._project = project
-        self._headers = {"Content-Type": "application/yaml",
+        self._headers = {"Content-Type": "application/json",
                          "accept": "application/json"}
         if TESTING is False:
             self._base_path = 'https://{0}:{1}/osm'.format(self._host, so_port)
@@ -35,7 +35,7 @@ class Client(object):
             self._headers['Authorization'] = 'Bearer {}'.format(
                 token['id'])
         else:
-            self._base_path = 'http://{0}:{1}/osm'.format(self._host, so_port)
+            self._base_path = 'http://{0}:{1}'.format(self._host, so_port)
 
     def _exec_get(self, url=None, params=None, headers=None):
         # result = {}
@@ -104,10 +104,10 @@ class Client(object):
                         'password': self._password,
                         'project_id': self._project}
         token_url = "{0}/{1}".format(self._base_path, self._token_endpoint)
-        return self._exec_post(token_url, json=auth_payload)
+        return self._exec_post(token_url, json=auth_payload, headers={"Content-Type": "application/yaml", "accept": "application/json"})
 
     def ns_list(self, args=None):
-        _url = "{0}/nslcm/v1/ns_instances_content".format(self._base_path)
+        _url = "{0}/nslcm/v1/ns_instances".format(self._base_path)
         _url = _build_testing_url(_url, args)
         return self._exec_get(_url, headers=self._headers)
 
@@ -226,8 +226,7 @@ class Client(object):
 
 
 def _build_testing_url(base, args):
-    if TESTING is False:
-        return base
-    elif args['args']:
+    if TESTING and args['args'] and len(args['args']) > 0:
         url_query = urlencode(args['args'])
         return "{0}?{1}".format(base, url_query)
+    return base
