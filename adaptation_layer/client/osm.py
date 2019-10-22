@@ -180,7 +180,7 @@ class Client(object):
         _url = _build_testing_url(_url, args)
         try:
             resp = requests.delete(_url, params=None,
-                                verify=False, headers=self._headers)
+                                   verify=False, headers=self._headers)
         except Exception as e:
             raise ServerError(str(e))
         if resp.status_code in (200, 201, 202, 204):
