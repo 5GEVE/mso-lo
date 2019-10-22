@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, abort, request, make_response
 import driver.manager as manager
-from error_handler import init_errorhandler, NfvoNotFound, NsNotFound, Unauthorized, BadRequest
+from error_handler import init_errorhandler, NfvoNotFound, NsNotFound, Unauthorized, BadRequest, ServerError
 
 app = Flask(__name__)
 init_errorhandler(app)
@@ -13,6 +13,8 @@ def get_nfvo_list():
         return jsonify(nfvo_list)
     except Unauthorized as e:
         abort(401, description=e.description)
+    except ServerError as e:
+        abort(500, description=e.description)
 
 
 @app.route('/nfvo/<nfvo_id>', methods=['GET'])
@@ -24,6 +26,8 @@ def get_nfvo(nfvo_id):
         abort(401, description=e.description)
     except NfvoNotFound as e:
         abort(404, description=e.description)
+    except ServerError as e:
+        abort(500, description=e.description)
 
 
 @app.route('/nfvo/<nfvo_id>/ns', methods=['GET'])
@@ -38,6 +42,8 @@ def get_ns_list(nfvo_id):
         abort(401, description=e.description)
     except NfvoNotFound as e:
         abort(404, description=e.description)
+    except ServerError as e:
+        abort(500, description=e.description)
 
 
 @app.route('/nfvo/<nfvo_id>/ns', methods=['POST'])
@@ -52,6 +58,8 @@ def create_ns(nfvo_id):
         abort(401, description=e.description)
     except NfvoNotFound as e:
         abort(404, description=e.description)
+    except ServerError as e:
+        abort(500, description=e.description)
 
 
 @app.route('/nfvo/<nfvo_id>/ns/<ns_id>/instantiate', methods=['post'])
@@ -68,6 +76,8 @@ def instantiate_ns(nfvo_id, ns_id):
         abort(404, description=e.description)
     except NsNotFound as e:
         abort(404, description=e.description)
+    except ServerError as e:
+        abort(500, description=e.description)
 
 
 @app.route('/nfvo/<nfvo_id>/ns/<ns_id>/terminate', methods=['post'])
@@ -84,6 +94,8 @@ def terminate_ns(nfvo_id, ns_id):
         abort(404, description=e.description)
     except NsNotFound as e:
         abort(404, description=e.description)
+    except ServerError as e:
+        abort(500, description=e.description)
 
 
 @app.route('/nfvo/<nfvo_id>/ns/<ns_id>', methods=['GET'])
@@ -100,6 +112,8 @@ def get_ns(nfvo_id, ns_id):
         abort(404, description=e.description)
     except NsNotFound as e:
         abort(404, description=e.description)
+    except ServerError as e:
+        abort(500, description=e.description)
 
 
 @app.route('/nfvo/<nfvo_id>/ns/<ns_id>/scale', methods=['POST'])
@@ -116,6 +130,8 @@ def scale_ns(nfvo_id, ns_id):
         abort(404, description=e.description)
     except NsNotFound as e:
         abort(404, description=e.description)
+    except ServerError as e:
+        abort(500, description=e.description)
 
 
 if __name__ == '__main__':

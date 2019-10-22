@@ -14,6 +14,10 @@ def init_errorhandler(app):
     def not_found(error):
         return make_response(jsonify({'error': error.description}), 404)
 
+    @app.errorhandler(500)
+    def server_error(error):
+        return make_response(jsonify({'error': error.description}), 500)
+
 
 class Error(Exception):
     """Base class for exceptions in this module."""
