@@ -8,7 +8,7 @@ nodeenv -p &
 deactivate &&
 source .venv/bin/activate &&
 npm install -g @stoplight/prism-cli &&
-prism mock tests/osm_fixed.yaml --port 9999 &
+prism mock tests/osm-openapi.yaml --port 9999 &
 
 # run pytest
 
