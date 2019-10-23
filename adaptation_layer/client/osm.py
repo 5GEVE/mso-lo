@@ -59,9 +59,9 @@ class Client(object):
         elif resp.status_code == 404:
             raise ResourceNotFound()
         else:
-            if 'application/json' == resp.headers['content-type']:
+            if 'application/json' in resp.headers['content-type']:
                 error = resp.json()
-            elif 'application/yaml' == resp.headers['content-type']:
+            elif 'application/yaml' in resp.headers['content-type']:
                 error = JSON.loads(JSON.dumps(
                     YAML.safe_load(resp.text), sort_keys=True, indent=2))
             else:
@@ -76,9 +76,9 @@ class Client(object):
             raise ServerError(str(e))
 
         if resp.status_code in (200, 201, 202, 204):
-            if 'application/json' == resp.headers['content-type']:
+            if 'application/json' in resp.headers['content-type']:
                 return resp.json()
-            elif 'application/yaml' == resp.headers['content-type']:
+            elif 'application/yaml' in resp.headers['content-type']:
                 return JSON.loads(JSON.dumps(
                     YAML.load(resp.text), sort_keys=True, indent=2))
             else:
@@ -104,7 +104,7 @@ class Client(object):
                         'password': self._password,
                         'project_id': self._project}
         token_url = "{0}/{1}".format(self._base_path, self._token_endpoint)
-        return self._exec_post(token_url, json=auth_payload, headers={"Content-Type": "application/yaml", "accept": "application/json"})
+        return self._exec_post(token_url, json=auth_payload)
 
     def ns_list(self, args=None):
         _url = "{0}/nslcm/v1/ns_instances".format(self._base_path)
