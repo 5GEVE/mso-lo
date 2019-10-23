@@ -12,6 +12,6 @@ PRISM_PID=$!
 printf "$PRISM_PID"
 sleep 1
 printf "run python here"
-#pipenv run python test_osm.py
+#pipenv run cd tests && python test_osm.py
 kill ${PRISM_PID}
 exit 0
