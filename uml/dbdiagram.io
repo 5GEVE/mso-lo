@@ -1,18 +1,17 @@
 // Paste into https://dbdiagram.io/
 
-Table NFVO_INFO {
+Table NFVO {
   id int [pk]
-  name varchar
+  name varchar [not null]
   type varchar [not null]
   site varchar [not null]
+  uri varchar
   created_at datetime
   updated_at datetime
-  uri varchar
 }
 
 Table NFVO_CREDENTIALS {
-  id int [pk]
-  nfvo_id varchar [ref: - NFVO_INFO.id]
+  nfvo_id int [ref: - NFVO.id, pk]
   host varchar [not null]
   project varchar [not null]
   user varchar [not null]
@@ -21,8 +20,12 @@ Table NFVO_CREDENTIALS {
 
 Table NS_SUBSCRIPTION {
   id int [pk]
-  nfvo_id varchar [ref: > NFVO_INFO.id]
-  hostReport varchar [not null]
-  ns_id varchar [not null]
+  nfvo_id varchar [ref: > NFVO.id]
+  callbackUri varchar [not null]
+}
+
+Table NS_INSTANCE {
+  ns_id varchar [pk]
+  sub_id varchar [ref: > NS_SUBSCRIPTION.id, pk]
 }
 

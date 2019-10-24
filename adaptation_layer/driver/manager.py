@@ -1,6 +1,7 @@
 from .interface import Driver
 from .osm import OSM
 from .onap import ONAP
+from error_handler import  NfvoNotFound, NsNotFound, Unauthorized, BadRequest
 
 # mock nvfo list
 nfvo_list = [
@@ -42,6 +43,6 @@ def get_nfvo_list(args=None) -> list:
 
 
 def get_nfvo(nfvo_id, args=None) -> dict:
-    print(args)
+
     # return a mock nvfo data
     return nfvo_list[0]

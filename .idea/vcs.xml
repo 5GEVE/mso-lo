@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="VcsDirectoryMappings">
-    <mapping directory="" vcs="Git" />
-<<<<<<< HEAD
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/adaptation_layer/.venv/src/osmclient" vcs="Git" />
-=======
->>>>>>> cd1e07e783b670108744796354bf4c4b5dbf0e86
   </component>
 </project>
