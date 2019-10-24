@@ -1565,6 +1565,13 @@ paths:
               schema:
                 type: string
                 format: uri
+          content:
+            application/json:
+              schema:
+                type: object
+            application/yaml:
+              schema:
+                type: object
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -3640,6 +3647,21 @@ components:
         description:
           description: Human readable description of the NS instance.
           type: string
+        nsd-id:
+          description: Identifier of the NSD.
+          type: string
+          format: uuid
+        _admin:
+          type: object
+          properties:
+            nsState:
+              type: string
+              description: "State of the NS instance. Permitted values:\n * `NOT_INSTANTIATED`:\
+                \ The NS instance is terminated or not instantiated.\n * `INSTANTIATED`: The\
+                \ NS instance is instantiated.\n \n"
+              enum:
+              - NOT_INSTANTIATED
+              - INSTANTIATED
       required:
         - _id
         - id

@@ -83,9 +83,9 @@ def instantiate_ns(nfvo_id, ns_id):
 @app.route('/nfvo/<nfvo_id>/ns/<ns_id>/terminate', methods=['post'])
 def terminate_ns(nfvo_id, ns_id):
     try:
-        ns = manager.get_driver(nfvo_id).terminate_ns(
+        term_ns = manager.get_driver(nfvo_id).terminate_ns(
             ns_id, args={'payload': request.json, 'args': request.args.to_dict()})
-        return make_response(ns, 202)
+        return make_response(jsonify(term_ns), 202)
     except BadRequest as e:
         abort(400, description=e.description)
     except Unauthorized as e:
@@ -119,9 +119,9 @@ def get_ns(nfvo_id, ns_id):
 @app.route('/nfvo/<nfvo_id>/ns/<ns_id>/scale', methods=['POST'])
 def scale_ns(nfvo_id, ns_id):
     try:
-        ns = manager.get_driver(nfvo_id).scale_ns(
+        scale_ns = manager.get_driver(nfvo_id).scale_ns(
             ns_id, args={'payload': request.json, 'args': request.args.to_dict()})
-        return make_response(ns, 202)
+        return make_response(jsonify(scale_ns), 202)
     except BadRequest as e:
         abort(400, description=e.description)
     except Unauthorized as e:

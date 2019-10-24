@@ -2,6 +2,7 @@ from .interface import Driver
 from client.osm import Client as Osmclient
 from typing import Union
 
+
 class OSM(Driver):
 
     def __init__(self, nfvo_auth):

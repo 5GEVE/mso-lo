@@ -74,7 +74,6 @@ class Client(object):
                                  verify=False, headers=headers)
         except Exception as e:
             raise ServerError(str(e))
-
         if resp.status_code in (200, 201, 202, 204):
             if 'application/json' in resp.headers['content-type']:
                 return resp.json()

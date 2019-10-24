@@ -103,9 +103,9 @@ class OSMTestCase(unittest.TestCase):
         res = self.client().post('/nfvo/nfvo_osm1/ns/ns_id_1/terminate?__code=401', json=self.mock_ns_terminate)
         self.assertEqual(res.status_code, 401)
 
-    # Check status codes 200, 401, 404, headers and payload for scale_ns()
+    # Check status codes 202, 401, 404, headers and payload for scale_ns()
     def test_scale_ns_202(self):
-        res = self.client().post('/nfvo/nfvo_osm1/ns/ns_id_1/scale?__code=200', json=self.mock_ns_scale)
+        res = self.client().post('/nfvo/nfvo_osm1/ns/ns_id_1/scale?__code=202', json=self.mock_ns_scale)
         self.assertEqual(res.status_code, 202)
 
     def test_scale_ns_404(self):
