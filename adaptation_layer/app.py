@@ -30,7 +30,7 @@ def get_nfvo(nfvo_id):
         abort(500, description=e.description)
 
 
-@app.route('/nfvo/<nfvo_id>/ns', methods=['GET'])
+@app.route('/nfvo/<nfvo_id>/ns_instances', methods=['GET'])
 def get_ns_list(nfvo_id):
     try:
         ns_list = manager.get_driver(nfvo_id).get_ns_list(
@@ -46,7 +46,7 @@ def get_ns_list(nfvo_id):
         abort(500, description=e.description)
 
 
-@app.route('/nfvo/<nfvo_id>/ns', methods=['POST'])
+@app.route('/nfvo/<nfvo_id>/ns_instances', methods=['POST'])
 def create_ns(nfvo_id):
     try:
         ns = manager.get_driver(nfvo_id).create_ns(
@@ -62,7 +62,7 @@ def create_ns(nfvo_id):
         abort(500, description=e.description)
 
 
-@app.route('/nfvo/<nfvo_id>/ns/<ns_id>/instantiate', methods=['post'])
+@app.route('/nfvo/<nfvo_id>/ns_instances/<ns_id>/instantiate', methods=['post'])
 def instantiate_ns(nfvo_id, ns_id):
     try:
         ns = manager.get_driver(nfvo_id).instantiate_ns(
@@ -80,7 +80,7 @@ def instantiate_ns(nfvo_id, ns_id):
         abort(500, description=e.description)
 
 
-@app.route('/nfvo/<nfvo_id>/ns/<ns_id>/terminate', methods=['post'])
+@app.route('/nfvo/<nfvo_id>/ns_instances/<ns_id>/terminate', methods=['post'])
 def terminate_ns(nfvo_id, ns_id):
     try:
         term_ns = manager.get_driver(nfvo_id).terminate_ns(
@@ -98,7 +98,7 @@ def terminate_ns(nfvo_id, ns_id):
         abort(500, description=e.description)
 
 
-@app.route('/nfvo/<nfvo_id>/ns/<ns_id>', methods=['GET'])
+@app.route('/nfvo/<nfvo_id>/ns_instances/<ns_id>', methods=['GET'])
 def get_ns(nfvo_id, ns_id):
     try:
         ns = manager.get_driver(nfvo_id).get_ns(
@@ -116,7 +116,7 @@ def get_ns(nfvo_id, ns_id):
         abort(500, description=e.description)
 
 
-@app.route('/nfvo/<nfvo_id>/ns/<ns_id>/scale', methods=['POST'])
+@app.route('/nfvo/<nfvo_id>/ns_instances/<ns_id>/scale', methods=['POST'])
 def scale_ns(nfvo_id, ns_id):
     try:
         scale_ns = manager.get_driver(nfvo_id).scale_ns(
