@@ -20,6 +20,10 @@ class Driver(ABC):
         raise NotImplementedError("The method is not implemented")
 
     @abstractmethod
+    def delete_ns(self, nsId: str, args: Dict = None) -> None:
+        raise NotImplementedError("The method is not implemented")
+
+    @abstractmethod
     def instantiate_ns(self, nsId: str, args: Dict = None) -> None:
         raise NotImplementedError("The method is not implemented")
 

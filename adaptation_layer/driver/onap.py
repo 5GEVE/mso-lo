@@ -5,20 +5,23 @@ from .interface import Driver
 
 class ONAP(Driver):
 
-    def get_ns_list(self, args: Dict = None) -> List[Dict]:
+    def create_ns(self, args: Dict = None) -> Dict:
         pass
 
-    def create_ns(self, args: Dict = None) -> Dict:
+    def get_ns_list(self, args: Dict = None) -> List[Dict]:
         pass
 
     def get_ns(self, nsId: str, args: Dict = None) -> Dict:
         pass
 
+    def delete_ns(self, nsId: str, args: Dict = None) -> None:
+        pass
+
     def instantiate_ns(self, nsId: str, args: Dict = None) -> None:
         pass
 
-    def terminate_ns(self, nsId: str, args: Dict = None) -> None:
+    def scale_ns(self, nsId: str, args: Dict = None) -> None:
         pass
 
-    def scale_ns(self, nsId: str, args: Dict = None) -> None:
+    def terminate_ns(self, nsId: str, args: Dict = None) -> None:
         pass
