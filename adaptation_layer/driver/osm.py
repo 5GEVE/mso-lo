@@ -26,13 +26,13 @@ class OSM(Driver):
         ns = self._client.ns_get(nsId, args=args)
         return self._ns_im_converter(ns)
 
-    def instantiate_ns(self, nsId: str, args=None) -> Dict:
+    def instantiate_ns(self, nsId: str, args=None) -> None:
         return self._client.ns_instantiate(nsId, args=args)
 
-    def terminate_ns(self, nsId: str, args=None) -> Dict:
+    def terminate_ns(self, nsId: str, args=None) -> None:
         return self._client.ns_terminate(nsId, args=args)
 
-    def scale_ns(self, nsId: str, args=None) -> Dict:
+    def scale_ns(self, nsId: str, args=None) -> None:
         return self._client.ns_scale(nsId, args=args)
 
     def _ns_im_converter(self, ns: Union[list, dict]) -> Union[list, dict]:

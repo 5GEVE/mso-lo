@@ -14,11 +14,11 @@ class ONAP(Driver):
     def get_ns(self, nsId: str, args: Dict = None) -> Dict:
         pass
 
-    def instantiate_ns(self, nsId: str, args: Dict = None) -> Dict:
+    def instantiate_ns(self, nsId: str, args: Dict = None) -> None:
         pass
 
-    def terminate_ns(self, nsId: str, args: Dict = None) -> Dict:
+    def terminate_ns(self, nsId: str, args: Dict = None) -> None:
         pass
 
-    def scale_ns(self, nsId: str, args: Dict = None) -> Dict:
+    def scale_ns(self, nsId: str, args: Dict = None) -> None:
         pass
