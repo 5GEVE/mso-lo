@@ -179,7 +179,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFoundResponse'
     
-  /nfvo/{nfvoId}/ns_instance/{nsInstanceId}/instantiate:
+  /nfvo/{nfvoId}/ns_instances/{nsInstanceId}/instantiate:
     post:
         tags:
           - NS instances
@@ -238,7 +238,7 @@ paths:
           $ref: '#/components/responses/NotFoundResponse'
   
   
-  /nfvo/{nfvoId}/ns_instance/{nsInstanceId}/terminate:
+  /nfvo/{nfvoId}/ns_instances/{nsInstanceId}/terminate:
     post:
       tags:
         - "NS instances"
