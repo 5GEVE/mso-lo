@@ -91,7 +91,7 @@ class OSMTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 401)
 
     # Check status codes 202, 401, 404, headers and payload for terminate_ns()
-    def test_terminatee_ns_202(self):
+    def test_terminate_ns_202(self):
         res = self.client().post('/nfvo/nfvo_osm1/ns_instances/ns_id_1/terminate?__code=202', json=self.mock_ns_terminate)
         self.assertEqual(res.status_code, 202)
 
@@ -101,6 +101,19 @@ class OSMTestCase(unittest.TestCase):
 
     def test_terminate_ns_401(self):
         res = self.client().post('/nfvo/nfvo_osm1/ns_instances/ns_id_1/terminate?__code=401', json=self.mock_ns_terminate)
+        self.assertEqual(res.status_code, 401)
+
+    # Check status codes 202, 401, 404, headers and payload for delete_ns()
+    def test_delete_ns_202(self):
+        res = self.client().delete('/nfvo/nfvo_osm1/ns_instances/ns_id_1?__code=202')
+        self.assertEqual(res.status_code, 202)
+
+    def test_delete_ns_404(self):
+        res = self.client().delete('/nfvo/nfvo_osm1/ns_instances/ns_id_1?__code=404')
+        self.assertEqual(res.status_code, 404)
+
+    def test_delete_ns_401(self):
+        res = self.client().delete('/nfvo/nfvo_osm1/ns_instances/ns_id_1?__code=401')
         self.assertEqual(res.status_code, 401)
 
     # Check status codes 202, 401, 404, headers and payload for scale_ns()

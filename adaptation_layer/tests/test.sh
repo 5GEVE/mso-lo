@@ -10,7 +10,7 @@ nodeenv --python-virtualenv --jobs=8;
 deactivate
 source .venv/bin/activate
 npm install --no-progress -g @stoplight/prism-cli;
-prism mock tests/osm-openapi.yaml --port 9999 &>/dev/null &
+prism mock tests/osm-openapi.yaml --port 9999  &
 PRISM_PID=$!
 printf "$PRISM_PID\n"
 sleep 2
