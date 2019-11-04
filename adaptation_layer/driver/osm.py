@@ -26,9 +26,8 @@ class OSM(Driver):
         ns = self._client.ns_get(nsId, args=args)
         return self._ns_im_converter(ns)
 
-    # TODO
     def delete_ns(self, nsId: str, args: Dict = None) -> None:
-        raise NotImplementedError("The method is not implemented")
+        return self._client.ns_delete(nsId, args=args)
 
     def instantiate_ns(self, nsId: str, args=None) -> None:
         return self._client.ns_instantiate(nsId, args=args)
