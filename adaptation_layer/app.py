@@ -92,7 +92,7 @@ def get_ns(nfvo_id, ns_id):
 def delete_ns(nfvo_id, ns_id):
     try:
         manager.get_driver(nfvo_id).delete_ns(ns_id, args={'args': request.args.to_dict()})
-        return make_response('', 204)
+        return make_response('', 202)
     except BadRequest as e:
         abort(400, description=e.description)
     except Unauthorized as e:

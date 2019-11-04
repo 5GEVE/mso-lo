@@ -1,9 +1,9 @@
 #!flask/bin/python
+from app import app
 import os
 import unittest
 import sys
 sys.path.append('../')
-from app import app
 
 
 class OSMTestCase(unittest.TestCase):
@@ -77,43 +77,62 @@ class OSMTestCase(unittest.TestCase):
     # Check status codes 202, 401, 404, headers and payload for instantiate_ns()
     def test_instantiate_ns_202(self):
         res = self.client().post('/nfvo/nfvo_osm1/ns_instances/ns_id_1/instantiate?__code=202',
-                                json=self.mock_ns_instantiate)
+                                 json=self.mock_ns_instantiate)
         self.assertEqual(res.status_code, 202)
 
     def test_instantiate_ns_400(self):
         res = self.client().post('/nfvo/nfvo_osm1/ns_instances/ns_id_1/instantiate?__code=400',
-                                json=self.mock_ns_instantiate)
+                                 json=self.mock_ns_instantiate)
         self.assertEqual(res.status_code, 400)
 
     def test_instantiate_ns_401(self):
         res = self.client().post('/nfvo/nfvo_osm1/ns_instances/ns_id_1/instantiate?__code=401',
-                                json=self.mock_ns_instantiate)
+                                 json=self.mock_ns_instantiate)
         self.assertEqual(res.status_code, 401)
 
     # Check status codes 202, 401, 404, headers and payload for terminate_ns()
-    def test_terminatee_ns_202(self):
-        res = self.client().post('/nfvo/nfvo_osm1/ns_instances/ns_id_1/terminate?__code=202', json=self.mock_ns_terminate)
+    def test_terminate_ns_202(self):
+        res = self.client().post('/nfvo/nfvo_osm1/ns_instances/ns_id_1/terminate?__code=202',
+                                 json=self.mock_ns_terminate)
         self.assertEqual(res.status_code, 202)
 
     def test_terminate_ns_404(self):
-        res = self.client().post('/nfvo/nfvo_osm1/ns_instances/ns_id_1/terminate?__code=404', json=self.mock_ns_terminate)
+        res = self.client().post('/nfvo/nfvo_osm1/ns_instances/ns_id_1/terminate?__code=404',
+                                 json=self.mock_ns_terminate)
         self.assertEqual(res.status_code, 404)
 
     def test_terminate_ns_401(self):
-        res = self.client().post('/nfvo/nfvo_osm1/ns_instances/ns_id_1/terminate?__code=401', json=self.mock_ns_terminate)
+        res = self.client().post('/nfvo/nfvo_osm1/ns_instances/ns_id_1/terminate?__code=401',
+                                 json=self.mock_ns_terminate)
+        self.assertEqual(res.status_code, 401)
+
+    # Check status codes 202, 401, 404, headers and payload for delete_ns()
+    def test_delete_ns_202(self):
+        res = self.client().delete('/nfvo/nfvo_osm1/ns_instances/ns_id_1?__code=202')
+        self.assertEqual(res.status_code, 202)
+
+    def test_delete_ns_404(self):
+        res = self.client().delete('/nfvo/nfvo_osm1/ns_instances/ns_id_1?__code=404')
+        self.assertEqual(res.status_code, 404)
+
+    def test_delete_ns_401(self):
+        res = self.client().delete('/nfvo/nfvo_osm1/ns_instances/ns_id_1?__code=401')
         self.assertEqual(res.status_code, 401)
 
     # Check status codes 202, 401, 404, headers and payload for scale_ns()
     def test_scale_ns_202(self):
-        res = self.client().post('/nfvo/nfvo_osm1/ns_instances/ns_id_1/scale?__code=202', json=self.mock_ns_scale)
+        res = self.client().post('/nfvo/nfvo_osm1/ns_instances/ns_id_1/scale?__code=202',
+                                 json=self.mock_ns_scale)
         self.assertEqual(res.status_code, 202)
 
     def test_scale_ns_404(self):
-        res = self.client().post('/nfvo/nfvo_osm1/ns_instances/ns_id_1/scale?__code=404', json=self.mock_ns_scale)
+        res = self.client().post('/nfvo/nfvo_osm1/ns_instances/ns_id_1/scale?__code=404',
+                                 json=self.mock_ns_scale)
         self.assertEqual(res.status_code, 404)
 
     def test_scale_ns_401(self):
-        res = self.client().post('/nfvo/nfvo_osm1/ns_instances/ns_id_1/scale?__code=401', json=self.mock_ns_scale)
+        res = self.client().post('/nfvo/nfvo_osm1/ns_instances/ns_id_1/scale?__code=401',
+                                 json=self.mock_ns_scale)
         self.assertEqual(res.status_code, 401)
 
 
