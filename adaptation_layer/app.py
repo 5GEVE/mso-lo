@@ -1,10 +1,17 @@
 from flask import Flask, jsonify, abort, request, make_response
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+from error_handler import init_errorhandler, NfvoNotFound, NsNotFound, Unauthorized, BadRequest, ServerError
+from config import Config
+
+# TODO move to __init__.py
+app = Flask(__name__)
+app.config.from_object(Config)
+init_errorhandler(app)
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 import driver.manager as manager
-from error_handler import init_errorhandler, NfvoNotFound, NsNotFound, Unauthorized, BadRequest, ServerError
-
-app = Flask(__name__)
-init_errorhandler(app)
 
 
 @app.route('/nfvo', methods=['GET'])
