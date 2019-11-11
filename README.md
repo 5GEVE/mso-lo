@@ -5,6 +5,8 @@
 Documentation and information about contributing can be found at:
 [5G-EVE adaptation layer presentation MSO-LO](https://bscw.5g-eve.eu/sec/bscw.cgi/d95439/5G-EVE%20adaptation%20layer%20presentation%20MSO-LO.pptx)
 
+[OpenAPI specification](https://app.swaggerhub.com/apis/zvfvrv/MSO-LO-new/3.1)
+
 ## Installation
 
 ### Docker-compose
