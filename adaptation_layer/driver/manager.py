@@ -2,27 +2,21 @@ from .interface import Driver
 from .osm import OSM
 from .onap import ONAP
 from error_handler import NfvoNotFound, NsNotFound, Unauthorized, BadRequest
-from models import NFVO
+from models import NFVO, NFVO_CREDENTIALS
 from app import db
 from flask import jsonify
 
 
-nfvo_mock_osm = {
-    'host': 'localhost',
-    'user': 'admin',
-    'password': 'admin',
-    'project': 'admin'
-}
-
-
 def get_driver(nfvo_id) -> Driver:
     nfvo = NFVO.query.filter_by(id=nfvo_id).first()
-    if nfvo is None:
+    nfvo_cred = NFVO_CREDENTIALS.query.filter_by(nfvo_id=nfvo_id).first()
+    if nfvo is None or nfvo_cred is None:
         raise NfvoNotFound(nfvo_id=nfvo_id)
     nfvo = nfvo.serialize
+    nfvo_cred = nfvo_cred.serialize
     type = nfvo['type'].casefold()
     if type == 'osm':
-        return OSM(nfvo_mock_osm)
+        return OSM(nfvo_cred)
     elif type == 'onap':
         return ONAP()
     else:

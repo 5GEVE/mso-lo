@@ -4,7 +4,6 @@ from flask_migrate import Migrate
 from error_handler import init_errorhandler, NfvoNotFound, NsNotFound, Unauthorized, BadRequest, ServerError
 from config import Config
 
-# TODO move to __init__.py
 app = Flask(__name__)
 app.config.from_object(Config)
 init_errorhandler(app)
