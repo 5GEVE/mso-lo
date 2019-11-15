@@ -10,7 +10,7 @@ class ONAP(object):
 
     def __init__(self):
         self._client = ONAPclient()
-        # self._client = ONAPclient(**self) - jak to ma byc czy potrzbne odwolanie czy tak jak wyzej wystarczy
+        # self._client = ONAPclient(**self)
 
     # def create_ns(self, args: Dict = None) -> Dict:
     #     pass
@@ -55,11 +55,11 @@ class ONAP(object):
                 result.append({
                     "id": element['id'],
                     "nsInstanceName": element['name'],
+                    # In ONAP - no description id NS Instance
                     "nsInstanceDescription": 'null',
                     "nsdId": element['serviceSpecification']['id'],
-                    # permited value of nsState: NOT_INSTANTIATED, INSTANTIATED
-                    # "nsState": element['distributionStatus']
-                    # zalozenie ze wszystjkie dostepne z api serwisy sa instantiated
+                    # permitted value of nsState: NOT_INSTANTIATED, INSTANTIATED
+                    # In ONAP all listed NS are instantiated
                     "nsState": 'INSTANTIATED'
                     })
 

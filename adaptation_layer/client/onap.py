@@ -60,10 +60,6 @@ class Client(object):
     #         error = resp.json()
     #         raise ServerError()
 
-    # def _exec_delete(self, url=None, data=None, json=None, headers=None):
-
-
-
     def ns_list(self):
         _url = '{0}/service'.format(self._base_path)
         return self._exec_get(_url)
@@ -75,7 +71,7 @@ class Client(object):
         except ResourceNotFound:
             print('resource-not-found')
             raise NsNotFound(ns_id=ns_id)
-    # exception doesnt work
+        # exception doesnt work
 
     def ns_delete(self, ns_id):
         _url = '{0} {1}'.format(new_path, ns_id)
