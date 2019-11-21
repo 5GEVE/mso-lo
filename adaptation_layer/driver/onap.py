@@ -1,5 +1,6 @@
 from typing import Dict, List
 from client.onap import Client as ONAPclient
+from client.onap import AgentClient as AGENTclient
 # from .interface import Driver #sometimes it has to be in commend like  ONAP(Driver)
 
 # Driver = 'onap'
@@ -9,6 +10,7 @@ class ONAP(object):
 
     def __init__(self):
         self._client = ONAPclient()
+        self._agent = AGENTclient()
         # self._client = ONAPclient(**self)
 
     # def create_ns(self, args: Dict = None) -> Dict:
@@ -18,8 +20,8 @@ class ONAP(object):
         ns = self._client.ns_list()
         return self._ns_converter(ns)
 
-    def get_ns(self, nsId: str, args=None) -> Dict: #DODANO ARGS PODOBNIE JAK W CLIENICIE
-        ns = self._client.ns_get(nsId, args=args)  #wprowadzono zmiany dodano args
+    def get_ns(self, nsId: str, args=None) -> Dict:
+        ns = self._client.ns_get(nsId, args=args)
         return self._ns_converter(ns)
 
     # def delete_ns(self, nsId: str, args: Dict = None) -> None:

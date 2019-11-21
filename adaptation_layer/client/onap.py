@@ -5,13 +5,77 @@ from error_handler import ResourceNotFound, NsNotFound, VnfNotFound,\
 
 # requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
-class ScriptClient(object):
+class AgentClient(object):
     def __init__(self):
         self._host = ''
         self._port = ''
         self._headers = {"Content-Type": "application/json",
                          "accept": "application/json"}
-        self._base_path = ''
+        self._base_path = 'http://{}:{}'.format(self._host, self._port)
+
+    def _exec_get(self, url=None, params=None, header=None):
+
+        try:
+            resp = requests.get(url, params=params, headers=None)
+        except Exception as e:
+            raise ServerError(str(e))
+
+        if resp.status_code in (200, 201, 202, 204, 206):  # response code 206 was added / limit to needed
+            print('response code: {}'.format(resp.status_code))  # for tests only
+            return resp.json()
+        elif resp.status_code == 400:
+            print('response code: {}'.format(resp.status_code))  # for tests only
+            raise BadRequest()
+        elif resp.status_code == 401:
+            print('response code: {}'.format(resp.status_code))  # for tests only
+            raise Unauthorized()
+        elif resp.status_code == 404:
+            print('response code: {}'.format(resp.status_code))  # for tests only
+            raise ResourceNotFound()
+        else:
+            error = resp.json()
+            raise ServerError(error)
+
+        # def _exec_post(self, url=None, data=None, json=None, headers=None):
+        #
+        #     try:
+        #         resp = requests.post(url, data=data, json=json, headers=None)
+        #     except Exception as e:
+        #         raise ServerError(str(e))
+        #
+        #     if resp.status_code in (200, 201, 202, 204, 206):
+        #         return resp.json()
+        #     elif resp.status_code == 400:
+        #         print('response code: {}'.format(resp.status_code))  # for tests only
+        #         raise BadRequest()
+        #     elif resp.status_code == 401:
+        #         print('response code: {}'.format(resp.status_code))  # for tests only
+        #         raise Unauthorized()
+        #     elif resp.status_code == 404:
+        #         print('response code: {}'.format(resp.status_code))  # for tests only
+        #         raise ResourceNotFound()
+        #     else:
+        #         error = resp.json()
+        #         raise ServerError()
+
+        # def create_ns(self, args = None)
+        #     _url =
+        #     return
+        # add a information about unsupported option by Onap
+
+        # def ns_instantiate(self, id args=None):
+        #     _url =
+        #     return self._execpost()
+
+        # def ns_delete(self, ns_id, args=None):
+        #     _url =
+        #     return self._
+
+        # def ns_terminate(self, ns_id, args=None):
+        #     _url =
+        #     return self._
+
+
 
 
 class Client(object):
@@ -31,10 +95,9 @@ class Client(object):
         try:
             resp = requests.get(url, params=params, headers=None)
         except Exception as e:
-            # print('before test1')
             raise ServerError(str(e))
 
-        if resp.status_code in (200, 201, 202, 204, 206): # response code 206 was added
+        if resp.status_code in (200, 201, 202, 204, 206):  # response code 206 was added
             print('response code: {}'.format(resp.status_code))  # for tests only
             return resp.json()
         elif resp.status_code == 400:
@@ -48,7 +111,7 @@ class Client(object):
             raise ResourceNotFound()
         else:
             error = resp.json()
-            raise ServerError(error) #(error), albo sprobuj errer zrobix text
+            raise ServerError(error) #(error) added
     #
     # def _exec_post(self, url=None, data=None, json=None, headers=None):
     #
@@ -76,21 +139,12 @@ class Client(object):
         _url = '{0}/service'.format(self._base_path)
         return self._exec_get(_url)
 
-    def ns_get(self, ns_Id, args=None): #DODANO ARGS
+    def ns_get(self, ns_Id, args=None):
         _url = '{0}/service/{1}'.format(self._base_path, ns_Id)
         try:
             return self._exec_get(_url)
         except ResourceNotFound:
-            # print('resource-not-found')
-            # print(ns_id)
             raise NsNotFound(ns_id=ns_Id)
-        # exception doesnt work
+        # exception doesnt work when function is tested locally
 
-    # def ns_delete(self, ns_id):
-    #     _url = '{0} {1}'.format(new_path, ns_id)
-    # try:
-    #     return
-    # except:
-
-    # def nf_list(self):
 
