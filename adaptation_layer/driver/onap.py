@@ -24,14 +24,12 @@ class ONAP(object):
         ns = self._client.ns_get(nsId, args=args)
         return self._ns_converter(ns)
 
-    # def delete_ns(self, nsId: str, args: Dict = None) -> None:
-    #     pass
+    def delete_ns(self, nsId: str, args: Dict = None) -> None:
+        return self._agent.ns_delete(nsId, args=args)
 
-
-
-    #
-    # def instantiate_ns(self, nsId: str, args: Dict = None) -> None:
-    #     pass
+    def instantiate_ns(self, nsId: str, args: Dict = None) -> None:
+        response = self._agent.ns_instantiate(nsId, args=args)
+        return self.instantiate_converter(response)
     #
     # def scale_ns(self, nsId: str, args: Dict = None) -> None:
     #     pass
@@ -65,3 +63,6 @@ class ONAP(object):
                     })
 
         return result
+
+    def instantiate_converter(self, response):
+        return

@@ -11,12 +11,13 @@ class AgentClient(object):
         self._port = ''
         self._headers = {"Content-Type": "application/json",
                          "accept": "application/json"}
-        self._base_path = 'http://{}:{}'.format(self._host, self._port)
+        # self._base_path = 'http://{}:{}'.format(self._host, self._port)
+        self._test_path = 'http://jsonplaceholder.typicode.com/posts'  # for tests only
 
-    def _exec_get(self, url=None, params=None, header=None):
+    def _exec_delete(self, url=None, params=None, headers=None):
 
         try:
-            resp = requests.get(url, params=params, headers=None)
+            resp = requests.delete(url, params=params, headers=None)
         except Exception as e:
             raise ServerError(str(e))
 
@@ -36,47 +37,47 @@ class AgentClient(object):
             error = resp.json()
             raise ServerError(error)
 
-        # def _exec_post(self, url=None, data=None, json=None, headers=None):
-        #
-        #     try:
-        #         resp = requests.post(url, data=data, json=json, headers=None)
-        #     except Exception as e:
-        #         raise ServerError(str(e))
-        #
-        #     if resp.status_code in (200, 201, 202, 204, 206):
-        #         return resp.json()
-        #     elif resp.status_code == 400:
-        #         print('response code: {}'.format(resp.status_code))  # for tests only
-        #         raise BadRequest()
-        #     elif resp.status_code == 401:
-        #         print('response code: {}'.format(resp.status_code))  # for tests only
-        #         raise Unauthorized()
-        #     elif resp.status_code == 404:
-        #         print('response code: {}'.format(resp.status_code))  # for tests only
-        #         raise ResourceNotFound()
-        #     else:
-        #         error = resp.json()
-        #         raise ServerError()
+    def _exec_post(self, url=None, data=None, json=None, headers=None):
 
-        # def create_ns(self, args = None)
-        #     _url =
-        #     return
-        # add a information about unsupported option by Onap
+        try:
+            resp = requests.post(url, data=data, json=json, headers=None)
+        except Exception as e:
+            raise ServerError(str(e))
 
-        # def ns_instantiate(self, id args=None):
-        #     _url =
-        #     return self._execpost()
+        if resp.status_code in (200, 201, 202, 204, 206):
+            print('response code: {}'.format(resp.status_code))  # for tests only
+            return resp.json()
+        elif resp.status_code == 400:
+            print('response code: {}'.format(resp.status_code))  # for tests only
+            raise BadRequest()
+        elif resp.status_code == 401:
+            print('response code: {}'.format(resp.status_code))  # for tests only
+            raise Unauthorized()
+        elif resp.status_code == 404:
+            print('response code: {}'.format(resp.status_code))  # for tests only
+            raise ResourceNotFound()
+        else:
+            error = resp.json()
+            raise ServerError()
 
-        # def ns_delete(self, ns_id, args=None):
-        #     _url =
-        #     return self._
+    # def create_ns(self, args = None)
+    #     _url =
+    #     return
+    # add a information about unsupported option by Onap ?
 
-        # def ns_terminate(self, ns_id, args=None):
-        #     _url =
-        #     return self._
+    def ns_instantiate(self, id, args=None):
+        _url = self._test_path
+        return self._exec_post(_url, json=args, headers=self._headers)  # for dev change to json=args['payload']
 
+    # create a response massage
 
+    def ns_delete(self, ns_id, args=None):
+        _url = '{}/1'.format(self._test_path)
+        return self._exec_delete(_url, headers=self._headers)
 
+    # def ns_terminate(self, ns_id, args=None):
+    #     _url =
+    #     return self._
 
 class Client(object):
     def __init__(self):
@@ -111,7 +112,7 @@ class Client(object):
             raise ResourceNotFound()
         else:
             error = resp.json()
-            raise ServerError(error) #(error) added
+            raise ServerError(error)  # (error) added
     #
     # def _exec_post(self, url=None, data=None, json=None, headers=None):
     #
