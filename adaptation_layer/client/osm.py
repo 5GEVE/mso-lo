@@ -233,6 +233,6 @@ class Client(object):
 
 def _build_testing_url(base, args):
     if TESTING and args['args'] and len(args['args']) > 0:
-        url_query = (args['args'])
+        url_query = urlencode(args['args'])
         return "{0}?{1}".format(base, url_query)
     return base
