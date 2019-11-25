@@ -2,6 +2,7 @@ from typing import Dict, List
 from client.onap import Client as ONAPclient
 from client.onap import AgentClient as AGENTclient
 # from .interface import Driver #sometimes it has to be in commend like  ONAP(Driver)
+import json
 
 # Driver = 'onap'
 
@@ -61,8 +62,19 @@ class ONAP(object):
                     # In ONAP all listed NS are instantiated
                     "nsState": 'INSTANTIATED'
                     })
-
         return result
 
     def instantiate_converter(self, response):
-        return
+
+        vnf_payload = response['vnf_info']["vnf_payload"]
+        vnf_payload = json.loads(vnf_payload)
+
+        result = {
+                "id": response["instance_id"]["instance_id"],
+                "nsInstanceName": 'check list of NS instances',
+                "nsInstanceDescription": 'null',
+                # nsdId - its better to get that info from get_ls_list function - may cause errors - for tests only
+                "nsdId": vnf_payload["requestDetails"]["relatedInstanceList"][0]['relatedInstance']['modelInfo']['modelVersionId'],
+                "nsState": 'INSTANTIATED'
+            }
+        return result

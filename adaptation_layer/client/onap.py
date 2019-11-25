@@ -7,12 +7,13 @@ from error_handler import ResourceNotFound, NsNotFound, VnfNotFound,\
 
 class AgentClient(object):
     def __init__(self):
-        self._host = ''
-        self._port = ''
+        self._host = '10.254.184.215'
+        self._port = '8080'
         self._headers = {"Content-Type": "application/json",
                          "accept": "application/json"}
-        # self._base_path = 'http://{}:{}'.format(self._host, self._port)
+        self._base_path = 'http://{0}:{1}'.format(self._host, self._port)
         self._test_path = 'http://jsonplaceholder.typicode.com/posts'  # for tests only
+        # self._local_path = 'http://localIp:{0}'.format(self._port)  # add local IP
 
     def _exec_delete(self, url=None, params=None, headers=None):
 
@@ -66,7 +67,7 @@ class AgentClient(object):
     # add a information about unsupported option by Onap ?
 
     def ns_instantiate(self, id, args=None):
-        _url = self._test_path
+        _url = '{0}/instantiate/{1}'.format(self._base_path, id)
         return self._exec_post(_url, json=args, headers=self._headers)  # for dev change to json=args['payload']
 
     # create a response massage
@@ -86,6 +87,7 @@ class Client(object):
         self._host = '10.254.184.164'
         self._port = 30274
         self._nbi_ver = 4
+        self._customer = 'Michal-Customer'  # when blank, default 'generic'
         self._headers = {"Content-Type": "application/json",
                          "accept": "application/json"}
 
@@ -137,7 +139,7 @@ class Client(object):
     #         raise ServerError()
 
     def ns_list(self):
-        _url = '{0}/service'.format(self._base_path)
+        _url = '{0}/service?relatedParty.id={1}'.format(self._base_path, self._customer)
         return self._exec_get(_url)
 
     def ns_get(self, ns_Id, args=None):
