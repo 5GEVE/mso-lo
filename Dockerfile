@@ -1,5 +1,5 @@
 FROM python:3.6 as base
-RUN apt-get update && apt-get install -y python-dev python3-dev
+RUN apt-get update && apt-get install -y python3-dev
 ENV PIPENV_VENV_IN_PROJECT 1
 RUN ["pip3", "install", "pipenv"]
 WORKDIR /usr/src/app
