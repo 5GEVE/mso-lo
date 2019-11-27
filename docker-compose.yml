@@ -1,4 +1,4 @@
-version: '3.1'
+version: '3.4'
 services:
   nginx:
     image: nginx:latest
@@ -13,13 +13,13 @@ services:
       - 80:80
   flask:
     build:
-      context: ./
-      dockerfile: Dockerfile
-    container_name: adaptation-layer
+      context: .
+      target: prod
+    container_name: MSO-LO
     networks:
       al-network:
         aliases:
-          - flask-app 
+          - flask-app
     ports:
       - 5000:5000
 networks:
