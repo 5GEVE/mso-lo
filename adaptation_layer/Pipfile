@@ -12,6 +12,7 @@ flask = "==1.0.2"
 pycurl = "*"
 requests = "*"
 pyaml = "*"
+uwsgi = "*"
 
 [requires]
 python_version = "3"
