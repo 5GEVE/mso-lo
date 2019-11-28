@@ -5,17 +5,13 @@ RUN ["pip3", "install", "pipenv"]
 WORKDIR /usr/src/app
 EXPOSE 5000
 
-FROM base as dev
+FROM base as test
 # copy only pipfiles to install dependencies
 COPY ./adaptation_layer/Pipfile .
 COPY ./adaptation_layer/Pipfile.lock .
 RUN ["pipenv", "install", "--dev"]
-# Bind mount here?
-
-FROM base as test
+# copy source code. if source changes we do not reinstall dependencies.
 COPY ./adaptation_layer .
-RUN ["pipenv", "install", "--dev"]
-ENV TESTING True
 
 FROM base as prod
 COPY ./adaptation_layer .

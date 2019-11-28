@@ -21,6 +21,7 @@ services:
     depends_on:
       - prism-osm
     environment:
+      TESTING: "True"
       PRISM_ALIAS: prism-osm
     working_dir: /usr/src/app/tests
     command: ["./wait-for-it.sh", "prism-osm:9999", "--", "pipenv", "run", "python", "test_osm.py"]
