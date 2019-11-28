@@ -1,9 +1,9 @@
 #!flask/bin/python
+import sys
+sys.path.append('../')
 from app import app
 import os
 import unittest
-import sys
-sys.path.append('../')
 
 
 class OSMTestCase(unittest.TestCase):

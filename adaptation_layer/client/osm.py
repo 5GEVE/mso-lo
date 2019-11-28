@@ -10,6 +10,7 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 TESTING = os.environ.get("TESTING", False)
+PRISM_ALIAS = os.environ.get("PRISM_ALIAS", "prism-osm")
 
 
 class Client(object):
@@ -36,7 +37,7 @@ class Client(object):
             self._headers['Authorization'] = 'Bearer {}'.format(
                 token['id'])
         else:
-            self._base_path = 'http://{0}:{1}'.format(self._host, so_port)
+            self._base_path = 'http://{0}:{1}'.format(PRISM_ALIAS, so_port)
 
     def _exec_get(self, url=None, params=None, headers=None):
         # result = {}
