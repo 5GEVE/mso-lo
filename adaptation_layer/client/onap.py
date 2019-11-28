@@ -18,7 +18,7 @@ class AgentClient(object):
     def _exec_delete(self, url=None, params=None, headers=None):
 
         try:
-            resp = requests.delete(url, params=params, headers=None)
+            resp = requests.delete(url, params=params, headers=headers)
         except Exception as e:
             raise ServerError(str(e))
 
@@ -59,19 +59,17 @@ class AgentClient(object):
             raise ResourceNotFound()
         else:
             error = resp.json()
-            raise ServerError()
+            raise ServerError(error)
 
-    # def create_ns(self, args = None)
-    #     _url =
-    #     return
-    # add a information about unsupported option by Onap ?
+    def ns_create(self, ns_name, args=None):
+        _url = '{0}/instantiate/{1}'.format(self._base_path, ns_name)
+        return self._exec_post(_url, headers=self._headers)
 
-    def ns_instantiate(self, id, args=None):
-        _url = '{0}/instantiate/{1}'.format(self._base_path, id)
+    def ns_instantiate(self, ns_name, args=None):
+        # _url = '{0}/instantiate/{1}'.format(self._base_path, ns_name)
         # add try except block to check if the service spec / service instance exists
-        return self._exec_post(_url, json=args, headers=self._headers)  # for dev change to json=args['payload']
-
-    # create a response massage
+        # return self._exec_post(_url, json=args, headers=self._headers)  # for dev change to json=args['payload']
+        return
 
     def ns_delete(self, ns_id, args=None):
         _url = '{0}/service/{1}'.format(self._base_path, ns_id)
@@ -94,10 +92,10 @@ class Client(object):
 
         self._base_path = 'http://{0}:{1}//nbi/api/v{2}'.format(self._host, self._port, self._nbi_ver)
 
-    def _exec_get(self, url=None, params=None, header=None):
+    def _exec_get(self, url=None, params=None, headers=None):
 
         try:
-            resp = requests.get(url, params=params, headers=None)
+            resp = requests.get(url, params=params, headers=headers)
         except Exception as e:
             raise ServerError(str(e))
 
@@ -141,14 +139,19 @@ class Client(object):
 
     def ns_list(self):
         _url = '{0}/service?relatedParty.id={1}'.format(self._base_path, self._customer)
-        return self._exec_get(_url)
+        return self._exec_get(_url, params=None, headers=self._headers)
 
     def ns_get(self, ns_Id, args=None):
         _url = '{0}/service/{1}'.format(self._base_path, ns_Id)
         try:
-            return self._exec_get(_url)
+            return self._exec_get(_url, headers=self._headers)
         except ResourceNotFound:
             raise NsNotFound(ns_id=ns_Id)
         # exception doesnt work when function is tested locally
+
+    def check_ns_name(self, nsd_Id, args = None):
+        _url = '{0}/serviceSpecification/{1}?fields=name'.format(self._base_path, nsd_Id)
+        return self._exec_get(_url, headers=self._headers)
+
 
 

@@ -5,8 +5,9 @@ from client.onap import AgentClient as AGENTclient
 import json
 
 # Driver = 'onap'
-
 # class ONAP(Driver):
+
+
 class ONAP(object):
 
     def __init__(self):
@@ -14,10 +15,16 @@ class ONAP(object):
         self._agent = AGENTclient()
         # self._client = ONAPclient(**self)
 
-    # def create_ns(self, args: Dict = None) -> Dict:
-    #     pass
+    def create_ns(self, args: Dict = None) -> Dict:
+        ns_name = self._client.check_ns_name(args["name"])  # to change nsdId to name of NS
+        response = self._agent.ns_create(ns_name['name'])  # instantiate NS with given name
+        # return self.instantiate_converter(response)  # response without one parameters value
+        # second option of response format
+        ns_Id = response["instance_id"]["instance_id"]
+        ns = self._client.ns_get(ns_Id, args=args)
+        return self._ns_converter(ns)
 
-    def get_ns_list(self, args=None) -> List[Dict]:
+    def get_ns_list(self) -> List[Dict]:
         ns = self._client.ns_list()
         return self._ns_converter(ns)
 
@@ -28,15 +35,17 @@ class ONAP(object):
     def delete_ns(self, nsId: str, args: Dict = None) -> None:
         return self._agent.ns_delete(nsId, args=args)
 
-    def instantiate_ns(self, nsId: str, args: Dict = None) -> None:
-        response = self._agent.ns_instantiate(nsId, args=args)
-        return self.instantiate_converter(response)
+    def instantiate_ns(self, ns_Id: str, args: Dict = None) -> None:
+        # response = self._agent.ns_instantiate(nsId, args=args)
+        # return self.instantiate_converter(response)
+        return
     #
     # def scale_ns(self, nsId: str, args: Dict = None) -> None:
     #     pass
     #
-    # def terminate_ns(self, nsId: str, args: Dict = None) -> None:
-    #     pass
+
+    def terminate_ns(self, nsId: str, args: Dict = None) -> None:
+        return
 
     def _ns_converter(self, ns):
 
@@ -64,17 +73,17 @@ class ONAP(object):
                     })
         return result
 
-    def instantiate_converter(self, response):
-
-        vnf_payload = response['vnf_info']["vnf_payload"]
-        vnf_payload = json.loads(vnf_payload)
-
-        result = {
-                "id": response["instance_id"]["instance_id"],
-                "nsInstanceName": 'check list of NS instances',
-                "nsInstanceDescription": 'null',
-                # nsdId - its better to get that info from get_ls_list function - may cause errors - for tests only
-                "nsdId": vnf_payload["requestDetails"]["relatedInstanceList"][0]['relatedInstance']['modelInfo']['modelVersionId'],
-                "nsState": 'INSTANTIATED'
-            }
-        return result
+    # def instantiate_converter(self, response):  # for first option of response format for ns_create function
+    #
+    #     vnf_payload = response['vnf_info']["vnf_payload"]
+    #     vnf_payload = json.loads(vnf_payload)
+    #
+    #     result = {
+    #             "id": response["instance_id"]["instance_id"],
+    #             "nsInstanceName": 'check list of NS instances',
+    #             "nsInstanceDescription": 'null',
+    #             # nsdId - its better to get that info from get_ls_list function - may cause errors - for tests only
+    #             "nsdId": vnf_payload["requestDetails"]["relatedInstanceList"][0]['relatedInstance']['modelInfo']['modelVersionId'],
+    #             "nsState": 'INSTANTIATED'
+    #         }
+    #     return result
