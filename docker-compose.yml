@@ -22,5 +22,11 @@ services:
           - flask-app
     ports:
       - 5000:5000
+    volumes:
+      - mso-lo-data:/usr/src/app/data
 networks:
-    mso-lo-net:
+  mso-lo-net:
+volumes:
+  mso-lo-data:
+    name: mso-lo-data
+
