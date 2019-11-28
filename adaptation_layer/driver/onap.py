@@ -35,17 +35,17 @@ class ONAP(object):
     def delete_ns(self, nsId: str, args: Dict = None) -> None:
         return self._agent.ns_delete(nsId, args=args)
 
-    def instantiate_ns(self, ns_Id: str, args: Dict = None) -> None:
+    def instantiate_ns(self, nsId: str, args: Dict = None) -> None:
         # response = self._agent.ns_instantiate(nsId, args=args)
         # return self.instantiate_converter(response)
-        return
+        return self._agent.ns_instantiate(nsId, args=args)
     #
     # def scale_ns(self, nsId: str, args: Dict = None) -> None:
     #     pass
     #
 
     def terminate_ns(self, nsId: str, args: Dict = None) -> None:
-        return
+        return self._agent.ns_terminate(nsId, args=args)
 
     def _ns_converter(self, ns):
 
@@ -71,6 +71,7 @@ class ONAP(object):
                     # In ONAP all listed NS are instantiated
                     "nsState": 'INSTANTIATED'
                     })
+
         return result
 
     # def instantiate_converter(self, response):  # for first option of response format for ns_create function

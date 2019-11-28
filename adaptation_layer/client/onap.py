@@ -65,19 +65,24 @@ class AgentClient(object):
         _url = '{0}/instantiate/{1}'.format(self._base_path, ns_name)
         return self._exec_post(_url, headers=self._headers)
 
-    def ns_instantiate(self, ns_name, args=None):
+    def ns_instantiate(self, id, ns_name, args=None):
         # _url = '{0}/instantiate/{1}'.format(self._base_path, ns_name)
         # add try except block to check if the service spec / service instance exists
         # return self._exec_post(_url, json=args, headers=self._headers)  # for dev change to json=args['payload']
-        return
+        try:
+            return
+        except ResourceNotFound:
+            raise NsNotFound(ns_id=id)
 
     def ns_delete(self, ns_id, args=None):
         _url = '{0}/service/{1}'.format(self._base_path, ns_id)
         return self._exec_delete(_url, headers=self._headers)
 
-    # def ns_terminate(self, ns_id, args=None):
-    #     _url =
-    #     return self._
+    def ns_terminate(self, ns_id, args=None):
+        try:
+            return
+        except ResourceNotFound:
+            raise NsNotFound(ns_id)
 
 class Client(object):
     def __init__(self):
