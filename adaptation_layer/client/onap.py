@@ -5,7 +5,8 @@ from error_handler import ResourceNotFound, NsNotFound, VnfNotFound,\
 
 # requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
-class AgentClient(object):
+
+class AgentClient(object):  # ns_instantiation_server
     def __init__(self):
         self._host = '10.254.184.215'  # change IP , for tests only
         self._port = '8080'
@@ -24,7 +25,7 @@ class AgentClient(object):
 
         if resp.status_code in (200, 201, 202, 204, 206):  # response code 206 was added / limit to needed
             print('response code: {}'.format(resp.status_code))  # for tests only
-            return resp.json()
+            return  # resp.json()  # for now ned to be commented maybe resp.text
         elif resp.status_code == 400:
             print('response code: {}'.format(resp.status_code))  # for tests only
             raise BadRequest()
@@ -35,8 +36,10 @@ class AgentClient(object):
             print('response code: {}'.format(resp.status_code))  # for tests only
             raise ResourceNotFound()
         else:
+            print(resp.status_code)  # for tests only
             error = resp.json()
             raise ServerError(error)
+            # raise ServerError()
 
     def _exec_post(self, url=None, data=None, json=None, headers=None):
 
@@ -58,7 +61,11 @@ class AgentClient(object):
             print('response code: {}'.format(resp.status_code))  # for tests only
             raise ResourceNotFound()
         else:
-            error = resp.json()
+            if 'application/json' in resp.headers['content-type']:
+                error = resp.json()
+            else:
+                error = resp.text
+            print(resp.status_code)  # for tests only
             raise ServerError(error)
 
     def ns_create(self, ns_name, args=None):
@@ -74,9 +81,9 @@ class AgentClient(object):
         except ResourceNotFound:
             raise NsNotFound(ns_id=id)
 
-    def ns_delete(self, ns_id, args=None):
-        _url = '{0}/service/{1}'.format(self._base_path, ns_id)
-        return self._exec_delete(_url, headers=self._headers)
+    def ns_delete(self, service_type, ns_id, args=None):
+        _url = '{0}/service/{1}/{2}'.format(self._base_path, service_type, ns_id)
+        return self._exec_delete(_url)
 
     def ns_terminate(self, ns_id, args=None):
         try:
@@ -117,6 +124,7 @@ class Client(object):
             print('response code: {}'.format(resp.status_code))  # for tests only
             raise ResourceNotFound()
         else:
+            print(resp.status_code)  # for tests only
             error = resp.json()
             raise ServerError(error)  # (error) added
     #
@@ -158,5 +166,8 @@ class Client(object):
         _url = '{0}/serviceSpecification/{1}?fields=name'.format(self._base_path, nsd_Id)
         return self._exec_get(_url, headers=self._headers)
 
-
+    def check_instance_ns_name(self, ns_Id, args = None):
+        _url = '{0}/service/{1}'.format(self._base_path, ns_Id)
+        response = self._exec_get(_url, headers=self._headers)
+        return response['serviceSpecification']['name']
 

@@ -20,7 +20,7 @@ class ONAP(object):
         response = self._agent.ns_create(ns_name['name'])  # instantiate NS with given name
         # return self.instantiate_converter(response)  # response without one parameters value
         # second option of response format
-        ns_Id = response["instance_id"]["instance_id"]
+        ns_Id = response["service_id"]  # information from ns_instantiation_server
         ns = self._client.ns_get(ns_Id, args=args)
         return self._ns_converter(ns)
 
@@ -33,7 +33,8 @@ class ONAP(object):
         return self._ns_converter(ns)
 
     def delete_ns(self, nsId: str, args: Dict = None) -> None:
-        return self._agent.ns_delete(nsId, args=args)
+        service_type = self._client.check_instance_ns_name(nsId)  # check service type
+        return self._agent.ns_delete(service_type, nsId, args=args)
 
     def instantiate_ns(self, nsId: str, args: Dict = None) -> None:
         # response = self._agent.ns_instantiate(nsId, args=args)
