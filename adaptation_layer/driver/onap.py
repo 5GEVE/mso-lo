@@ -16,7 +16,7 @@ class ONAP(object):
         # self._client = ONAPclient(**self)
 
     def create_ns(self, args: Dict = None) -> Dict:
-        ns_name = self._client.check_ns_name(args['payload']["nsdId"])  # to change nsdId to name of NS
+        ns_name = self._client.check_ns_name(args['payload']['nsdId'])  # to change nsdId to name of NS
         response = self._agent.ns_create(ns_name['name'])  # instantiate NS with given name
         # return self.instantiate_converter(response)  # response without one parameters value
         # second option of response format

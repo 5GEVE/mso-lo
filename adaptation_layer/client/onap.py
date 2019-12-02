@@ -162,12 +162,17 @@ class Client(object):
             raise NsNotFound(ns_id=ns_Id)
         # exception doesnt work when function is tested locally
 
-    def check_ns_name(self, nsd_Id, args = None):
+    def check_ns_name(self, nsd_Id, args = None):  # tutaj też może się przydać wyjątek
         _url = '{0}/serviceSpecification/{1}?fields=name'.format(self._base_path, nsd_Id)
-        return self._exec_get(_url, headers=self._headers)
+        try:
+            return self._exec_get(_url, headers=self._headers)
+        except ResourceNotFound:
+            raise NsNotFound(ns_id=nsd_Id)
 
-    def check_instance_ns_name(self, ns_Id, args = None):
+    def check_instance_ns_name(self, ns_Id, args = None):  # exception block for tests
         _url = '{0}/service/{1}'.format(self._base_path, ns_Id)
-        response = self._exec_get(_url, headers=self._headers)
-        return response['serviceSpecification']['name']
-
+        try:
+            response = self._exec_get(_url, headers=self._headers)
+            return response['serviceSpecification']['name']
+        except ResourceNotFound:
+            raise NsNotFound(ns_id=ns_Id)
