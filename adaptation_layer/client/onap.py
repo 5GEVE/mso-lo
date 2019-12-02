@@ -65,7 +65,7 @@ class AgentClient(object):  # ns_instantiation_server
                 error = resp.json()
             else:
                 error = resp.text
-            print(resp.status_code)  # for tests only
+            # print(resp.status_code)  # for tests only
             raise ServerError(error)
 
     def ns_create(self, ns_name, args=None):
@@ -160,16 +160,15 @@ class Client(object):
             return self._exec_get(_url, headers=self._headers)
         except ResourceNotFound:
             raise NsNotFound(ns_id=ns_Id)
-        # exception doesnt work when function is tested locally
 
-    def check_ns_name(self, nsd_Id, args = None):  # tutaj też może się przydać wyjątek
+    def check_ns_name(self, nsd_Id, args=None):
         _url = '{0}/serviceSpecification/{1}?fields=name'.format(self._base_path, nsd_Id)
         try:
             return self._exec_get(_url, headers=self._headers)
         except ResourceNotFound:
-            raise NsNotFound(ns_id=nsd_Id)
+            raise BadRequest()
 
-    def check_instance_ns_name(self, ns_Id, args = None):  # exception block for tests
+    def check_instance_ns_name(self, ns_Id, args = None):
         _url = '{0}/service/{1}'.format(self._base_path, ns_Id)
         try:
             response = self._exec_get(_url, headers=self._headers)

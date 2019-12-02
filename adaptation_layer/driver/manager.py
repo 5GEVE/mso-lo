@@ -26,7 +26,7 @@ nfvo_mock_osm = {
 
 def get_driver(nfvo_id) -> Driver:
     # checks the nfvo_id against the database and gets the type
-    type = 'osm'
+    type = 'onap'  # for test only
 
     if type == 'osm':
         return OSM(nfvo_mock_osm)
