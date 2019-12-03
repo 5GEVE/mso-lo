@@ -12,6 +12,7 @@ pycurl = "*"
 requests = "*"
 pyaml = "*"
 uwsgi = "*"
+flask-script = "*"
 
 [requires]
 python_version = "3"
