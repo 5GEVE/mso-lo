@@ -1,0 +1,9 @@
+[
+    {
+        "id": 1,
+        "name": "turin_osm",
+        "site": "Italy",
+        "nfvo_type": "OSM",
+        "uri": "https://osm-turin.5g-eve.eu"
+      }
+]

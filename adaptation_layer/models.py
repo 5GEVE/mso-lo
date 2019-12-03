@@ -28,6 +28,9 @@ class NFVO(db.Model):
             'updated_at': self.updated_at
         }
 
+    def __init__(self, **kwargs):
+        super(NFVO, self).__init__(**kwargs)
+
     def __repr__(self):
         return '<NFVO {}>'.format(self.id)
 

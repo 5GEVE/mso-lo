@@ -1,19 +1,34 @@
+import os
+import json
 from flask_script import Manager
 from app import app, db
 from models import NFVO, NFVO_CREDENTIALS
 manager = Manager(app)
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 @manager.command
 def seed():
-    turin_osm = NFVO(id=1, name="turin_osm", nfvo_type="OSM", uri="https://osm-turin.5g-eve.eu", site="Italy")
-    turin_os_cred = NFVO_CREDENTIALS(
-        nfvo_id=1, host='localhost', user='admin',
-        password='admin', project='admin')
-    db.session.add(turin_osm)
-    db.session.commit()
-    db.session.add(turin_os_cred)
-    db.session.commit()
+    SEED_NFVO = os.environ.get('DB_SEED_NFVO') or \
+        os.path.join(basedir, 'seed/nfvo.json')
+    SEED_NFVO_CRED = os.environ.get('DB_SEED_NFVO_CRED') or \
+        os.path.join(basedir, 'seed/nfvo_credentials.json')
+
+    with open(SEED_NFVO, 'r') as f:
+        nfvo_dict = json.load(f)
+
+    for new_nfvo in nfvo_dict:
+        new_nfvo_model = NFVO(**new_nfvo)
+        db.session.add(new_nfvo_model)
+        db.session.commit()
+
+    with open(SEED_NFVO_CRED, 'r') as f:
+        nfvo_cred_dict = json.load(f)
+
+    for new_nfvo_cred in nfvo_cred_dict:
+        new_nfvo_cred_model = NFVO_CREDENTIALS(**new_nfvo_cred)
+        db.session.add(new_nfvo_cred_model)
+        db.session.commit()
 
 
 if __name__ == "__main__":
