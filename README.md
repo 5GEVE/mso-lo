@@ -5,7 +5,7 @@
 ## Install guide
 
 Before deploying, database must be populated with NFVO data.
-Copy the mock files in [adaptation-layer/seed](adaptation-layer/seed):
+Copy the mock files:
 
 ```
 cd adaptation-layer/seed
@@ -19,7 +19,7 @@ We use Docker Compose for deployment (it will also take care of database initial
 From the repository main directory, run:
 
 ```
-docker-compose build 
+docker-compose build
 docker-compose up
 ```
 
@@ -88,7 +88,7 @@ After that, please commit `Pipfile` and `Pipfile.lock`.
 
 To create a new NFVO driver, it is enough to create a new python module
 extending the `Driver` interface.
-For example, let's create `/adaptation_layer/driver/onap.py`:
+For example, let's create `adaptation_layer/driver/onap.py`:
 
 ```
 from .interface import Driver
@@ -101,13 +101,13 @@ Your IDE should suggest you to create stubs for methods to be overriden.
 
 ### Error handling
 
-When throwing exceptions, please use the ones defined in `error_handler.py`.
+When throwing exceptions, please use the ones defined in [error_handler.py](adaptation_layer/error_handler.py).
 This allows the application to correctly create the corresponding response and
 status code.
 
 ### Update the driver manager
 
-To enable a newly created driver, edit `/adaptation_layer/driver/manager.py`.
+To enable a newly created driver, edit [manager.py](adaptation_layer/driver/manager.py).
 The `get_driver()` method is simply a switch that returns an instance of the
 proper driver.
 
@@ -115,12 +115,11 @@ proper driver.
 
 In order to test our software against an NFVO NBI, we need to mock it.
 For this purpose, we use [Prism](https://stoplight.io/open-source/prism/).
-You can control the kind of HTTP response returned by Prism by modifying the
-request URL.
+You can control the kind of HTTP response returned by Prism by modifying the request URL.
 Example: `/nfvo/nfvo_osm1/ns?__code=200`
 
-To add unit tests for a driver, create a new python file in `/adaptation_layer/tests`.
-Please refer to `/adaptation_layer/tests/test_osm.py` for examples.
+To add unit tests for a driver, create a new python file in `adaptation_layer/tests`.
+Please refer to [test_osm.py](/adaptation_layer/tests/test_osm.py) for examples.
 
 Unit tests can be executed by using Docker Compose files.
 *Note*: the `--build-arg` parameters are used to initialize the database with mock data.
@@ -139,5 +138,5 @@ The file will run two containers:
 1. A Prism server mocking the OSM NBI
 2. A python container to execute unit tests
 
-Unit tests execution for a new driver can be added by copying and modifyng `docker-compose.test-osm.yml`.
+Unit tests execution for a new driver can be added by copying and modifyng [docker-compose.test-osm.yml](docker-compose.test-osm.yml).
 
