@@ -15,7 +15,7 @@ services:
     build:
       context: .
       target: prod
-    container_name: MSO-LO
+    container_name: mso-lo
     networks:
       mso-lo-net:
         aliases:

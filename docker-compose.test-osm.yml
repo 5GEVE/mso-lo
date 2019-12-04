@@ -16,7 +16,7 @@ services:
   test-osm:
     build:
       context: .
-      target: test
+      target: base
     container_name: test-osm
     depends_on:
       - prism-osm

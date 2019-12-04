@@ -4,18 +4,36 @@
 
 ## Install guide
 
-We use Docker Compose for deployment. From the repository main directory, run:
+Before deploying, database must be populated with NFVO data.
+Copy the mock files in [adaptation-layer/seed](adaptation-layer/seed):
 
 ```
-docker-compose build --build-arg DB_SEED_NFVO="seed/nfvo.json" --build-arg DB_SEED_NFVO_CRED="seed/nfvo_credentials.json"
-docker-compose run
+cd adaptation-layer/seed
+cp nfvo_mock.json nfvo.json
+cp nfvo_credentials_mock.json nfvo_credentials.json
 ```
 
-The app is now litening on `http://0.0.0.0:5000`.
-You can test it with:
+Edit the files by inserting your NFVOs information.
+
+We use Docker Compose for deployment (it will also take care of database initialization).
+From the repository main directory, run:
+
+```
+docker-compose build 
+docker-compose up
+```
+
+You can test the app with:
 
 ```
 curl --request GET --url http://127.0.0.1:80/nfvo
+```
+### Uninstall
+
+To remove the containers and volumes, use:
+
+```
+docker-compose down --remove-orphans --volumes
 ```
 
 ## Developer guide
@@ -100,15 +118,19 @@ For this purpose, we use [Prism](https://stoplight.io/open-source/prism/).
 You can control the kind of HTTP response returned by Prism by modifying the
 request URL.
 Example: `/nfvo/nfvo_osm1/ns?__code=200`
+
+To add unit tests for a driver, create a new python file in `/adaptation_layer/tests`.
 Please refer to `/adaptation_layer/tests/test_osm.py` for examples.
 
-To add unit tests for a driver, create a new python file in
-`/adaptation_layer/tests`.
-For example: `/adaptation_layer/tests/test_onap.py`
+Unit tests can be executed by using Docker Compose files.
+*Note*: the `--build-arg` parameters are used to initialize the database with mock data.
 
-Unit tests can be run by using Docker Compose files. Example:
+Example:
 
 ```
+docker-compose -f docker-compose.test-osm.yml -p test-osm build \
+    --build-arg DB_SEED_NFVO="seed/nfvo_mock.json" \
+    --build-arg DB_SEED_NFVO_CRED="seed/nfvo_credentials_mock.json"
 docker-compose -f docker-compose.test-osm.yml -p test-osm up
 ```
 
@@ -117,6 +139,5 @@ The file will run two containers:
 1. A Prism server mocking the OSM NBI
 2. A python container to execute unit tests
 
-Unit tests execution for a new driver can be added by copying and modifyng
-`docker-compose.test-osm.yml`.
+Unit tests execution for a new driver can be added by copying and modifyng `docker-compose.test-osm.yml`.
 
