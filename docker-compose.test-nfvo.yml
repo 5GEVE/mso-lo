@@ -1,0 +1,12 @@
+version: '3.7'
+services:
+  test-nfvo:
+    build:
+      context: .
+      target: test
+    container_name: test-nfvo
+    environment:
+      TESTING: "True"
+    working_dir: /usr/src/app/tests
+    command: ["pipenv", "run", "python", "test_nfvo.py"]
+

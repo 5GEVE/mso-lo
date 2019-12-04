@@ -3,12 +3,14 @@ import json as JSON
 import yaml as YAML
 import os
 from urllib.parse import urlencode
-from error_handler import ResourceNotFound, NsNotFound, VnfNotFound, Unauthorized, BadRequest, ServerError
+from error_handler import ResourceNotFound, NsNotFound, VnfNotFound,\
+        Unauthorized, BadRequest, ServerError
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 TESTING = os.environ.get("TESTING", False)
+PRISM_ALIAS = os.environ.get("PRISM_ALIAS", "prism-osm")
 
 
 class Client(object):
@@ -35,7 +37,7 @@ class Client(object):
             self._headers['Authorization'] = 'Bearer {}'.format(
                 token['id'])
         else:
-            self._base_path = 'http://{0}:{1}'.format(self._host, so_port)
+            self._base_path = 'http://{0}:{1}'.format(PRISM_ALIAS, so_port)
 
     def _exec_get(self, url=None, params=None, headers=None):
         # result = {}
@@ -118,14 +120,16 @@ class Client(object):
     def ns_create(self, args=None):
         _url = "{0}/nslcm/v1/ns_instances".format(self._base_path)
         _url = _build_testing_url(_url, args)
-        return self._exec_post(_url, json=args['payload'], headers=self._headers)
+        return self._exec_post(_url, json=args['payload'],
+                               headers=self._headers)
 
     def ns_instantiate(self, id, args=None):
         _url = "{0}/nslcm/v1/ns_instances/{1}/instantiate".format(
             self._base_path, id)
         _url = _build_testing_url(_url, args)
         try:
-            return self._exec_post(_url, json=args['payload'], headers=self._headers)
+            return self._exec_post(_url, json=args['payload'],
+                                   headers=self._headers)
         except ResourceNotFound:
             raise NsNotFound(ns_id=id)
 
@@ -151,7 +155,8 @@ class Client(object):
             self._base_path, ns_id)
         _url = _build_testing_url(_url, args)
         try:
-            return self._exec_post(_url, json=args['payload'], headers=self._headers)
+            return self._exec_post(_url, json=args['payload'],
+                                   headers=self._headers)
         except ResourceNotFound:
             raise NsNotFound(ns_id=id)
 
@@ -160,7 +165,8 @@ class Client(object):
             self._base_path, ns_id)
         _url = _build_testing_url(_url, args)
         try:
-            return self._exec_post(_url, json=args['payload'], headers=self._headers)
+            return self._exec_post(_url, json=args['payload'],
+                                   headers=self._headers)
         except ResourceNotFound:
             raise NsNotFound(ns_id=id)
 
@@ -169,7 +175,8 @@ class Client(object):
             self._base_path, ns_id)
         _url = _build_testing_url(_url, args)
         try:
-            return self._exec_post(_url, json=args['payload'], headers=self._headers)
+            return self._exec_post(_url, json=args['payload'],
+                                   headers=self._headers)
         except ResourceNotFound:
             raise NsNotFound(ns_id=id)
 
@@ -178,14 +185,15 @@ class Client(object):
             self._base_path, ns_id)
         _url = _build_testing_url(_url, args)
         try:
-            resp = requests.delete(_url, params=None,
+            resp = requests.delete(_url, params=None, json=args['payload'],
                                    verify=False, headers=self._headers)
         except Exception as e:
             raise ServerError(str(e))
+        print(resp.status_code)
         if resp.status_code in (200, 201, 202, 204):
-            if 'application/json' == resp.headers['content-type']:
+            if 'application/json' in resp.headers['content-type']:
                 return resp.json()
-            elif 'application/yaml' == resp.headers['content-type']:
+            elif 'application/yaml' in resp.headers['content-type']:
                 return JSON.loads(JSON.dumps(
                     YAML.load(resp.text), sort_keys=True, indent=2))
             else:
@@ -195,7 +203,7 @@ class Client(object):
         elif resp.status_code == 401:
             raise Unauthorized()
         elif resp.status_code == 404:
-            raise ResourceNotFound()
+            raise NsNotFound(ns_id=ns_id)
         else:
             if 'application/json' in resp.headers['content-type']:
                 error = resp.json()

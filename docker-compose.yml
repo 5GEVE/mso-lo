@@ -1,4 +1,4 @@
-version: '3.1'
+version: '3.7'
 services:
   nginx:
     image: nginx:latest
@@ -8,19 +8,25 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
     networks:
-      - al-network
+      - mso-lo-net
     ports:
       - 80:80
   flask:
     build:
-      context: ./
-      dockerfile: Dockerfile
-    container_name: adaptation-layer
+      context: .
+      target: prod
+    container_name: MSO-LO
     networks:
-      al-network:
+      mso-lo-net:
         aliases:
-          - flask-app 
+          - flask-app
     ports:
       - 5000:5000
+    volumes:
+      - mso-lo-data:/usr/src/app/data
 networks:
-    al-network:
+  mso-lo-net:
+volumes:
+  mso-lo-data:
+    name: mso-lo-data
+

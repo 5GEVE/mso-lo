@@ -12,21 +12,25 @@ class Driver(ABC):
         raise NotImplementedError("The method is not implemented")
 
     @abstractmethod
-    def create_ns(self, args: Dict = None) -> List[Dict]:
+    def create_ns(self, args: Dict = None) -> Dict:
         raise NotImplementedError("The method is not implemented")
 
     @abstractmethod
-    def get_ns(self, nsId: str, args: Dict = None) -> List[Dict]:
+    def get_ns(self, nsId: str, args: Dict = None) -> Dict:
         raise NotImplementedError("The method is not implemented")
 
     @abstractmethod
-    def instantiate_ns(self, nsId: str, args: Dict = None) -> List[Dict]:
+    def delete_ns(self, nsId: str, args: Dict = None) -> None:
         raise NotImplementedError("The method is not implemented")
 
     @abstractmethod
-    def terminate_ns(self, nsId: str, args: Dict = None) -> List[Dict]:
+    def instantiate_ns(self, nsId: str, args: Dict = None) -> None:
         raise NotImplementedError("The method is not implemented")
 
     @abstractmethod
-    def scale_ns(self, nsId: str, args: Dict = None) -> List[Dict]:
+    def terminate_ns(self, nsId: str, args: Dict = None) -> None:
+        raise NotImplementedError("The method is not implemented")
+
+    @abstractmethod
+    def scale_ns(self, nsId: str, args: Dict = None) -> None:
         raise NotImplementedError("The method is not implemented")

@@ -1,10 +1,27 @@
+from typing import Dict, List
+
 from .interface import Driver
 
 
 class ONAP(Driver):
 
-    def get_nsd_list(self, args) -> dict:
-        return {'NSDs': ['onap_nsd_1', 'onap_nsd_2']}
+    def create_ns(self, args: Dict = None) -> Dict:
+        pass
 
-    def get_nsd(self, nsd_id: str, args) -> dict:
-        return {'NSD': {'id': 'onap_nsd_1'}}
+    def get_ns_list(self, args: Dict = None) -> List[Dict]:
+        pass
+
+    def get_ns(self, nsId: str, args: Dict = None) -> Dict:
+        pass
+
+    def delete_ns(self, nsId: str, args: Dict = None) -> None:
+        pass
+
+    def instantiate_ns(self, nsId: str, args: Dict = None) -> None:
+        pass
+
+    def scale_ns(self, nsId: str, args: Dict = None) -> None:
+        pass
+
+    def terminate_ns(self, nsId: str, args: Dict = None) -> None:
+        pass
