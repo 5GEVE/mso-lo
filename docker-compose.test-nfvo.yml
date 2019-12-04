@@ -3,7 +3,7 @@ services:
   test-nfvo:
     build:
       context: .
-      target: test
+      target: base
     container_name: test-nfvo
     environment:
       TESTING: "True"
