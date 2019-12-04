@@ -1,6 +1,10 @@
 FROM python:3.6 as base
 RUN apt-get update && apt-get install -y python3-dev
 ENV PIPENV_VENV_IN_PROJECT 1
+ARG DB_SEED_NFVO
+ENV DB_SEED_NFVO $DB_SEED_NFVO
+ARG DB_SEED_NFVO_CRED
+ENV DB_SEED_NFVO_CRED $DB_SEED_NFVO_CRED
 RUN ["pip3", "install", "pipenv"]
 WORKDIR /usr/src/app
 EXPOSE 5000
@@ -16,6 +20,9 @@ COPY ./adaptation_layer .
 FROM base as prod
 COPY ./adaptation_layer .
 COPY ./uWSGI/app.ini .
+RUN ["rm", "-f", "data/mso-lo.db"]
 RUN ["pipenv", "install"]
+RUN ["pipenv", "run", "flask", "db", "upgrade"]
+RUN ["pipenv", "run", "python", "manage.py", "seed"]
 CMD pipenv run uwsgi --ini app.ini
 

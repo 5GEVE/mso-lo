@@ -7,7 +7,7 @@
 We use Docker Compose for deployment. From the repository main directory, run:
 
 ```
-docker-compose build
+docker-compose build --build-arg DB_SEED_NFVO="seed/nfvo.json" --build-arg DB_SEED_NFVO_CRED="seed/nfvo_credentials.json"
 docker-compose run
 ```
 

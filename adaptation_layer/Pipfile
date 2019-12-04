@@ -13,6 +13,8 @@ requests = "*"
 pyaml = "*"
 uwsgi = "*"
 flask-script = "*"
+flask-sqlalchemy = "*"
+flask-migrate = "*"
 
 [requires]
 python_version = "3"
