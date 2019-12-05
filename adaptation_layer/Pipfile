@@ -15,6 +15,7 @@ uwsgi = "*"
 flask-script = "*"
 flask-sqlalchemy = "*"
 flask-migrate = "*"
+pytest = "*"
 
 [requires]
 python_version = "3"
