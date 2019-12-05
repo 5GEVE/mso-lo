@@ -7,7 +7,7 @@ from collections import OrderedDict
 class NFVO(db.Model):
     id = db.Column('id', db.Integer, primary_key=True)
     name = db.Column('name', db.String(128), nullable=False)
-    nfvo_type = db.Column('type', db.String(128), nullable=False)
+    type = db.Column('type', db.String(128), nullable=False)
     site = db.Column('site', db.String(128), nullable=False)
     uri = db.Column('uri', db.String(128))
     created_at = db.Column('created_at', db.DateTime,
@@ -21,7 +21,7 @@ class NFVO(db.Model):
         return {
             'id': self.id,
             'name': self.name,
-            'type': self.nfvo_type,
+            'type': self.type,
             'site': self.site,
             'uri': self.uri,
             'created_at': self.created_at,
