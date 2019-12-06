@@ -36,7 +36,7 @@ class NFVO(db.Model):
 
 
 class NFVO_CREDENTIALS(db.Model):
-    nfvo_id = db.Column('id', db.Integer, db.ForeignKey(
+    nfvo_id = db.Column('nfvo_id', db.Integer, db.ForeignKey(
         'NFVO.id'), primary_key=True)
     host = db.Column('host', db.String(128), nullable=False)
     project = db.Column('project', db.String(128), nullable=False)
@@ -47,7 +47,7 @@ class NFVO_CREDENTIALS(db.Model):
     def serialize(self):
         """Return object data in serializeable format"""
         return {
-            'id': self.nfvo_id,
+            'nfvo_id': self.nfvo_id,
             'host': self.host,
             'project': self.project,
             'user': self.user,
