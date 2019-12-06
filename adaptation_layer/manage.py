@@ -1,8 +1,11 @@
-import os
 import json
+import os
+
 from flask_script import Manager
-from app import app, db
+
+from config import app, db
 from models import NFVO, NFVO_CREDENTIALS
+
 manager = Manager(app)
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -10,9 +13,9 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 @manager.command
 def seed():
     SEED_NFVO = os.environ.get('DB_SEED_NFVO') or \
-        os.path.join(basedir, 'seed/nfvo.json')
+                os.path.join(basedir, 'seed/nfvo.json')
     SEED_NFVO_CRED = os.environ.get('DB_SEED_NFVO_CRED') or \
-        os.path.join(basedir, 'seed/nfvo_credentials.json')
+                     os.path.join(basedir, 'seed/nfvo_credentials.json')
 
     with open(SEED_NFVO, 'r') as f:
         nfvo_dict = json.load(f)
