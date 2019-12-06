@@ -70,8 +70,11 @@ To setup the environment use:
 
 ```
 git checkout development
-cd adaptation_layer
+cd adaptation_layer/adaptation_layer
 pipenv install --dev
+# Create database with mock data
+pipenv run flask db upgrade
+pipenv run python manage.py seed
 # Run the flask app
 pipenv run python app.py
 ```
