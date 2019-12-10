@@ -10,7 +10,8 @@ app = config.app
 @app.route('/nfvo', methods=['GET'])
 def get_nfvo_list():
     try:
-        nfvo_list = manager.get_nfvo_list(args={'args': request.args.to_dict()})
+        nfvo_list = manager.get_nfvo_list(
+            args={'args': request.args.to_dict()})
         return jsonify(nfvo_list)
     except Unauthorized as e:
         abort(401, description=e.description)
@@ -84,7 +85,8 @@ def get_ns(nfvo_id, ns_id):
 @app.route('/nfvo/<nfvo_id>/ns_instances/<ns_id>', methods=['DELETE'])
 def delete_ns(nfvo_id, ns_id):
     try:
-        manager.get_driver(nfvo_id).delete_ns(ns_id, args={'args': request.args.to_dict()})
+        manager.get_driver(nfvo_id).delete_ns(
+            ns_id, args={'args': request.args.to_dict()})
         return make_response('', 202)
     except BadRequest as e:
         abort(400, description=e.description)
