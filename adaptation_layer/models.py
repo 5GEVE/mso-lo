@@ -1,7 +1,6 @@
-import sys
-from app import db
 import datetime
-from collections import OrderedDict
+
+from config import db
 
 
 class NFVO(db.Model):

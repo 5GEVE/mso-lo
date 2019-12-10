@@ -1,22 +1,17 @@
-from flask import Flask, jsonify, abort, request, make_response
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-from error_handler import init_errorhandler, NfvoNotFound, NsNotFound, Unauthorized, BadRequest, ServerError
-from config import Config
+from flask import jsonify, abort, request, make_response
 
-app = Flask(__name__)
-app.config.from_object(Config)
-init_errorhandler(app)
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
-
+import config
 import driver.manager as manager
+from error_handler import NfvoNotFound, NsNotFound, Unauthorized, BadRequest, ServerError
+
+app = config.app
 
 
 @app.route('/nfvo', methods=['GET'])
 def get_nfvo_list():
     try:
-        nfvo_list = manager.get_nfvo_list(args={'args': request.args.to_dict()})
+        nfvo_list = manager.get_nfvo_list(
+            args={'args': request.args.to_dict()})
         return jsonify(nfvo_list)
     except Unauthorized as e:
         abort(401, description=e.description)
@@ -90,7 +85,8 @@ def get_ns(nfvo_id, ns_id):
 @app.route('/nfvo/<nfvo_id>/ns_instances/<ns_id>', methods=['DELETE'])
 def delete_ns(nfvo_id, ns_id):
     try:
-        manager.get_driver(nfvo_id).delete_ns(ns_id, args={'args': request.args.to_dict()})
+        manager.get_driver(nfvo_id).delete_ns(
+            ns_id, args={'args': request.args.to_dict()})
         return make_response('', 202)
     except BadRequest as e:
         abort(400, description=e.description)
@@ -160,4 +156,3 @@ def scale_ns(nfvo_id, ns_id):
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
-

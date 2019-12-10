@@ -1,10 +1,8 @@
-from .interface import Driver
-from .osm import OSM
-from .onap import ONAP
-from error_handler import NfvoNotFound, NsNotFound, Unauthorized, BadRequest
+from error_handler import NfvoNotFound
 from models import NFVO, NFVO_CREDENTIALS
-from app import db
-from flask import jsonify
+from .interface import Driver
+from .onap import ONAP
+from .osm import OSM
 
 
 def get_driver(nfvo_id) -> Driver:
