@@ -1,8 +1,7 @@
 #!flask/bin/python
 import sys
-
-from app import app
 import unittest
+from app import app
 
 
 class OSMTestCase(unittest.TestCase):
@@ -49,15 +48,18 @@ class OSMTestCase(unittest.TestCase):
 
     # Check status codes 200, 401, 404, headers and payload for get_ns()
     def test_get_ns_200(self):
-        res = self.client().get('/nfvo/1/ns_instances/ns_id_1?__code=200')
+        res = self.client().get(
+            '/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7?__code=200')
         self.assertEqual(res.status_code, 200)
 
     def test_get_ns_404(self):
-        res = self.client().get('/nfvo/1/ns_instances/ns_id_1_missing?__code=404')
+        res = self.client().get(
+            '/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7?__code=404')
         self.assertEqual(res.status_code, 404)
 
     def test_get_ns_401(self):
-        res = self.client().get('/nfvo/1/ns_instances/ns_id_1?__code=401')
+        res = self.client().get(
+            '/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7?__code=401')
         self.assertEqual(res.status_code, 401)
 
     # Check status codes 201, 401, 404, headers and payload for create_ns()
@@ -75,62 +77,65 @@ class OSMTestCase(unittest.TestCase):
 
     # Check status codes 202, 401, 404, headers and payload for instantiate_ns()
     def test_instantiate_ns_202(self):
-        res = self.client().post('/nfvo/1/ns_instances/ns_id_1/instantiate?__code=202',
+        res = self.client().post('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/instantiate?__code=202',
                                  json=self.mock_ns_instantiate)
         self.assertEqual(res.status_code, 202)
 
     def test_instantiate_ns_400(self):
-        res = self.client().post('/nfvo/1/ns_instances/ns_id_1/instantiate?__code=400',
+        res = self.client().post('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/instantiate?__code=400',
                                  json=self.mock_ns_instantiate)
         self.assertEqual(res.status_code, 400)
 
     def test_instantiate_ns_401(self):
-        res = self.client().post('/nfvo/1/ns_instances/ns_id_1/instantiate?__code=401',
+        res = self.client().post('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/instantiate?__code=401',
                                  json=self.mock_ns_instantiate)
         self.assertEqual(res.status_code, 401)
 
     # Check status codes 202, 401, 404, headers and payload for terminate_ns()
     def test_terminate_ns_202(self):
-        res = self.client().post('/nfvo/1/ns_instances/ns_id_1/terminate?__code=202',
+        res = self.client().post('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/terminate?__code=202',
                                  json=self.mock_ns_terminate)
         self.assertEqual(res.status_code, 202)
 
     def test_terminate_ns_404(self):
-        res = self.client().post('/nfvo/1/ns_instances/ns_id_1/terminate?__code=404',
+        res = self.client().post('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/terminate?__code=404',
                                  json=self.mock_ns_terminate)
         self.assertEqual(res.status_code, 404)
 
     def test_terminate_ns_401(self):
-        res = self.client().post('/nfvo/1/ns_instances/ns_id_1/terminate?__code=401',
+        res = self.client().post('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/terminate?__code=401',
                                  json=self.mock_ns_terminate)
         self.assertEqual(res.status_code, 401)
 
     # Check status codes 202, 401, 404, headers and payload for delete_ns()
     def test_delete_ns_202(self):
-        res = self.client().delete('/nfvo/1/ns_instances/ns_id_1?__code=202')
+        res = self.client().delete(
+            '/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7?__code=202')
         self.assertEqual(res.status_code, 202)
 
     def test_delete_ns_404(self):
-        res = self.client().delete('/nfvo/1/ns_instances/ns_id_1?__code=404')
+        res = self.client().delete(
+            '/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7?__code=404')
         self.assertEqual(res.status_code, 404)
 
     def test_delete_ns_401(self):
-        res = self.client().delete('/nfvo/1/ns_instances/ns_id_1?__code=401')
+        res = self.client().delete(
+            '/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7?__code=401')
         self.assertEqual(res.status_code, 401)
 
     # Check status codes 202, 401, 404, headers and payload for scale_ns()
     def test_scale_ns_202(self):
-        res = self.client().post('/nfvo/1/ns_instances/ns_id_1/scale?__code=202',
+        res = self.client().post('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/scale?__code=202',
                                  json=self.mock_ns_scale)
         self.assertEqual(res.status_code, 202)
 
     def test_scale_ns_404(self):
-        res = self.client().post('/nfvo/1/ns_instances/ns_id_1/scale?__code=404',
+        res = self.client().post('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/scale?__code=404',
                                  json=self.mock_ns_scale)
         self.assertEqual(res.status_code, 404)
 
     def test_scale_ns_401(self):
-        res = self.client().post('/nfvo/1/ns_instances/ns_id_1/scale?__code=401',
+        res = self.client().post('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/scale?__code=401',
                                  json=self.mock_ns_scale)
         self.assertEqual(res.status_code, 401)
 
