@@ -4,7 +4,7 @@ import yaml as YAML
 import os
 from urllib.parse import urlencode
 from error_handler import ResourceNotFound, NsNotFound, VnfNotFound,\
-        Unauthorized, BadRequest, ServerError
+    Unauthorized, BadRequest, ServerError
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
@@ -185,8 +185,8 @@ class Client(object):
             self._base_path, ns_id)
         _url = _build_testing_url(_url, args)
         try:
-            resp = requests.delete(_url, params=None, json=args['payload'],
-                                   verify=False, headers=self._headers)
+            resp = requests.delete(_url, params=None, verify=False, headers={
+                                   "accept": "application/json"})
         except Exception as e:
             raise ServerError(str(e))
         print(resp.status_code)
