@@ -187,11 +187,10 @@ class Client(object):
             self._base_path, ns_id)
         _url = _build_testing_url(_url, args)
         try:
-            resp = requests.delete(_url, params=None, json=args['payload'],
-                                   verify=False, headers=self._headers)
+            resp = requests.delete(_url, params=None, verify=False, headers={
+                                   "accept": "application/json"})
         except Exception as e:
             raise ServerError(str(e))
-        print(resp.status_code)
         if resp.status_code in (200, 201, 202, 204):
             if 'application/json' in resp.headers['content-type']:
                 return resp.json()
