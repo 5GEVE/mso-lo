@@ -2,7 +2,7 @@
 swagger: "2.0"
 info:
   description: 5G-EVE Adaptation Layer API spec.
-  version: "3.1"
+  version: "3.2"
   title: 5G-EVE Adaptation Layer API
   contact: {}
 host: example.com
@@ -44,14 +44,14 @@ paths:
         required: false
         type: string
       responses:
-        200:
+        "200":
           description: search results matching criteria
           headers: {}
           schema:
             type: array
             items:
               $ref: '#/definitions/NFVO'
-        400:
+        "400":
           description: The request is malformed
           schema:
             $ref: '#/definitions/ErrorResponse'
@@ -73,20 +73,20 @@ paths:
         required: true
         type: string
       responses:
-        200:
+        "200":
           description: NFVO found
           headers: {}
           schema:
             $ref: '#/definitions/NFVO'
-        400:
+        "400":
           description: The request is malformed
           schema:
             $ref: '#/definitions/ErrorResponse'
-        401:
+        "401":
           description: Unauthorized, Invalid credentials (client or user)
           schema:
             $ref: '#/definitions/ErrorResponse'
-        404:
+        "404":
           description: The specified resource was not found
           schema:
             $ref: '#/definitions/ErrorResponse'
@@ -113,18 +113,18 @@ paths:
         required: false
         type: string
       responses:
-        200:
+        "200":
           description: search results matching criteria
           headers: {}
           schema:
             type: array
             items:
               $ref: '#/definitions/NsInstance'
-        400:
+        "400":
           description: The request is malformed
           schema:
             $ref: '#/definitions/ErrorResponse'
-        401:
+        "401":
           description: Unauthorized, Invalid credentials (client or user)
           schema:
             $ref: '#/definitions/ErrorResponse'
@@ -150,18 +150,21 @@ paths:
         schema:
           $ref: '#/definitions/NfvoNsInstancesRequest'
       responses:
-        201:
+        "201":
           description: |
             201 Created
             A NS Instance identifier has been created successfully. The response body shall contain a representation of the created NS instance, as defined in clause 6.5.2.8. The HTTP response shall include a "Location" HTTP header that contains the resource URI of the created NS instance.
-          headers: {}
+          headers:
+            Location:
+              type: string
+              description: nsInstanceId of the created NS
           schema:
             $ref: '#/definitions/NsInstance'
-        400:
+        "400":
           description: The request is malformed
           schema:
             $ref: '#/definitions/ErrorResponse'
-        401:
+        "401":
           description: Unauthorized, Invalid credentials (client or user)
           schema:
             $ref: '#/definitions/ErrorResponse'
@@ -188,20 +191,20 @@ paths:
         required: true
         type: string
       responses:
-        200:
+        "200":
           description: NS
           headers: {}
           schema:
             $ref: '#/definitions/NsInstance'
-        400:
+        "400":
           description: The request is malformed
           schema:
             $ref: '#/definitions/ErrorResponse'
-        401:
+        "401":
           description: Unauthorized, Invalid credentials (client or user)
           schema:
             $ref: '#/definitions/ErrorResponse'
-        404:
+        "404":
           description: The specified resource was not found
           schema:
             $ref: '#/definitions/ErrorResponse'
@@ -227,19 +230,19 @@ paths:
         required: true
         type: string
       responses:
-        204:
+        "204":
           description: |
             204 No Content The NS instance resource and the associated NS identifier were deleted successfully. The response body shall be empty.
           headers: {}
-        400:
+        "400":
           description: The request is malformed
           schema:
             $ref: '#/definitions/ErrorResponse'
-        401:
+        "401":
           description: Unauthorized, Invalid credentials (client or user)
           schema:
             $ref: '#/definitions/ErrorResponse'
-        404:
+        "404":
           description: The specified resource was not found
           schema:
             $ref: '#/definitions/ErrorResponse'
@@ -270,19 +273,22 @@ paths:
         required: true
         type: string
       responses:
-        202:
+        "202":
           description: |
             202 ACCEPTED
-          headers: {}
-        400:
+          headers:
+            Location:
+              type: string
+              description: nsLcmOpOccId of the instantiated NS
+        "400":
           description: The request is malformed
           schema:
             $ref: '#/definitions/ErrorResponse'
-        401:
+        "401":
           description: Unauthorized, Invalid credentials (client or user)
           schema:
             $ref: '#/definitions/ErrorResponse'
-        404:
+        "404":
           description: The specified resource was not found
           schema:
             $ref: '#/definitions/ErrorResponse'
@@ -319,19 +325,19 @@ paths:
         schema:
           $ref: '#/definitions/NfvoNsInstancesScaleRequest'
       responses:
-        202:
+        "202":
           description: |
             202 ACCEPTED
           headers: {}
-        400:
+        "400":
           description: The request is malformed
           schema:
             $ref: '#/definitions/ErrorResponse'
-        401:
+        "401":
           description: Unauthorized, Invalid credentials (client or user)
           schema:
             $ref: '#/definitions/ErrorResponse'
-        404:
+        "404":
           description: The specified resource was not found
           schema:
             $ref: '#/definitions/ErrorResponse'
@@ -364,20 +370,106 @@ paths:
         schema:
           $ref: '#/definitions/TerminateNsRequest'
       responses:
-        202:
+        "202":
           description: |
             202 ACCEPTED
           headers: {}
-        400:
+        "400":
           description: The request is malformed
           schema:
             $ref: '#/definitions/ErrorResponse'
-        401:
+        "401":
           description: Unauthorized, Invalid credentials (client or user)
           schema:
             $ref: '#/definitions/ErrorResponse'
-        404:
+        "404":
           description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+  /nfvo/{nfvoId}/ns_lcm_op_occs:
+    get:
+      tags:
+      - NS LCM Operations
+      summary: Retrieve list of NS LCM operations.
+      description: |
+        List of Operations occurrences in a NFVO. It may be useful filtering by a concrete NS with '?nsInstanceId=<nsInstanceId>'
+      operationId: Nfvo.NS_LCM_OP.list
+      produces:
+      - application/json
+      parameters:
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        type: string
+      - name: nsInstanceId
+        in: query
+        description: Identifier of nsInstanceId
+        required: false
+        type: string
+      - name: Pagination parameters
+        in: query
+        description: The parameters are used to create pagination
+        required: false
+        type: string
+      responses:
+        "200":
+          description: search results matching criteria
+          headers: {}
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/NsInstance'
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+  /nfvo/{nfvoId}/ns_lcm_op_occs/{nsLcmOpOccId}:
+    get:
+      tags:
+      - NS LCM Operations
+      summary: Show details of an Operation.
+      description: |
+        Show details of an Operation
+      operationId: Nfvo.NS_LCM_OP.fetch
+      produces:
+      - application/json
+      parameters:
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        type: string
+      - name: nsLcmOpOccId
+        in: path
+        description: Identifier of a NS lifecycle management operation occurrence
+        required: true
+        type: string
+      - name: Pagination parameters
+        in: query
+        description: The parameters are used to create pagination
+        required: false
+        type: string
+      responses:
+        "200":
+          description: search results matching criteria
+          headers: {}
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/NsInstance'
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
           schema:
             $ref: '#/definitions/ErrorResponse'
       deprecated: false
@@ -404,7 +496,7 @@ paths:
         required: false
         type: string
       responses:
-        200:
+        "200":
           description: |
             200 OK
             The list of subscriptions has been queried successfully. The response body shall contain the representations of all active  subscriptions of the functional block that invokes the method. If the NFVO supports alternative 2 (paging) according to  clause 5.4.2.1 of ETSI GS NFV SOL 013 for this resource, inclusion of the Link HTTP header in this response shall follow the provisions in clause 5.4.2.3 of ETSI GS NFV SOL 013.
@@ -413,15 +505,15 @@ paths:
             type: array
             items:
               $ref: '#/definitions/NSInstanceSubscription'
-        400:
+        "400":
           description: The request is malformed
           schema:
             $ref: '#/definitions/ErrorResponse'
-        401:
+        "401":
           description: Unauthorized, Invalid credentials (client or user)
           schema:
             $ref: '#/definitions/ErrorResponse'
-        404:
+        "404":
           description: The specified resource was not found
           schema:
             $ref: '#/definitions/ErrorResponse'
@@ -448,20 +540,20 @@ paths:
         schema:
           $ref: '#/definitions/NfvoSubscriptionsRequest'
       responses:
-        201:
+        "201":
           description: 201 Created. The subscription has been created successfully.
           headers: {}
           schema:
             $ref: '#/definitions/NSInstanceSubscription'
-        400:
+        "400":
           description: The request is malformed
           schema:
             $ref: '#/definitions/ErrorResponse'
-        401:
+        "401":
           description: Unauthorized, Invalid credentials (client or user)
           schema:
             $ref: '#/definitions/ErrorResponse'
-        404:
+        "404":
           description: The specified resource was not found
           schema:
             $ref: '#/definitions/ErrorResponse'
@@ -488,21 +580,21 @@ paths:
         required: true
         type: string
       responses:
-        200:
+        "200":
           description: |
             200 OK. The operation has completed successfully. The response body shall contain a representation of the subscription resource.
           headers: {}
           schema:
             $ref: '#/definitions/NSInstanceSubscription'
-        400:
+        "400":
           description: The request is malformed
           schema:
             $ref: '#/definitions/ErrorResponse'
-        401:
+        "401":
           description: Unauthorized, Invalid credentials (client or user)
           schema:
             $ref: '#/definitions/ErrorResponse'
-        404:
+        "404":
           description: The specified resource was not found
           schema:
             $ref: '#/definitions/ErrorResponse'
@@ -528,19 +620,19 @@ paths:
         required: true
         type: string
       responses:
-        204:
+        "204":
           description: |
             204 NO CONTENT. The subscription resource has been deleted successfully. The response body shall be empty.
           headers: {}
-        400:
+        "400":
           description: The request is malformed
           schema:
             $ref: '#/definitions/ErrorResponse'
-        401:
+        "401":
           description: Unauthorized, Invalid credentials (client or user)
           schema:
             $ref: '#/definitions/ErrorResponse'
-        404:
+        "404":
           description: The specified resource was not found
           schema:
             $ref: '#/definitions/ErrorResponse'
@@ -558,20 +650,20 @@ paths:
       - application/json
       parameters: []
       responses:
-        204:
+        "204":
           description: |
             204 No Content
             Shall be returned when the notification endpoint has been tested successfully. The response body shall be empty.
           headers: {}
-        400:
+        "400":
           description: The request is malformed
           schema:
             $ref: '#/definitions/ErrorResponse'
-        401:
+        "401":
           description: Unauthorized, Invalid credentials (client or user)
           schema:
             $ref: '#/definitions/ErrorResponse'
-        404:
+        "404":
           description: The specified resource was not found
           schema:
             $ref: '#/definitions/ErrorResponse'
@@ -593,20 +685,20 @@ paths:
         schema:
           $ref: '#/definitions/body'
       responses:
-        204:
+        "204":
           description: |
             204 No Content
             Shall be returned when the notification has been delivered successfully.
           headers: {}
-        400:
+        "400":
           description: The request is malformed
           schema:
             $ref: '#/definitions/ErrorResponse'
-        401:
+        "401":
           description: Unauthorized, Invalid credentials (client or user)
           schema:
             $ref: '#/definitions/ErrorResponse'
-        404:
+        "404":
           description: The specified resource was not found
           schema:
             $ref: '#/definitions/ErrorResponse'
@@ -624,20 +716,20 @@ paths:
       - application/json
       parameters: []
       responses:
-        204:
+        "204":
           description: |
             204 No Content
             Shall be returned when the notification endpoint has been tested successfully. The response body shall be empty.
           headers: {}
-        400:
+        "400":
           description: The request is malformed
           schema:
             $ref: '#/definitions/ErrorResponse'
-        401:
+        "401":
           description: Unauthorized, Invalid credentials (client or user)
           schema:
             $ref: '#/definitions/ErrorResponse'
-        404:
+        "404":
           description: The specified resource was not found
           schema:
             $ref: '#/definitions/ErrorResponse'
@@ -659,19 +751,19 @@ paths:
         schema:
           $ref: '#/definitions/body_1'
       responses:
-        204:
+        "204":
           description: |
             204 No Content Shall be returned when the notification has been delivered successfully.
           headers: {}
-        400:
+        "400":
           description: The request is malformed
           schema:
             $ref: '#/definitions/ErrorResponse'
-        401:
+        "401":
           description: Unauthorized, Invalid credentials (client or user)
           schema:
             $ref: '#/definitions/ErrorResponse'
-        404:
+        "404":
           description: The specified resource was not found
           schema:
             $ref: '#/definitions/ErrorResponse'
