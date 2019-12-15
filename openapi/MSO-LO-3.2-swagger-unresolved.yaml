@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  version: '3.1'
+  version: "3.2"
   title: 5G-EVE Adaptation Layer API
   description: 5G-EVE Adaptation Layer API spec.
   contact: {}
@@ -148,7 +148,10 @@ paths:
             A NS Instance identifier has been created successfully. The response body shall contain a representation of the created NS instance, as defined in clause 6.5.2.8. The HTTP response shall include a "Location" HTTP header that contains the resource URI of the created NS instance.
           schema:
             $ref: '#/definitions/NsInstance'
-          headers: {}
+          headers:
+            Location:
+              description: nsInstanceId of the created NS
+              type: string
         400:
           description: The request is malformed
           schema:
@@ -269,7 +272,10 @@ paths:
         202:
           description: >
             202 ACCEPTED
-          headers: {}
+          headers:
+            Location:
+              description: nsLcmOpOccId of the instantiated NS
+              type: string
         400:
           description: The request is malformed
           schema:
@@ -380,6 +386,94 @@ paths:
           description: The specified resource was not found
           schema:
             $ref: '#/definitions/ErrorResponse'
+
+  /nfvo/{nfvoId}/ns_lcm_op_occs:
+    get:
+      description: > 
+        List of Operations occurrences in a NFVO. It may be useful filtering by a concrete NS with '?nsInstanceId=<nsInstanceId>'
+      summary: Retrieve list of NS LCM operations.
+      tags: 
+      - NS LCM Operations
+      operationId: Nfvo.NS_LCM_OP.list
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: nfvoId
+        in: path
+        required: true
+        type: string
+        description: Identifier of a Nfvo
+      - name: nsInstanceId
+        in: query
+        type: string
+        description: Identifier of nsInstanceId
+      - name: Pagination parameters
+        in: query
+        required: false
+        type: string
+        description: The parameters are used to create pagination
+      responses:
+        200:
+          description: search results matching criteria
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/NsInstance'
+          headers: {}
+        400:
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  
+  /nfvo/{nfvoId}/ns_lcm_op_occs/{nsLcmOpOccId}:
+    get:
+      description: > 
+        Show details of an Operation
+      summary: Show details of an Operation.
+      tags: 
+      - NS LCM Operations
+      operationId: Nfvo.NS_LCM_OP.fetch
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: nfvoId
+        in: path
+        required: true
+        type: string
+        description: Identifier of a Nfvo
+      - name: nsLcmOpOccId
+        in: path
+        required: true
+        type: string
+        description: Identifier of a NS lifecycle management operation occurrence
+      - name: Pagination parameters
+        in: query
+        required: false
+        type: string
+        description: The parameters are used to create pagination
+      responses:
+        200:
+          description: search results matching criteria
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/NsInstance'
+          headers: {}
+        400:
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        401:
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  
   /nfvo/{nfvoId}/subscriptions:
     get:
       description: >
