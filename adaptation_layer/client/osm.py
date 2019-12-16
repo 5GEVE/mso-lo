@@ -4,7 +4,7 @@ import yaml as YAML
 import os
 from urllib.parse import urlencode
 from error_handler import ResourceNotFound, NsNotFound, VnfNotFound,\
-    Unauthorized, BadRequest, ServerError
+    Unauthorized, BadRequest, ServerError, NsOpNotFound
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
@@ -133,22 +133,24 @@ class Client(object):
         except ResourceNotFound:
             raise NsNotFound(ns_id=id)
 
-    def ns_op_list(self, id, args=None):
-        _url = "{0}/nslcm/v1/ns_lcm_op_occs/?nsInstanceId={1}".format(
-            self._base_path, id)
+    def ns_op_list(self, ns_id, args=None):
+        _url = "{0}/nslcm/v1/ns_lcm_op_occs".format(self._base_path)
+        if ns_id:
+            _url = "{0}/?nsInstanceId={1}".format(_url, ns_id)
         _url = _build_testing_url(_url, args)
         try:
             return self._exec_get(_url, headers=self._headers)
         except ResourceNotFound:
-            raise NsNotFound(ns_id=id)
+            raise NsNotFound(ns_id=ns_id)
 
-    def ns_op(self, id, args=None):
-        _url = "{0}/nslcm/v1/ns_lcm_op_occs/{1}".format(self._base_path, id)
+    def ns_op(self, ns_op_id, args=None):
+        _url = "{0}/nslcm/v1/ns_lcm_op_occs/{1}".format(
+            self._base_path, ns_op_id)
         _url = _build_testing_url(_url, args)
         try:
             return self._exec_get(_url, headers=self._headers)
         except ResourceNotFound:
-            raise NsNotFound(ns_id=id)
+            raise NsOpNotFound(ns_op_id=ns_op_id)
 
     def ns_action(self, ns_id, args=None):
         _url = "{0}/nslcm/v1/ns_instances/{1}/action".format(
@@ -189,7 +191,6 @@ class Client(object):
                                    "accept": "application/json"})
         except Exception as e:
             raise ServerError(str(e))
-        print(resp.status_code)
         if resp.status_code in (200, 201, 202, 204):
             if 'application/json' in resp.headers['content-type']:
                 return resp.json()

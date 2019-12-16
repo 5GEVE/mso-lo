@@ -139,6 +139,28 @@ class OSMTestCase(unittest.TestCase):
                                  json=self.mock_ns_scale)
         self.assertEqual(res.status_code, 401)
 
+    # Check status codes 200, 401, 404, headers and payload for get_ns_lcm_op_occs_()
+    def test_get_ns_lcm_op_occs_200(self):
+        res = self.client().get('/nfvo/1/ns_lcm_op_occs/49ccb6a2-5bcd-4f35-a2cf-7728c54c48b7?__code=200')
+        self.assertEqual(res.status_code, 200)
+
+    def test_get_ns_lcm_op_occs_404(self):
+        res = self.client().get('/nfvo/1/ns_lcm_op_occs/49ccb6a2-5bcd-4f35-a2cf-7728c54c48b7?__code=404')
+        self.assertEqual(res.status_code, 404)
+
+    def test_get_ns_lcm_op_occs_401(self):
+        res = self.client().get('/nfvo/1/ns_lcm_op_occs/49ccb6a2-5bcd-4f35-a2cf-7728c54c48b7?__code=401')
+        self.assertEqual(res.status_code, 401)
+
+    # Check status codes 200, 401, headers and payload for get_ns_lcm_op_occs_list()
+    def test_get_ns_lcm_op_occs_list_200(self):
+        res = self.client().get('/nfvo/1/ns_lcm_op_occs?__code=200')
+        self.assertEqual(res.status_code, 200)
+
+    def test_get_ns_lcm_op_occs_list_401(self):
+        res = self.client().get('/nfvo/1/ns_lcm_op_occs?__code=401')
+        self.assertEqual(res.status_code, 401)
+
 
 if __name__ == '__main__':
     unittest.main()

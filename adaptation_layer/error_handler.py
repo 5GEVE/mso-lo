@@ -34,6 +34,11 @@ class ResourceNotFound(Error):
         self.description = 'Resource not found.'
 
 
+class NsOpNotFound(Error):
+    def __init__(self, ns_op_id=None):
+        self.description = 'NS LCM operatione {0} not found.'.format(ns_op_id)
+
+
 class NsNotFound(Error):
     def __init__(self, ns_id=None):
         self.description = 'NS instance {0} not found.'.format(ns_id)
