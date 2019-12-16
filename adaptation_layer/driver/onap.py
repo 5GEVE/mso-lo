@@ -17,12 +17,20 @@ class ONAP(object):
 
     def create_ns(self, args: Dict = None) -> Dict:
         ns_name = self._client.check_ns_name(args['payload']['nsdId'])  # to change nsdId to name of NS
-        response = self._agent.ns_create(ns_name['name'])  # instantiate NS with given name
-        # return self.instantiate_converter(response)  # response without one parameters value
-        # second option of response format
-        ns_Id = response["service_id"]  # information from ns_instantiation_server
-        ns = self._client.ns_get(ns_Id, args=args)
-        return self._ns_converter(ns)
+        return self._agent.ns_create(ns_name['name'], args=args)
+
+        # variable
+        # nsdId = args['payload']['nsdId']
+        # nsName = args['payload']['nsName']
+        # nsDescription = args['payload']['nsDescription']
+
+        # response = self._agent.ns_create(ns_name['name'])  # instantiate NS with given name
+
+        # # return self.instantiate_converter(response)  # response without one parameters value
+        # # second option of response format
+        # ns_Id = response["service_id"]  # information from ns_instantiation_server
+        # ns = self._client.ns_get(ns_Id, args=args)
+        # return self._ns_converter(ns)
 
     def get_ns_list(self, args=None) -> List[Dict]:
         ns = self._client.ns_list()
@@ -37,9 +45,8 @@ class ONAP(object):
         return self._agent.ns_delete(service_type, nsId, args=args)
 
     def instantiate_ns(self, nsId: str, args: Dict = None) -> None:
-        # response = self._agent.ns_instantiate(nsId, args=args)
-        # return self.instantiate_converter(response)
         return self._agent.ns_instantiate(nsId, args=args)
+
     #
     # def scale_ns(self, nsId: str, args: Dict = None) -> None:
     #     pass

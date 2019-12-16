@@ -69,8 +69,13 @@ class AgentClient(object):  # ns_instantiation_server
             raise ServerError(error)
 
     def ns_create(self, ns_name, args=None):
-        _url = '{0}/instantiate/{1}'.format(self._base_path, ns_name)
-        return self._exec_post(_url, headers=self._headers)
+        args['payload']['serviceType'] = ns_name
+        _url = '{0}/create'.format(self._base_path)
+        # TODO sprawdzic format danych przesylanych do NS-server
+        return self._exec_post(_url, headers=self._headers, json=args)
+
+        # _url = '{0}/instantiate/{1}'.format(self._base_path, ns_name)
+        # return self._exec_post(_url, headers=self._headers)
 
     def ns_instantiate(self, id, ns_name, args=None):
         # _url = '{0}/instantiate/{1}'.format(self._base_path, ns_name)
@@ -90,6 +95,7 @@ class AgentClient(object):  # ns_instantiation_server
             return
         except ResourceNotFound:
             raise NsNotFound(ns_id)
+
 
 class Client(object):
     def __init__(self):
