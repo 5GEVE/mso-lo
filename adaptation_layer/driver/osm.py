@@ -93,7 +93,7 @@ class OSM(Driver):
                                 "ipAddresses": [
                                     {
                                         "type": "IPV4",
-                                        "addresses": [ip_address]
+                                        "fixedAddresses": [ip_address]
                                     }
                                 ]
                             }
