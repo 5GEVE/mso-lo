@@ -1,6 +1,7 @@
-from .interface import Driver
+from typing import Dict, List
+
 from client.osm import Client as Osmclient
-from typing import Union, Dict, List
+from .interface import Driver
 
 
 class OSM(Driver):
@@ -17,7 +18,7 @@ class OSM(Driver):
 
     def get_ns_list(self, args=None) -> List[Dict]:
         ns_list = self._client.ns_list(args=args)
-        return self._ns_im_converter(ns_list)
+        return self._ns_list_converter(ns_list)
 
     def create_ns(self, args=None) -> Dict:
         return self._client.ns_create(args=args)
@@ -47,24 +48,18 @@ class OSM(Driver):
     def get_op(self, nsLcmOpId, args: Dict = None) -> Dict:
         return self._client.ns_op(nsLcmOpId, args=args)
 
-    def _ns_im_converter(self, ns: Union[list, dict]) -> Union[list, dict]:
-        if type(ns) is dict:
-            result = {
-                "id": ns['id'],
-                "nsInstanceName": ns['name'],
-                "nsInstanceDescription": ns['description'],
-                "nsdId": ns['nsd-id'],
-                "nsState": ns['_admin']['nsState']
-            }
-        elif type(ns) is list:
-            result = []
-            for ins in ns:
-                result.append({
-                    "id": ins['id'],
-                    "nsInstanceName": ins['name'],
-                    "nsInstanceDescription": ins['description'],
-                    "nsdId": ins['nsd-id'],
-                    "nsState": ins['_admin']['nsState']
-                })
+    def _ns_im_converter(self, ns: Dict) -> Dict:
+        result = {
+            "id": ns['id'],
+            "nsInstanceName": ns['name'],
+            "nsInstanceDescription": ns['description'],
+            "nsdId": ns['nsd-id'],
+            "nsState": ns['_admin']['nsState']
+        }
+        return result
 
+    def _ns_list_converter(self, ns_list: List[Dict]):
+        result = []
+        for ins in ns_list:
+            result.append(self._ns_im_converter(ins))
         return result
