@@ -42,7 +42,7 @@ class ONAP(object):
 
     def delete_ns(self, nsId: str, args: Dict = None) -> None:
         service_type = self._client.check_instance_ns_name(nsId)  # check service type
-        return self._agent.ns_delete(service_type, nsId, args=args)
+        return self._agent.ns_delete(nsId, args=args)
 
     def instantiate_ns(self, nsId: str, args: Dict = None) -> None:
         return self._agent.ns_instantiate(nsId, args=args)

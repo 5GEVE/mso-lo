@@ -8,7 +8,8 @@ from error_handler import ResourceNotFound, NsNotFound, VnfNotFound,\
 
 class AgentClient(object):  # ns_instantiation_server
     def __init__(self):
-        self._host = '10.254.184.215'  # change IP , for tests only
+        # self._host = '10.254.184.215'  # change IP , for tests only
+        self._host = '127.0.0.1'  # change IP , for tests only
         self._port = '8080'
         self._headers = {"Content-Type": "application/json",
                          "accept": "application/json"}
@@ -71,23 +72,22 @@ class AgentClient(object):  # ns_instantiation_server
     def ns_create(self, ns_name, args=None):
         args['payload']['serviceType'] = ns_name
         _url = '{0}/create'.format(self._base_path)
-        # TODO sprawdzic format danych przesylanych do NS-server
-        return self._exec_post(_url, headers=self._headers, json=args)
+        return self._exec_post(_url, headers=self._headers, json=args['payload'])
 
         # _url = '{0}/instantiate/{1}'.format(self._base_path, ns_name)
         # return self._exec_post(_url, headers=self._headers)
 
-    def ns_instantiate(self, id, ns_name, args=None):
-        # _url = '{0}/instantiate/{1}'.format(self._base_path, ns_name)
-        # add try except block to check if the service spec / service instance exists
+    def ns_instantiate(self, ns_id, args=None):
+        _url = '{0}/instantiate/{1}'.format(self._base_path, ns_id)
+        # add try except block to check if the service instance exists
         # return self._exec_post(_url, json=args, headers=self._headers)  # for dev change to json=args['payload']
         try:
-            return
-        except ResourceNotFound:
+            return self._exec_post(_url, headers=self._headers, json=args['payload'])
+        except ResourceNotFound:  # check it
             raise NsNotFound(ns_id=id)
 
-    def ns_delete(self, service_type, ns_id, args=None):
-        _url = '{0}/service/{1}/{2}'.format(self._base_path, service_type, ns_id)
+    def ns_delete(self, ns_id, args=None):
+        _url = '{0}/delete/{1}'.format(self._base_path, ns_id)
         return self._exec_delete(_url)
 
     def ns_terminate(self, ns_id, args=None):
@@ -95,6 +95,8 @@ class AgentClient(object):  # ns_instantiation_server
             return
         except ResourceNotFound:
             raise NsNotFound(ns_id)
+
+#  add functions to GET all info about service instance
 
 
 class Client(object):
