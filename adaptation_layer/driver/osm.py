@@ -48,15 +48,60 @@ class OSM(Driver):
     def get_op(self, nsLcmOpId, args: Dict = None) -> Dict:
         return self._client.ns_op(nsLcmOpId, args=args)
 
-    def _ns_im_converter(self, ns: Dict) -> Dict:
-        result = {
-            "id": ns['id'],
-            "nsInstanceName": ns['name'],
-            "nsInstanceDescription": ns['description'],
-            "nsdId": ns['nsd-id'],
-            "nsState": ns['_admin']['nsState']
+    def _ns_im_converter(self, osm_ns: Dict, osm_vnfs: List[Dict]) -> Dict:
+        sol_ns = {
+            "id": osm_ns['id'],
+            "nsInstanceName": osm_ns['name'],
+            "nsInstanceDescription": osm_ns['description'],
+            "nsdId": osm_ns['nsd-id'],
+            "nsState": osm_ns['_admin']['nsState'],
+            "vnfInstance": []
         }
-        return result
+        for ov in osm_vnfs:
+            vnf_instance = {
+                "id": ov["id"],
+                "vnfdId": ov["vnfd-id"],
+                "vnfProductName": ov["vnfd-ref"],
+                "vimId": ov["vim-account-id"],
+                "instantiationState": "INSTANTIATED",  # no way to get this info in OSM
+                "instantiatedVnfInfo": {
+                    "extCpInfo": []
+                }
+            }
+            for cp in ov["connection-point"]:
+                vld_id = ""
+                for v in osm_ns["nsd"]["vld"]:
+                    for cpr in v["vnfd-connection-point-ref"]:
+                        if cpr["vnfd-connection-point-ref"] == cp["name"] and cpr["vnfd-id-ref"] == ov["vnfd-ref"]:
+                            vld_id = v["id"]
+                            break
+                ip_address = ""
+                mac_address = ""
+                for vdur in ov["vdur"]:
+                    for iface in vdur["interface"]:
+                        if iface["ns-vld-id"] == vld_id:
+                            ip_address = iface["ip-address"]
+                            mac_address = iface["mac-address"]
+                            break
+                vnf_instance["instantiatedVnfInfo"]["extCpInfo"].append({
+                    "id": cp["name"],
+                    "cpProtocolInfo": [
+                        {
+                            "layerProtocol": "IP_OVER_ETHERNET",
+                            "ipOverEthernet": {
+                                "macAddress": mac_address,
+                                "ipAddresses": [
+                                    {
+                                        "type": "IPV4",
+                                        "addresses": [ip_address]
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                })
+            sol_ns["vnfInstance"].append(vnf_instance)
+        return sol_ns
 
     def _ns_list_converter(self, ns_list: List[Dict]):
         result = []
