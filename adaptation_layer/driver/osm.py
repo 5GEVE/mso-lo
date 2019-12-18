@@ -84,7 +84,7 @@ class OSM(Driver):
                 "vnfdId": osm_vnf["vnfd-id"],
                 "vnfProductName": osm_vnf["vnfd-ref"],
                 "vimId": osm_vnf["vim-account-id"],
-                "instantiationState": "INSTANTIATED",  # no way to get this info in OSM
+                "instantiationState": osm_ns['_admin']['nsState'],  # same as the NS
                 "instantiatedVnfInfo": {
                     "extCpInfo": []
                 }
