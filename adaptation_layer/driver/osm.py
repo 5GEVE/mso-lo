@@ -87,7 +87,7 @@ class OSM(Driver):
                 "instantiationState": osm_ns['_admin']['nsState'],  # same as the NS
             }
             if vnf_instance["instantiationState"] is "INSTANTIATED":
-                vnf_instance["instantiatedVnfInfo"]["extCpInfo"] = []
+                vnf_instance["instantiatedVnfInfo"] = {"extCpInfo": []}
                 for cp in osm_vnf["connection-point"]:
                     ip_address, mac_address = self._get_cp_address(cp, osm_vnf, osm_ns)
                     vnf_instance["instantiatedVnfInfo"]["extCpInfo"].append({
