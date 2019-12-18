@@ -71,8 +71,8 @@ class OSM(Driver):
             }
             for cp in ov["connection-point"]:
                 [vld_id] = [v["id"] for v in osm_ns["nsd"]["vld"] for cpr in v["vnfd-connection-point-ref"]
-                           if cpr["vnfd-connection-point-ref"] == cp["name"]
-                           and cpr["member-vnf-index-ref"] == ov["member-vnf-index-ref"]]
+                            if cpr["vnfd-connection-point-ref"] == cp["name"]
+                            and cpr["member-vnf-index-ref"] == ov["member-vnf-index-ref"]]
                 try:
                     [(ip_address, mac_address)] = [(iface["ip-address"], iface["mac-address"]) for vdur in ov["vdur"]
                                                    for iface in vdur["interfaces"]
