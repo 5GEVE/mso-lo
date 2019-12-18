@@ -25,8 +25,7 @@ class OSM(Driver):
 
     def get_ns(self, nsId: str, args=None) -> Dict:
         ns = self._client.ns_get(nsId, args=args)
-        vnfs = [self._client.vnf_get(vnf_id) for vnf_id in ns["constituent-vnfr-ref"]]
-        return self._ns_im_converter(ns, vnfs)
+        return self._ns_im_converter(ns)
 
     def delete_ns(self, nsId: str, args: Dict = None) -> None:
         return self._client.ns_delete(nsId, args=args)
@@ -69,7 +68,7 @@ class OSM(Driver):
             (ip_addr, mac_addr) = (None, None)
         return ip_addr, mac_addr
 
-    def _ns_im_converter(self, osm_ns: Dict, osm_vnfs: List[Dict]) -> Dict:
+    def _ns_im_converter(self, osm_ns: Dict) -> Dict:
         sol_ns = {
             "id": osm_ns['id'],
             "nsInstanceName": osm_ns['name'],
@@ -78,6 +77,7 @@ class OSM(Driver):
             "nsState": osm_ns['_admin']['nsState'],
             "vnfInstance": []
         }
+        osm_vnfs = [self._client.vnf_get(vnf_id) for vnf_id in osm_ns["constituent-vnfr-ref"]]
         for osm_vnf in osm_vnfs:
             vnf_instance = {
                 "id": osm_vnf["id"],
@@ -88,6 +88,7 @@ class OSM(Driver):
             }
             if vnf_instance["instantiationState"] is "INSTANTIATED":
                 vnf_instance["instantiatedVnfInfo"] = {"extCpInfo": []}
+                # TODO add method vnfpkg_get to OsmClient
                 for cp in osm_vnf["connection-point"]:
                     ip_address, mac_address = self._get_cp_address(cp, osm_vnf, osm_ns)
                     vnf_instance["instantiatedVnfInfo"]["extCpInfo"].append({
@@ -113,6 +114,5 @@ class OSM(Driver):
     def _ns_list_converter(self, ns_list: List[Dict]):
         sol_ns_list = []
         for ns in ns_list:
-            vnfs = [self._client.vnf_get(vnf_id) for vnf_id in ns["constituent-vnfr-ref"]]
-            sol_ns_list.append(self._ns_im_converter(ns, vnfs))
+            sol_ns_list.append(self._ns_im_converter(ns))
         return sol_ns_list
