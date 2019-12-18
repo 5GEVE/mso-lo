@@ -78,20 +78,19 @@ class OSM(Driver):
             "nsState": osm_ns['_admin']['nsState'],
             "vnfInstance": []
         }
-        for ov in osm_vnfs:
+        for osm_vnf in osm_vnfs:
             vnf_instance = {
-                "id": ov["id"],
-                "vnfdId": ov["vnfd-id"],
-                "vnfProductName": ov["vnfd-ref"],
-                "vimId": ov["vim-account-id"],
+                "id": osm_vnf["id"],
+                "vnfdId": osm_vnf["vnfd-id"],
+                "vnfProductName": osm_vnf["vnfd-ref"],
+                "vimId": osm_vnf["vim-account-id"],
                 "instantiationState": "INSTANTIATED",  # no way to get this info in OSM
                 "instantiatedVnfInfo": {
                     "extCpInfo": []
                 }
             }
-
-            for cp in ov["connection-point"]:
-                ip_address, mac_address = self._get_cp_address(cp, ov, osm_ns)
+            for cp in osm_vnf["connection-point"]:
+                ip_address, mac_address = self._get_cp_address(cp, osm_vnf, osm_ns)
                 vnf_instance["instantiatedVnfInfo"]["extCpInfo"].append({
                     "id": cp["name"],
                     "cpProtocolInfo": [
@@ -113,8 +112,8 @@ class OSM(Driver):
         return sol_ns
 
     def _ns_list_converter(self, ns_list: List[Dict]):
-        result = []
+        sol_ns_list = []
         for ns in ns_list:
             vnfs = [self._client.vnf_get(vnf_id) for vnf_id in ns["constituent-vnfr-ref"]]
-            result.append(self._ns_im_converter(ns, vnfs))
-        return result
+            sol_ns_list.append(self._ns_im_converter(ns, vnfs))
+        return sol_ns_list
