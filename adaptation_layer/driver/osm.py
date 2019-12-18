@@ -85,29 +85,28 @@ class OSM(Driver):
                 "vnfProductName": osm_vnf["vnfd-ref"],
                 "vimId": osm_vnf["vim-account-id"],
                 "instantiationState": osm_ns['_admin']['nsState'],  # same as the NS
-                "instantiatedVnfInfo": {
-                    "extCpInfo": []
-                }
             }
-            for cp in osm_vnf["connection-point"]:
-                ip_address, mac_address = self._get_cp_address(cp, osm_vnf, osm_ns)
-                vnf_instance["instantiatedVnfInfo"]["extCpInfo"].append({
-                    "id": cp["name"],
-                    "cpProtocolInfo": [
-                        {
-                            "layerProtocol": "IP_OVER_ETHERNET",
-                            "ipOverEthernet": {
-                                "macAddress": mac_address,
-                                "ipAddresses": [
-                                    {
-                                        "type": "IPV4",
-                                        "addresses": [ip_address]
-                                    }
-                                ]
+            if vnf_instance["instantiationState"] is "INSTANTIATED":
+                vnf_instance["instantiatedVnfInfo"]["extCpInfo"] = []
+                for cp in osm_vnf["connection-point"]:
+                    ip_address, mac_address = self._get_cp_address(cp, osm_vnf, osm_ns)
+                    vnf_instance["instantiatedVnfInfo"]["extCpInfo"].append({
+                        "id": cp["name"],
+                        "cpProtocolInfo": [
+                            {
+                                "layerProtocol": "IP_OVER_ETHERNET",
+                                "ipOverEthernet": {
+                                    "macAddress": mac_address,
+                                    "ipAddresses": [
+                                        {
+                                            "type": "IPV4",
+                                            "addresses": [ip_address]
+                                        }
+                                    ]
+                                }
                             }
-                        }
-                    ]
-                })
+                        ]
+                    })
             sol_ns["vnfInstance"].append(vnf_instance)
         return sol_ns
 
