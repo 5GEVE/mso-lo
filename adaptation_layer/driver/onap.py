@@ -19,6 +19,7 @@ class ONAP(object):
         ns_name = self._client.check_ns_name(args['payload']['nsdId'])  # to change nsdId to name of NS
         return self._agent.ns_create(ns_name['name'], args=args)
 
+        # OLD VERSION
         # variable
         # nsdId = args['payload']['nsdId']
         # nsName = args['payload']['nsName']
@@ -33,12 +34,15 @@ class ONAP(object):
         # return self._ns_converter(ns)
 
     def get_ns_list(self, args=None) -> List[Dict]:
-        ns = self._client.ns_list()
-        return self._ns_converter(ns)
+        ns = self._agent.ns_list()
+        return ns
+        # ns = self._client.ns_list()
+        # return self._ns_converter(ns)
 
     def get_ns(self, nsId: str, args=None) -> Dict:
-        ns = self._client.ns_get(nsId, args=args)
-        return self._ns_converter(ns)
+        ns = self._agent.ns_get(nsId, args=args)
+        return ns
+        # return self._ns_converter(ns)
 
     def delete_ns(self, nsId: str, args: Dict = None) -> None:
         service_type = self._client.check_instance_ns_name(nsId)  # check service type

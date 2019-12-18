@@ -69,6 +69,30 @@ class AgentClient(object):  # ns_instantiation_server
             # print(resp.status_code)  # for tests only
             raise ServerError(error)
 
+    def _exec_get(self, url=None, params=None, headers=None):
+
+        try:
+            resp = requests.get(url, params=params, headers=headers)
+        except Exception as e:
+            raise ServerError(str(e))
+
+        if resp.status_code in (200, 201, 202, 204, 206):  # response code 206 was added
+            print('response code: {}'.format(resp.status_code))  # for tests only
+            return resp.json()
+        elif resp.status_code == 400:
+            print('response code: {}'.format(resp.status_code))  # for tests only
+            raise BadRequest()
+        elif resp.status_code == 401:
+            print('response code: {}'.format(resp.status_code))  # for tests only
+            raise Unauthorized()
+        elif resp.status_code == 404:
+            print('response code: {}'.format(resp.status_code))  # for tests only
+            raise ResourceNotFound()
+        else:
+            print(resp.status_code)  # for tests only
+            error = resp.json()
+            raise ServerError(error)  # (error) added
+
     def ns_create(self, ns_name, args=None):
         args['payload']['serviceType'] = ns_name
         _url = '{0}/create'.format(self._base_path)
@@ -95,6 +119,18 @@ class AgentClient(object):  # ns_instantiation_server
             return
         except ResourceNotFound:
             raise NsNotFound(ns_id)
+
+    def ns_list(self):
+        _url = '{0}/instances'.format(self._base_path)
+        return self._exec_get(_url, params=None, headers=self._headers)
+
+    def ns_get(self, ns_Id, args=None):
+        _url = '{0}/instance/{1}'.format(self._base_path, ns_Id)
+        try:
+            return self._exec_get(_url, headers=self._headers)
+        except ResourceNotFound:
+            raise NsNotFound(ns_id=ns_Id)
+
 
 #  add functions to GET all info about service instance
 
@@ -158,9 +194,9 @@ class Client(object):
     #         error = resp.json()
     #         raise ServerError()
 
-    def ns_list(self):
-        _url = '{0}/service?relatedParty.id={1}'.format(self._base_path, self._customer)
-        return self._exec_get(_url, params=None, headers=self._headers)
+    # def ns_list(self):
+    #     _url = '{0}/service?relatedParty.id={1}'.format(self._base_path, self._customer)
+    #     return self._exec_get(_url, params=None, headers=self._headers)
 
     def ns_get(self, ns_Id, args=None):
         _url = '{0}/service/{1}'.format(self._base_path, ns_Id)
