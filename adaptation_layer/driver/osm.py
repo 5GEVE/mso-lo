@@ -25,7 +25,8 @@ class OSM(Driver):
 
     def get_ns(self, nsId: str, args=None) -> Dict:
         ns = self._client.ns_get(nsId, args=args)
-        return self._ns_im_converter(ns)
+        vnfs = [self._client.vnf_get(vnf_id) for vnf_id in ns["constituent-vnfr-ref"]]
+        return self._ns_im_converter(ns, vnfs)
 
     def delete_ns(self, nsId: str, args: Dict = None) -> None:
         return self._client.ns_delete(nsId, args=args)
@@ -69,20 +70,16 @@ class OSM(Driver):
                 }
             }
             for cp in ov["connection-point"]:
-                vld_id = ""
-                for v in osm_ns["nsd"]["vld"]:
-                    for cpr in v["vnfd-connection-point-ref"]:
-                        if cpr["vnfd-connection-point-ref"] == cp["name"] and cpr["vnfd-id-ref"] == ov["vnfd-ref"]:
-                            vld_id = v["id"]
-                            break
-                ip_address = ""
-                mac_address = ""
-                for vdur in ov["vdur"]:
-                    for iface in vdur["interface"]:
-                        if iface["ns-vld-id"] == vld_id:
-                            ip_address = iface["ip-address"]
-                            mac_address = iface["mac-address"]
-                            break
+                vld_ids = [v["id"] for v in osm_ns["nsd"]["vld"] for cpr in v["vnfd-connection-point-ref"]
+                           if cpr["vnfd-connection-point-ref"] == cp["name"]
+                           and cpr["member-vnf-index-ref"] == ov["member-vnf-index-ref"]]
+                vld_id = vld_ids[0]
+                try:
+                    [(ip_address, mac_address)] = [(iface["ip-address"], iface["mac-address"]) for vdur in ov["vdur"]
+                                                   for iface in vdur["interfaces"]
+                                                   if iface["ns-vld-id"] == vld_id]
+                except KeyError:
+                    (ip_address, mac_address) = (None, None)
                 vnf_instance["instantiatedVnfInfo"]["extCpInfo"].append({
                     "id": cp["name"],
                     "cpProtocolInfo": [
@@ -93,7 +90,7 @@ class OSM(Driver):
                                 "ipAddresses": [
                                     {
                                         "type": "IPV4",
-                                        "fixedAddresses": [ip_address]
+                                        "addresses": [ip_address]
                                     }
                                 ]
                             }
@@ -105,6 +102,7 @@ class OSM(Driver):
 
     def _ns_list_converter(self, ns_list: List[Dict]):
         result = []
-        for ins in ns_list:
-            result.append(self._ns_im_converter(ins))
+        for ns in ns_list:
+            vnfs = [self._client.vnf_get(vnf_id) for vnf_id in ns["constituent-vnfr-ref"]]
+            result.append(self._ns_im_converter(ns, vnfs))
         return result
