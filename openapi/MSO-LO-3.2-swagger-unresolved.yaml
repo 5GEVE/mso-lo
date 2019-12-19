@@ -389,12 +389,16 @@ paths:
 
   /nfvo/{nfvoId}/ns_lcm_op_occs:
     get:
-      description: > 
-        List of Operations occurrences in a NFVO. It may be useful filtering by a concrete NS with '?nsInstanceId=<nsInstanceId>'
-      summary: Retrieve list of NS LCM operations.
       tags: 
-      - NS LCM Operations
+        - NS LCM Operations
       operationId: Nfvo.NS_LCM_OP.list
+      summary: Query multiple NS LCM operation occurrences.
+      description: >
+        Get Operation Status.
+        The client can use this method to query status information about multiple NS lifecycle management operation
+        occurrences.
+        This method shall follow the provisions specified in the Tables 6.4.9.3.2-1 and 6.4.9.3.2-2 for URI query parameters,
+        request and response data structures, and response codes.
       deprecated: false
       produces:
       - application/json
@@ -404,23 +408,42 @@ paths:
         required: true
         type: string
         description: Identifier of a Nfvo
-      - name: nsInstanceId
-        in: query
+      - name: Accept
+        description: >
+            Content-Types that are acceptable for the response.
+            Reference: IETF RFC 7231
+        in: header
+        required: true
         type: string
-        description: Identifier of nsInstanceId
-      - name: Pagination parameters
-        in: query
-        required: false
-        type: string
-        description: The parameters are used to create pagination
       responses:
         200:
-          description: search results matching criteria
+          description: >
+            200 OK
+
+            Status information for zero or more NS lifecycle management operation 
+            occurrences has been queried successfully.
+            The response body shall contain in an array the representations of
+            zero or more NS instances, as defined in clause 6.5.2.3.
+
+            If the "filter" URI parameter or one of the "all_fields", "fields",
+            "exclude_fields" or "exclude_default" URI parameters was supplied in
+            the request and is supported, the data in the response body shall have
+            been transformed according to the rules specified in clauses 5.2.2 and
+            5.3.2 of ETSI GS NFV SOL 013, respectively.
+
+            If the NFVO supports alternative 2 (paging) according to 
+            clause 5.4.2.1 of ETSI GS NFV SOL 013 for this resource, inclusion of the Link HTTP header
+            in this response shall follow the provisions in clause 5.4.2.3 of ETSI GS NFV SOL 013.
+          headers:
+            Content-Type:
+              description: The MIME type of the body of the response.
+              type: string
+              maximum: 1
+              minimum: 1
           schema:
             type: array
             items:
-              $ref: '#/definitions/NsInstance'
-          headers: {}
+              $ref: "#/definitions/NsLcmOpOcc"
         400:
           description: The request is malformed
           schema:
@@ -432,13 +455,18 @@ paths:
   
   /nfvo/{nfvoId}/ns_lcm_op_occs/{nsLcmOpOccId}:
     get:
-      description: > 
-        Show details of an Operation
-      summary: Show details of an Operation.
       tags: 
       - NS LCM Operations
       operationId: Nfvo.NS_LCM_OP.fetch
       deprecated: false
+      summary: Read an individual NS LCM operation occurrence resource.
+      description: >
+        The client can use this method to retrieve status information about
+        a NS lifecycle management operation occurrence by
+        reading an individual "NS LCM operation occurrence" resource.
+        This method shall follow the provisions specified in the
+        Tables 6.4.10.3.2-1 and 6.4.10.3.2-2 for URI query parameters,
+        request and response data structures, and response codes.
       produces:
       - application/json
       parameters:
@@ -448,23 +476,51 @@ paths:
         type: string
         description: Identifier of a Nfvo
       - name: nsLcmOpOccId
+        description: >
+          Identifier of a NS lifecycle management operation occurrence.
         in: path
+        type: string
+        required: true
+      - name: Accept
+        description: >
+          Content-Types that are acceptable for the response.
+          Reference: IETF RFC 7231
+        in: header
         required: true
         type: string
-        description: Identifier of a NS lifecycle management operation occurrence
-      - name: Pagination parameters
-        in: query
-        required: false
-        type: string
-        description: The parameters are used to create pagination
       responses:
         200:
-          description: search results matching criteria
+          description: >
+            200 OK
+
+            Information about a NS LCM operation occurrence has been
+            queried successfully.
+            The response body shall contain status information about a NS 
+            lifecycle management operation occurrence (see clause 6.5.2.3).
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/NsInstance'
-          headers: {}
+            $ref: "#/definitions/NsLcmOpOcc"
+          headers:
+            Content-Type:
+              type: string
+              description: >
+                The MIME type of the body of the response.This header
+                field shall be present if the response has a non-empty message body.
+              maximum: 1
+              minimum: 1
+            WWW-Authenticate:
+              type: string
+              description: >
+                Challenge if the corresponding HTTP request has not provided
+                authorization, or error details if the corresponding HTTP request
+                has provided an invalid authorization token.
+              maximum: 1
+              minimum: 0
+            Version:
+              description: >
+                Version of the API used in the response.
+              type: string
+              maximum: 1
+              minimum: 1
         400:
           description: The request is malformed
           schema:
@@ -830,12 +886,183 @@ definitions:
         format: uuid
       nsState:
         $ref: '#/definitions/NsStateType'
+      vnfInstance:
+        description: >
+          Information on constituent VNF(s) of the NS instance.
+        type: array
+        items:
+          $ref: "#/definitions/VnfInstance"
     required:
     - id
     - nsInstanceName
     - nsInstanceDescription
     - nsdId
     - nsState
+    
+  VnfInstance:
+    description: >
+      This type represents a VNF instance.
+    type: object
+    required:
+      - id
+      - vnfdId
+      - vnfProductName
+      - instantiationState
+    properties:
+      id:
+        description: >
+          Identifier of the VNF instance.
+        allOf:
+          - $ref: "#/definitions/Identifier"
+      vnfdId:
+        description: >
+          Identifier of the VNFD on which the VNF instance is based.
+        allOf:
+          - $ref: "#/definitions/Identifier"
+      vnfProductName:
+        description: >
+          Name to identify the VNF Product. The value is copied from the VNFD.
+        type: string
+      vimId:
+        description: >
+          Identifier of a VIM that manages resources for the VNF instance.
+        allOf:
+          - $ref: "#/definitions/Identifier"
+      instantiationState:
+        description: >
+          The instantiation state of the VNF.
+        type: string
+        enum:
+          - NOT_INSTANTIATED
+          - INSTANTIATED
+      instantiatedVnfInfo:
+        description: >
+          Information specific to an instantiated VNF instance. This attribute
+          shall be present if the instantiateState attribute value is INSTANTIATED.
+        type: object
+        properties:
+          extCpInfo:
+            description: >
+              Information about the external CPs exposed by the VNF instance.
+            type: array
+            minItems: 1
+            items:
+              $ref: "#/definitions/VnfExtCpInfo"
+
+  VnfExtCpInfo:
+    description: >
+      This type represents information about an external CP of a VNF. It shall comply 
+      with the provisions defined in Table 6.5.3.70-1.
+    type: object
+    required:
+      - id
+    properties:
+      id:
+        description: >
+          Identifier of the external CP instance and the related information instance.
+        allOf:
+          - $ref: "#/definitions/IdentifierInVnf"
+      cpProtocolInfo:
+        description: >
+          Network protocol information for this CP.
+        type: array
+        minItems: 1
+        items:
+          $ref: "#/definitions/CpProtocolInfo"
+
+  CpProtocolInfo:
+    description: >
+      This type describes the protocol layer(s) that a CP or SAP uses together with protocol-related information, like
+      addresses. It shall comply with the provisions defined in Table 6.5.3.58-1.
+    type: object
+    required:
+      - layerProtocol
+      - ipOverEthernet
+    properties:
+      layerProtocol:
+        description: >
+          The identifier of layer(s) and protocol(s)
+          associated to the network address information.
+          Permitted values: IP_OVER_ETHERNET See note.
+        type: string
+        enum:
+          - IP_OVER_ETHERNET
+      ipOverEthernet:
+        description: >
+          IP addresses over Ethernet to assign to the CP
+          or SAP instance. Shall be present if
+          layerProtocol is equal to "
+          IP_OVER_ETHERNET", and shall be absent otherwise.
+        allOf:
+          - $ref: "#/definitions/IpOverEthernetAddressInfo"
+  
+  IpOverEthernetAddressInfo:
+    description: >
+      This type represents information about a network address that has been assigned.
+      It shall comply with the provisions defined in Table 6.5.3.18-1.
+    type: object
+    required:
+      - macAddress
+      - ipAddresses
+    properties:
+      macAddress:
+        description: >
+          Assigned MAC address.
+        allOf:
+          - $ref: "#/definitions/MacAddress"
+      ipAddresses:
+        description: >
+          Addresses assigned to the CP instance. Each entry represents IP
+          addresses assigned by fixed or dynamic IP address assignment per
+          subnet.
+        type: array
+        items:
+          type: object
+          required:
+            - type
+          properties:
+            type:
+              description: >
+                The type of the IP addresses.
+                Permitted values: IPV4, IPV6.
+              type: string
+              enum:
+                - IPV4
+                - IPV6
+            addresses:
+              description: >
+                Fixed addresses assigned (from the subnet defined by
+                "subnetId" if provided).
+              type: array
+              items:
+                $ref: "#/definitions/IpAddress"
+
+  MacAddress:
+    description: >
+      A MAC address. Representation: string that consists of groups of two hexadecimal digits,
+      separated by hyphens or colons.
+    type: string
+    format: MAC
+
+  IpAddress:
+    description: >
+      An IPV4 or IPV6 address. Representation: In case of an IPV4 address, string that consists of four decimal
+      integers separated by dots, each integer ranging from 0 to 255. In case of an IPV6 address, string that
+      consists of groups of zero to four hexadecimal digits, separated by colons.
+    type: string
+    format: IP
+
+  IdentifierInVnf:
+    description: >
+      An identifier that is unique for the respective type within a VNF
+      instance, but may not be globally unique.
+    type: string
+  
+  Identifier:
+    description: >
+      An identifier with the intention of being globally unique.
+    type: string
+
   NsStateType:
     title: NsStateType
     description: >-
@@ -860,6 +1087,88 @@ definitions:
     required:
     - nsFlavourId
     - nsInstantiationLevelId
+  
+  NsLcmOpOcc:
+    description: >
+      This type represents a request a NS lifecycle operation occurrence.
+      It shall comply with the provisions defined in Table 6.5.2.3-1.
+    type: object
+    required:
+      - id
+      - operationState
+      - stateEnteredTime
+      - nsInstanceId
+      - lcmOperationType
+      - startTime
+    properties:
+      id:
+        description: >
+          Identifier of this NS lifecycle operation occurrence.
+        allOf:
+          - $ref: "#/definitions/Identifier"
+      operationState:
+        allOf:
+          - $ref: "#/definitions/NsLcmOperationStateType"
+      stateEnteredTime:
+        description: >
+          Date-time when the current state has been entered.
+        type: string
+        format: date-time
+      nsInstanceId:
+        description: >
+          Identifier of the NS instance to which the operation applies.
+        allOf:
+          - $ref: "#/definitions/Identifier"
+      lcmOperationType:
+        allOf:
+          - $ref: "#/definitions/NsLcmOpType"
+      startTime:
+        description: >
+          Date-time of the start of the operation.
+        type: string
+        format: date-time
+      
+  NsLcmOperationStateType:
+    description: >
+      The enumeration NsLcmOperationStateType shall comply with the provisions defined in Table 6.5.4.4-1.
+      
+      Value | Description
+      
+      ------|------------
+      
+      PROCESSING | The LCM operation is currently in execution.
+      
+      COMPLETED | The LCM operation has been completed successfully.
+      
+      FAILED | The LCM operation has failed and it cannot be retried or rolled back, as it is determined that such action won't succeed.
+      
+    type: string
+    enum:
+      - PROCESSING
+      - COMPLETED 
+      - FAILED
+  
+  NsLcmOpType:
+    description: >
+      The enumeration NsLcmOpType represents those lifecycle operations that trigger a NS lifecycle management operation
+      occurrence notification.
+      
+      Value | Description
+      
+      ------|------------
+      
+      INSTANTIATE | Represents the "Instantiate NS" LCM operation.
+      
+      SCALE | Represents the "Scale NS" LCM operation.
+      
+      TERMINATE | Represents the "Terminate NS" LCM operation.
+
+    type: string
+    enum:
+      - INSTANTIATE
+      - SCALE
+      - TERMINATE
+  
   ErrorResponse:
     title: ErrorResponse
     description: Error rappresentation
