@@ -48,26 +48,6 @@ class OSM(Driver):
     def get_op(self, nsLcmOpId, args: Dict = None) -> Dict:
         return self._client.ns_op(nsLcmOpId, args=args)
 
-    @staticmethod
-    def _get_cp_address(cp, osm_vnf, osm_ns):
-        """
-        OSM does not map a connection-point to its addresses in the GET vnf_instances response.
-        Given the connection-point reported in the osm_vnf, we navigate the osm_ns and the nsd field
-        to retrieve the vld_id to which the connection-point is connected. We match the connection point id
-        and the member-vnf-index.
-        Given the vld_id we get the mac_address and ip_address of the connection-point from osm_vnf.
-        """
-        [vld_id] = [v["id"] for v in osm_ns["nsd"]["vld"] for cpr in v["vnfd-connection-point-ref"]
-                    if cpr["vnfd-connection-point-ref"] == cp["name"]
-                    and cpr["member-vnf-index-ref"] == osm_vnf["member-vnf-index-ref"]]
-        try:
-            [(ip_addr, mac_addr)] = [(iface["ip-address"], iface["mac-address"]) for vdur in osm_vnf["vdur"]
-                                     for iface in vdur["interfaces"]
-                                     if iface["ns-vld-id"] == vld_id]
-        except KeyError:
-            (ip_addr, mac_addr) = (None, None)
-        return ip_addr, mac_addr
-
     def _ns_im_converter(self, osm_ns: Dict) -> Dict:
         sol_ns = {
             "id": osm_ns['id'],
@@ -88,26 +68,30 @@ class OSM(Driver):
             }
             if vnf_instance["instantiationState"] is "INSTANTIATED":
                 vnf_instance["instantiatedVnfInfo"] = {"extCpInfo": []}
-                # TODO add method vnfpkg_get to OsmClient
-                for cp in osm_vnf["connection-point"]:
-                    ip_address, mac_address = self._get_cp_address(cp, osm_vnf, osm_ns)
-                    vnf_instance["instantiatedVnfInfo"]["extCpInfo"].append({
-                        "id": cp["name"],
-                        "cpProtocolInfo": [
-                            {
-                                "layerProtocol": "IP_OVER_ETHERNET",
-                                "ipOverEthernet": {
-                                    "macAddress": mac_address,
-                                    "ipAddresses": [
-                                        {
-                                            "type": "IPV4",
-                                            "addresses": [ip_address]
-                                        }
-                                    ]
+                for vdur in osm_vnf["vdur"]:
+                    # TODO add method vnfpkg_get(vdur["vnfd-id"]) to OsmClient
+                    vnfpkg = {}
+                    for iface in vdur["interfaces"]:
+                        # TODO fix to handle also internal-connection-point-ref
+                        [cp] = [i["external-connection-point-ref"] for v in vnfpkg["vdu"] for i in v["interface"]
+                                if v["id"] == vdur["vdu-id-ref"] and i["name"] == iface["name"]]
+                        vnf_instance["instantiatedVnfInfo"]["extCpInfo"].append({
+                            "id": cp,
+                            "cpProtocolInfo": [
+                                {
+                                    "layerProtocol": "IP_OVER_ETHERNET",
+                                    "ipOverEthernet": {
+                                        "macAddress": iface["mac_address"],
+                                        "ipAddresses": [
+                                            {
+                                                "type": "IPV4",
+                                                "addresses": [iface["ip_address"]]
+                                            }
+                                        ]
+                                    }
                                 }
-                            }
-                        ]
-                    })
+                            ]
+                        })
             sol_ns["vnfInstance"].append(vnf_instance)
         return sol_ns
 
