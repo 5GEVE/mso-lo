@@ -106,7 +106,7 @@ class AgentClient(object):  # ns_instantiation_server
         # add try except block to check if the service instance exists
         # return self._exec_post(_url, json=args, headers=self._headers)  # for dev change to json=args['payload']
         try:
-            return self._exec_post(_url, headers=self._headers, json=args['payload'])
+            return self._exec_post(_url, headers=self._headers)
         except ResourceNotFound:  # check it
             raise NsNotFound(ns_id=id)
 
