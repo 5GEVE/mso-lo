@@ -1,11 +1,13 @@
-import requests
 import json as JSON
-import yaml as YAML
 import os
 from urllib.parse import urlencode
-from error_handler import ResourceNotFound, NsNotFound, VnfNotFound,\
-    Unauthorized, BadRequest, ServerError, NsOpNotFound
+
+import requests
+import yaml as YAML
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
+
+from error_handler import ResourceNotFound, NsNotFound, VnfNotFound, \
+    Unauthorized, BadRequest, ServerError, NsOpNotFound, VnfPkgNotFound
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -117,6 +119,11 @@ class Client(object):
         _url = _build_testing_url(_url, args)
         return self._exec_get(_url, headers=self._headers)
 
+    def vnfpkg_list(self, args=None):
+        _url = "{0}/vnfpkgm/v1/vnf_packages".format(self._base_path)
+        _url = _build_testing_url(_url, args)
+        return self._exec_get(_url, headers=self._headers)
+
     def ns_create(self, args=None):
         _url = "{0}/nslcm/v1/ns_instances".format(self._base_path)
         _url = _build_testing_url(_url, args)
@@ -188,7 +195,7 @@ class Client(object):
         _url = _build_testing_url(_url, args)
         try:
             resp = requests.delete(_url, params=None, verify=False, headers={
-                                   "accept": "application/json"})
+                "accept": "application/json"})
         except Exception as e:
             raise ServerError(str(e))
         if resp.status_code in (200, 201, 202, 204):
@@ -230,7 +237,15 @@ class Client(object):
         try:
             return self._exec_get(_url, headers=self._headers)
         except ResourceNotFound:
-            raise VnfNotFound(ns_id=id)
+            raise VnfNotFound(vnf_id=id)
+
+    def vnfpkg_get(self, id, args=None):
+        _url = "{0}/vnfpkgm/v1/vnf_packages/{1}".format(self._base_path, id)
+        _url = _build_testing_url(_url, args)
+        try:
+            return self._exec_get(_url, headers=self._headers)
+        except ResourceNotFound:
+            raise VnfPkgNotFound(vnfpkg_id=id)
 
 
 def _build_testing_url(base, args):
