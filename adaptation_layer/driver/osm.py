@@ -43,10 +43,12 @@ class OSM(Driver):
         nsId = None
         if args['args'] and len(args['args']) > 0:
             nsId = args['args']['nsInstanceId'] if 'nsInstanceId' in args['args'] else None
-        return self._client.ns_op_list(nsId, args=args)
+        op_list = self._client.ns_op_list(nsId, args=args)
+        return self._op_list_im_converter(op_list)
 
     def get_op(self, nsLcmOpId, args: Dict = None) -> Dict:
-        return self._client.ns_op(nsLcmOpId, args=args)
+        op = self._client.ns_op(nsLcmOpId, args=args)
+        return self._op_im_converter(op)
 
     def _ns_im_converter(self, osm_ns: Dict) -> Dict:
         sol_ns = {
@@ -103,3 +105,21 @@ class OSM(Driver):
         for ns in ns_list:
             sol_ns_list.append(self._ns_im_converter(ns))
         return sol_ns_list
+
+    @staticmethod
+    def _op_im_converter(osm_op):
+        sol_op = {
+            "id": osm_op["id"],
+            "operationState": osm_op["operationState"].upper(),
+            "stateEnteredTime": osm_op["statusEnteredTime"],
+            "nsInstanceId": osm_op["nsInstanceId"],
+            "lcmOperationType": osm_op["lcmOperationType"].upper(),
+            "startTime": osm_op["startTime"]
+        }
+        return sol_op
+
+    def _op_list_im_converter(self, osm_op_list):
+        sol_op_list = []
+        for op in osm_op_list:
+            sol_op_list.append(self._op_im_converter(op))
+        return sol_op_list
