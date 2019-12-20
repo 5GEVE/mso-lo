@@ -100,9 +100,9 @@ class OSM(Driver):
             sol_ns["vnfInstance"].append(vnf_instance)
         return sol_ns
 
-    def _ns_list_converter(self, ns_list: List[Dict]):
+    def _ns_list_converter(self, osm_ns_list: List[Dict]):
         sol_ns_list = []
-        for ns in ns_list:
+        for ns in osm_ns_list:
             sol_ns_list.append(self._ns_im_converter(ns))
         return sol_ns_list
 
