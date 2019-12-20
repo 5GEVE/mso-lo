@@ -45,7 +45,7 @@ class ONAP(object):
         # return self._ns_converter(ns)
 
     def delete_ns(self, nsId: str, args: Dict = None) -> None:
-        service_type = self._client.check_instance_ns_name(nsId)  # check service type
+        # service_type = self._client.check_instance_ns_name(nsId)  # check service type
         return self._agent.ns_delete(nsId, args=args)
 
     def instantiate_ns(self, nsId: str, args: Dict = None) -> None:

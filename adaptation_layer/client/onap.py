@@ -115,24 +115,22 @@ class AgentClient(object):  # ns_instantiation_server
         return self._exec_delete(_url)
 
     def ns_terminate(self, ns_id, args=None):
+        _url = '{0}/terminate/{1}'.format(self._base_path, ns_id)
         try:
-            return
+            return self._exec_post(_url, headers=self._headers)
         except ResourceNotFound:
-            raise NsNotFound(ns_id)
+            raise NsNotFound(ns_id=ns_id)
 
     def ns_list(self):
         _url = '{0}/instances'.format(self._base_path)
         return self._exec_get(_url, params=None, headers=self._headers)
 
     def ns_get(self, ns_Id, args=None):
-        _url = '{0}/instance/{1}'.format(self._base_path, ns_Id)
+        _url = '{0}/instances/{1}'.format(self._base_path, ns_Id)
         try:
             return self._exec_get(_url, headers=self._headers)
         except ResourceNotFound:
             raise NsNotFound(ns_id=ns_Id)
-
-
-#  add functions to GET all info about service instance
 
 
 class Client(object):
@@ -194,16 +192,18 @@ class Client(object):
     #         error = resp.json()
     #         raise ServerError()
 
+    # functionality moved to NS-server
     # def ns_list(self):
     #     _url = '{0}/service?relatedParty.id={1}'.format(self._base_path, self._customer)
     #     return self._exec_get(_url, params=None, headers=self._headers)
 
-    def ns_get(self, ns_Id, args=None):
-        _url = '{0}/service/{1}'.format(self._base_path, ns_Id)
-        try:
-            return self._exec_get(_url, headers=self._headers)
-        except ResourceNotFound:
-            raise NsNotFound(ns_id=ns_Id)
+    # functionality moved to NS-server
+    # def ns_get(self, ns_Id, args=None):
+    #     _url = '{0}/service/{1}'.format(self._base_path, ns_Id)
+    #     try:
+    #         return self._exec_get(_url, headers=self._headers)
+    #     except ResourceNotFound:
+    #         raise NsNotFound(ns_id=ns_Id)
 
     def check_ns_name(self, nsd_Id, args=None):
         _url = '{0}/serviceSpecification/{1}?fields=name'.format(self._base_path, nsd_Id)
@@ -212,7 +212,7 @@ class Client(object):
         except ResourceNotFound:
             raise BadRequest()
 
-    def check_instance_ns_name(self, ns_Id, args = None):
+    def check_instance_ns_name(self, ns_Id, args=None):
         _url = '{0}/service/{1}'.format(self._base_path, ns_Id)
         try:
             response = self._exec_get(_url, headers=self._headers)
