@@ -403,6 +403,18 @@ paths:
       produces:
       - application/json
       parameters:
+      - name: filter
+        in: query
+        required: false
+        type: string
+        description: >
+          Only 'nsInstanceId' is supported.
+          
+          Attribute-based filtering expression according to clause 5.2 of ETSI GS NFV SOL 013.
+          The NFVO shall support receiving this parameter as part of the URI query string.
+          The OSS/BSS may supply this parameter.
+          All attribute names that appear in the NsLcmOpOcc and in data types referenced
+          from it shall be supported by the NFVO in the filter expression.
       - name: nfvoId
         in: path
         required: true
