@@ -49,6 +49,11 @@ class VnfNotFound(Error):
         self.description = 'VNF instance {0} not found.'.format(vnf_id)
 
 
+class VnfPkgNotFound(Error):
+    def __init__(self, vnfpkg_id=None):
+        self.description = 'VNF package {0} not found.'.format(vnfpkg_id)
+
+
 class Unauthorized(Error):
     def __init__(self):
         self.description = 'Unauthorized'

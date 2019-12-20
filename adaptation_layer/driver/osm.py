@@ -68,24 +68,27 @@ class OSM(Driver):
             }
             if vnf_instance["instantiationState"] is "INSTANTIATED":
                 vnf_instance["instantiatedVnfInfo"] = {"extCpInfo": []}
+                vnfpkg = self._client.vnfpkg_get(osm_vnf["vnfd-id"])
                 for vdur in osm_vnf["vdur"]:
-                    # TODO add method vnfpkg_get(vdur["vnfd-id"]) to OsmClient
-                    vnfpkg = {}
-                    for iface in vdur["interfaces"]:
-                        # TODO fix to handle also internal-connection-point-ref
-                        [cp] = [i["external-connection-point-ref"] for v in vnfpkg["vdu"] for i in v["interface"]
-                                if v["id"] == vdur["vdu-id-ref"] and i["name"] == iface["name"]]
+                    for if_vdur in vdur["interfaces"]:
+                        [if_pkg] = [if_pkg for vdu in vnfpkg["vdu"] for if_pkg in vdu["interface"]
+                                    if vdu["id"] == vdur["vdu-id-ref"] and if_pkg["name"] == if_vdur["name"]]
+                        [cp] = [val for key, val in if_pkg.items() if key.endswith("-connection-point-ref")]
+                        try:
+                            (ip_address, mac_address) = (if_vdur["ip_address"], if_vdur["mac_address"])
+                        except KeyError:
+                            (ip_address, mac_address) = (None, None)
                         vnf_instance["instantiatedVnfInfo"]["extCpInfo"].append({
                             "id": cp,
                             "cpProtocolInfo": [
                                 {
                                     "layerProtocol": "IP_OVER_ETHERNET",
                                     "ipOverEthernet": {
-                                        "macAddress": iface["mac_address"],
+                                        "macAddress": mac_address,
                                         "ipAddresses": [
                                             {
                                                 "type": "IPV4",
-                                                "addresses": [iface["ip_address"]]
+                                                "addresses": [ip_address]
                                             }
                                         ]
                                     }
