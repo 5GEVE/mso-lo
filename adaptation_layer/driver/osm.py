@@ -17,15 +17,18 @@ class OSM(Driver):
         return self._client.vnf_get(vnfId, args=args)
 
     def get_ns_list(self, args=None) -> List[Dict]:
-        ns_list = self._client.ns_list(args=args)
-        return self._ns_list_converter(ns_list)
+        osm_ns_list = self._client.ns_list(args=args)
+        sol_ns_list = []
+        for osm_ns in osm_ns_list:
+            sol_ns_list.append(self._ns_im_converter(osm_ns))
+        return sol_ns_list
 
     def create_ns(self, args=None) -> Dict:
         return self._client.ns_create(args=args)
 
     def get_ns(self, nsId: str, args=None) -> Dict:
-        ns = self._client.ns_get(nsId, args=args)
-        return self._ns_im_converter(ns)
+        osm_ns = self._client.ns_get(nsId, args=args)
+        return self._ns_im_converter(osm_ns)
 
     def delete_ns(self, nsId: str, args: Dict = None) -> None:
         return self._client.ns_delete(nsId, args=args)
@@ -40,11 +43,12 @@ class OSM(Driver):
         return self._client.ns_scale(nsId, args=args)
 
     def get_op_list(self, args: Dict = None) -> List[Dict]:
-        nsId = None
-        if args['args'] and len(args['args']) > 0:
-            nsId = args['args']['nsInstanceId'] if 'nsInstanceId' in args['args'] else None
-        op_list = self._client.ns_op_list(nsId, args=args)
-        return self._op_list_im_converter(op_list)
+        nsId = args['args']['nsInstanceId'] if args['args'] and 'nsInstanceId' in args['args'] else None
+        osm_op_list = self._client.ns_op_list(nsId, args=args)
+        sol_op_list = []
+        for op in osm_op_list:
+            sol_op_list.append(self._op_im_converter(op))
+        return sol_op_list
 
     def get_op(self, nsLcmOpId, args: Dict = None) -> Dict:
         op = self._client.ns_op(nsLcmOpId, args=args)
@@ -68,7 +72,7 @@ class OSM(Driver):
                 "vimId": osm_vnf["vim-account-id"],
                 "instantiationState": osm_ns['_admin']['nsState'],  # same as the NS
             }
-            if vnf_instance["instantiationState"] is "INSTANTIATED":
+            if vnf_instance["instantiationState"] == "INSTANTIATED":
                 vnf_instance["instantiatedVnfInfo"] = {"extCpInfo": []}
                 vnfpkg = self._client.vnfpkg_get(osm_vnf["vnfd-id"])
                 for vdur in osm_vnf["vdur"]:
@@ -100,12 +104,6 @@ class OSM(Driver):
             sol_ns["vnfInstance"].append(vnf_instance)
         return sol_ns
 
-    def _ns_list_converter(self, osm_ns_list: List[Dict]):
-        sol_ns_list = []
-        for ns in osm_ns_list:
-            sol_ns_list.append(self._ns_im_converter(ns))
-        return sol_ns_list
-
     @staticmethod
     def _op_im_converter(osm_op):
         sol_op = {
@@ -117,9 +115,3 @@ class OSM(Driver):
             "startTime": osm_op["startTime"]
         }
         return sol_op
-
-    def _op_list_im_converter(self, osm_op_list):
-        sol_op_list = []
-        for op in osm_op_list:
-            sol_op_list.append(self._op_im_converter(op))
-        return sol_op_list
