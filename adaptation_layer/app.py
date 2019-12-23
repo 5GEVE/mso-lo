@@ -152,5 +152,42 @@ def scale_ns(nfvo_id, ns_id):
         abort(500, description=e.description)
 
 
+# copied from develop branch - for tests only
+
+
+@app.route('/nfvo/<nfvo_id>/ns_lcm_op_occs', methods=['GET'])
+def get_op_list(nfvo_id):
+    try:
+        op_list = manager.get_driver(nfvo_id).get_op_list(
+            args={'args': request.args.to_dict()})
+        return jsonify(op_list)
+    except BadRequest as e:
+        abort(400, description=e.description)
+    except Unauthorized as e:
+        abort(401, description=e.description)
+    except NfvoNotFound as e:
+        abort(404, description=e.description)
+    except ServerError as e:
+        abort(500, description=e.description)
+
+
+@app.route('/nfvo/<nfvo_id>/ns_lcm_op_occs/<nsLcmOpId>', methods=['GET'])
+def get_op(nfvo_id, nsLcmOpId):
+    try:
+        ns_op = manager.get_driver(nfvo_id).get_op(
+            nsLcmOpId, args={'args': request.args.to_dict()})
+        return jsonify(ns_op)
+    except BadRequest as e:
+        abort(400, description=e.description)
+    except Unauthorized as e:
+        abort(401, description=e.description)
+    except NfvoNotFound as e:
+        abort(404, description=e.description)
+    # except NsOpNotFound as e:  # need to add exception in error_handling file
+    #     abort(404, description=e.description)
+    except ServerError as e:
+        abort(500, description=e.description)
+
+
 if __name__ == '__main__':
     app.run(debug=True)

@@ -132,6 +132,14 @@ class AgentClient(object):  # ns_instantiation_server
         except ResourceNotFound:
             raise NsNotFound(ns_id=ns_Id)
 
+    def get_op_list(self, args=None):
+        _url = '{0}/ns_lcm_op_occs'.format(self._base_path)  # test it
+        return self._exec_get(_url, params=None, headers=self._headers)
+
+    def get_op(self, nsLcmOpId, args=None):
+        _url = '{0}/ns_lcm_op_occs/{1}'.format(self._base_path, nsLcmOpId)  # fill with correct path
+        return self._exec_get(_url, params=None, headers=self._headers)
+
 
 class Client(object):
     def __init__(self):

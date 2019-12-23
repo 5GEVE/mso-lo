@@ -59,6 +59,12 @@ class ONAP(object):
     def terminate_ns(self, nsId: str, args: Dict = None) -> None:
         return self._agent.ns_terminate(nsId, args=args)
 
+    def get_op_list(self, args: Dict = None) -> List[Dict]:
+        return self._agent.get_op_list()
+
+    def get_op(self, nsLcmOpId, args: Dict = None) -> Dict:
+        return self._agent.get_op(nsLcmOpId)
+
     def _ns_converter(self, ns):
 
         if type(ns) is dict:
