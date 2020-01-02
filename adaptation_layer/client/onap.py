@@ -1,6 +1,6 @@
 import requests
 from error_handler import ResourceNotFound, NsNotFound, VnfNotFound,\
-    Unauthorized, BadRequest, ServerError
+    Unauthorized, BadRequest, ServerError, NsOpNotFound
 # from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 # requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
@@ -106,13 +106,16 @@ class AgentClient(object):  # ns_instantiation_server
         # add try except block to check if the service instance exists
         # return self._exec_post(_url, json=args, headers=self._headers)  # for dev change to json=args['payload']
         try:
-            return self._exec_post(_url, headers=self._headers)
+            return self._exec_post(_url, headers=self._headers)  # TODO add header 'Location' here ???
         except ResourceNotFound:  # check it
             raise NsNotFound(ns_id=id)
 
     def ns_delete(self, ns_id, args=None):
         _url = '{0}/delete/{1}'.format(self._base_path, ns_id)
-        return self._exec_delete(_url)
+        try:
+            return self._exec_delete(_url)
+        except ResourceNotFound:
+            raise NsNotFound(ns_id=ns_id)
 
     def ns_terminate(self, ns_id, args=None):
         _url = '{0}/terminate/{1}'.format(self._base_path, ns_id)
@@ -138,7 +141,10 @@ class AgentClient(object):  # ns_instantiation_server
 
     def get_op(self, nsLcmOpId, args=None):
         _url = '{0}/ns_lcm_op_occs/{1}'.format(self._base_path, nsLcmOpId)  # fill with correct path
-        return self._exec_get(_url, params=None, headers=self._headers)
+        try:
+            return self._exec_get(_url, params=None, headers=self._headers)
+        except ResourceNotFound:
+            raise NsOpNotFound(ns_op_id=nsLcmOpId)
 
 
 class Client(object):
