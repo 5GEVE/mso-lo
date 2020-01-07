@@ -110,7 +110,7 @@ def instantiate_ns(nfvo_id, ns_id):
         # resp.status_code = 202
         # return resp
 
-        ns = manager.get_driver(nfvo_id).instantiate_ns(
+        manager.get_driver(nfvo_id).instantiate_ns(
             ns_id, args={'payload': request.json, 'args': request.args.to_dict()})
         return make_response('', 202)
     except BadRequest as e:

@@ -106,7 +106,7 @@ class AgentClient(object):  # ns_instantiation_server
         # add try except block to check if the service instance exists
         # return self._exec_post(_url, json=args, headers=self._headers)  # for dev change to json=args['payload']
         try:
-            return self._exec_post(_url, headers=self._headers)  # TODO add header 'Location' here ? - didn't work
+            return self._exec_post(_url, headers=self._headers)  # header 'Location' here ? - didn't work
         except ResourceNotFound:
             raise NsNotFound(ns_id=ns_id)
 
@@ -226,10 +226,11 @@ class Client(object):
         except ResourceNotFound:
             raise BadRequest()
 
-    def check_instance_ns_name(self, ns_Id, args=None):
-        _url = '{0}/service/{1}'.format(self._base_path, ns_Id)
-        try:
-            response = self._exec_get(_url, headers=self._headers)
-            return response['serviceSpecification']['name']
-        except ResourceNotFound:
-            raise NsNotFound(ns_id=ns_Id)
+    # useless in current release
+    # def check_instance_ns_name(self, ns_Id, args=None):
+    #     _url = '{0}/service/{1}'.format(self._base_path, ns_Id)
+    #     try:
+    #         response = self._exec_get(_url, headers=self._headers)
+    #         return response['serviceSpecification']['name']
+    #     except ResourceNotFound:
+    #         raise NsNotFound(ns_id=ns_Id)
