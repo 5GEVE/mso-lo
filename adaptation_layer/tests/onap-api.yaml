@@ -8,18 +8,18 @@ info:
     NBI ONAP and ns-server api
     test version
 
-# zostawione - nie wiem czy potrzebne
-tags:
-  - name: 'VNF packages'
-    description: Management operations of VNF descriptors and packages
-  - name: 'NS packages'
-    description: Management operations of NS descriptors and packages
-  - name: 'NS instances'
-    description: Management operations of NS instances
-  - name: 'NetSlice templates'
-    description: Management operations of NetSlice Templates
-  - name: 'NetSlice instances'
-    description: Management operations of NetSlice Instances
+## zostawione - nie wiem czy potrzebne
+#tags:
+#  - name: 'VNF packages'
+#    description: Management operations of VNF descriptors and packages
+#  - name: 'NS packages'
+#    description: Management operations of NS descriptors and packages
+#  - name: 'NS instances'
+#    description: Management operations of NS instances
+#  - name: 'NetSlice templates'
+#    description: Management operations of NetSlice Templates
+#  - name: 'NetSlice instances'
+#    description: Management operations of NetSlice Instances
 
 # sciezki do onap nbi api oraz ns-server
 paths:
@@ -110,14 +110,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NsInstanceIdCreated'
-        '202':
-          description: Accepted
-        '204':
-          description: No Content
+#        '202':
+#          description: Accepted
+#        '204':
+#          description: No Content
         '400':
           $ref: '#/components/responses/BadRequest'
-        '404':
-          $ref: '#/components/responses/NotFound'
+#        '404':
+#          $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
         '5XX':
@@ -125,7 +125,7 @@ paths:
         default:
           $ref: '#/components/responses/UnexpectedError'
 # instantiate NS with given NsId
-  '/instantiate_ns/{ns_db_id}':
+  '/instantiate/{ns_db_id}':
     parameters:
       - name: ns_db_id
         in: path
@@ -142,8 +142,8 @@ paths:
       # requestBody:
       #   $ref: '#/components/requestBodies/CreateVnfPkgInfoRequest'
       responses:
-        '201':
-          description: Created
+        '202':
+          description: Accepted
           headers:
             Location:
               schema:
@@ -189,8 +189,8 @@ paths:
             schema:
               $ref: '#/components/schemas/TerminationTime'
       responses:
-        '201':
-          description: Created
+        '202':
+          description: Accepted
 #          headers:
 #            Location:
 #              schema:
@@ -203,10 +203,10 @@ paths:
           #   application/yaml:
           #     schema:
           #       $ref: '#/components/schemas/ObjectId'
-        '202':
-          description: Accepted
-        '204':
-          description: No Content
+#        '202':
+#          description: Accepted
+#        '204':
+#          description: No Content
         '400':
           $ref: '#/components/responses/BadRequest'
         '404':
@@ -235,8 +235,10 @@ paths:
       description:
       operationId:
       responses:
-        '204':
-          description: No Content
+        '202':
+          description: Accepted
+#        '204':
+#          description: No Content
         '400':
           $ref: '#/components/responses/BadRequest'
         '404':
@@ -327,6 +329,12 @@ paths:
       description:
       operationId:
       responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnapServiceSpecification'
         '206':
           description: Partial Content
           content:
@@ -346,10 +354,48 @@ paths:
         default:
           $ref: '#/components/responses/UnexpectedError'
 
+  '/nbi/api/v4/serviceSpecification/{nsd_id}':
+    parameters:
+      - name: nsd_id
+        in: path
+        required: true
+        description: NS specification ID
+        schema:
+          type : string
+    get:
+      tags:
+        - "NS specification ID"
+      summary: Query information about NS specification
+      description:
+      operationId:
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnapServiceSpecification'
+        '206':
+          description: Partial Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnapServiceSpecification'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '5XX':
+          $ref: '#/components/responses/UnexpectedError'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
 # externalDocs:
 #   description: Find out more OSM
 #   url: 'http://osm.etsi.org/wikipub'
-
 components:
   responses:
     BadRequest:
@@ -393,13 +439,13 @@ components:
     NsInstanceInfo:
       description: NS Instance Info
       content:
-        application/zip:
+        application/json:
           schema:
             $ref: '#/components/schemas/NsInstanceInfo'
     NsInstanceIdCreated:
       description: NS Instance ID response
       content:
-        application/zip:
+        application/json:
           schema:
             $ref: '#/components/schemas/NsInstanceIdCreated'
     List_lcm_op_occs:
@@ -411,18 +457,17 @@ components:
     ID_lcm_op_occs:
       description: lcm id info
       content:
-        application/zip:
+        application/json:
           schema:
             $ref: '#/components/schemas/ID_lcm_op_occs'
     OnapServiceSpecification:
       description: Onap Service Specification
       content:
-        text/plain:
+        application/json:
           schema:
             $ref: '#/components/schemas/OnapServiceSpecification'
 # end of schemas in responses
 # END RESPONSES
-
   schemas:
 # # json example
 #     ObjectId:
@@ -486,37 +531,39 @@ components:
 #
     NsInstanceList:
       description:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        nsInstanceName:
-          description:
-          type: string
-        nsInstanceDescription:
-          description:
-          type: string
-        nsdId:
-          description:
-          type: string
-          format: uuid
-        nsState:
-          description:
-          type: string
-          enum:
-            - NOT_INSTANTIATED
-            - INSTANTIATED
-        vnfInstance:
-          description:
-          type: array
-      required:
-        - id
-        - nsInstanceName
-        - nsInstanceDescription
-        - nsdId
-        - nsState
-        - vnfInstance
+      type: array
+      items:
+        $ref: #/components/schemas/NsInstanceInfo
+        properties:
+          id:
+            type: string
+            format: uuid
+          nsInstanceName:
+            description:
+            type: string
+          nsInstanceDescription:
+            description:
+            type: string
+          nsdId:
+            description:
+            type: string
+            format: uuid
+          nsState:
+            description:
+            type: string
+            enum:
+              - NOT_INSTANTIATED
+              - INSTANTIATED
+          vnfInstance:
+            description:
+            type: array
+        required:
+          - id
+          - nsInstanceName
+          - nsInstanceDescription
+          - nsdId
+          - nsState
+          - vnfInstance
 #
     NsInstanceInfo:
       description:
@@ -604,35 +651,62 @@ components:
         - nsdId
         - nsState
 # -----
+#    List_lcm_op_occs:
+#      description:
+#      type: object
+#      properties:
+#        id:
+#          type: string
+#          format: uuid
+#        operationState:
+#          description:
+#          type: string
+#        stateEnteredTime:
+#          description:
+#          type: string
+#        nsInstanceId:
+#          description:
+#          type: string
+#          format: uuid
+#        lcmOperationType:
+#          description:
+#          type: string
+#        startTime:
+#          type: string
+#          format: date-time
+#
+#
     List_lcm_op_occs:
       description:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        operationState:
-          description:
-          type: string
-        stateEnteredTime:
-          description:
-          type: string
-        nsInstanceId:
-          description:
-          type: string
-          format: uuid
-        lcmOperationType:
-          description:
-          type: string
-        startTime:
-          type: string
-          format: date-time
-      # required:
-      #   - id
-      #   -
-      #   - nsInstanceDescription
-      #   - nsdId
-      #   - nsState
+      type: array
+      items:
+        $ref: #/components/schemas/ID_lcm_op_occs
+        properties:
+          id:
+            type: string
+            format: uuid
+          operationState:
+            description:
+            type: string
+          stateEnteredTime:
+            description:
+            type: string
+          nsInstanceId:
+            description:
+            type: string
+            format: uuid
+          lcmOperationType:
+            description:
+            type: string
+          startTime:
+            type: string
+            format: date-time
+#      # required:
+#      #   - id
+#      #   -
+#      #   - nsInstanceDescription
+#      #   - nsdId
+#      #   - nsState
 #
     ID_lcm_op_occs:
       description:

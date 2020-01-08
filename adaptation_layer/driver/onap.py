@@ -36,8 +36,8 @@ class ONAP(Driver):
         return self._agent.ns_instantiate(nsId, args=args)
 
     # # unsupported by ONAP
-    # def scale_ns(self, nsId: str, args: Dict = None) -> None:
-    #     pass
+    def scale_ns(self, nsId: str, args: Dict = None) -> None:
+        pass
     #
 
     def terminate_ns(self, nsId: str, args: Dict = None) -> None:
