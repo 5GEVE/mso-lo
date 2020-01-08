@@ -120,7 +120,7 @@ class AgentClient(object):  # ns_instantiation_server
     def ns_terminate(self, ns_id, args=None):
         _url = '{0}/terminate/{1}'.format(self._base_path, ns_id)
         try:
-            return self._exec_post(_url, headers=self._headers)
+            return self._exec_post(_url, headers=self._headers, json=args['payload'])
         except ResourceNotFound:
             raise NsNotFound(ns_id=ns_id)
 
@@ -158,7 +158,7 @@ class Client(object):
         self._headers = {"Content-Type": "application/json",
                          "accept": "application/json"}
 
-        self._base_path = 'http://{0}:{1}//nbi/api/v{2}'.format(self._host, self._port, self._nbi_ver)
+        self._base_path = 'http://{0}:{1}/nbi/api/v{2}'.format(self._host, self._port, self._nbi_ver)
 
     def _exec_get(self, url=None, params=None, headers=None):
 

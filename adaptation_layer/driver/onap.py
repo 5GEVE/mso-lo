@@ -34,14 +34,12 @@ class ONAP(object):
         # return self._ns_converter(ns)
 
     def get_ns_list(self, args=None) -> List[Dict]:
-        ns = self._agent.ns_list()
-        return ns
+        return self._agent.ns_list()
         # ns = self._client.ns_list()
         # return self._ns_converter(ns)
 
     def get_ns(self, nsId: str, args=None) -> Dict:
-        ns = self._agent.ns_get(nsId, args=args)
-        return ns
+        return self._agent.ns_get(nsId, args=args)
         # return self._ns_converter(ns)
 
     def delete_ns(self, nsId: str, args: Dict = None) -> None:
@@ -51,7 +49,7 @@ class ONAP(object):
     def instantiate_ns(self, nsId: str, args: Dict = None) -> None:
         return self._agent.ns_instantiate(nsId, args=args)
 
-    #
+    # # unsupported by ONAP
     # def scale_ns(self, nsId: str, args: Dict = None) -> None:
     #     pass
     #
@@ -65,32 +63,32 @@ class ONAP(object):
     def get_op(self, nsLcmOpId, args: Dict = None) -> Dict:
         return self._agent.get_op(nsLcmOpId)
 
-    def _ns_converter(self, ns):
-
-        if type(ns) is dict:
-            result = {
-                "id": ns["id"],
-                "nsInstanceName": ns['name'],
-                "nsInstanceDescription": 'null',
-                "nsdId": ns['serviceSpecification']['id'],
-                "nsState": 'INSTANTIATED'
-            }
-
-        elif type(ns) is list:
-            result = []
-            for element in ns:
-                result.append({
-                    "id": element['id'],
-                    "nsInstanceName": element['name'],
-                    # In ONAP - no description id NS Instance
-                    "nsInstanceDescription": 'null',
-                    "nsdId": element['serviceSpecification']['id'],
-                    # permitted value of nsState: NOT_INSTANTIATED, INSTANTIATED
-                    # In ONAP all listed NS are instantiated
-                    "nsState": 'INSTANTIATED'
-                    })
-
-        return result
+    # def _ns_converter(self, ns):
+    #
+    #     if type(ns) is dict:
+    #         result = {
+    #             "id": ns["id"],
+    #             "nsInstanceName": ns['name'],
+    #             "nsInstanceDescription": 'null',
+    #             "nsdId": ns['serviceSpecification']['id'],
+    #             "nsState": 'INSTANTIATED'
+    #         }
+    #
+    #     elif type(ns) is list:
+    #         result = []
+    #         for element in ns:
+    #             result.append({
+    #                 "id": element['id'],
+    #                 "nsInstanceName": element['name'],
+    #                 # In ONAP - no description id NS Instance
+    #                 "nsInstanceDescription": 'null',
+    #                 "nsdId": element['serviceSpecification']['id'],
+    #                 # permitted value of nsState: NOT_INSTANTIATED, INSTANTIATED
+    #                 # In ONAP all listed NS are instantiated
+    #                 "nsState": 'INSTANTIATED'
+    #                 })
+    #
+    #     return result
 
     # def instantiate_converter(self, response):  # for first option of response format for ns_create function
     #

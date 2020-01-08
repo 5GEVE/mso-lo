@@ -191,11 +191,11 @@ paths:
       responses:
         '201':
           description: Created
-          headers:
-            Location:
-              schema:
-                type: string
-                format: uri
+#          headers:
+#            Location:
+#              schema:
+#                type: string
+#                format: uri
           # content:
           #   application/json:
           #     schema:
@@ -552,27 +552,27 @@ components:
         - nsState
         - vnfInstance
 #
-    createNsId:
-      description:
-      type: object
-      properties:
-        nsdId:
-          type: string
-          format: uuid
-        nsName:
-          description:
-          type: string
-        nsDescription:
-          description:
-          type: string
-        serviceType:
-          description:
-          type: string
-      required:
-        - nsdId
-        - nsName
-        - nsDescription
-        - serviceType
+#    createNsId:
+#      description:
+#      type: object
+#      properties:
+#        nsdId:
+#          type: string
+#          format: uuid
+#        nsName:
+#          description:
+#          type: string
+#        nsDescription:
+#          description:
+#          type: string
+#        serviceType:
+#          description:
+#          type: string
+#      required:
+#        - nsdId
+#        - nsName
+#        - nsDescription
+#        - serviceType
 #
     NsInstanceIdCreated:
       description:

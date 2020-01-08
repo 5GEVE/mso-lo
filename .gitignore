@@ -115,6 +115,8 @@ venv.bak/
 .idea/**/libraries
 .idea/**/modules.xml
 *.iml
+.idea/
+.idea/*
 
 # vscode
 .vscode/
