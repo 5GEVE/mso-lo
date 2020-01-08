@@ -327,8 +327,8 @@ paths:
       description:
       operationId:
       responses:
-        '200':
-          description: OK
+        '206':
+          description: Partial Content
           content:
             application/json:
               schema:
@@ -657,36 +657,13 @@ components:
         startTime:
           type: string
           format: date-time
-# TODO finish it
+# TODO test it
     OnapServiceSpecification:
       description:
       type: object
       properties:
-        id:
+        name:
           type: string
-          format: uuid
-        nsInstanceName:
-          description:
-          type: string
-        nsInstanceDescription:
-          description:
-          type: string
-        nsdId:
-          description:
-          type: string
-          format: uuid
-        nsState:
-          description:
-          type: string
-          enum:
-            - NOT_INSTANTIATED
-            - INSTANTIATED
-      required:
-        - id
-        - nsInstanceName
-        - nsInstanceDescription
-        - nsdId
-        - nsState
 
   # END SCHEMAS
   # start request bodies
