@@ -34,3 +34,11 @@ class Driver(ABC):
     @abstractmethod
     def scale_ns(self, nsId: str, args: Dict = None) -> None:
         raise NotImplementedError("The method is not implemented")
+
+    @abstractmethod
+    def get_op_list(self, nsId: str, args: Dict = None) -> List[Dict]:
+        raise NotImplementedError("The method is not implemented")
+
+    @abstractmethod
+    def get_op(self, nsLcmOpId, args: Dict = None) -> List[Dict]:
+        raise NotImplementedError("The method is not implemented")

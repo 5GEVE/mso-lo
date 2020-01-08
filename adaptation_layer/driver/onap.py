@@ -1,14 +1,14 @@
 from typing import Dict, List
 from client.onap import Client as ONAPclient
 from client.onap import AgentClient as AGENTclient
-# from .interface import Driver #sometimes it has to be in commend like  ONAP(Driver)
+from .interface import Driver  # commented for tests like  ONAP(Driver)
 import json
 
 # Driver = 'onap'
-# class ONAP(Driver):
+# class ONAP(object):
 
 
-class ONAP(object):
+class ONAP(Driver):
 
     def __init__(self):
         self._client = ONAPclient()
@@ -18,20 +18,6 @@ class ONAP(object):
     def create_ns(self, args: Dict = None) -> Dict:
         ns_name = self._client.check_ns_name(args['payload']['nsdId'])  # to change nsdId to name of NS
         return self._agent.ns_create(ns_name['name'], args=args)
-
-        # OLD VERSION
-        # variable
-        # nsdId = args['payload']['nsdId']
-        # nsName = args['payload']['nsName']
-        # nsDescription = args['payload']['nsDescription']
-
-        # response = self._agent.ns_create(ns_name['name'])  # instantiate NS with given name
-
-        # # return self.instantiate_converter(response)  # response without one parameters value
-        # # second option of response format
-        # ns_Id = response["service_id"]  # information from ns_instantiation_server
-        # ns = self._client.ns_get(ns_Id, args=args)
-        # return self._ns_converter(ns)
 
     def get_ns_list(self, args=None) -> List[Dict]:
         return self._agent.ns_list()
