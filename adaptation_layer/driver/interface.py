@@ -36,7 +36,7 @@ class Driver(ABC):
         raise NotImplementedError("The method is not implemented")
 
     @abstractmethod
-    def get_op_list(self, nsId: str, args: Dict = None) -> List[Dict]:
+    def get_op_list(self, args: Dict = None) -> List[Dict]:
         raise NotImplementedError("The method is not implemented")
 
     @abstractmethod

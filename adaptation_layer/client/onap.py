@@ -8,14 +8,12 @@ from error_handler import ResourceNotFound, NsNotFound, VnfNotFound,\
 
 class AgentClient(object):  # ns_instantiation_server
     def __init__(self):
-        # self._host = '10.254.184.215'  # change IP , for tests only
-        self._host = '127.0.0.1'  # change IP , for tests only
+        self._host = '10.254.184.215'  # change IP , for tests only
+        # self._host = '127.0.0.1'  # change IP , for tests only
         self._port = '8080'
         self._headers = {"Content-Type": "application/json",
                          "accept": "application/json"}
         self._base_path = 'http://{0}:{1}'.format(self._host, self._port)
-        # self._test_path = 'http://jsonplaceholder.typicode.com/posts'  # for tests only
-        # self._local_path = 'http://localIp:{0}'.format(self._port)  # add local IP
 
     def _exec_delete(self, url=None, params=None, headers=None):
 
@@ -25,19 +23,19 @@ class AgentClient(object):  # ns_instantiation_server
             raise ServerError(str(e))
 
         if resp.status_code in (200, 201, 202, 204, 206):  # response code 206 was added / limit to needed
-            print('response code: {}'.format(resp.status_code))  # for tests only
+            # print('response code: {}'.format(resp.status_code))  # for tests only
             return  # resp.json()  # for now ned to be commented maybe resp.text
         elif resp.status_code == 400:
-            print('response code: {}'.format(resp.status_code))  # for tests only
+            # print('response code: {}'.format(resp.status_code))  # for tests only
             raise BadRequest()
         elif resp.status_code == 401:
-            print('response code: {}'.format(resp.status_code))  # for tests only
+            # print('response code: {}'.format(resp.status_code))  # for tests only
             raise Unauthorized()
         elif resp.status_code == 404:
-            print('response code: {}'.format(resp.status_code))  # for tests only
+            # print('response code: {}'.format(resp.status_code))  # for tests only
             raise ResourceNotFound()
         else:
-            print(resp.status_code)  # for tests only
+            # print(resp.status_code)  # for tests only
             error = resp.json()
             raise ServerError(error)
             # raise ServerError()
@@ -45,21 +43,21 @@ class AgentClient(object):  # ns_instantiation_server
     def _exec_post(self, url=None, data=None, json=None, headers=None):
 
         try:
-            resp = requests.post(url, data=data, json=json, headers=None)
+            resp = requests.post(url, data=data, json=json, headers=headers)
         except Exception as e:
             raise ServerError(str(e))
 
         if resp.status_code in (200, 201, 202, 204, 206):
-            print('response code: {}'.format(resp.status_code))  # for tests only
+            # print('response code: {}'.format(resp.status_code))  # for tests only
             return resp.json()
         elif resp.status_code == 400:
-            print('response code: {}'.format(resp.status_code))  # for tests only
+            # print('response code: {}'.format(resp.status_code))  # for tests only
             raise BadRequest()
         elif resp.status_code == 401:
-            print('response code: {}'.format(resp.status_code))  # for tests only
+            # print('response code: {}'.format(resp.status_code))  # for tests only
             raise Unauthorized()
         elif resp.status_code == 404:
-            print('response code: {}'.format(resp.status_code))  # for tests only
+            # print('response code: {}'.format(resp.status_code))  # for tests only
             raise ResourceNotFound()
         else:
             if 'application/json' in resp.headers['content-type']:
@@ -77,16 +75,16 @@ class AgentClient(object):  # ns_instantiation_server
             raise ServerError(str(e))
 
         if resp.status_code in (200, 201, 202, 204, 206):  # response code 206 was added
-            print('response code: {}'.format(resp.status_code))  # for tests only
+            # print('response code: {}'.format(resp.status_code))  # for tests only
             return resp.json()
         elif resp.status_code == 400:
-            print('response code: {}'.format(resp.status_code))  # for tests only
+            # print('response code: {}'.format(resp.status_code))  # for tests only
             raise BadRequest()
         elif resp.status_code == 401:
-            print('response code: {}'.format(resp.status_code))  # for tests only
+            # print('response code: {}'.format(resp.status_code))  # for tests only
             raise Unauthorized()
         elif resp.status_code == 404:
-            print('response code: {}'.format(resp.status_code))  # for tests only
+            # print('response code: {}'.format(resp.status_code))  # for tests only
             raise ResourceNotFound()
         else:
             print(resp.status_code)  # for tests only

@@ -38,7 +38,6 @@ class ONAP(Driver):
     # # unsupported by ONAP
     def scale_ns(self, nsId: str, args: Dict = None) -> None:
         pass
-    #
 
     def terminate_ns(self, nsId: str, args: Dict = None) -> None:
         return self._agent.ns_terminate(nsId, args=args)
@@ -49,44 +48,3 @@ class ONAP(Driver):
     def get_op(self, nsLcmOpId, args: Dict = None) -> Dict:
         return self._agent.get_op(nsLcmOpId)
 
-    # def _ns_converter(self, ns):
-    #
-    #     if type(ns) is dict:
-    #         result = {
-    #             "id": ns["id"],
-    #             "nsInstanceName": ns['name'],
-    #             "nsInstanceDescription": 'null',
-    #             "nsdId": ns['serviceSpecification']['id'],
-    #             "nsState": 'INSTANTIATED'
-    #         }
-    #
-    #     elif type(ns) is list:
-    #         result = []
-    #         for element in ns:
-    #             result.append({
-    #                 "id": element['id'],
-    #                 "nsInstanceName": element['name'],
-    #                 # In ONAP - no description id NS Instance
-    #                 "nsInstanceDescription": 'null',
-    #                 "nsdId": element['serviceSpecification']['id'],
-    #                 # permitted value of nsState: NOT_INSTANTIATED, INSTANTIATED
-    #                 # In ONAP all listed NS are instantiated
-    #                 "nsState": 'INSTANTIATED'
-    #                 })
-    #
-    #     return result
-
-    # def instantiate_converter(self, response):  # for first option of response format for ns_create function
-    #
-    #     vnf_payload = response['vnf_info']["vnf_payload"]
-    #     vnf_payload = json.loads(vnf_payload)
-    #
-    #     result = {
-    #             "id": response["instance_id"]["instance_id"],
-    #             "nsInstanceName": 'check list of NS instances',
-    #             "nsInstanceDescription": 'null',
-    #             # nsdId - its better to get that info from get_ls_list function - may cause errors - for tests only
-    #             "nsdId": vnf_payload["requestDetails"]["relatedInstanceList"][0]['relatedInstance']['modelInfo']['modelVersionId'],
-    #             "nsState": 'INSTANTIATED'
-    #         }
-    #     return result
