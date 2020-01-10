@@ -1,0 +1,32 @@
+version: '3.6'
+services:
+  prism-osm:
+    image: stoplight/prism:3
+    container_name: prism-onap
+    command: mock --host 0.0.0.0 --port 9999 /etc/onap-api.yaml
+    volumes:
+      - ./adaptation_layer/tests/onap-api.yaml:/etc/onap-api.yaml
+    networks:
+      mso-lo-net:
+        aliases:
+          - prism-onap
+    # export prism port for debugging
+    ports:
+      - 9999:9999
+  test-osm:
+    build:
+      context: .
+      target: base
+    container_name: test-onap
+    depends_on:
+      - prism-onap
+    environment:
+      TESTING: "True"
+      PRISM_ALIAS: prism-onap
+    command: ["./tests/wait-for-it.sh", "prism-onap:9999", "--", "pipenv", "run", "pytest", "-v", "tests/test_onap.py"]
+    networks:
+      mso-lo-net:
+        aliases:
+          - test-onap
+networks:
+    mso-lo-net:
