@@ -1,6 +1,6 @@
 version: '3.6'
 services:
-  prism-osm:
+  prism-onap:
     image: stoplight/prism:3
     container_name: prism-onap
     command: mock --host 0.0.0.0 --port 9999 /etc/onap-api.yaml
@@ -13,7 +13,7 @@ services:
     # export prism port for debugging
     ports:
       - 9999:9999
-  test-osm:
+  test-onap:
     build:
       context: .
       target: base
