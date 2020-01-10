@@ -1,6 +1,7 @@
-from .interface import Driver
+from typing import Dict, List
+
 from client.osm import Client as Osmclient
-from typing import Union, Dict, List
+from .interface import Driver
 
 
 class OSM(Driver):
@@ -16,15 +17,18 @@ class OSM(Driver):
         return self._client.vnf_get(vnfId, args=args)
 
     def get_ns_list(self, args=None) -> List[Dict]:
-        ns_list = self._client.ns_list(args=args)
-        return self._ns_im_converter(ns_list)
+        osm_ns_list = self._client.ns_list(args=args)
+        sol_ns_list = []
+        for osm_ns in osm_ns_list:
+            sol_ns_list.append(self._ns_im_converter(osm_ns))
+        return sol_ns_list
 
     def create_ns(self, args=None) -> Dict:
         return self._client.ns_create(args=args)
 
     def get_ns(self, nsId: str, args=None) -> Dict:
-        ns = self._client.ns_get(nsId, args=args)
-        return self._ns_im_converter(ns)
+        osm_ns = self._client.ns_get(nsId, args=args)
+        return self._ns_im_converter(osm_ns)
 
     def delete_ns(self, nsId: str, args: Dict = None) -> None:
         return self._client.ns_delete(nsId, args=args)
@@ -39,32 +43,75 @@ class OSM(Driver):
         return self._client.ns_scale(nsId, args=args)
 
     def get_op_list(self, args: Dict = None) -> List[Dict]:
-        nsId = None
-        if args['args'] and len(args['args']) > 0:
-            nsId = args['args']['nsInstanceId'] if 'nsInstanceId' in args['args'] else None
-        return self._client.ns_op_list(nsId, args=args)
+        nsId = args['args']['nsInstanceId'] if args['args'] and 'nsInstanceId' in args['args'] else None
+        osm_op_list = self._client.ns_op_list(nsId, args=args)
+        sol_op_list = []
+        for op in osm_op_list:
+            sol_op_list.append(self._op_im_converter(op))
+        return sol_op_list
 
     def get_op(self, nsLcmOpId, args: Dict = None) -> Dict:
-        return self._client.ns_op(nsLcmOpId, args=args)
+        op = self._client.ns_op(nsLcmOpId, args=args)
+        return self._op_im_converter(op)
 
-    def _ns_im_converter(self, ns: Union[list, dict]) -> Union[list, dict]:
-        if type(ns) is dict:
-            result = {
-                "id": ns['id'],
-                "nsInstanceName": ns['name'],
-                "nsInstanceDescription": ns['description'],
-                "nsdId": ns['nsd-id'],
-                "nsState": ns['_admin']['nsState']
+    def _ns_im_converter(self, osm_ns: Dict) -> Dict:
+        sol_ns = {
+            "id": osm_ns['id'],
+            "nsInstanceName": osm_ns['name'],
+            "nsInstanceDescription": osm_ns['description'],
+            "nsdId": osm_ns['nsd-id'],
+            "nsState": osm_ns['_admin']['nsState'],
+            "vnfInstance": []
+        }
+        osm_vnfs = [self._client.vnf_get(vnf_id) for vnf_id in osm_ns["constituent-vnfr-ref"]]
+        for osm_vnf in osm_vnfs:
+            vnf_instance = {
+                "id": osm_vnf["id"],
+                "vnfdId": osm_vnf["vnfd-id"],
+                "vnfProductName": osm_vnf["vnfd-ref"],
+                "vimId": osm_vnf["vim-account-id"],
+                "instantiationState": osm_ns['_admin']['nsState'],  # same as the NS
             }
-        elif type(ns) is list:
-            result = []
-            for ins in ns:
-                result.append({
-                    "id": ins['id'],
-                    "nsInstanceName": ins['name'],
-                    "nsInstanceDescription": ins['description'],
-                    "nsdId": ins['nsd-id'],
-                    "nsState": ins['_admin']['nsState']
-                })
+            if vnf_instance["instantiationState"] == "INSTANTIATED":
+                vnf_instance["instantiatedVnfInfo"] = {"extCpInfo": []}
+                vnfpkg = self._client.vnfpkg_get(osm_vnf["vnfd-id"])
+                for vdur in osm_vnf["vdur"]:
+                    for if_vdur in vdur["interfaces"]:
+                        [if_pkg] = [if_pkg for vdu in vnfpkg["vdu"] for if_pkg in vdu["interface"]
+                                    if vdu["id"] == vdur["vdu-id-ref"] and if_pkg["name"] == if_vdur["name"]]
+                        [cp] = [val for key, val in if_pkg.items() if key.endswith("-connection-point-ref")]
+                        try:
+                            (ip_address, mac_address) = (if_vdur["ip_address"], if_vdur["mac_address"])
+                        except KeyError:
+                            (ip_address, mac_address) = (None, None)
+                        vnf_instance["instantiatedVnfInfo"]["extCpInfo"].append({
+                            "id": cp,
+                            "cpProtocolInfo": [
+                                {
+                                    "layerProtocol": "IP_OVER_ETHERNET",
+                                    "ipOverEthernet": {
+                                        "macAddress": mac_address,
+                                        "ipAddresses": [
+                                            {
+                                                "type": "IPV4",
+                                                "addresses": [ip_address]
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        })
+            sol_ns["vnfInstance"].append(vnf_instance)
+        return sol_ns
 
-        return result
+    @staticmethod
+    def _op_im_converter(osm_op):
+        sol_op = {
+            "id": osm_op["id"],
+            "operationState": osm_op["operationState"].upper(),
+            "stateEnteredTime": osm_op["statusEnteredTime"],
+            "nsInstanceId": osm_op["nsInstanceId"],
+            "lcmOperationType": osm_op["lcmOperationType"].upper(),
+            "startTime": osm_op["startTime"]
+        }
+        return sol_op
