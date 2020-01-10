@@ -17,6 +17,7 @@ flask-script = "*"
 flask-sqlalchemy = "*"
 flask-migrate = "*"
 pytest = "*"
+jsonschema = "*"
 
 [requires]
 python_version = "3.6"

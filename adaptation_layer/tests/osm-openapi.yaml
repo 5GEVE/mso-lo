@@ -3797,11 +3797,11 @@ components:
         isCancelPending:
           type: boolean
         startTime:
-          type: number
-          format: float
+          type: string
+          format: date-time
         statusEnteredTime:
-          type: number
-          format: float
+          type: string
+          format: date-time
         operationParams:
           type: object
           properties:
