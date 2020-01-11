@@ -1,11 +1,12 @@
 #!flask/bin/python
-import sys
 import unittest
-from app import app
+
+import request_mock
+import response_schemas
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError, SchemaError
-import response_schemas
-import request_mock
+
+from app import app
 
 
 class OSMTestCase(unittest.TestCase):
