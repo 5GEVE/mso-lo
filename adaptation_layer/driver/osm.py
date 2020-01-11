@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Dict, List
 
 from client.osm import Client as Osmclient
@@ -124,9 +125,9 @@ class OSM(Driver):
         sol_op = {
             "id": osm_op["id"],
             "operationState": osm_op["operationState"].upper(),
-            "stateEnteredTime": osm_op["statusEnteredTime"],
+            "stateEnteredTime": datetime.utcfromtimestamp(osm_op["statusEnteredTime"]).isoformat("T") + "Z",
             "nsInstanceId": osm_op["nsInstanceId"],
             "lcmOperationType": osm_op["lcmOperationType"].upper(),
-            "startTime": osm_op["startTime"]
+            "startTime": datetime.utcfromtimestamp(osm_op["startTime"]).isoformat("T") + "Z",
         }
         return sol_op
