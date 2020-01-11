@@ -39,7 +39,7 @@ class Client(object):
             self._headers['Authorization'] = 'Bearer {}'.format(
                 token['id'])
         else:
-            self._base_path = 'http://{0}:{1}'.format(PRISM_ALIAS, so_port)
+            self._base_path = 'http://{0}:{1}/osm'.format(PRISM_ALIAS, so_port)
 
     def _exec_get(self, url=None, params=None, headers=None):
         # result = {}
