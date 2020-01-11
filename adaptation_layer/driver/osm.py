@@ -1,6 +1,7 @@
 from typing import Dict, List
 
 from client.osm import Client as Osmclient
+from error_handler import VnfNotFound
 from .interface import Driver
 
 
@@ -63,11 +64,15 @@ class OSM(Driver):
             "nsState": osm_ns['_admin']['nsState'],
             "vnfInstance": []
         }
-        
+
         osm_vnfs = []
         if 'constituent-vnfr-ref' in osm_ns:
-            osm_vnfs = [self._client.vnf_get(vnf_id) for vnf_id in osm_ns["constituent-vnfr-ref"]]
-            
+            for vnf_id in osm_ns["constituent-vnfr-ref"]:
+                try:
+                    osm_vnfs.append(self._client.vnf_get(vnf_id))
+                except VnfNotFound:
+                    pass
+
         for osm_vnf in osm_vnfs:
             vnf_instance = {
                 "id": osm_vnf["id"],
