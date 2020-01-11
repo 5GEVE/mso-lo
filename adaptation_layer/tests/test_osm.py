@@ -2,7 +2,8 @@
 import sys
 import unittest
 from app import app
-from jsonschema import validate, exceptions as jsv_exception
+from jsonschema import validate
+from jsonschema.exceptions import ValidationError, SchemaError
 import response_schemas
 import request_mock
 
@@ -22,7 +23,7 @@ class OSMTestCase(unittest.TestCase):
         res = self.client().get('/nfvo/1/ns_instances?__code=200')
         try:
             validate(res.json, response_schemas.ns_list_schema)
-        except jsv_exception as e:
+        except (ValidationError, SchemaError) as e:
             self.fail(msg=e.message)
         self.assertEqual(res.status_code, 200)
 
@@ -36,7 +37,7 @@ class OSMTestCase(unittest.TestCase):
             '/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7?__code=200')
         try:
             validate(res.json, response_schemas.ns_schema)
-        except jsv_exception as e:
+        except (ValidationError, SchemaError) as e:
             self.fail(msg=e.message)
         self.assertEqual(res.status_code, 200)
 
@@ -56,7 +57,7 @@ class OSMTestCase(unittest.TestCase):
                                  json=request_mock.mock_ns)
         try:
             validate(res.json, response_schemas.ns_create_schema)
-        except jsv_exception as e:
+        except (ValidationError, SchemaError) as e:
             self.fail(msg=e.message)
         self.assertEqual(res.status_code, 201)
 
@@ -143,7 +144,7 @@ class OSMTestCase(unittest.TestCase):
             '/nfvo/1/ns_lcm_op_occs/49ccb6a2-5bcd-4f35-a2cf-7728c54c48b7?__code=200')
         try:
             validate(res.json, response_schemas.ns_lcm_op_occ_schema)
-        except jsv_exception as e:
+        except (ValidationError, SchemaError) as e:
             self.fail(msg=e.message)
         self.assertEqual(res.status_code, 200)
 
