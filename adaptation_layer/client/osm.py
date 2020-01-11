@@ -249,7 +249,7 @@ class Client(object):
 
 
 def _build_testing_url(base, args):
-    if TESTING and args['args']:
+    if TESTING and args and args['args']:  # TODO Ugly. We should remove the nested 'args' from app.py
         url_query = urlencode(args['args'])
         return "{0}?{1}".format(base, url_query)
     return base
