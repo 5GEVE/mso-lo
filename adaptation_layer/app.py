@@ -35,7 +35,7 @@ def get_nfvo(nfvo_id):
 @app.route('/nfvo/<nfvo_id>/ns_instances', methods=['POST'])
 def create_ns(nfvo_id):
     try:
-        ns = manager.get_driver(nfvo_id).create_ns(
+        ns, headers = manager.get_driver(nfvo_id).create_ns(
             args={'payload': request.json, 'args': request.args.to_dict()})
         return make_response(jsonify(ns), 201)
     except BadRequest as e:
@@ -51,7 +51,7 @@ def create_ns(nfvo_id):
 @app.route('/nfvo/<nfvo_id>/ns_instances', methods=['GET'])
 def get_ns_list(nfvo_id):
     try:
-        ns_list = manager.get_driver(nfvo_id).get_ns_list(
+        ns_list, headers = manager.get_driver(nfvo_id).get_ns_list(
             args={'args': request.args.to_dict()})
         return jsonify(ns_list)
     except BadRequest as e:
@@ -67,7 +67,7 @@ def get_ns_list(nfvo_id):
 @app.route('/nfvo/<nfvo_id>/ns_instances/<ns_id>', methods=['GET'])
 def get_ns(nfvo_id, ns_id):
     try:
-        ns = manager.get_driver(nfvo_id).get_ns(
+        ns, headers = manager.get_driver(nfvo_id).get_ns(
             ns_id, args={'args': request.args.to_dict()})
         return jsonify(ns)
     except BadRequest as e:
@@ -103,7 +103,7 @@ def delete_ns(nfvo_id, ns_id):
 @app.route('/nfvo/<nfvo_id>/ns_instances/<ns_id>/instantiate', methods=['POST'])
 def instantiate_ns(nfvo_id, ns_id):
     try:
-        ns = manager.get_driver(nfvo_id).instantiate_ns(
+        ns, headers = manager.get_driver(nfvo_id).instantiate_ns(
             ns_id, args={'payload': request.json, 'args': request.args.to_dict()})
         return make_response('', 202)
     except BadRequest as e:
@@ -121,7 +121,7 @@ def instantiate_ns(nfvo_id, ns_id):
 @app.route('/nfvo/<nfvo_id>/ns_instances/<ns_id>/terminate', methods=['POST'])
 def terminate_ns(nfvo_id, ns_id):
     try:
-        term_ns = manager.get_driver(nfvo_id).terminate_ns(
+        term_ns, headers = manager.get_driver(nfvo_id).terminate_ns(
             ns_id, args={'payload': request.json, 'args': request.args.to_dict()})
         return make_response('', 202)
     except BadRequest as e:
@@ -139,7 +139,7 @@ def terminate_ns(nfvo_id, ns_id):
 @app.route('/nfvo/<nfvo_id>/ns_instances/<ns_id>/scale', methods=['POST'])
 def scale_ns(nfvo_id, ns_id):
     try:
-        scale_ns = manager.get_driver(nfvo_id).scale_ns(
+        scale_ns, headers = manager.get_driver(nfvo_id).scale_ns(
             ns_id, args={'payload': request.json, 'args': request.args.to_dict()})
         return make_response('', 202)
     except BadRequest as e:
@@ -157,7 +157,7 @@ def scale_ns(nfvo_id, ns_id):
 @app.route('/nfvo/<nfvo_id>/ns_lcm_op_occs', methods=['GET'])
 def get_op_list(nfvo_id):
     try:
-        op_list = manager.get_driver(nfvo_id).get_op_list(
+        op_list, headers = manager.get_driver(nfvo_id).get_op_list(
             args={'args': request.args.to_dict()})
         return jsonify(op_list)
     except BadRequest as e:
@@ -173,7 +173,7 @@ def get_op_list(nfvo_id):
 @app.route('/nfvo/<nfvo_id>/ns_lcm_op_occs/<nsLcmOpId>', methods=['GET'])
 def get_op(nfvo_id, nsLcmOpId):
     try:
-        ns_op = manager.get_driver(nfvo_id).get_op(
+        ns_op, headers = manager.get_driver(nfvo_id).get_op(
             nsLcmOpId, args={'args': request.args.to_dict()})
         return jsonify(ns_op)
     except BadRequest as e:
