@@ -1359,8 +1359,12 @@ paths:
           headers:
             Location:
               schema:
+                description: |
+                  It must point to the new "NS Instance"
+                  resource, i.e. an URI like ".../ns_lcm_op_occs/{nsLcmOpOccId}"
                 type: string
                 format: uri
+                example: /osm/nslcm/v1/ns_instances/4e462039-e57b-44e4-8431-bc586f31b4cb
           content:
             application/json:
               schema:
@@ -1505,6 +1509,7 @@ paths:
               schema:
                 type: string
                 format: uri
+                example: /osm/nslcm/v1/ns_lcm_op_occs/d4888b76-d741-4387-b7ac-37813d513a5a
           content:
             application/json:
               schema:
@@ -1568,6 +1573,7 @@ paths:
               schema:
                 type: string
                 format: uri
+                example: /osm/nslcm/v1/ns_lcm_op_occs/d4888b76-d741-4387-b7ac-37813d513a5a
           content:
             application/json:
               schema:
@@ -1632,6 +1638,7 @@ paths:
               schema:
                 type: string
                 format: uri
+                example: /osm/nslcm/v1/ns_lcm_op_occs/d4888b76-d741-4387-b7ac-37813d513a5a
           content:
             application/json:
               schema:
@@ -1698,6 +1705,7 @@ paths:
               schema:
                 type: string
                 format: uri
+                example: /osm/nslcm/v1/ns_lcm_op_occs/d4888b76-d741-4387-b7ac-37813d513a5a
           content:
             application/json:
               schema:
@@ -4383,16 +4391,10 @@ components:
             example: 7c252170-ff12-4ee5-979c-6ddf3346839a
             type: string
           type: array
-
-
       required:
         - _id
         - id
         - name
-        
-        
-        
-        
     InstantiateNsRequest:
       type: object
       properties:
