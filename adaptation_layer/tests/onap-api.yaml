@@ -149,10 +149,10 @@ paths:
               schema:
                 type: string
                 format: uri
-          # content:
-          #   application/json:
-          #     schema:
-          #       $ref: '#/components/schemas/ObjectId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
           #   application/yaml:
           #     schema:
           #       $ref: '#/components/schemas/ObjectId'
@@ -191,6 +191,10 @@ paths:
       responses:
         '202':
           description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
 #          headers:
 #            Location:
 #              schema:
@@ -237,6 +241,10 @@ paths:
       responses:
         '202':
           description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
 #        '204':
 #          description: No Content
         '400':
@@ -423,6 +431,13 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/OnapServiceSpecification'
+    Empty:
+      description: Onap Service Specification
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Empty'
+#
 # end of schemas in responses
 # END RESPONSES
   schemas:
@@ -647,6 +662,11 @@ components:
         name:
           type: string
 #
+    Empty:
+      description:
+      type: object
+      properties:
+
   # END SCHEMAS
   # start request bodies
   # application/json:
