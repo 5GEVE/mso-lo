@@ -103,9 +103,9 @@ def delete_ns(nfvo_id, ns_id):
 @app.route('/nfvo/<nfvo_id>/ns_instances/<ns_id>/instantiate', methods=['POST'])
 def instantiate_ns(nfvo_id, ns_id):
     try:
-        ns, headers = manager.get_driver(nfvo_id).instantiate_ns(
-            ns_id, args={'payload': request.json, 'args': request.args.to_dict()})
-        return make_response('', 202)
+        body, headers = manager.get_driver(nfvo_id). \
+            instantiate_ns(ns_id, args={'payload': request.json, 'args': request.args.to_dict()})
+        return make_response('', 202, headers)
     except BadRequest as e:
         abort(400, description=e.description)
     except Unauthorized as e:

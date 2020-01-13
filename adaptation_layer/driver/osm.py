@@ -1,12 +1,7 @@
-from datetime import datetime
-from typing import Dict, List
-
-from client.osm import Client as Osmclient
-from error_handler import VnfNotFound, VnfPkgNotFound
-from .interface import Driver
-
 import json as JSON
 import os
+from datetime import datetime
+from typing import Dict, List, Tuple
 from urllib.parse import urlencode
 
 import requests
@@ -15,6 +10,7 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 from error_handler import ResourceNotFound, NsNotFound, VnfNotFound, \
     Unauthorized, BadRequest, ServerError, NsOpNotFound, VnfPkgNotFound
+from .interface import Driver, Headers
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -56,12 +52,11 @@ class OSM(Driver):
             raise ServerError(str(e))
         if resp.status_code in (200, 201, 202, 204):
             if 'application/json' in resp.headers['content-type']:
-                return resp.json(), resp.headers
+                return resp.json(), dict(**resp.headers)
             elif 'application/yaml' in resp.headers['content-type']:
-                return JSON.loads(JSON.dumps(
-                    YAML.load(resp.text), sort_keys=True, indent=2)), resp.headers
+                return JSON.loads(JSON.dumps(YAML.load(resp.text), sort_keys=True, indent=2)), dict(**resp.headers)
             else:
-                return resp.text, resp.headers
+                return resp.text, dict(**resp.headers)
         elif resp.status_code == 400:
             raise BadRequest()
         elif resp.status_code == 401:
@@ -86,12 +81,11 @@ class OSM(Driver):
             raise ServerError(str(e))
         if resp.status_code in (200, 201, 202, 204):
             if 'application/json' in resp.headers['content-type']:
-                return resp.json(), resp.headers
+                return resp.json(), dict(**resp.headers)
             elif 'application/yaml' in resp.headers['content-type']:
-                return JSON.loads(JSON.dumps(
-                    YAML.load(resp.text), sort_keys=True, indent=2)), resp.headers
+                return JSON.loads(JSON.dumps(YAML.load(resp.text), sort_keys=True, indent=2)), dict(**resp.headers)
             else:
-                return resp.text, resp.headers
+                return resp.text, dict(**resp.headers)
         elif resp.status_code == 400:
             raise BadRequest()
         elif resp.status_code == 401:
@@ -102,8 +96,7 @@ class OSM(Driver):
             if 'application/json' in resp.headers['content-type']:
                 error = resp.json()
             elif 'application/yaml' in resp.headers['content-type']:
-                error = JSON.loads(JSON.dumps(
-                    YAML.safe_load(resp.text), sort_keys=True, indent=2))
+                error = JSON.loads(JSON.dumps(YAML.safe_load(resp.text), sort_keys=True, indent=2))
             else:
                 error = resp.text
             raise ServerError(error)
@@ -136,8 +129,7 @@ class OSM(Driver):
     def create_ns(self, args=None) -> (Dict, Dict):
         _url = "{0}/nslcm/v1/ns_instances".format(self._base_path)
         _url = self._build_testing_url(_url, args)
-        return self._exec_post(_url, json=args['payload'],
-                               headers=self._headers)
+        return self._exec_post(_url, json=args['payload'], headers=self._headers)
 
     def get_ns(self, nsId: str, args=None) -> (Dict, Dict):
         _url = "{0}/nslcm/v1/ns_instances/{1}".format(
@@ -161,12 +153,11 @@ class OSM(Driver):
             raise ServerError(str(e))
         if resp.status_code in (200, 201, 202, 204):
             if 'application/json' in resp.headers['content-type']:
-                return resp.json(), resp.headers
+                return resp.json(), dict(**resp.headers)
             elif 'application/yaml' in resp.headers['content-type']:
-                return JSON.loads(JSON.dumps(
-                    YAML.load(resp.text), sort_keys=True, indent=2)), resp.headers
+                return JSON.loads(JSON.dumps(YAML.load(resp.text), sort_keys=True, indent=2)), dict(**resp.headers)
             else:
-                return resp.text, resp.headers
+                return resp.text, dict(**resp.headers)
         elif resp.status_code == 400:
             raise BadRequest()
         elif resp.status_code == 401:
@@ -177,25 +168,21 @@ class OSM(Driver):
             if 'application/json' in resp.headers['content-type']:
                 error = resp.json()
             elif 'application/yaml' in resp.headers['content-type']:
-                error = JSON.loads(JSON.dumps(
-                    YAML.safe_load(resp.text), sort_keys=True, indent=2))
+                error = JSON.loads(JSON.dumps(YAML.safe_load(resp.text), sort_keys=True, indent=2))
             else:
                 error = resp.text
             raise ServerError(error)
 
-    def instantiate_ns(self, nsId: str, args=None) -> (None, Dict):
-        _url = "{0}/nslcm/v1/ns_instances/{1}/instantiate".format(
-            self._base_path, id)
+    def instantiate_ns(self, nsId: str, args=None) -> Tuple[None, Headers]:
+        _url = "{0}/nslcm/v1/ns_instances/{1}/instantiate".format(self._base_path, nsId)
         _url = self._build_testing_url(_url, args)
         try:
-            return self._exec_post(_url, json=args['payload'],
-                                   headers=self._headers)
+            return self._exec_post(_url, json=args['payload'], headers=self._headers)
         except ResourceNotFound:
-            raise NsNotFound(ns_id=id)
+            raise NsNotFound(ns_id=nsId)
 
     def terminate_ns(self, nsId: str, args=None) -> (None, Dict):
-        _url = "{0}/nslcm/v1/ns_instances/{1}/terminate".format(
-            self._base_path, nsId)
+        _url = "{0}/nslcm/v1/ns_instances/{1}/terminate".format(self._base_path, nsId)
         _url = self._build_testing_url(_url, args)
         try:
             return self._exec_post(_url, json=args['payload'],
@@ -230,8 +217,7 @@ class OSM(Driver):
         return sol_op_list, headers
 
     def get_op(self, nsLcmOpId, args: Dict = None) -> (Dict, Dict):
-        _url = "{0}/nslcm/v1/ns_lcm_op_occs/{1}".format(
-            self._base_path, nsLcmOpId)
+        _url = "{0}/nslcm/v1/ns_lcm_op_occs/{1}".format(self._base_path, nsLcmOpId)
         _url = self._build_testing_url(_url, args)
         try:
             op, headers = self._exec_get(_url, headers=self._headers)
@@ -249,11 +235,9 @@ class OSM(Driver):
             for if_vdur in vdur["interfaces"]:
                 [if_pkg] = [if_pkg for vdu in vnfpkg["vdu"] for if_pkg in vdu["interface"]
                             if vdu["id"] == vdur["vdu-id-ref"] and if_pkg["name"] == if_vdur["name"]]
-                [cp] = [val for key, val in if_pkg.items(
-                ) if key.endswith("-connection-point-ref")]
+                [cp] = [val for key, val in if_pkg.items() if key.endswith("-connection-point-ref")]
                 try:
-                    (ip_address, mac_address) = (
-                        if_vdur["ip_address"], if_vdur["mac_address"])
+                    (ip_address, mac_address) = (if_vdur["ip_address"], if_vdur["mac_address"])
                 except KeyError:
                     (ip_address, mac_address) = (None, None)
                 cp_info.append({
@@ -303,8 +287,7 @@ class OSM(Driver):
                 "instantiationState": osm_ns['_admin']['nsState'],
             }
             if vnf_instance["instantiationState"] == "INSTANTIATED":
-                vnf_instance["instantiatedVnfInfo"]["extCpInfo"] = self._cpinfo_converter(
-                    osm_vnf)
+                vnf_instance["instantiatedVnfInfo"]["extCpInfo"] = self._cpinfo_converter(osm_vnf)
             sol_ns["vnfInstance"].append(vnf_instance)
         return sol_ns
 
