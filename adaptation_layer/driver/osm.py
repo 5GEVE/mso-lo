@@ -1,7 +1,7 @@
 import json as JSON
 import os
 from datetime import datetime
-from typing import Dict, List, Tuple
+from typing import Dict, Tuple
 from urllib.parse import urlencode
 
 import requests
@@ -108,12 +108,12 @@ class OSM(Driver):
         token_url = "{0}/{1}".format(self._base_path, self._token_endpoint)
         return self._exec_post(token_url, json=auth_payload)
 
-    def get_vnf_list(self, args=None) -> (list, Dict):
+    def get_vnf_list(self, args=None) -> Tuple[BodyList, Headers]:
         _url = "{0}/nslcm/v1/vnf_instances".format(self._base_path)
         _url = self._build_testing_url(_url, args)
         return self._exec_get(_url, headers=self._headers)
 
-    def get_vnf(self, vnfId: str, args=None) -> (list, Dict):
+    def get_vnf(self, vnfId: str, args=None) -> Tuple[Body, Headers]:
         return self.get_vnf(vnfId, args=args)
 
     def get_ns_list(self, args=None) -> Tuple[BodyList, Headers]:
