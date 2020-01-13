@@ -1,19 +1,33 @@
 import requests
+import os
 from error_handler import ResourceNotFound, NsNotFound, VnfNotFound,\
     Unauthorized, BadRequest, ServerError, NsOpNotFound
 # from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 # requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
+TESTING = os.environ.get("TESTING", False)
+PRISM_ALIAS = os.environ.get("PRISM_ALIAS", "prism-onap")
+
 
 class AgentClient(object):  # ns_instantiation_server
-    def __init__(self):
-        self._host = '10.254.184.215'  # change IP , for tests only
-        # self._host = '127.0.0.1'  # change IP , for tests only
-        self._port = '8080'
+    def __init__(
+            self,
+            host=None,
+            so_port=8080,
+            **kwargs):
+
+        self._host = host
+        self._port = so_port
         self._headers = {"Content-Type": "application/json",
                          "accept": "application/json"}
-        self._base_path = 'http://{0}:{1}'.format(self._host, self._port)
+
+        if TESTING is False:
+            # self._base_path = 'http://{0}:{1}'.format(self._host, self._port)
+            self._base_path = 'http://{0}:{1}'.format('10.254.184.215', self._port)  # for tests only
+            # self._base_path = 'http://{0}:{1}'.format('127.0.0.1', self._port)  # for tests only
+        else:
+            self._base_path = 'http://{0}:{1}'.format(PRISM_ALIAS, 9999)
 
     def _exec_delete(self, url=None, params=None, headers=None):
 
@@ -146,17 +160,25 @@ class AgentClient(object):  # ns_instantiation_server
 
 
 class Client(object):
-    def __init__(self):
+    def __init__(
+            self,
+            host=None,
+            so_port=30274,
+            **kwargs):
 
-        # add a info about ONAP IP and port - current local instance
-        self._host = '10.254.184.164'
-        self._port = 30274
+        self._host = host
+        self._port = so_port
         self._nbi_ver = 4
-        self._customer = 'Michal-Customer'  # when blank, default 'generic' ; IMPORTANT!
+        self._customer = 'generic'  # when blank, default 'generic' ; IMPORTANT!
         self._headers = {"Content-Type": "application/json",
                          "accept": "application/json"}
 
-        self._base_path = 'http://{0}:{1}/nbi/api/v{2}'.format(self._host, self._port, self._nbi_ver)
+        if TESTING is False:
+            # self._base_path = 'http://{0}:{1}/nbi/api/v{2}'.format(self._host, self._port, self._nbi_ver)
+            # for tests only
+            self._base_path = 'http://{0}:{1}/nbi/api/v{2}'.format('10.254.184.164', self._port, self._nbi_ver)
+        else:
+            self._base_path = 'http://{0}:{1}/nbi/api/v4'.format(PRISM_ALIAS, 9999)
 
     def _exec_get(self, url=None, params=None, headers=None):
 
