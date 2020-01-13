@@ -10,7 +10,7 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 from error_handler import ResourceNotFound, NsNotFound, VnfNotFound, \
     Unauthorized, BadRequest, ServerError, NsOpNotFound, VnfPkgNotFound
-from .interface import Driver, Headers
+from .interface import Driver, Headers, BodyList, Body
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -116,7 +116,7 @@ class OSM(Driver):
     def get_vnf(self, vnfId: str, args=None) -> (list, Dict):
         return self.get_vnf(vnfId, args=args)
 
-    def get_ns_list(self, args=None) -> (List[Dict], Dict):
+    def get_ns_list(self, args=None) -> Tuple[BodyList, Headers]:
         _url = "{0}/nslcm/v1/ns_instances".format(self._base_path)
         print(_url)
         _url = self._build_testing_url(_url, args)
@@ -126,12 +126,12 @@ class OSM(Driver):
             sol_ns_list.append(self._ns_im_converter(osm_ns))
         return sol_ns_list, headers
 
-    def create_ns(self, args=None) -> (Dict, Dict):
+    def create_ns(self, args=None) -> Tuple[Body, Headers]:
         _url = "{0}/nslcm/v1/ns_instances".format(self._base_path)
         _url = self._build_testing_url(_url, args)
         return self._exec_post(_url, json=args['payload'], headers=self._headers)
 
-    def get_ns(self, nsId: str, args=None) -> (Dict, Dict):
+    def get_ns(self, nsId: str, args=None) -> Tuple[Body, Headers]:
         _url = "{0}/nslcm/v1/ns_instances/{1}".format(
             self._base_path, nsId)
         _url = self._build_testing_url(_url, args)
@@ -142,7 +142,7 @@ class OSM(Driver):
 
         return self._ns_im_converter(ns), headers
 
-    def delete_ns(self, nsId: str, args: Dict = None) -> (None, Dict):
+    def delete_ns(self, nsId: str, args: Dict = None) -> Tuple[None, Headers]:
         _url = "{0}/nslcm/v1/ns_instances/{1}".format(
             self._base_path, nsId)
         _url = self._build_testing_url(_url, args)
@@ -181,7 +181,7 @@ class OSM(Driver):
         except ResourceNotFound:
             raise NsNotFound(ns_id=nsId)
 
-    def terminate_ns(self, nsId: str, args=None) -> (None, Dict):
+    def terminate_ns(self, nsId: str, args=None) -> Tuple[None, Headers]:
         _url = "{0}/nslcm/v1/ns_instances/{1}/terminate".format(self._base_path, nsId)
         _url = self._build_testing_url(_url, args)
         try:
@@ -190,7 +190,7 @@ class OSM(Driver):
         except ResourceNotFound:
             raise NsNotFound(ns_id=nsId)
 
-    def scale_ns(self, nsId: str, args=None) -> (None, Dict):
+    def scale_ns(self, nsId: str, args=None) -> Tuple[None, Headers]:
         _url = "{0}/nslcm/v1/ns_instances/{1}/scale".format(
             self._base_path, nsId)
         _url = self._build_testing_url(_url, args)
@@ -200,7 +200,7 @@ class OSM(Driver):
         except ResourceNotFound:
             raise NsNotFound(ns_id=id)
 
-    def get_op_list(self, args: Dict = None) -> (List[Dict], Dict):
+    def get_op_list(self, args: Dict = None) -> Tuple[BodyList, Headers]:
         nsId = args['args']['nsInstanceId'] if args['args'] and 'nsInstanceId' in args['args'] else None
         _url = "{0}/nslcm/v1/ns_lcm_op_occs".format(self._base_path)
         if nsId:
@@ -216,7 +216,7 @@ class OSM(Driver):
             sol_op_list.append(self._op_im_converter(op))
         return sol_op_list, headers
 
-    def get_op(self, nsLcmOpId, args: Dict = None) -> (Dict, Dict):
+    def get_op(self, nsLcmOpId, args: Dict = None) -> Tuple[Body, Headers]:
         _url = "{0}/nslcm/v1/ns_lcm_op_occs/{1}".format(self._base_path, nsLcmOpId)
         _url = self._build_testing_url(_url, args)
         try:
