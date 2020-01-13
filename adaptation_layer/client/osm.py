@@ -39,7 +39,7 @@ class Client(object):
             self._headers['Authorization'] = 'Bearer {}'.format(
                 token['id'])
         else:
-            self._base_path = 'http://{0}:{1}'.format(PRISM_ALIAS, so_port)
+            self._base_path = 'http://{0}:{1}/osm'.format(PRISM_ALIAS, so_port)
 
     def _exec_get(self, url=None, params=None, headers=None):
         # result = {}
@@ -115,7 +115,7 @@ class Client(object):
         return self._exec_get(_url, headers=self._headers)
 
     def vnf_list(self, args=None):
-        _url = "{0}/nslcm/v1/vnfrs".format(self._base_path)
+        _url = "{0}/nslcm/v1/vnf_instances".format(self._base_path)
         _url = _build_testing_url(_url, args)
         return self._exec_get(_url, headers=self._headers)
 
@@ -232,7 +232,7 @@ class Client(object):
             raise NsNotFound(ns_id=id)
 
     def vnf_get(self, id, args=None):
-        _url = "{0}/nslcm/v1/vnfrs/{1}".format(self._base_path, id)
+        _url = "{0}/nslcm/v1/vnf_instances/{1}".format(self._base_path, id)
         _url = _build_testing_url(_url, args)
         try:
             return self._exec_get(_url, headers=self._headers)
@@ -249,7 +249,7 @@ class Client(object):
 
 
 def _build_testing_url(base, args):
-    if TESTING and args['args']:
+    if TESTING and args and args['args']:  # TODO Ugly. We should remove the nested 'args' from app.py
         url_query = urlencode(args['args'])
         return "{0}?{1}".format(base, url_query)
     return base

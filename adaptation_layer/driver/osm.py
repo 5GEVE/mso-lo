@@ -1,6 +1,8 @@
+from datetime import datetime
 from typing import Dict, List
 
 from client.osm import Client as Osmclient
+from error_handler import VnfNotFound, VnfPkgNotFound
 from .interface import Driver
 
 
@@ -54,6 +56,39 @@ class OSM(Driver):
         op = self._client.ns_op(nsLcmOpId, args=args)
         return self._op_im_converter(op)
 
+    def _cpinfo_converter(self, osm_vnf):
+        cp_info = []
+        try:
+            vnfpkg = self._client.vnfpkg_get(osm_vnf["vnfd-id"])
+        except VnfPkgNotFound:
+            return cp_info
+        for vdur in osm_vnf["vdur"]:
+            for if_vdur in vdur["interfaces"]:
+                [if_pkg] = [if_pkg for vdu in vnfpkg["vdu"] for if_pkg in vdu["interface"]
+                            if vdu["id"] == vdur["vdu-id-ref"] and if_pkg["name"] == if_vdur["name"]]
+                [cp] = [val for key, val in if_pkg.items() if key.endswith("-connection-point-ref")]
+                try:
+                    (ip_address, mac_address) = (if_vdur["ip_address"], if_vdur["mac_address"])
+                except KeyError:
+                    (ip_address, mac_address) = (None, None)
+                cp_info.append({
+                    "id": cp,
+                    "cpProtocolInfo": [
+                        {
+                            "layerProtocol": "IP_OVER_ETHERNET",
+                            "ipOverEthernet": {
+                                "macAddress": mac_address,
+                                "ipAddresses": [
+                                    {
+                                        "type": "IPV4",
+                                        "addresses": [ip_address]
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                })
+
     def _ns_im_converter(self, osm_ns: Dict) -> Dict:
         sol_ns = {
             "id": osm_ns['id'],
@@ -63,7 +98,15 @@ class OSM(Driver):
             "nsState": osm_ns['_admin']['nsState'],
             "vnfInstance": []
         }
-        osm_vnfs = [self._client.vnf_get(vnf_id) for vnf_id in osm_ns["constituent-vnfr-ref"]]
+
+        osm_vnfs = []
+        if 'constituent-vnfr-ref' in osm_ns:
+            for vnf_id in osm_ns["constituent-vnfr-ref"]:
+                try:
+                    osm_vnfs.append(self._client.vnf_get(vnf_id))
+                except VnfNotFound:
+                    pass
+
         for osm_vnf in osm_vnfs:
             vnf_instance = {
                 "id": osm_vnf["id"],
@@ -73,34 +116,7 @@ class OSM(Driver):
                 "instantiationState": osm_ns['_admin']['nsState'],  # same as the NS
             }
             if vnf_instance["instantiationState"] == "INSTANTIATED":
-                vnf_instance["instantiatedVnfInfo"] = {"extCpInfo": []}
-                vnfpkg = self._client.vnfpkg_get(osm_vnf["vnfd-id"])
-                for vdur in osm_vnf["vdur"]:
-                    for if_vdur in vdur["interfaces"]:
-                        [if_pkg] = [if_pkg for vdu in vnfpkg["vdu"] for if_pkg in vdu["interface"]
-                                    if vdu["id"] == vdur["vdu-id-ref"] and if_pkg["name"] == if_vdur["name"]]
-                        [cp] = [val for key, val in if_pkg.items() if key.endswith("-connection-point-ref")]
-                        try:
-                            (ip_address, mac_address) = (if_vdur["ip_address"], if_vdur["mac_address"])
-                        except KeyError:
-                            (ip_address, mac_address) = (None, None)
-                        vnf_instance["instantiatedVnfInfo"]["extCpInfo"].append({
-                            "id": cp,
-                            "cpProtocolInfo": [
-                                {
-                                    "layerProtocol": "IP_OVER_ETHERNET",
-                                    "ipOverEthernet": {
-                                        "macAddress": mac_address,
-                                        "ipAddresses": [
-                                            {
-                                                "type": "IPV4",
-                                                "addresses": [ip_address]
-                                            }
-                                        ]
-                                    }
-                                }
-                            ]
-                        })
+                vnf_instance["instantiatedVnfInfo"]["extCpInfo"] = self._cpinfo_converter(osm_vnf)
             sol_ns["vnfInstance"].append(vnf_instance)
         return sol_ns
 
@@ -109,9 +125,9 @@ class OSM(Driver):
         sol_op = {
             "id": osm_op["id"],
             "operationState": osm_op["operationState"].upper(),
-            "stateEnteredTime": osm_op["statusEnteredTime"],
+            "stateEnteredTime": datetime.utcfromtimestamp(osm_op["statusEnteredTime"]).isoformat("T") + "Z",
             "nsInstanceId": osm_op["nsInstanceId"],
             "lcmOperationType": osm_op["lcmOperationType"].upper(),
-            "startTime": osm_op["startTime"]
+            "startTime": datetime.utcfromtimestamp(osm_op["startTime"]).isoformat("T") + "Z",
         }
         return sol_op
