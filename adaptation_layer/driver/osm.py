@@ -344,7 +344,7 @@ class OSM(Driver):
             re_res = re.findall(
                 r"/osm/nslcm/v1/(ns_instances|ns_lcm_op_occs)/([A-Za-z0-9\-]+)", headers['location'])
             if len(re_res):
-                if re_res[0][0] == 'ns_instance':
+                if re_res[0][0] == 'ns_instances':
                     headers['location'] = '/nfvo/{0}/ns_instances/{1}'.format(
                         self._nfvoId, re_res[0][1])
                 elif re_res[0][0] == 'ns_lcm_op_occs':
