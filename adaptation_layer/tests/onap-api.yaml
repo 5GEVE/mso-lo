@@ -1,37 +1,42 @@
-openapi: 1.0.0
+openapi: 3.0.0
 
 servers:
-  - description: ONAP and ns-server API
+  - description: ns-server
+    url: https://github.com/chabimic/NS-InstantiationServer
+  - description: Onap driver
+    url: https://github.com/TheWall89/adaptation-layer/tree/onap_driver
 
 info:
-  description: |
+  description:
     NBI ONAP and ns-server api
     test version
+  version: "2"
+  title: ONAP and NS-server API
+  contact:
+    email: michal.grzesik@orange.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
 
-## zostawione - nie wiem czy potrzebne
-#tags:
-#  - name: 'VNF packages'
-#    description: Management operations of VNF descriptors and packages
-#  - name: 'NS packages'
-#    description: Management operations of NS descriptors and packages
-#  - name: 'NS instances'
-#    description: Management operations of NS instances
-#  - name: 'NetSlice templates'
-#    description: Management operations of NetSlice Templates
-#  - name: 'NetSlice instances'
-#    description: Management operations of NetSlice Instances
+tags:
+  - name: 'NS instances'
+    description: Management operations of NS instances
+  - name: 'NS lcm'
+    description: NS LCM Operations
+  - name: 'ONAP NBI API'
+    description: Onap NBI API to check the service type
 
-# sciezki do onap nbi api oraz ns-server
+# paths onap nbi & ns-server
 paths:
 # NS-SERVER
 # get all ns instances info
   '/instances':
     get:
       tags:
-        - "list of NS instances"
-      summary:
-      description:
-      operationId:
+        - 'NS instances'
+      summary: retrieve list of NS instances
+      description: list of NS instances
+      operationId: getNSlist
       responses:
         '200':
           description: OK
@@ -62,10 +67,10 @@ paths:
           type : string
     get:
       tags:
-        - "NS instance info"
-      summary:
-      description:
-      operationId:
+        - 'NS instances'
+      summary: retrieve informations about ns instance
+      description: info about ns instance
+      operationId: getNSinfo
       responses:
         '200':
           description: OK
@@ -89,10 +94,10 @@ paths:
   '/create':
     post:
       tags:
-        - "create a NS Instance ID"
+        - 'NS instances'
       summary: create na NS Instance ID
-      description:
-      operationId:
+      description: create a NS Instance ID
+      operationId: createNS
       requestBody:
         content:
           application/json:
@@ -110,14 +115,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NsInstanceIdCreated'
-#        '202':
-#          description: Accepted
-#        '204':
-#          description: No Content
         '400':
           $ref: '#/components/responses/BadRequest'
-#        '404':
-#          $ref: '#/components/responses/NotFound'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
         '5XX':
@@ -135,17 +136,16 @@ paths:
           type : string
     post:
       tags:
-        - "instantiate NS"
+        - 'NS instances'
       summary: Instantiate NS with given NS ID
-      description:
-      operationId:
-      # requestBody:
-      #   $ref: '#/components/requestBodies/CreateVnfPkgInfoRequest'
+      description: Instantiate NS with given NS ID
+      operationId: instantiateNS
       responses:
         '202':
           description: Accepted
           headers:
             Location:
+              description: link with nsLcmOpOccId of the instantiated NS
               schema:
                 type: string
                 format: uri
@@ -153,9 +153,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Empty'
-          #   application/yaml:
-          #     schema:
-          #       $ref: '#/components/schemas/ObjectId'
         '400':
           $ref: '#/components/responses/BadRequest'
         '404':
@@ -174,15 +171,15 @@ paths:
       - name: ns_db_id
         in: path
         required: true
-        description: NS Instance Id - db
+        description: NS Instance Id - from db
         schema:
           type : string
     post:
       tags:
-        - "terminate NS Instance"
+        - 'NS instances'
       summary: terminate a NS Instance with given Id
-      description:
-      operationId:
+      description: terminate NS Instance
+      operationId: terminateNS
       requestBody:
         content:
           application/json:
@@ -195,20 +192,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Empty'
-#          headers:
-#            Location:
-#              schema:
-#                type: string
-#                format: uri
-          # content:
-          #   application/json:
-          #     schema:
-          #       $ref: '#/components/schemas/ObjectId'
-          #   application/yaml:
-          #     schema:
-          #       $ref: '#/components/schemas/ObjectId'
-#        '202':
-#          description: Accepted
 #        '204':
 #          description: No Content
         '400':
@@ -234,10 +217,10 @@ paths:
           type : string
     delete:
       tags:
-        - "delete NS Instance"
+        - 'NS instances'
       summary: delete NS Instance with given ID
-      description:
-      operationId:
+      description: delete NS instance with given ID
+      operationId: deleteNS
       responses:
         '202':
           description: Accepted
@@ -263,10 +246,10 @@ paths:
   '/ns_lcm_op_occs':
     get:
       tags:
-        - "NS LCM OP"
+        - 'NS lcm'
       summary: retrive a list of all ns lcm oppp occs
-      description:
-      operationId:
+      description: retrive a list of all ns lcm op occs
+      operationId: lcmNSlist
       responses:
         '200':
           description: OK
@@ -292,15 +275,15 @@ paths:
       - name: lcm_id
         in: path
         required: true
-        description: LCM ID
+        description: lcm ID
         schema:
           type : string
     get:
       tags:
-        - "LCM ID INFO"
+        - 'NS lcm'
       summary: retrieve a lcm info with given ID
-      description:
-      operationId:
+      description: retrieve a lcm info with given ID
+      operationId: lcmNS
       responses:
         '200':
           description: OK
@@ -331,10 +314,10 @@ paths:
           type : string
     get:
       tags:
-        - "NS specification ID"
-      summary: Query information about NS specification
-      description:
-      operationId:
+        - 'ONAP NBI API'
+      summary: retrieve information about NS specification
+      description: retrieve information about NS specification
+      operationId: OnapTypeService
       responses:
 #        '200':
 #          description: OK
@@ -437,33 +420,24 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Empty'
-#
 # end of schemas in responses
 # END RESPONSES
   schemas:
-# # json example
-#     ObjectId:
-#       type: object
-#       properties:
-#         id:
-#           type: string
-#           format: uuid
-#
     createNsId:
-      description:
+      # description:
       type: object
       properties:
         nsdId:
           type: string
           format: uuid
         nsName:
-          description:
+          # description:
           type: string
         nsDescription:
-          description:
+          # description:
           type: string
         serviceType:
-          description:
+          # description:
           type: string
       required:
         - nsdId
@@ -493,7 +467,6 @@ components:
         - detail
 #
     TerminationTime:
-      description:
       type: object
       properties:
         terminationTime:
@@ -503,67 +476,65 @@ components:
         - terminationTime
 #
     NsInstanceList:
-      description:
+      # description: list of ns instances
       type: array
       items:
-        $ref: #/components/schemas/NsInstanceInfo
-        properties:
-          id:
-            type: string
-            format: uuid
-          nsInstanceName:
-            description:
-            type: string
-          nsInstanceDescription:
-            description:
-            type: string
-          nsdId:
-            description:
-            type: string
-            format: uuid
-          nsState:
-            description:
-            type: string
-            enum:
-              - NOT_INSTANTIATED
-              - INSTANTIATED
-          vnfInstance:
-            description:
-            type: array
-        required:
-          - id
-          - nsInstanceName
-          - nsInstanceDescription
-          - nsdId
-          - nsState
-          - vnfInstance
+        $ref: '#/components/schemas/NsInstanceInfo'
+        # properties:
+        #   id:
+        #     type: string
+        #     format: uuid
+        #   nsInstanceName:
+        #     description:
+        #     type: string
+        #   nsInstanceDescription:
+        #     description:
+        #     type: string
+        #   nsdId:
+        #     description:
+        #     type: string
+        #     format: uuid
+        #   nsState:
+        #     description:
+        #     type: string
+        #     enum:
+        #       - NOT_INSTANTIATED
+        #       - INSTANTIATED
+        #   vnfInstance:
+        #     description:
+        #     type: array
+        # required:
+        #   - id
+        #   - nsInstanceName
+        #   - nsInstanceDescription
+        #   - nsdId
+        #   - nsState
+        #   - vnfInstance
 #
     NsInstanceInfo:
-      description:
+      # description: info about single NS instance
       type: object
       properties:
         id:
           type: string
           format: uuid
         nsInstanceName:
-          description:
           type: string
         nsInstanceDescription:
-          description:
           type: string
         nsdId:
-          description:
           type: string
           format: uuid
         nsState:
-          description:
           type: string
           enum:
             - NOT_INSTANTIATED
             - INSTANTIATED
         vnfInstance:
-          description:
           type: array
+          items:
+            type: object
+            # TODO check it !!!
       required:
         - id
         - nsInstanceName
@@ -573,103 +544,89 @@ components:
         - vnfInstance
 #
     NsInstanceIdCreated:
-      description:
       type: object
       properties:
         id:
           type: string
           format: uuid
         nsInstanceName:
-          description:
           type: string
         nsInstanceDescription:
-          description:
           type: string
         nsdId:
-          description:
           type: string
           format: uuid
         nsState:
-          description:
           type: string
           enum:
-            - NOT_INSTANTIATED
             - INSTANTIATED
         vnfInstance:
-          description:
           type: array
+          items:
+            type: object
       required:
         - id
         - nsInstanceName
         - nsInstanceDescription
         - nsdId
         - nsState
+        - vnfInstance
 #
     List_lcm_op_occs:
-      description:
       type: array
       items:
-        $ref: #/components/schemas/ID_lcm_op_occs
-        properties:
-          id:
-            type: string
-            format: uuid
-          operationState:
-            description:
-            type: string
-          stateEnteredTime:
-            description:
-            type: string
-          nsInstanceId:
-            description:
-            type: string
-            format: uuid
-          lcmOperationType:
-            description:
-            type: string
-          startTime:
-            type: string
-            format: date-time
+        $ref: '#/components/schemas/ID_lcm_op_occs'
+        # properties:
+        #   id:
+        #     type: string
+        #     format: uuid
+        #   operationState:
+        #     description:
+        #     type: string
+        #   stateEnteredTime:
+        #     description:
+        #     type: string
+        #   nsInstanceId:
+        #     description:
+        #     type: string
+        #     format: uuid
+        #   lcmOperationType:
+        #     description:
+        #     type: string
+        #   startTime:
+        #     type: string
+        #     format: date-time
 #
     ID_lcm_op_occs:
-      description:
       type: object
       properties:
         id:
           type: string
           format: uuid
         operationState:
-          description:
           type: string
         stateEnteredTime:
-          description:
           type: string
         nsInstanceId:
-          description:
           type: string
           format: uuid
         lcmOperationType:
-          description:
           type: string
         startTime:
           type: string
           format: date-time
 #
     OnapServiceSpecification:
-      description:
       type: object
       properties:
         name:
           type: string
 #
     Empty:
-      description:
       type: object
-      properties:
-
+      # properties:
   # END SCHEMAS
   # start request bodies
-  # application/json:
   requestBodies:
     createNsId:
       content:
