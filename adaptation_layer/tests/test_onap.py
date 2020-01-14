@@ -87,6 +87,11 @@ class OnapTestCase(unittest.TestCase):
                                  json=self.mock_ns_instantiate)
         self.assertEqual(res.status_code, 400)
 
+    def test_instantiate_ns_404(self):
+        res = self.client().post('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/instantiate?__code=404',
+                                 json=self.mock_ns_instantiate)
+        self.assertEqual(res.status_code, 404)
+
     # def test_instantiate_ns_401(self):
     #     res = self.client().post('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/instantiate?__code=401',
     #                              json=self.mock_ns_instantiate)

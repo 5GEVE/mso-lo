@@ -46,8 +46,8 @@ paths:
                 $ref: '#/components/schemas/NsInstanceList'
         '400':
           $ref: '#/components/responses/BadRequest'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        # '404':
+        #   $ref: '#/components/responses/NotFound'
         '405':
           $ref: '#/components/responses/MethodNotAllowed'
         '500':
@@ -106,11 +106,6 @@ paths:
       responses:
         '201':
           description: Created
-          headers:
-            Location:
-              schema:
-                type: string
-                format: uri
           content:
             application/json:
               schema:
@@ -449,22 +444,10 @@ components:
     ProblemDetails:
       type: object
       properties:
-        type:
+        error:
           type: string
-          format: uri
-        title:
-          type: string
-        status:
-          type: integer
-        detail:
-          type: string
-        instance:
-          type: string
-          format: uri
-      additionalProperties: true
       required:
-        - status
-        - detail
+        - error
 #
     TerminationTime:
       type: object
@@ -518,6 +501,7 @@ components:
         id:
           type: string
           format: uuid
+          example: 1de0e9c3-b238-44da-b01b-b249a7784b03
         nsInstanceName:
           type: string
         nsInstanceDescription:
@@ -525,6 +509,7 @@ components:
         nsdId:
           type: string
           format: uuid
+          example: c418cc62-f3b4-43c6-b684-d38bfbd2d7f6
         nsState:
           type: string
           enum:
@@ -549,6 +534,7 @@ components:
         id:
           type: string
           format: uuid
+          example: 1de0e9c3-b238-44da-b01b-b249a7784b03
         nsInstanceName:
           type: string
         nsInstanceDescription:
@@ -556,6 +542,7 @@ components:
         nsdId:
           type: string
           format: uuid
+          example: c418cc62-f3b4-43c6-b684-d38bfbd2d7f6
         nsState:
           type: string
           enum:
@@ -603,6 +590,7 @@ components:
         id:
           type: string
           format: uuid
+          example: 1de0e9c3-b238-44da-b01b-b249a7784b03
         operationState:
           type: string
         stateEnteredTime:
@@ -610,6 +598,7 @@ components:
         nsInstanceId:
           type: string
           format: uuid
+          example: c418cc62-f3b4-43c6-b684-d38bfbd2d7f6
         lcmOperationType:
           type: string
         startTime:

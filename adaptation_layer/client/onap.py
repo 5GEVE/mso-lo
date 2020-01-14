@@ -108,7 +108,10 @@ class AgentClient(object):  # ns_instantiation_server
     def ns_create(self, ns_name, args=None):
         args['payload']['serviceType'] = ns_name
         _url = '{0}/create'.format(self._base_path)
-        return self._exec_post(_url, headers=self._headers, json=args['payload'])
+        try:
+            return self._exec_post(_url, headers=self._headers, json=args['payload'])
+        except BadRequest:
+            raise BadRequest
 
         # _url = '{0}/instantiate/{1}'.format(self._base_path, ns_name)
         # return self._exec_post(_url, headers=self._headers)
@@ -118,9 +121,11 @@ class AgentClient(object):  # ns_instantiation_server
         # add try except block to check if the service instance exists
         # return self._exec_post(_url, json=args, headers=self._headers)  # for dev change to json=args['payload']
         try:
-            return self._exec_post(_url, headers=self._headers)  # header 'Location' here ? - didn't work
+            return self._exec_post(_url, headers={"accept": "application/json"})  # header 'Location' here ? - didn't work
         except ResourceNotFound:
             raise NsNotFound(ns_id=ns_id)
+        except BadRequest:
+            raise BadRequest
 
     def ns_delete(self, ns_id, args=None):
         _url = '{0}/delete/{1}'.format(self._base_path, ns_id)
