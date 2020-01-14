@@ -1,5 +1,6 @@
 import requests
 import os
+from urllib.parse import urlencode
 from error_handler import ResourceNotFound, NsNotFound, VnfNotFound,\
     Unauthorized, BadRequest, ServerError, NsOpNotFound
 # from requests.packages.urllib3.exceptions import InsecureRequestWarning
@@ -108,6 +109,7 @@ class AgentClient(object):  # ns_instantiation_server
     def ns_create(self, ns_name, args=None):
         args['payload']['serviceType'] = ns_name
         _url = '{0}/create'.format(self._base_path)
+        _url = _build_testing_url(_url, args)
         try:
             return self._exec_post(_url, headers=self._headers, json=args['payload'])
         except BadRequest:
@@ -118,6 +120,7 @@ class AgentClient(object):  # ns_instantiation_server
 
     def ns_instantiate(self, ns_id, args=None):
         _url = '{0}/instantiate/{1}'.format(self._base_path, ns_id)
+        _url = _build_testing_url(_url, args)
         # add try except block to check if the service instance exists
         # return self._exec_post(_url, json=args, headers=self._headers)  # for dev change to json=args['payload']
         try:
@@ -129,6 +132,7 @@ class AgentClient(object):  # ns_instantiation_server
 
     def ns_delete(self, ns_id, args=None):
         _url = '{0}/delete/{1}'.format(self._base_path, ns_id)
+        _url = _build_testing_url(_url, args)
         try:
             return self._exec_delete(_url, headers={"accept": "application/json"})
         except ResourceNotFound:
@@ -136,17 +140,20 @@ class AgentClient(object):  # ns_instantiation_server
 
     def ns_terminate(self, ns_id, args=None):
         _url = '{0}/terminate/{1}'.format(self._base_path, ns_id)
+        _url = _build_testing_url(_url, args)
         try:
             return self._exec_post(_url, headers=self._headers, json=args['payload'])
         except ResourceNotFound:
             raise NsNotFound(ns_id=ns_id)
 
-    def ns_list(self):
+    def ns_list(self, args=None):
         _url = '{0}/instances'.format(self._base_path)
+        _url = _build_testing_url(_url, args)
         return self._exec_get(_url, params=None, headers=self._headers)
 
     def ns_get(self, ns_Id, args=None):
         _url = '{0}/instances/{1}'.format(self._base_path, ns_Id)
+        _url = _build_testing_url(_url, args)
         try:
             return self._exec_get(_url, headers=self._headers)
         except ResourceNotFound:
@@ -154,10 +161,12 @@ class AgentClient(object):  # ns_instantiation_server
 
     def get_op_list(self, args=None):
         _url = '{0}/ns_lcm_op_occs'.format(self._base_path)  # test it
+        _url = _build_testing_url(_url, args)
         return self._exec_get(_url, params=None, headers=self._headers)
 
     def get_op(self, nsLcmOpId, args=None):
         _url = '{0}/ns_lcm_op_occs/{1}'.format(self._base_path, nsLcmOpId)  # fill with correct path
+        _url = _build_testing_url(_url, args)
         try:
             return self._exec_get(_url, params=None, headers=self._headers)
         except ResourceNotFound:
@@ -246,6 +255,7 @@ class Client(object):
 
     def check_ns_name(self, nsd_Id, args=None):
         _url = '{0}/serviceSpecification/{1}?fields=name'.format(self._base_path, nsd_Id)
+        _url = _build_testing_url(_url, args)
         try:
             return self._exec_get(_url, headers=self._headers)
         except ResourceNotFound:
@@ -259,3 +269,10 @@ class Client(object):
     #         return response['serviceSpecification']['name']
     #     except ResourceNotFound:
     #         raise NsNotFound(ns_id=ns_Id)
+
+
+def _build_testing_url(base, args):
+    if TESTING and args and args['args']:  # TODO Ugly. We should remove the nested 'args' from app.py
+        url_query = urlencode(args['args'])
+        return "{0}?{1}".format(base, url_query)
+    return base
