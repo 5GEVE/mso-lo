@@ -20,27 +20,22 @@ PRISM_ALIAS = os.environ.get("PRISM_ALIAS", "prism-osm")
 
 class OSM(Driver):
 
-    def __init__(self,
-                 host=None,
-                 so_port=9999,
-                 user='admin',
-                 password='admin',
-                 project='admin'):
+    def __init__(self, nfvo_cred):
         self._token_endpoint = 'admin/v1/tokens'
         self._user_endpoint = 'admin/v1/users'
-        self._host = host
-        self._so_port = so_port
-        self._user = user
-        self._password = password
-        self._project = project
+        self._host = nfvo_cred["host"]
+        self._so_port = nfvo_cred["port"] if "port" in nfvo_cred else 9999
+        self._user = nfvo_cred["user"]
+        self._password = nfvo_cred["password"]
+        self._project = nfvo_cred["project"]
         self._headers = {"Content-Type": "application/json",
                          "accept": "application/json"}
         if TESTING is False:
-            self._base_path = 'https://{0}:{1}/osm'.format(self._host, so_port)
-            token = self.authenticate()
+            self._base_path = 'https://{0}:{1}/osm'.format(self._host, self._so_port)
+            token, headers = self._authenticate()
             self._headers['Authorization'] = 'Bearer {}'.format(token['id'])
         else:
-            self._base_path = 'http://{0}:{1}/osm'.format(PRISM_ALIAS, so_port)
+            self._base_path = 'http://{0}:{1}/osm'.format(PRISM_ALIAS, self._so_port)
 
     def _exec_get(self, url=None, params=None, headers=None):
         # result = {}
@@ -127,7 +122,7 @@ class OSM(Driver):
                 error = resp.text
             raise ServerError(error)
 
-    def authenticate(self):
+    def _authenticate(self):
         auth_payload = {'username': self._user,
                         'password': self._password,
                         'project_id': self._project}
