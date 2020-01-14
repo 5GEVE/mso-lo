@@ -131,12 +131,12 @@ class OSM(Driver):
 
     def get_vnf_list(self, args=None) -> Tuple[BodyList, Headers]:
         _url = "{0}/nslcm/v1/vnf_instances".format(self._base_path)
-        _url = self._build_testing_url(_url, args)
+        _url = self._build_url_query(_url, args)
         return self._exec_get(_url, headers=self._headers)
 
     def get_vnf(self, vnfId: str, args=None) -> Tuple[Body, Headers]:
         _url = "{0}/nslcm/v1/vnf_instances/{1}".format(self._base_path, vnfId)
-        _url = self._build_testing_url(_url, args)
+        _url = self._build_url_query(_url, args)
         try:
             return self._exec_get(_url, headers=self._headers)
         except ResourceNotFound:
@@ -144,7 +144,7 @@ class OSM(Driver):
 
     def get_vnfpkg(self, vnfPkgId, args=None):
         _url = "{0}/vnfpkgm/v1/vnf_packages/{1}".format(self._base_path, vnfPkgId)
-        _url = self._build_testing_url(_url, args)
+        _url = self._build_url_query(_url, args)
         try:
             return self._exec_get(_url, headers=self._headers)
         except ResourceNotFound:
@@ -152,7 +152,7 @@ class OSM(Driver):
 
     def get_ns_list(self, args=None) -> Tuple[BodyList, Headers]:
         _url = "{0}/nslcm/v1/ns_instances".format(self._base_path)
-        _url = self._build_testing_url(_url, args)
+        _url = self._build_url_query(_url, args)
         osm_ns_list, headers = self._exec_get(_url, headers=self._headers)
         sol_ns_list = []
         for osm_ns in osm_ns_list:
@@ -161,12 +161,12 @@ class OSM(Driver):
 
     def create_ns(self, args=None) -> Tuple[Body, Headers]:
         _url = "{0}/nslcm/v1/ns_instances".format(self._base_path)
-        _url = self._build_testing_url(_url, args)
+        _url = self._build_url_query(_url, args)
         return self._exec_post(_url, json=args['payload'], headers=self._headers)
 
     def get_ns(self, nsId: str, args=None) -> Tuple[Body, Headers]:
         _url = "{0}/nslcm/v1/ns_instances/{1}".format(self._base_path, nsId)
-        _url = self._build_testing_url(_url, args)
+        _url = self._build_url_query(_url, args)
         try:
             ns, headers = self._exec_get(_url, headers=self._headers)
         except ResourceNotFound:
@@ -175,7 +175,7 @@ class OSM(Driver):
 
     def delete_ns(self, nsId: str, args: Dict = None) -> Tuple[None, Headers]:
         _url = "{0}/nslcm/v1/ns_instances/{1}".format(self._base_path, nsId)
-        _url = self._build_testing_url(_url, args)
+        _url = self._build_url_query(_url, args)
         try:
             ns, headers = self._exec_delete(_url, params=None, headers={"accept": "application/json"})
         except ResourceNotFound:
@@ -184,7 +184,7 @@ class OSM(Driver):
 
     def instantiate_ns(self, nsId: str, args=None) -> Tuple[None, Headers]:
         _url = "{0}/nslcm/v1/ns_instances/{1}/instantiate".format(self._base_path, nsId)
-        _url = self._build_testing_url(_url, args)
+        _url = self._build_url_query(_url, args)
         try:
             return self._exec_post(_url, json=args['payload'], headers=self._headers)
         except ResourceNotFound:
@@ -192,7 +192,7 @@ class OSM(Driver):
 
     def terminate_ns(self, nsId: str, args=None) -> Tuple[None, Headers]:
         _url = "{0}/nslcm/v1/ns_instances/{1}/terminate".format(self._base_path, nsId)
-        _url = self._build_testing_url(_url, args)
+        _url = self._build_url_query(_url, args)
         try:
             return self._exec_post(_url, json=args['payload'], headers=self._headers)
         except ResourceNotFound:
@@ -200,7 +200,7 @@ class OSM(Driver):
 
     def scale_ns(self, nsId: str, args=None) -> Tuple[None, Headers]:
         _url = "{0}/nslcm/v1/ns_instances/{1}/scale".format(self._base_path, nsId)
-        _url = self._build_testing_url(_url, args)
+        _url = self._build_url_query(_url, args)
         try:
             return self._exec_post(_url, json=args['payload'], headers=self._headers)
         except ResourceNotFound:
@@ -209,9 +209,7 @@ class OSM(Driver):
     def get_op_list(self, args: Dict = None) -> Tuple[BodyList, Headers]:
         nsId = args['args']['nsInstanceId'] if args['args'] and 'nsInstanceId' in args['args'] else None
         _url = "{0}/nslcm/v1/ns_lcm_op_occs".format(self._base_path)
-        if nsId:
-            _url = "{0}/?nsInstanceId={1}".format(_url, nsId)
-        _url = self._build_testing_url(_url, args)
+        _url = self._build_url_query(_url, args)
         try:
             osm_op_list, headers = self._exec_get(_url, headers=self._headers)
         except ResourceNotFound:
@@ -223,7 +221,7 @@ class OSM(Driver):
 
     def get_op(self, nsLcmOpId, args: Dict = None) -> Tuple[Body, Headers]:
         _url = "{0}/nslcm/v1/ns_lcm_op_occs/{1}".format(self._base_path, nsLcmOpId)
-        _url = self._build_testing_url(_url, args)
+        _url = self._build_url_query(_url, args)
         try:
             op, headers = self._exec_get(_url, headers=self._headers)
         except ResourceNotFound:
@@ -309,9 +307,8 @@ class OSM(Driver):
         return sol_op
 
     @staticmethod
-    def _build_testing_url(base, args):
-        # TODO Ugly. We should remove the nested 'args' from app.py
-        if TESTING and args and args['args']:
+    def _build_url_query(base, args):
+        if args and args['args']:
             url_query = urlencode(args['args'])
             return "{0}?{1}".format(base, url_query)
         return base
