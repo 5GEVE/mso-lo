@@ -1,4 +1,3 @@
-import json as JSON
 import os
 import re
 from datetime import datetime
@@ -31,7 +30,7 @@ class OSM(Driver):
         self._password = nfvo_cred["password"]
         self._project = nfvo_cred["project"]
         self._headers = {"Content-Type": "application/json",
-                         "accept": "application/json"}
+                         "Accept": "application/json"}
         if TESTING is False:
             self._base_path = 'https://{0}:{1}/osm'.format(
                 self._host, self._so_port)
@@ -42,7 +41,6 @@ class OSM(Driver):
                 PRISM_ALIAS, self._so_port)
 
     def _exec_get(self, url=None, params=None, headers=None):
-        # result = {}
         try:
             resp = requests.get(url, params=params,
                                 verify=False, stream=True, headers=headers)
@@ -50,11 +48,11 @@ class OSM(Driver):
             raise ServerError(str(e))
         if resp.status_code in (200, 201, 202, 204):
             if 'application/json' in resp.headers['content-type']:
-                return resp.json(), dict(**resp.headers)
+                return resp.json(), resp.headers
             elif 'application/yaml' in resp.headers['content-type']:
-                return JSON.loads(JSON.dumps(YAML.load(resp.text), sort_keys=True, indent=2)), dict(**resp.headers)
+                return YAML.load(resp.text, Loader=YAML.SafeLoader), resp.headers
             else:
-                return resp.text, dict(**resp.headers)
+                return resp.text, resp.headers
         elif resp.status_code == 400:
             raise BadRequest()
         elif resp.status_code == 401:
@@ -65,8 +63,7 @@ class OSM(Driver):
             if 'application/json' in resp.headers['content-type']:
                 error = resp.json()
             elif 'application/yaml' in resp.headers['content-type']:
-                error = JSON.loads(JSON.dumps(
-                    YAML.safe_load(resp.text), sort_keys=True, indent=2))
+                error = YAML.load(resp.text, Loader=YAML.SafeLoader)
             else:
                 error = resp.text
             raise ServerError(error)
@@ -79,11 +76,11 @@ class OSM(Driver):
             raise ServerError(str(e))
         if resp.status_code in (200, 201, 202, 204):
             if 'application/json' in resp.headers['content-type']:
-                return resp.json(), dict(**resp.headers)
+                return resp.json(), resp.headers
             elif 'application/yaml' in resp.headers['content-type']:
-                return JSON.loads(JSON.dumps(YAML.load(resp.text), sort_keys=True, indent=2)), dict(**resp.headers)
+                return YAML.load(resp.text, Loader=YAML.SafeLoader), resp.headers
             else:
-                return resp.text, dict(**resp.headers)
+                return resp.text, resp.headers
         elif resp.status_code == 400:
             raise BadRequest()
         elif resp.status_code == 401:
@@ -94,8 +91,7 @@ class OSM(Driver):
             if 'application/json' in resp.headers['content-type']:
                 error = resp.json()
             elif 'application/yaml' in resp.headers['content-type']:
-                error = JSON.loads(JSON.dumps(YAML.safe_load(
-                    resp.text), sort_keys=True, indent=2))
+                error = YAML.load(resp.text, Loader=YAML.SafeLoader)
             else:
                 error = resp.text
             raise ServerError(error)
@@ -108,11 +104,11 @@ class OSM(Driver):
             raise ServerError(str(e))
         if resp.status_code in (200, 201, 202, 204):
             if 'application/json' in resp.headers['content-type']:
-                return resp.json(), dict(**resp.headers)
+                return resp.json(), resp.headers
             elif 'application/yaml' in resp.headers['content-type']:
-                return JSON.loads(JSON.dumps(YAML.load(resp.text), sort_keys=True, indent=2)), dict(**resp.headers)
+                return YAML.load(resp.text, Loader=YAML.SafeLoader), resp.headers
             else:
-                return resp.text, dict(**resp.headers)
+                return resp.text, resp.headers
         elif resp.status_code == 400:
             raise BadRequest()
         elif resp.status_code == 401:
@@ -123,8 +119,7 @@ class OSM(Driver):
             if 'application/json' in resp.headers['content-type']:
                 error = resp.json()
             elif 'application/yaml' in resp.headers['content-type']:
-                error = JSON.loads(JSON.dumps(YAML.safe_load(
-                    resp.text), sort_keys=True, indent=2))
+                error = YAML.load(resp.text, Loader=YAML.SafeLoader)
             else:
                 error = resp.text
             raise ServerError(error)
@@ -161,37 +156,40 @@ class OSM(Driver):
     def get_ns_list(self, args=None) -> Tuple[BodyList, Headers]:
         _url = "{0}/nslcm/v1/ns_instances".format(self._base_path)
         _url = self._build_url_query(_url, args)
-        osm_ns_list, headers = self._exec_get(_url, headers=self._headers)
+        osm_ns_list, osm_headers = self._exec_get(_url, headers=self._headers)
         sol_ns_list = []
         for osm_ns in osm_ns_list:
             sol_ns_list.append(self._ns_im_converter(osm_ns))
+        headers = self._build_headers(osm_headers)
         return sol_ns_list, headers
 
     def create_ns(self, args=None) -> Tuple[Body, Headers]:
         _url = "{0}/nslcm/v1/ns_instances".format(self._base_path)
         _url = self._build_url_query(_url, args)
-        body, headers = self._exec_post(_url, json=args['payload'], headers=self._headers)
-        headers = self._rebuild_headers(headers)
-        return body, headers
+        osm_ns, osm_headers = self._exec_post(_url, json=args['payload'], headers=self._headers)
+        headers = self._build_headers(osm_headers)
+        sol_ns = {}  # TODO
+        return sol_ns, headers
 
     def get_ns(self, nsId: str, args=None) -> Tuple[Body, Headers]:
         _url = "{0}/nslcm/v1/ns_instances/{1}".format(self._base_path, nsId)
         _url = self._build_url_query(_url, args)
         try:
-            ns, headers = self._exec_get(_url, headers=self._headers)
+            osm_ns, osm_headers = self._exec_get(_url, headers=self._headers)
         except ResourceNotFound:
             raise NsNotFound(ns_id=nsId)
-        return self._ns_im_converter(ns), headers
+        sol_ns = self._ns_im_converter(osm_ns)
+        headers = self._build_headers(osm_headers)
+        return sol_ns, headers
 
     def delete_ns(self, nsId: str, args: Dict = None) -> Tuple[None, Headers]:
         _url = "{0}/nslcm/v1/ns_instances/{1}".format(self._base_path, nsId)
         _url = self._build_url_query(_url, args)
         try:
-            ns, headers = self._exec_delete(_url, params=None, headers={
-                                            "accept": "application/json"})
+            empty_body, osm_headers = self._exec_delete(_url, params=None, headers={"Accept": "application/json"})
         except ResourceNotFound:
             raise NsNotFound(ns_id=nsId)
-        headers = self._rebuild_headers(headers)
+        headers = self._build_headers(osm_headers)
         return None, headers
 
     def instantiate_ns(self, nsId: str, args=None) -> Tuple[None, Headers]:
@@ -199,46 +197,47 @@ class OSM(Driver):
             self._base_path, nsId)
         _url = self._build_url_query(_url, args)
         try:
-            ns, headers = self._exec_post(
+            empty_body, osm_headers = self._exec_post(
                 _url, json=args['payload'], headers=self._headers)
-            headers = self._rebuild_headers(headers)
-            return None, headers
         except ResourceNotFound:
             raise NsNotFound(ns_id=nsId)
+        headers = self._build_headers(osm_headers)
+        return None, headers
 
     def terminate_ns(self, nsId: str, args=None) -> Tuple[None, Headers]:
         _url = "{0}/nslcm/v1/ns_instances/{1}/terminate".format(
             self._base_path, nsId)
         _url = self._build_url_query(_url, args)
         try:
-            ns, headers = self._exec_post(_url, json=args['payload'], headers=self._headers)
-            headers = self._rebuild_headers(headers)
-            return None, headers
+            emtpy_body, osm_headers = self._exec_post(_url, json=args['payload'], headers=self._headers)
         except ResourceNotFound:
             raise NsNotFound(ns_id=nsId)
+        headers = self._build_headers(osm_headers)
+        return None, headers
 
     def scale_ns(self, nsId: str, args=None) -> Tuple[None, Headers]:
         _url = "{0}/nslcm/v1/ns_instances/{1}/scale".format(
             self._base_path, nsId)
         _url = self._build_url_query(_url, args)
         try:
-            op, headers = self._exec_post(_url, json=args['payload'], headers=self._headers)
-            headers = self._rebuild_headers(headers)
-            return None, headers
+            empty_body, osm_headers = self._exec_post(_url, json=args['payload'], headers=self._headers)
         except ResourceNotFound:
             raise NsNotFound(ns_id=id)
+        headers = self._build_headers(osm_headers)
+        return None, headers
 
     def get_op_list(self, args: Dict = None) -> Tuple[BodyList, Headers]:
         nsId = args['args']['nsInstanceId'] if args['args'] and 'nsInstanceId' in args['args'] else None
         _url = "{0}/nslcm/v1/ns_lcm_op_occs".format(self._base_path)
         _url = self._build_url_query(_url, args)
         try:
-            osm_op_list, headers = self._exec_get(_url, headers=self._headers)
+            osm_op_list, osm_headers = self._exec_get(_url, headers=self._headers)
         except ResourceNotFound:
             raise NsNotFound(ns_id=nsId)
         sol_op_list = []
         for op in osm_op_list:
             sol_op_list.append(self._op_im_converter(op))
+        headers = self._build_headers(osm_headers)
         return sol_op_list, headers
 
     def get_op(self, nsLcmOpId, args: Dict = None) -> Tuple[Body, Headers]:
@@ -246,15 +245,17 @@ class OSM(Driver):
             self._base_path, nsLcmOpId)
         _url = self._build_url_query(_url, args)
         try:
-            op, headers = self._exec_get(_url, headers=self._headers)
+            osm_op, osm_headers = self._exec_get(_url, headers=self._headers)
         except ResourceNotFound:
             raise NsOpNotFound(ns_op_id=nsLcmOpId)
-        return self._op_im_converter(op), headers
+        sol_op = self._op_im_converter(osm_op)
+        headers = self._build_headers(osm_headers)
+        return sol_op, headers
 
     def _cpinfo_converter(self, osm_vnf):
         cp_info = []
         try:
-            vnfpkg, headers = self.vnfpkg_get(osm_vnf["vnfd-id"])
+            vnfpkg, headers = self.get_vnfpkg(osm_vnf["vnfd-id"])
         except VnfPkgNotFound:
             return cp_info
         for vdur in osm_vnf["vdur"]:
@@ -339,10 +340,11 @@ class OSM(Driver):
             return "{0}?{1}".format(base, url_query)
         return base
 
-    def _rebuild_headers(self, headers):
-        if 'location' in headers:
+    def _build_headers(self, osm_headers):
+        headers = {}
+        if 'location' in osm_headers:
             re_res = re.findall(
-                r"/osm/nslcm/v1/(ns_instances|ns_lcm_op_occs)/([A-Za-z0-9\-]+)", headers['location'])
+                r"/osm/nslcm/v1/(ns_instances|ns_lcm_op_occs)/([A-Za-z0-9\-]+)", osm_headers['location'])
             if len(re_res):
                 if re_res[0][0] == 'ns_instances':
                     headers['location'] = '/nfvo/{0}/ns_instances/{1}'.format(
