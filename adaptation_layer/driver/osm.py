@@ -38,8 +38,7 @@ class OSM(Driver):
         if TESTING is False:
             self._base_path = 'https://{0}:{1}/osm'.format(self._host, so_port)
             token = self.authenticate()
-            self._headers['Authorization'] = 'Bearer {}'.format(
-                token['id'])
+            self._headers['Authorization'] = 'Bearer {}'.format(token['id'])
         else:
             self._base_path = 'http://{0}:{1}/osm'.format(PRISM_ALIAS, so_port)
 
@@ -101,54 +100,9 @@ class OSM(Driver):
                 error = resp.text
             raise ServerError(error)
 
-    def authenticate(self):
-        auth_payload = {'username': self._user,
-                        'password': self._password,
-                        'project_id': self._project}
-        token_url = "{0}/{1}".format(self._base_path, self._token_endpoint)
-        return self._exec_post(token_url, json=auth_payload)
-
-    def get_vnf_list(self, args=None) -> Tuple[BodyList, Headers]:
-        _url = "{0}/nslcm/v1/vnf_instances".format(self._base_path)
-        _url = self._build_testing_url(_url, args)
-        return self._exec_get(_url, headers=self._headers)
-
-    def get_vnf(self, vnfId: str, args=None) -> Tuple[Body, Headers]:
-        return self.get_vnf(vnfId, args=args)
-
-    def get_ns_list(self, args=None) -> Tuple[BodyList, Headers]:
-        _url = "{0}/nslcm/v1/ns_instances".format(self._base_path)
-        print(_url)
-        _url = self._build_testing_url(_url, args)
-        osm_ns_list, headers = self._exec_get(_url, headers=self._headers)
-        sol_ns_list = []
-        for osm_ns in osm_ns_list:
-            sol_ns_list.append(self._ns_im_converter(osm_ns))
-        return sol_ns_list, headers
-
-    def create_ns(self, args=None) -> Tuple[Body, Headers]:
-        _url = "{0}/nslcm/v1/ns_instances".format(self._base_path)
-        _url = self._build_testing_url(_url, args)
-        return self._exec_post(_url, json=args['payload'], headers=self._headers)
-
-    def get_ns(self, nsId: str, args=None) -> Tuple[Body, Headers]:
-        _url = "{0}/nslcm/v1/ns_instances/{1}".format(
-            self._base_path, nsId)
-        _url = self._build_testing_url(_url, args)
+    def _exec_delete(self, url=None, params=None, headers=None):
         try:
-            ns, headers = self._exec_get(_url, headers=self._headers)
-        except ResourceNotFound:
-            raise NsNotFound(ns_id=nsId)
-
-        return self._ns_im_converter(ns), headers
-
-    def delete_ns(self, nsId: str, args: Dict = None) -> Tuple[None, Headers]:
-        _url = "{0}/nslcm/v1/ns_instances/{1}".format(
-            self._base_path, nsId)
-        _url = self._build_testing_url(_url, args)
-        try:
-            resp = requests.delete(_url, params=None, verify=False, headers={
-                "accept": "application/json"})
+            resp = requests.delete(url, params=params, verify=False, headers=headers)
         except Exception as e:
             raise ServerError(str(e))
         if resp.status_code in (200, 201, 202, 204):
@@ -163,7 +117,7 @@ class OSM(Driver):
         elif resp.status_code == 401:
             raise Unauthorized()
         elif resp.status_code == 404:
-            raise NsNotFound(ns_id=nsId)
+            raise ResourceNotFound()
         else:
             if 'application/json' in resp.headers['content-type']:
                 error = resp.json()
@@ -172,6 +126,66 @@ class OSM(Driver):
             else:
                 error = resp.text
             raise ServerError(error)
+
+    def authenticate(self):
+        auth_payload = {'username': self._user,
+                        'password': self._password,
+                        'project_id': self._project}
+        token_url = "{0}/{1}".format(self._base_path, self._token_endpoint)
+        return self._exec_post(token_url, json=auth_payload)
+
+    def get_vnf_list(self, args=None) -> Tuple[BodyList, Headers]:
+        _url = "{0}/nslcm/v1/vnf_instances".format(self._base_path)
+        _url = self._build_testing_url(_url, args)
+        return self._exec_get(_url, headers=self._headers)
+
+    def get_vnf(self, vnfId: str, args=None) -> Tuple[Body, Headers]:
+        _url = "{0}/nslcm/v1/vnf_instances/{1}".format(self._base_path, vnfId)
+        _url = self._build_testing_url(_url, args)
+        try:
+            return self._exec_get(_url, headers=self._headers)
+        except ResourceNotFound:
+            raise VnfNotFound(vnf_id=vnfId)
+
+    def get_vnfpkg(self, vnfPkgId, args=None):
+        _url = "{0}/vnfpkgm/v1/vnf_packages/{1}".format(self._base_path, vnfPkgId)
+        _url = self._build_testing_url(_url, args)
+        try:
+            return self._exec_get(_url, headers=self._headers)
+        except ResourceNotFound:
+            raise VnfPkgNotFound(vnfpkg_id=vnfPkgId)
+
+    def get_ns_list(self, args=None) -> Tuple[BodyList, Headers]:
+        _url = "{0}/nslcm/v1/ns_instances".format(self._base_path)
+        _url = self._build_testing_url(_url, args)
+        osm_ns_list, headers = self._exec_get(_url, headers=self._headers)
+        sol_ns_list = []
+        for osm_ns in osm_ns_list:
+            sol_ns_list.append(self._ns_im_converter(osm_ns))
+        return sol_ns_list, headers
+
+    def create_ns(self, args=None) -> Tuple[Body, Headers]:
+        _url = "{0}/nslcm/v1/ns_instances".format(self._base_path)
+        _url = self._build_testing_url(_url, args)
+        return self._exec_post(_url, json=args['payload'], headers=self._headers)
+
+    def get_ns(self, nsId: str, args=None) -> Tuple[Body, Headers]:
+        _url = "{0}/nslcm/v1/ns_instances/{1}".format(self._base_path, nsId)
+        _url = self._build_testing_url(_url, args)
+        try:
+            ns, headers = self._exec_get(_url, headers=self._headers)
+        except ResourceNotFound:
+            raise NsNotFound(ns_id=nsId)
+        return self._ns_im_converter(ns), headers
+
+    def delete_ns(self, nsId: str, args: Dict = None) -> Tuple[None, Headers]:
+        _url = "{0}/nslcm/v1/ns_instances/{1}".format(self._base_path, nsId)
+        _url = self._build_testing_url(_url, args)
+        try:
+            ns, headers = self._exec_delete(_url, params=None, headers={"accept": "application/json"})
+        except ResourceNotFound:
+            raise NsNotFound(ns_id=nsId)
+        return None, headers
 
     def instantiate_ns(self, nsId: str, args=None) -> Tuple[None, Headers]:
         _url = "{0}/nslcm/v1/ns_instances/{1}/instantiate".format(self._base_path, nsId)
@@ -185,18 +199,15 @@ class OSM(Driver):
         _url = "{0}/nslcm/v1/ns_instances/{1}/terminate".format(self._base_path, nsId)
         _url = self._build_testing_url(_url, args)
         try:
-            return self._exec_post(_url, json=args['payload'],
-                                   headers=self._headers)
+            return self._exec_post(_url, json=args['payload'], headers=self._headers)
         except ResourceNotFound:
             raise NsNotFound(ns_id=nsId)
 
     def scale_ns(self, nsId: str, args=None) -> Tuple[None, Headers]:
-        _url = "{0}/nslcm/v1/ns_instances/{1}/scale".format(
-            self._base_path, nsId)
+        _url = "{0}/nslcm/v1/ns_instances/{1}/scale".format(self._base_path, nsId)
         _url = self._build_testing_url(_url, args)
         try:
-            return self._exec_post(_url, json=args['payload'],
-                                   headers=self._headers)
+            return self._exec_post(_url, json=args['payload'], headers=self._headers)
         except ResourceNotFound:
             raise NsNotFound(ns_id=id)
 
@@ -210,7 +221,6 @@ class OSM(Driver):
             osm_op_list, headers = self._exec_get(_url, headers=self._headers)
         except ResourceNotFound:
             raise NsNotFound(ns_id=nsId)
-
         sol_op_list = []
         for op in osm_op_list:
             sol_op_list.append(self._op_im_converter(op))
@@ -272,7 +282,7 @@ class OSM(Driver):
         if 'constituent-vnfr-ref' in osm_ns:
             for vnf_id in osm_ns["constituent-vnfr-ref"]:
                 try:
-                    vnf, headers = self.vnf_get(vnf_id)
+                    vnf, headers = self.get_vnf(vnf_id)
                     osm_vnfs.append(vnf)
                 except VnfNotFound:
                     pass
@@ -290,22 +300,6 @@ class OSM(Driver):
                 vnf_instance["instantiatedVnfInfo"]["extCpInfo"] = self._cpinfo_converter(osm_vnf)
             sol_ns["vnfInstance"].append(vnf_instance)
         return sol_ns
-
-    def vnf_get(self, id, args=None):
-        _url = "{0}/nslcm/v1/vnf_instances/{1}".format(self._base_path, id)
-        _url = self._build_testing_url(_url, args)
-        try:
-            return self._exec_get(_url, headers=self._headers)
-        except ResourceNotFound:
-            raise VnfNotFound(vnf_id=id)
-
-    def vnfpkg_get(self, id, args=None):
-        _url = "{0}/vnfpkgm/v1/vnf_packages/{1}".format(self._base_path, id)
-        _url = self._build_testing_url(_url, args)
-        try:
-            return self._exec_get(_url, headers=self._headers)
-        except ResourceNotFound:
-            raise VnfPkgNotFound(vnfpkg_id=id)
 
     @staticmethod
     def _op_im_converter(osm_op):
