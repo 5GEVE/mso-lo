@@ -6,14 +6,14 @@ from urllib.parse import urlencode
 
 import requests
 import yaml as YAML
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
+import urllib3
+from urllib3.exceptions import InsecureRequestWarning
 
 from error_handler import ResourceNotFound, NsNotFound, VnfNotFound, \
     Unauthorized, BadRequest, ServerError, NsOpNotFound, VnfPkgNotFound
 from .interface import Driver, Headers, BodyList, Body
 
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-
+urllib3.disable_warnings(InsecureRequestWarning)
 TESTING = os.environ.get("TESTING", False)
 PRISM_ALIAS = os.environ.get("PRISM_ALIAS", "prism-osm")
 
