@@ -131,12 +131,12 @@ class OSM(Driver):
         token_url = "{0}/{1}".format(self._base_path, self._token_endpoint)
         return self._exec_post(token_url, json=auth_payload)
 
-    def get_vnf_list(self, args=None) -> Tuple[BodyList, Headers]:
+    def _get_vnf_list(self, args=None):
         _url = "{0}/nslcm/v1/vnf_instances".format(self._base_path)
         _url = self._build_url_query(_url, args)
         return self._exec_get(_url, headers=self._headers)
 
-    def get_vnf(self, vnfId: str, args=None) -> Tuple[Body, Headers]:
+    def _get_vnf(self, vnfId: str, args=None):
         _url = "{0}/nslcm/v1/vnf_instances/{1}".format(self._base_path, vnfId)
         _url = self._build_url_query(_url, args)
         try:
@@ -144,7 +144,7 @@ class OSM(Driver):
         except ResourceNotFound:
             raise VnfNotFound(vnf_id=vnfId)
 
-    def get_vnfpkg(self, vnfPkgId, args=None):
+    def _get_vnfpkg(self, vnfPkgId, args=None):
         _url = "{0}/vnfpkgm/v1/vnf_packages/{1}".format(
             self._base_path, vnfPkgId)
         _url = self._build_url_query(_url, args)
@@ -255,7 +255,7 @@ class OSM(Driver):
     def _cpinfo_converter(self, osm_vnf: Dict) -> List[Dict]:
         cp_info = []
         try:
-            vnfpkg, headers = self.get_vnfpkg(osm_vnf["vnfd-id"])
+            vnfpkg, headers = self._get_vnfpkg(osm_vnf["vnfd-id"])
         except VnfPkgNotFound:
             return cp_info
         for vdur in osm_vnf["vdur"]:
@@ -314,7 +314,7 @@ class OSM(Driver):
         if 'constituent-vnfr-ref' in osm_ns:
             for vnf_id in osm_ns["constituent-vnfr-ref"]:
                 try:
-                    vnf, headers = self.get_vnf(vnf_id)
+                    vnf, headers = self._get_vnf(vnf_id)
                     osm_vnfs.append(vnf)
                 except VnfNotFound:
                     pass
