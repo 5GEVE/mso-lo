@@ -155,6 +155,10 @@ class OSMTestCase(unittest.TestCase):
         res = self.client().get('/nfvo/1/ns_lcm_op_occs?__code=200')
         self.assertEqual(res.status_code, 200)
 
+    def test_get_ns_lcm_op_occs_list_200_filter(self):
+        res = self.client().get('/nfvo/2/ns_lcm_op_occs?nsInstanceId=1de0e9c3-b238-44da-b01b-b249a7784b03&__code=200')
+        self.assertEqual(res.status_code, 200)
+
     def test_get_ns_lcm_op_occs_list_401(self):
         res = self.client().get('/nfvo/1/ns_lcm_op_occs?__code=401')
         self.assertEqual(res.status_code, 401)
