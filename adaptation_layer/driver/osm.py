@@ -1,7 +1,7 @@
 import os
 import re
 from datetime import datetime
-from typing import Dict, Tuple
+from typing import Dict, Tuple, List
 from urllib.parse import urlencode
 
 import requests
@@ -252,7 +252,7 @@ class OSM(Driver):
         headers = self._build_headers(osm_headers)
         return sol_op, headers
 
-    def _cpinfo_converter(self, osm_vnf):
+    def _cpinfo_converter(self, osm_vnf: Dict) -> List[Dict]:
         cp_info = []
         try:
             vnfpkg, headers = self.get_vnfpkg(osm_vnf["vnfd-id"])
@@ -286,6 +286,7 @@ class OSM(Driver):
                         }
                     ]
                 })
+        return cp_info
 
     @staticmethod
     def _ns_im_resource(osm_ns: Dict, req_payload: Dict) -> Dict:
