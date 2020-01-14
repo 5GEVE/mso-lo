@@ -32,7 +32,7 @@ class AgentClient(object):  # ns_instantiation_server
     def _exec_delete(self, url=None, params=None, headers=None):
 
         try:
-            resp = requests.delete(url, params=params, headers=headers)
+            resp = requests.delete(url, params=params, verify=False, headers=headers)
         except Exception as e:
             raise ServerError(str(e))
 
@@ -57,7 +57,7 @@ class AgentClient(object):  # ns_instantiation_server
     def _exec_post(self, url=None, data=None, json=None, headers=None):
 
         try:
-            resp = requests.post(url, data=data, json=json, headers=headers)
+            resp = requests.post(url, data=data, json=json, verify=False, headers=headers)
         except Exception as e:
             raise ServerError(str(e))
 
@@ -84,7 +84,7 @@ class AgentClient(object):  # ns_instantiation_server
     def _exec_get(self, url=None, params=None, headers=None):
 
         try:
-            resp = requests.get(url, params=params, headers=headers)
+            resp = requests.get(url, params=params, verify=False, headers=headers)
         except Exception as e:
             raise ServerError(str(e))
 
@@ -188,7 +188,7 @@ class Client(object):
     def _exec_get(self, url=None, params=None, headers=None):
 
         try:
-            resp = requests.get(url, params=params, headers=headers)
+            resp = requests.get(url, params=params, verify=False, headers=headers)
         except Exception as e:
             raise ServerError(str(e))
 
