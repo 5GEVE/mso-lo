@@ -168,7 +168,7 @@ class OSM(Driver):
         _url = self._build_url_query(_url, args)
         osm_ns, osm_headers = self._exec_post(_url, json=args['payload'], headers=self._headers)
         headers = self._build_headers(osm_headers)
-        sol_ns = {}  # TODO
+        sol_ns = self._ns_im_resource(osm_ns, args['payload'])
         return sol_ns, headers
 
     def get_ns(self, nsId: str, args=None) -> Tuple[Body, Headers]:
@@ -286,6 +286,18 @@ class OSM(Driver):
                         }
                     ]
                 })
+
+    @staticmethod
+    def _ns_im_resource(osm_ns: Dict, req_payload: Dict) -> Dict:
+        sol_ns = {
+            "id": osm_ns['id'],
+            "nsInstanceName": req_payload['nsName'],
+            "nsInstanceDescription": req_payload['nsDescription'],
+            "nsdId": req_payload['nsdId'],
+            "nsState": "NOT_INSTANTIATED",
+            "vnfInstance": []
+        }
+        return sol_ns
 
     def _ns_im_converter(self, osm_ns: Dict) -> Dict:
         sol_ns = {

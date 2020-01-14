@@ -7,7 +7,7 @@ from jsonschema.exceptions import ValidationError, SchemaError
 
 from app import app
 from .request_mock import mock_ns, mock_ns_instantiate, mock_ns_scale, mock_ns_terminate
-from .response_schemas import ns_create_schema, ns_lcm_op_occ_schema, ns_list_schema, ns_schema, \
+from .response_schemas import ns_lcm_op_occ_schema, ns_list_schema, ns_schema, \
     ns_lcm_op_occ_list_schema
 
 
@@ -31,13 +31,12 @@ class OSMTestCase(unittest.TestCase):
         self.assertTrue(all([validate_url.scheme, validate_url.netloc, validate_url.path]))
 
         try:
-            validate(res.json, ns_create_schema)
+            validate(res.json, ns_schema)
         except (ValidationError, SchemaError) as e:
             self.fail(msg=e.message)
 
     def test_create_ns_400(self):
         res = self.client().post('/nfvo/1/ns_instances?__code=400', json=mock_ns)
-
         self.assertEqual(res.status_code, 400)
 
     def test_create_ns_401(self):

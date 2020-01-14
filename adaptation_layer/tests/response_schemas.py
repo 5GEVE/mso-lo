@@ -20,22 +20,6 @@ ns_list_schema = {
     "items": ns_schema
 }
 
-ns_instantiate_schema = {
-    "type": "object",
-    "properties": {
-        "id": {"type": "string"}
-    },
-    "required": ["id"]
-}
-
-ns_create_schema = {
-    "type": "object",
-    "properties": {
-        "id": {"type": "string"}
-    },
-    "required": ["id"]
-}
-
 ns_lcm_op_occ_schema = {
     "type": "object",
     "properties": {
