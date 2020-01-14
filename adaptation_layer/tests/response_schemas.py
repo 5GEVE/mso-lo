@@ -1,4 +1,3 @@
-
 id_schema = {"type": "string",
              "pattern": "^[a-fA-F0-9]{8}(-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}$"}
 
@@ -15,7 +14,6 @@ ns_schema = {
     "required": ["id", "nsInstanceName", "nsInstanceDescription", "nsdId", "nsState"],
     "additionalProperties": False
 }
-
 
 ns_list_schema = {
     "type": "array",
@@ -48,4 +46,8 @@ ns_lcm_op_occ_schema = {
         "lcmOperationType": {"type": "string"},
         "startTime": {"type": "string", "format": "date-time"}
     }
+}
+ns_lcm_op_occ_list_schema = {
+    "type": "array",
+    "items": ns_lcm_op_occ_schema
 }
