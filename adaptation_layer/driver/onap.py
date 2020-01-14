@@ -45,6 +45,6 @@ class ONAP(Driver):
     def get_op_list(self, args: Dict = None) -> List[Dict]:
         return self._agent.get_op_list()
 
-    def get_op(self, nsLcmOpId, args: Dict = None) -> Dict:
-        return self._agent.get_op(nsLcmOpId)
+    def get_op(self, nsLcmOpId: str, args: Dict = None) -> Dict:
+        return self._agent.get_op(nsLcmOpId, args=args)
 
