@@ -1,11 +1,7 @@
 from typing import Dict, List
 from client.onap import Client as ONAPclient
 from client.onap import AgentClient as AGENTclient
-from .interface import Driver  # commented for tests like  ONAP(Driver)
-import json
-
-# Driver = 'onap'
-# class ONAP(object):
+from .interface import Driver
 
 
 class ONAP(Driver):
@@ -16,26 +12,22 @@ class ONAP(Driver):
         # self._client = ONAPclient(**self)
 
     def create_ns(self, args: Dict = None) -> Dict:
-        ns_name = self._client.check_ns_name(args['payload']['nsdId'])  # to change nsdId to name of NS
+        ns_name = self._client.check_ns_name(args['payload']['nsdId'])  # retrieve name of nsdId
         return self._agent.ns_create(ns_name['name'], args=args)
 
     def get_ns_list(self, args=None) -> List[Dict]:
         return self._agent.ns_list()
-        # ns = self._client.ns_list()
-        # return self._ns_converter(ns)
 
     def get_ns(self, nsId: str, args=None) -> Dict:
         return self._agent.ns_get(nsId, args=args)
-        # return self._ns_converter(ns)
 
     def delete_ns(self, nsId: str, args: Dict = None) -> None:
-        # service_type = self._client.check_instance_ns_name(nsId)  # check service type
         return self._agent.ns_delete(nsId, args=args)
 
     def instantiate_ns(self, nsId: str, args: Dict = None) -> None:
         return self._agent.ns_instantiate(nsId, args=args)
 
-    # # unsupported by ONAP
+    # unsupported by ONAP
     def scale_ns(self, nsId: str, args: Dict = None) -> None:
         pass
 
