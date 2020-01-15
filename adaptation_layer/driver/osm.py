@@ -282,7 +282,7 @@ class OSM(Driver):
                 ) if key.endswith("-connection-point-ref")]
                 try:
                     (ip_address, mac_address) = (
-                        if_vdur["ip_address"], if_vdur["mac_address"])
+                        if_vdur["ip-address"], if_vdur["mac-address"])
                 except KeyError:
                     (ip_address, mac_address) = (None, None)
                 cp_info.append({
@@ -352,8 +352,9 @@ class OSM(Driver):
                 "instantiationState": osm_ns['_admin']['nsState'],
             }
             if vnf_instance["instantiationState"] == "INSTANTIATED":
-                vnf_instance["instantiatedVnfInfo"]["extCpInfo"] = self._cpinfo_converter(
-                    osm_vnf)
+                vnf_instance["instantiatedVnfInfo"] = {
+                    "extCpInfo": self._cpinfo_converter(osm_vnf)
+                }
             sol_ns["vnfInstance"].append(vnf_instance)
         return sol_ns
 
