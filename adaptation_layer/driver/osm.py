@@ -1,74 +1,288 @@
+import os
+import re
 from datetime import datetime
-from typing import Dict, List
+from typing import Dict, Tuple, List
+from urllib.parse import urlencode
 
-from client.osm import Client as Osmclient
-from error_handler import VnfNotFound, VnfPkgNotFound
-from .interface import Driver
+import requests
+import yaml as YAML
+import urllib3
+from urllib3.exceptions import InsecureRequestWarning
+
+from error_handler import ResourceNotFound, NsNotFound, VnfNotFound, \
+    Unauthorized, BadRequest, ServerError, NsOpNotFound, VnfPkgNotFound, \
+    VimNotFound
+from .interface import Driver, Headers, BodyList, Body
+
+urllib3.disable_warnings(InsecureRequestWarning)
+TESTING = os.environ.get("TESTING", False)
+PRISM_ALIAS = os.environ.get("PRISM_ALIAS", "prism-osm")
 
 
 class OSM(Driver):
 
-    def __init__(self, nfvo_auth):
-        self._nfvo_auth = nfvo_auth
-        self._client = Osmclient(**self._nfvo_auth)
+    def __init__(self, nfvo_cred):
+        self._nfvoId = nfvo_cred["nfvo_id"]
+        self._token_endpoint = 'admin/v1/tokens'
+        self._user_endpoint = 'admin/v1/users'
+        self._host = nfvo_cred["host"]
+        self._so_port = nfvo_cred["port"] if "port" in nfvo_cred else 9999
+        self._user = nfvo_cred["user"]
+        self._password = nfvo_cred["password"]
+        self._project = nfvo_cred["project"]
+        self._headers = {"Content-Type": "application/json",
+                         "Accept": "application/json"}
+        if TESTING is False:
+            self._base_path = 'https://{0}:{1}/osm'.format(
+                self._host, self._so_port)
+            token, headers = self._authenticate()
+            self._headers['Authorization'] = 'Bearer {}'.format(token['id'])
+        else:
+            self._base_path = 'http://{0}:{1}/osm'.format(
+                PRISM_ALIAS, self._so_port)
 
-    def get_vnf_list(self, args=None) -> list:
-        return self._client.vnf_list(args=args)
+    def _exec_get(self, url=None, params=None, headers=None):
+        try:
+            resp = requests.get(url, params=params,
+                                verify=False, stream=True, headers=headers)
+        except Exception as e:
+            raise ServerError(str(e))
+        if resp.status_code in (200, 201, 202, 204):
+            if 'application/json' in resp.headers['content-type']:
+                return resp.json(), resp.headers
+            elif 'application/yaml' in resp.headers['content-type']:
+                return YAML.load(resp.text, Loader=YAML.SafeLoader), resp.headers
+            else:
+                return resp.text, resp.headers
+        elif resp.status_code == 400:
+            raise BadRequest()
+        elif resp.status_code == 401:
+            raise Unauthorized()
+        elif resp.status_code == 404:
+            raise ResourceNotFound()
+        else:
+            if 'application/json' in resp.headers['content-type']:
+                error = resp.json()
+            elif 'application/yaml' in resp.headers['content-type']:
+                error = YAML.load(resp.text, Loader=YAML.SafeLoader)
+            else:
+                error = resp.text
+            raise ServerError(error)
 
-    def get_vnf(self, vnfId: str, args=None) -> list:
-        return self._client.vnf_get(vnfId, args=args)
+    def _exec_post(self, url=None, data=None, json=None, headers=None):
+        try:
+            resp = requests.post(url, data=data, json=json,
+                                 verify=False, headers=headers)
+        except Exception as e:
+            raise ServerError(str(e))
+        if resp.status_code in (200, 201, 202, 204):
+            if 'application/json' in resp.headers['content-type']:
+                return resp.json(), resp.headers
+            elif 'application/yaml' in resp.headers['content-type']:
+                return YAML.load(resp.text, Loader=YAML.SafeLoader), resp.headers
+            else:
+                return resp.text, resp.headers
+        elif resp.status_code == 400:
+            raise BadRequest()
+        elif resp.status_code == 401:
+            raise Unauthorized()
+        elif resp.status_code == 404:
+            raise ResourceNotFound()
+        else:
+            if 'application/json' in resp.headers['content-type']:
+                error = resp.json()
+            elif 'application/yaml' in resp.headers['content-type']:
+                error = YAML.load(resp.text, Loader=YAML.SafeLoader)
+            else:
+                error = resp.text
+            raise ServerError(error)
 
-    def get_ns_list(self, args=None) -> List[Dict]:
-        osm_ns_list = self._client.ns_list(args=args)
+    def _exec_delete(self, url=None, params=None, headers=None):
+        try:
+            resp = requests.delete(
+                url, params=params, verify=False, headers=headers)
+        except Exception as e:
+            raise ServerError(str(e))
+        if resp.status_code in (200, 201, 202, 204):
+            if 'application/json' in resp.headers['content-type']:
+                return resp.json(), resp.headers
+            elif 'application/yaml' in resp.headers['content-type']:
+                return YAML.load(resp.text, Loader=YAML.SafeLoader), resp.headers
+            else:
+                return resp.text, resp.headers
+        elif resp.status_code == 400:
+            raise BadRequest()
+        elif resp.status_code == 401:
+            raise Unauthorized()
+        elif resp.status_code == 404:
+            raise ResourceNotFound()
+        else:
+            if 'application/json' in resp.headers['content-type']:
+                error = resp.json()
+            elif 'application/yaml' in resp.headers['content-type']:
+                error = YAML.load(resp.text, Loader=YAML.SafeLoader)
+            else:
+                error = resp.text
+            raise ServerError(error)
+
+    def _authenticate(self):
+        auth_payload = {'username': self._user,
+                        'password': self._password,
+                        'project_id': self._project}
+        token_url = "{0}/{1}".format(self._base_path, self._token_endpoint)
+        return self._exec_post(token_url, json=auth_payload)
+
+    def _get_vnf_list(self, args=None):
+        _url = "{0}/nslcm/v1/vnf_instances".format(self._base_path)
+        _url = self._build_url_query(_url, args)
+        return self._exec_get(_url, headers=self._headers)
+
+    def _get_vnf(self, vnfId: str, args=None):
+        _url = "{0}/nslcm/v1/vnf_instances/{1}".format(self._base_path, vnfId)
+        _url = self._build_url_query(_url, args)
+        try:
+            return self._exec_get(_url, headers=self._headers)
+        except ResourceNotFound:
+            raise VnfNotFound(vnf_id=vnfId)
+
+    def _get_vim_list(self):
+        _url = "{0}/admin/v1/vims".format(self._base_path)
+        _url = self._build_url_query(_url, None)
+        return self._exec_get(_url, headers=self._headers)
+
+    def _get_vnfpkg(self, vnfPkgId, args=None):
+        _url = "{0}/vnfpkgm/v1/vnf_packages/{1}".format(
+            self._base_path, vnfPkgId)
+        _url = self._build_url_query(_url, args)
+        try:
+            return self._exec_get(_url, headers=self._headers)
+        except ResourceNotFound:
+            raise VnfPkgNotFound(vnfpkg_id=vnfPkgId)
+
+    def get_ns_list(self, args=None) -> Tuple[BodyList, Headers]:
+        _url = "{0}/nslcm/v1/ns_instances".format(self._base_path)
+        _url = self._build_url_query(_url, args)
+        osm_ns_list, osm_headers = self._exec_get(_url, headers=self._headers)
         sol_ns_list = []
         for osm_ns in osm_ns_list:
             sol_ns_list.append(self._ns_im_converter(osm_ns))
-        return sol_ns_list
+        headers = self._build_headers(osm_headers)
+        return sol_ns_list, headers
 
-    def create_ns(self, args=None) -> Dict:
-        return self._client.ns_create(args=args)
+    def create_ns(self, args=None) -> Tuple[Body, Headers]:
+        _url = "{0}/nslcm/v1/ns_instances".format(self._base_path)
+        _url = self._build_url_query(_url, args)
+        args['payload']['vimAccountId'] = self._select_vim()
+        osm_ns, osm_headers = self._exec_post(
+            _url, json=args['payload'], headers=self._headers)
+        headers = self._build_headers(osm_headers)
+        sol_ns = self._ns_im_resource(osm_ns, args['payload'])
+        return sol_ns, headers
 
-    def get_ns(self, nsId: str, args=None) -> Dict:
-        osm_ns = self._client.ns_get(nsId, args=args)
-        return self._ns_im_converter(osm_ns)
+    def get_ns(self, nsId: str, args=None, skip_sol=False) -> Tuple[Body, Headers]:
+        _url = "{0}/nslcm/v1/ns_instances/{1}".format(self._base_path, nsId)
+        _url = self._build_url_query(_url, args)
+        try:
+            osm_ns, osm_headers = self._exec_get(_url, headers=self._headers)
+        except ResourceNotFound:
+            raise NsNotFound(ns_id=nsId)
+        headers = self._build_headers(osm_headers)
+        if skip_sol:
+            return osm_ns, headers
+        sol_ns = self._ns_im_converter(osm_ns)
+        return sol_ns, headers
 
-    def delete_ns(self, nsId: str, args: Dict = None) -> None:
-        return self._client.ns_delete(nsId, args=args)
+    def delete_ns(self, nsId: str, args: Dict = None) -> Tuple[None, Headers]:
+        _url = "{0}/nslcm/v1/ns_instances/{1}".format(self._base_path, nsId)
+        _url = self._build_url_query(_url, args)
+        try:
+            empty_body, osm_headers = self._exec_delete(
+                _url, params=None, headers={"Accept": "application/json"})
+        except ResourceNotFound:
+            raise NsNotFound(ns_id=nsId)
+        headers = self._build_headers(osm_headers)
+        return None, headers
 
-    def instantiate_ns(self, nsId: str, args=None) -> None:
-        return self._client.ns_instantiate(nsId, args=args)
+    def instantiate_ns(self, nsId: str, args=None) -> Tuple[None, Headers]:
+        _url = "{0}/nslcm/v1/ns_instances/{1}/instantiate".format(
+            self._base_path, nsId)
+        _url = self._build_url_query(_url, args)
+        ns_res, ns_head = self.get_ns(nsId, skip_sol=True)
+        args['payload'] = ns_res['instantiate_params']
+        try:
+            empty_body, osm_headers = self._exec_post(
+                _url, json=args['payload'], headers=self._headers)
+        except ResourceNotFound:
+            raise NsNotFound(ns_id=nsId)
+        headers = self._build_headers(osm_headers)
+        return None, headers
 
-    def terminate_ns(self, nsId: str, args=None) -> None:
-        return self._client.ns_terminate(nsId, args=args)
+    def terminate_ns(self, nsId: str, args=None) -> Tuple[None, Headers]:
+        _url = "{0}/nslcm/v1/ns_instances/{1}/terminate".format(
+            self._base_path, nsId)
+        _url = self._build_url_query(_url, args)
+        try:
+            emtpy_body, osm_headers = self._exec_post(
+                _url, json=args['payload'], headers=self._headers)
+        except ResourceNotFound:
+            raise NsNotFound(ns_id=nsId)
+        headers = self._build_headers(osm_headers)
+        return None, headers
 
-    def scale_ns(self, nsId: str, args=None) -> None:
-        return self._client.ns_scale(nsId, args=args)
+    def scale_ns(self, nsId: str, args=None) -> Tuple[None, Headers]:
+        _url = "{0}/nslcm/v1/ns_instances/{1}/scale".format(
+            self._base_path, nsId)
+        _url = self._build_url_query(_url, args)
+        try:
+            empty_body, osm_headers = self._exec_post(
+                _url, json=args['payload'], headers=self._headers)
+        except ResourceNotFound:
+            raise NsNotFound(ns_id=id)
+        headers = self._build_headers(osm_headers)
+        return None, headers
 
-    def get_op_list(self, args: Dict = None) -> List[Dict]:
+    def get_op_list(self, args: Dict = None) -> Tuple[BodyList, Headers]:
         nsId = args['args']['nsInstanceId'] if args['args'] and 'nsInstanceId' in args['args'] else None
-        osm_op_list = self._client.ns_op_list(nsId, args=args)
+        _url = "{0}/nslcm/v1/ns_lcm_op_occs".format(self._base_path)
+        _url = self._build_url_query(_url, args)
+        try:
+            osm_op_list, osm_headers = self._exec_get(
+                _url, headers=self._headers)
+        except ResourceNotFound:
+            raise NsNotFound(ns_id=nsId)
         sol_op_list = []
         for op in osm_op_list:
             sol_op_list.append(self._op_im_converter(op))
-        return sol_op_list
+        headers = self._build_headers(osm_headers)
+        return sol_op_list, headers
 
-    def get_op(self, nsLcmOpId, args: Dict = None) -> Dict:
-        op = self._client.ns_op(nsLcmOpId, args=args)
-        return self._op_im_converter(op)
+    def get_op(self, nsLcmOpId, args: Dict = None) -> Tuple[Body, Headers]:
+        _url = "{0}/nslcm/v1/ns_lcm_op_occs/{1}".format(
+            self._base_path, nsLcmOpId)
+        _url = self._build_url_query(_url, args)
+        try:
+            osm_op, osm_headers = self._exec_get(_url, headers=self._headers)
+        except ResourceNotFound:
+            raise NsOpNotFound(ns_op_id=nsLcmOpId)
+        sol_op = self._op_im_converter(osm_op)
+        headers = self._build_headers(osm_headers)
+        return sol_op, headers
 
-    def _cpinfo_converter(self, osm_vnf):
+    def _cpinfo_converter(self, osm_vnf: Dict) -> List[Dict]:
         cp_info = []
         try:
-            vnfpkg = self._client.vnfpkg_get(osm_vnf["vnfd-id"])
+            vnfpkg, headers = self._get_vnfpkg(osm_vnf["vnfd-id"])
         except VnfPkgNotFound:
             return cp_info
         for vdur in osm_vnf["vdur"]:
             for if_vdur in vdur["interfaces"]:
                 [if_pkg] = [if_pkg for vdu in vnfpkg["vdu"] for if_pkg in vdu["interface"]
                             if vdu["id"] == vdur["vdu-id-ref"] and if_pkg["name"] == if_vdur["name"]]
-                [cp] = [val for key, val in if_pkg.items() if key.endswith("-connection-point-ref")]
+                [cp] = [val for key, val in if_pkg.items(
+                ) if key.endswith("-connection-point-ref")]
                 try:
-                    (ip_address, mac_address) = (if_vdur["ip_address"], if_vdur["mac_address"])
+                    (ip_address, mac_address) = (
+                        if_vdur["ip-address"], if_vdur["mac-address"])
                 except KeyError:
                     (ip_address, mac_address) = (None, None)
                 cp_info.append({
@@ -88,6 +302,26 @@ class OSM(Driver):
                         }
                     ]
                 })
+        return cp_info
+
+    @staticmethod
+    def _ns_im_resource(osm_ns: Dict, req_payload: Dict) -> Dict:
+        sol_ns = {
+            "id": osm_ns['id'],
+            "nsInstanceName": req_payload['nsName'],
+            "nsInstanceDescription": req_payload['nsDescription'],
+            "nsdId": req_payload['nsdId'],
+            "nsState": "NOT_INSTANTIATED",
+            "vnfInstance": []
+        }
+        return sol_ns
+
+    def _select_vim(self):
+        osm_vims, osm_vim_h = self._get_vim_list()
+        if osm_vims and len(osm_vims) > 0:
+            return osm_vims[0]['_id']
+        else:
+            raise VimNotFound()
 
     def _ns_im_converter(self, osm_ns: Dict) -> Dict:
         sol_ns = {
@@ -103,7 +337,8 @@ class OSM(Driver):
         if 'constituent-vnfr-ref' in osm_ns:
             for vnf_id in osm_ns["constituent-vnfr-ref"]:
                 try:
-                    osm_vnfs.append(self._client.vnf_get(vnf_id))
+                    vnf, headers = self._get_vnf(vnf_id)
+                    osm_vnfs.append(vnf)
                 except VnfNotFound:
                     pass
 
@@ -113,10 +348,13 @@ class OSM(Driver):
                 "vnfdId": osm_vnf["vnfd-id"],
                 "vnfProductName": osm_vnf["vnfd-ref"],
                 "vimId": osm_vnf["vim-account-id"],
-                "instantiationState": osm_ns['_admin']['nsState'],  # same as the NS
+                # same as the NS
+                "instantiationState": osm_ns['_admin']['nsState'],
             }
             if vnf_instance["instantiationState"] == "INSTANTIATED":
-                vnf_instance["instantiatedVnfInfo"]["extCpInfo"] = self._cpinfo_converter(osm_vnf)
+                vnf_instance["instantiatedVnfInfo"] = {
+                    "extCpInfo": self._cpinfo_converter(osm_vnf)
+                }
             sol_ns["vnfInstance"].append(vnf_instance)
         return sol_ns
 
@@ -131,3 +369,24 @@ class OSM(Driver):
             "startTime": datetime.utcfromtimestamp(osm_op["startTime"]).isoformat("T") + "Z",
         }
         return sol_op
+
+    @staticmethod
+    def _build_url_query(base, args):
+        if args and args['args']:
+            url_query = urlencode(args['args'])
+            return "{0}?{1}".format(base, url_query)
+        return base
+
+    def _build_headers(self, osm_headers):
+        headers = {}
+        if 'location' in osm_headers:
+            re_res = re.findall(
+                r"/osm/nslcm/v1/(ns_instances|ns_lcm_op_occs)/([A-Za-z0-9\-]+)", osm_headers['location'])
+            if len(re_res):
+                if re_res[0][0] == 'ns_instances':
+                    headers['location'] = '/nfvo/{0}/ns_instances/{1}'.format(
+                        self._nfvoId, re_res[0][1])
+                elif re_res[0][0] == 'ns_lcm_op_occs':
+                    headers['location'] = '/nfvo/{0}/ns_lcm_op_occs/{1}'.format(
+                        self._nfvoId, re_res[0][1])
+        return headers

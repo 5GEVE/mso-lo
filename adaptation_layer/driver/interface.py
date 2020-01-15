@@ -1,14 +1,12 @@
 from abc import ABC, abstractmethod
-from typing import List, Dict, NewType, Tuple
+from typing import List, Dict, Tuple
+
+Headers = Dict
+Body = Dict
+BodyList = List[Dict]
 
 
 class Driver(ABC):
-    """
-    methods related to Network Service Descriptor
-    """
-    Headers = Dict
-    Body = Dict
-    BodyList = List[Dict]
 
     @abstractmethod
     def get_ns_list(self, args: Dict = None) -> Tuple[BodyList, Headers]:
@@ -23,19 +21,19 @@ class Driver(ABC):
         raise NotImplementedError("The method is not implemented")
 
     @abstractmethod
-    def delete_ns(self, nsId: str, args: Dict = None) -> None:
+    def delete_ns(self, nsId: str, args: Dict = None) -> Tuple[None, Headers]:
         raise NotImplementedError("The method is not implemented")
 
     @abstractmethod
-    def instantiate_ns(self, nsId: str, args: Dict = None) -> None:
+    def instantiate_ns(self, nsId: str, args: Dict = None) -> Tuple[None, Headers]:
         raise NotImplementedError("The method is not implemented")
 
     @abstractmethod
-    def terminate_ns(self, nsId: str, args: Dict = None) -> None:
+    def terminate_ns(self, nsId: str, args: Dict = None) -> Tuple[None, Headers]:
         raise NotImplementedError("The method is not implemented")
 
     @abstractmethod
-    def scale_ns(self, nsId: str, args: Dict = None) -> None:
+    def scale_ns(self, nsId: str, args: Dict = None) -> Tuple[None, Headers]:
         raise NotImplementedError("The method is not implemented")
 
     @abstractmethod

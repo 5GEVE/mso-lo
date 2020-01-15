@@ -3331,6 +3331,47 @@ paths:
 # END PDU
 
 # BEGIN Admin
+  '/osm/admin/v1/vims':
+    get:
+      tags:
+        - "NS packages"
+      summary: Query information about multiple NS descriptor resources
+      description: Query information about multiple NS descriptor resources
+      operationId: getVIMs
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArrayOfVimInfo'
+            application/yaml:
+              schema:
+                $ref: '#/components/schemas/ArrayOfVimInfo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '5XX':
+          $ref: '#/components/responses/UnexpectedError'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
   # /admin/v1/tokens
   # /admin/v1/tokens/{tokenId}
   # /admin/v1/users
@@ -3687,6 +3728,28 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/NsdInfo'
+    VimInfo:
+      description: |
+        Vim Information
+        Only generic fields (_id, uuid, vim_type) 
+      type: object
+      properties:
+        _id:
+          description: None
+          example: b5494f61-41f8-4630-9439-a053fb779411
+          type: string
+        uuid:
+          description: None
+          example: b5494f61-41f8-4630-9439-a053fb779411
+          type: string
+        vim_type:
+          description: None
+          example: openstack
+          type: string
+    ArrayOfVimInfo:
+      type: array
+      items:
+        $ref: '#/components/schemas/VimInfo'
     ProblemDetails:
       type: object
       properties:
@@ -3746,11 +3809,11 @@ components:
           properties:
             created:
               description: None
-              example: 1571841174.9903417
+              example: 1579084026.2760458
               type: number
             modified:
               description: None
-              example: 1571841174.9903417
+              example: 1579084026.2760458
               type: number
             onboardingState:
               description: None
@@ -3779,11 +3842,11 @@ components:
               properties:
                 descriptor:
                   description: None
-                  example: ping_vnf/ping_vnfd.yaml
+                  example: pong_vnf/pong_vnfd.yaml
                   type: string
                 folder:
                   description: None
-                  example: 7c252170-ff12-4ee5-979c-6ddf3346839a
+                  example: f6ebc290-8a6a-4753-bc4c-0af8bdcc0219
                   type: string
                 fs:
                   description: None
@@ -3795,11 +3858,11 @@ components:
                   type: string
                 pkg-dir:
                   description: None
-                  example: ping_vnf
+                  example: pong_vnf
                   type: string
                 zipfile:
                   description: None
-                  example: package.tar.gz
+                  example: pong.tar.gz
                   type: string
               type: object
             type:
@@ -3817,7 +3880,7 @@ components:
           type: object
         _id:
           description: None
-          example: 7c252170-ff12-4ee5-979c-6ddf3346839a
+          example: f6ebc290-8a6a-4753-bc4c-0af8bdcc0219
           type: string
         connection-point:
           description: None
@@ -3826,7 +3889,7 @@ components:
             properties:
               name:
                 description: None
-                example: ping/cp0
+                example: pong/cp0
                 type: string
               type:
                 description: None
@@ -3840,61 +3903,23 @@ components:
           type: string
         id:
           description: None
-          example: ping
+          example: pong
           type: string
-        internal-vld:
-          description: None
-          items:
-            description: None
-            properties:
-              id:
-                description: None
-                example: vnf_vl_x4og
-                type: string
-              internal-connection-point:
-                description: None
-                items:
-                  description: None
-                  properties:
-                    id-ref:
-                      description: None
-                      example: intcp_99i0
-                      type: string
-                  type: object
-                type: array
-              ip-profile-ref:
-                description: None
-                example: ''
-                type: string
-              name:
-                description: None
-                example: vnf_vl_x4og
-                type: string
-              short-name:
-                description: None
-                example: vnf_vl_x4og
-                type: string
-              type:
-                description: None
-                example: ELAN
-                type: string
-            type: object
-          type: array
         mgmt-interface:
           description: None
           properties:
             cp:
               description: None
-              example: ping/cp0
+              example: pong/cp0
               type: string
           type: object
         name:
           description: None
-          example: ping
+          example: pong
           type: string
         short-name:
           description: None
-          example: ping
+          example: pong
           type: string
         vdu:
           description: None
@@ -3924,11 +3949,11 @@ components:
                   properties:
                     external-connection-point-ref:
                       description: None
-                      example: ping/cp0
+                      example: pong/cp0
                       type: string
                     name:
                       description: None
-                      example: ping0
+                      example: pong0
                       type: string
                     position:
                       description: None
@@ -3974,6 +3999,8 @@ components:
           description: None
           example: '1.1'
           type: string
+
+
 
 
       required:
@@ -4061,7 +4088,7 @@ components:
               type: number
             nsState:
               description: None
-              example: NOT_INSTANTIATED
+              example: INSTANTIATED
               type: string
             nslcmop:
               description: None
@@ -4639,19 +4666,14 @@ components:
           properties:
             created:
               description: None
-              example: 1576856648.9064274
+              example: 1579084053.351542
               type: number
             modified:
               description: None
-              example: 1576856648.9064274
+              example: 1579084053.351542
               type: number
             nsState:
-              description: "State of the NS instance. Permitted values:\n * `NOT_INSTANTIATED`:\
-                \ The NS instance is terminated or not instantiated.\n * `INSTANTIATED`: The\
-                \ NS instance is instantiated.\n \n"
-              enum:
-              - NOT_INSTANTIATED
-              - INSTANTIATED
+              description: None
               example: NOT_INSTANTIATED
               type: string
             projects_read:
@@ -4671,7 +4693,7 @@ components:
           type: object
         _id:
           description: None
-          example: 89f353ea-5358-44f5-a15e-e7c2eb4e3993
+          example: 44a7feb9-127a-40fa-ace8-dc9e6ac28db2
           type: string
         additionalParamsForVnf:
           description: None
@@ -4692,29 +4714,29 @@ components:
                 type: string
               name:
                 description: None
-                example: ping/cp0
+                example: pong/cp0
                 type: string
             type: object
           type: array
         created-time:
           description: None
-          example: 1576856648.8664641
+          example: 1579084053.3458812
           type: number
         id:
           description: None
-          example: 89f353ea-5358-44f5-a15e-e7c2eb4e3993
+          example: 44a7feb9-127a-40fa-ace8-dc9e6ac28db2
           type: string
         ip-address:
           description: None
-          example: ''
+          example: "172.17.0.3"
           type: string
         member-vnf-index-ref:
           description: None
-          example: '1'
+          example: '2'
           type: string
         nsr-id-ref:
           description: None
-          example: 8c7114cc-782b-407e-8212-44b6499f5749
+          example: 066a14fe-c71b-4973-b181-b38b9de3bd7f
           type: string
         vdur:
           description: None
@@ -4723,7 +4745,7 @@ components:
             properties:
               _id:
                 description: None
-                example: 3f6f3b5d-67ab-4961-8b5e-1f3188bd19cf
+                example: fe347be9-e3e1-4ce0-837c-b38f63bfb343
                 type: string
               count-index:
                 description: None
@@ -4734,13 +4756,21 @@ components:
                 items:
                   description: None
                   properties:
+                    ip-address:
+                      description: None
+                      example: "172.17.0.3"
+                      type: string
+                    mac-address:
+                      description: None
+                      example: "12:9c:50:61:b3:9c"
+                      type: string
                     mgmt-vnf:
                       description: None
                       example: true
                       type: boolean
                     name:
                       description: None
-                      example: ping0
+                      example: pong0
                       type: string
                     ns-vld-id:
                       description: None
@@ -4755,37 +4785,44 @@ components:
                 type: array
               ip-address:
                 description: None
+                example: "172.17.0.3"
+                type: string
+              name:
+                description: None
+                example: test-2-ubuntu-1
+                type: string
+              status:
+                description: None
+                example: ACTIVE
+                type: string
+              status-detailed:
+                description: None
                 example: ''
                 type: string
               vdu-id-ref:
                 description: None
                 example: ubuntu
                 type: string
+              vim-id:
+                description: None
+                example: a4ed31e0-67c0-4204-95f6-e37ce5a7a475
+                type: string
             type: object
           type: array
         vim-account-id:
           description: None
-          example: 30659dc0-0984-4ac7-83b9-7f34ce832e6e
+          example: 0b429855-7c09-490b-927a-8dbacefaffb7
           type: string
-        vld:
-          description: None
-          items:
-            description: None
-            properties:
-              id:
-                description: None
-                example: vnf_vl_x4og
-                type: string
-            type: object
-          type: array
         vnfd-id:
           description: None
-          example: 7c252170-ff12-4ee5-979c-6ddf3346839a
+          example: f6ebc290-8a6a-4753-bc4c-0af8bdcc0219
           type: string
         vnfd-ref:
           description: None
-          example: ping
+          example: pong
           type: string
+
+
 
 
     ArrayOfVnfInstanceInfo:
