@@ -25,8 +25,7 @@ class AgentClient(object):
                          "accept": "application/json"}
 
         if TESTING is False:
-            # self._base_path = 'http://{0}:{1}'.format(self._host, self._port)
-            self._base_path = 'http://{0}:{1}'.format('10.254.184.215', self._port)  # for tests only
+            self._base_path = 'http://{0}:{1}'.format(self._host, self._port)
         else:
             self._base_path = 'http://{0}:{1}'.format(PRISM_ALIAS, 9999)
 
@@ -168,9 +167,7 @@ class Client(object):
                          "accept": "application/json"}
 
         if TESTING is False:
-            # self._base_path = 'http://{0}:{1}/nbi/api/v{2}'.format(self._host, self._port, self._nbi_ver)
-            # for tests only
-            self._base_path = 'http://{0}:{1}/nbi/api/v{2}'.format('10.254.184.164', self._port, self._nbi_ver)
+            self._base_path = 'http://{0}:{1}/nbi/api/v{2}'.format(self._host, self._port, self._nbi_ver)
         else:
             self._base_path = 'http://{0}:{1}/nbi/api/v4'.format(PRISM_ALIAS, 9999)
 
