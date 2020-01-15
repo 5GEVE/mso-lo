@@ -10,7 +10,8 @@ import urllib3
 from urllib3.exceptions import InsecureRequestWarning
 
 from error_handler import ResourceNotFound, NsNotFound, VnfNotFound, \
-    Unauthorized, BadRequest, ServerError, NsOpNotFound, VnfPkgNotFound
+    Unauthorized, BadRequest, ServerError, NsOpNotFound, VnfPkgNotFound, \
+    VimNotFound
 from .interface import Driver, Headers, BodyList, Body
 
 urllib3.disable_warnings(InsecureRequestWarning)
@@ -144,6 +145,11 @@ class OSM(Driver):
         except ResourceNotFound:
             raise VnfNotFound(vnf_id=vnfId)
 
+    def _get_vim_list(self):
+        _url = "{0}/admin/v1/vims".format(self._base_path)
+        _url = self._build_url_query(_url, None)
+        return self._exec_get(_url, headers=self._headers)
+
     def _get_vnfpkg(self, vnfPkgId, args=None):
         _url = "{0}/vnfpkgm/v1/vnf_packages/{1}".format(
             self._base_path, vnfPkgId)
@@ -166,27 +172,32 @@ class OSM(Driver):
     def create_ns(self, args=None) -> Tuple[Body, Headers]:
         _url = "{0}/nslcm/v1/ns_instances".format(self._base_path)
         _url = self._build_url_query(_url, args)
-        osm_ns, osm_headers = self._exec_post(_url, json=args['payload'], headers=self._headers)
+        args['payload']['vimAccountId'] = self._select_vim()
+        osm_ns, osm_headers = self._exec_post(
+            _url, json=args['payload'], headers=self._headers)
         headers = self._build_headers(osm_headers)
         sol_ns = self._ns_im_resource(osm_ns, args['payload'])
         return sol_ns, headers
 
-    def get_ns(self, nsId: str, args=None) -> Tuple[Body, Headers]:
+    def get_ns(self, nsId: str, args=None, skip_sol=False) -> Tuple[Body, Headers]:
         _url = "{0}/nslcm/v1/ns_instances/{1}".format(self._base_path, nsId)
         _url = self._build_url_query(_url, args)
         try:
             osm_ns, osm_headers = self._exec_get(_url, headers=self._headers)
         except ResourceNotFound:
             raise NsNotFound(ns_id=nsId)
-        sol_ns = self._ns_im_converter(osm_ns)
         headers = self._build_headers(osm_headers)
+        if skip_sol:
+            return osm_ns, headers
+        sol_ns = self._ns_im_converter(osm_ns)
         return sol_ns, headers
 
     def delete_ns(self, nsId: str, args: Dict = None) -> Tuple[None, Headers]:
         _url = "{0}/nslcm/v1/ns_instances/{1}".format(self._base_path, nsId)
         _url = self._build_url_query(_url, args)
         try:
-            empty_body, osm_headers = self._exec_delete(_url, params=None, headers={"Accept": "application/json"})
+            empty_body, osm_headers = self._exec_delete(
+                _url, params=None, headers={"Accept": "application/json"})
         except ResourceNotFound:
             raise NsNotFound(ns_id=nsId)
         headers = self._build_headers(osm_headers)
@@ -196,6 +207,8 @@ class OSM(Driver):
         _url = "{0}/nslcm/v1/ns_instances/{1}/instantiate".format(
             self._base_path, nsId)
         _url = self._build_url_query(_url, args)
+        ns_res, ns_head = self.get_ns(nsId, skip_sol=True)
+        args['payload']['vimAccountId'] = ns_res['instantiate_params']['vimAccountId']
         try:
             empty_body, osm_headers = self._exec_post(
                 _url, json=args['payload'], headers=self._headers)
@@ -209,7 +222,8 @@ class OSM(Driver):
             self._base_path, nsId)
         _url = self._build_url_query(_url, args)
         try:
-            emtpy_body, osm_headers = self._exec_post(_url, json=args['payload'], headers=self._headers)
+            emtpy_body, osm_headers = self._exec_post(
+                _url, json=args['payload'], headers=self._headers)
         except ResourceNotFound:
             raise NsNotFound(ns_id=nsId)
         headers = self._build_headers(osm_headers)
@@ -220,7 +234,8 @@ class OSM(Driver):
             self._base_path, nsId)
         _url = self._build_url_query(_url, args)
         try:
-            empty_body, osm_headers = self._exec_post(_url, json=args['payload'], headers=self._headers)
+            empty_body, osm_headers = self._exec_post(
+                _url, json=args['payload'], headers=self._headers)
         except ResourceNotFound:
             raise NsNotFound(ns_id=id)
         headers = self._build_headers(osm_headers)
@@ -231,7 +246,8 @@ class OSM(Driver):
         _url = "{0}/nslcm/v1/ns_lcm_op_occs".format(self._base_path)
         _url = self._build_url_query(_url, args)
         try:
-            osm_op_list, osm_headers = self._exec_get(_url, headers=self._headers)
+            osm_op_list, osm_headers = self._exec_get(
+                _url, headers=self._headers)
         except ResourceNotFound:
             raise NsNotFound(ns_id=nsId)
         sol_op_list = []
@@ -299,6 +315,13 @@ class OSM(Driver):
             "vnfInstance": []
         }
         return sol_ns
+
+    def _select_vim(self):
+        osm_vims, osm_vim_h = self._get_vim_list()
+        if osm_vims and len(osm_vims) > 0:
+            return osm_vims[0]['_id']
+        else:
+            raise VimNotFound()
 
     def _ns_im_converter(self, osm_ns: Dict) -> Dict:
         sol_ns = {

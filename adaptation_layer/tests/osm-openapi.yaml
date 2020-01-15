@@ -3331,6 +3331,47 @@ paths:
 # END PDU
 
 # BEGIN Admin
+  '/osm/admin/v1/vims':
+    get:
+      tags:
+        - "NS packages"
+      summary: Query information about multiple NS descriptor resources
+      description: Query information about multiple NS descriptor resources
+      operationId: getVIMs
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArrayOfVimInfo'
+            application/yaml:
+              schema:
+                $ref: '#/components/schemas/ArrayOfVimInfo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '5XX':
+          $ref: '#/components/responses/UnexpectedError'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
   # /admin/v1/tokens
   # /admin/v1/tokens/{tokenId}
   # /admin/v1/users
@@ -3687,6 +3728,28 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/NsdInfo'
+    VimInfo:
+      description: |
+        Vim Information
+        Only generic fields (_id, uuid, vim_type) 
+      type: object
+      properties:
+        _id:
+          description: None
+          example: b5494f61-41f8-4630-9439-a053fb779411
+          type: string
+        uuid:
+          description: None
+          example: b5494f61-41f8-4630-9439-a053fb779411
+          type: string
+        vim_type:
+          description: None
+          example: openstack
+          type: string
+    ArrayOfVimInfo:
+      type: array
+      items:
+        $ref: '#/components/schemas/VimInfo'
     ProblemDetails:
       type: object
       properties:

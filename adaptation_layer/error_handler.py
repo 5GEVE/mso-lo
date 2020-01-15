@@ -33,6 +33,10 @@ class ResourceNotFound(Error):
     def __init__(self):
         self.description = 'Resource not found.'
 
+class VimNotFound(Error):
+    def __init__(self):
+        self.description = 'Resource not found.'
+
 
 class NsOpNotFound(Error):
     def __init__(self, ns_op_id=None):
