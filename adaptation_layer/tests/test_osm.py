@@ -6,7 +6,7 @@ from jsonschema import validate
 from jsonschema.exceptions import ValidationError, SchemaError
 
 from app import app
-from .request_mock import mock_ns, mock_ns_instantiate, mock_ns_scale, mock_ns_terminate
+from .request_mock import mock_ns, mock_ns_scale, mock_ns_terminate
 from .response_schemas import ns_lcm_op_occ_schema, ns_list_schema, ns_schema, \
     ns_lcm_op_occ_list_schema
 
@@ -90,8 +90,7 @@ class OSMTestCase(unittest.TestCase):
 
     # Check status codes 202, 401, 404, headers and payload for instantiate_ns()
     def test_instantiate_ns_202(self):
-        res = self.client().post('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/instantiate?__code=202',
-                                 json=mock_ns_instantiate)
+        res = self.client().post('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/instantiate?__code=202')
         self.assertEqual(res.status_code, 202)
 
         self.assertIn('Location', res.headers)
@@ -99,13 +98,11 @@ class OSMTestCase(unittest.TestCase):
         self.assertTrue(all([validate_url.scheme, validate_url.netloc, validate_url.path]))
 
     def test_instantiate_ns_400(self):
-        res = self.client().post('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/instantiate?__code=400',
-                                 json=mock_ns_instantiate)
+        res = self.client().post('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/instantiate?__code=400')
         self.assertEqual(res.status_code, 400)
 
     def test_instantiate_ns_401(self):
-        res = self.client().post('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/instantiate?__code=401',
-                                 json=mock_ns_instantiate)
+        res = self.client().post('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/instantiate?__code=401')
         self.assertEqual(res.status_code, 401)
 
     # Check status codes 202, 401, 404, headers and payload for terminate_ns()

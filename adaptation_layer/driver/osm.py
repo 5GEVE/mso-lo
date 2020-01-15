@@ -208,7 +208,7 @@ class OSM(Driver):
             self._base_path, nsId)
         _url = self._build_url_query(_url, args)
         ns_res, ns_head = self.get_ns(nsId, skip_sol=True)
-        args['payload']['vimAccountId'] = ns_res['instantiate_params']['vimAccountId']
+        args['payload'] = ns_res['instantiate_params']
         try:
             empty_body, osm_headers = self._exec_post(
                 _url, json=args['payload'], headers=self._headers)
