@@ -20,5 +20,5 @@ RUN ["pipenv", "run", "python", "manage.py", "seed"]
 
 FROM base as prod
 COPY ./uWSGI/app.ini .
-CMD ["pipenv", "run", "uwsgi", "--ini", "app.ini"] 
+CMD ["pipenv", "run", "uwsgi", "--ini", "app.ini"]
 

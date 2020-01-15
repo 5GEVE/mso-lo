@@ -31,6 +31,7 @@ ns_lcm_op_occ_schema = {
         "startTime": {"type": "string", "format": "date-time"}
     }
 }
+
 ns_lcm_op_occ_list_schema = {
     "type": "array",
     "items": ns_lcm_op_occ_schema
