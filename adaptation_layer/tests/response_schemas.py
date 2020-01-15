@@ -21,14 +21,7 @@ ns_list_schema = {
     "type": "array",
     "items": ns_schema
 }
-# ?
-ns_instantiate_schema = {
-    "type": "object",
-    "properties": {
-        "id": {"type": "string"}
-    },
-    "required": ["id"]
-}
+
 # ?
 ns_create_schema = {
     "type": "object",

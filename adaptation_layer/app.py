@@ -1,7 +1,8 @@
 from flask import Flask, jsonify, abort, request, make_response
 
 import driver.manager as manager
-from error_handler import init_errorhandler, NfvoNotFound, NsNotFound, Unauthorized, BadRequest, ServerError, NsOpNotFound
+from error_handler import init_errorhandler, NfvoNotFound, NsNotFound, Unauthorized, BadRequest, \
+    ServerError, NsOpNotFound
 
 app = Flask(__name__)
 init_errorhandler(app)
@@ -101,15 +102,6 @@ def delete_ns(nfvo_id, ns_id):
 @app.route('/nfvo/<nfvo_id>/ns_instances/<ns_id>/instantiate', methods=['POST'])
 def instantiate_ns(nfvo_id, ns_id):
     try:
-
-        # # code to insert location header in response
-        # ns = manager.get_driver(nfvo_id).instantiate_ns(
-        #     ns_id, args={'payload': request.json, 'args': request.args.to_dict()})
-        # resp = make_response()
-        # resp.headers["Location"] = 'http://127.0.0.1:5000/nfvo/{0}/ns_lcm_op_occs/{1}'.format(nfvo_id, ns)
-        # resp.status_code = 202
-        # return resp
-
         ns = manager.get_driver(nfvo_id).instantiate_ns(
             ns_id, args={'payload': request.json, 'args': request.args.to_dict()})
         return make_response('', 202)
@@ -159,9 +151,6 @@ def scale_ns(nfvo_id, ns_id):
         abort(404, description=e.description)
     except ServerError as e:
         abort(500, description=e.description)
-
-
-# copied from develop branch - for tests only
 
 
 @app.route('/nfvo/<nfvo_id>/ns_lcm_op_occs', methods=['GET'])

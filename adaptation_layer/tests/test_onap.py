@@ -4,7 +4,7 @@ from jsonschema import validate
 from jsonschema.exceptions import ValidationError, SchemaError
 
 from app import app
-from .request_mock import mock_ns, mock_ns_instantiate, mock_ns_terminate
+from .request_mock import mock_ns, mock_ns_terminate
 from .response_schemas import ns_create_schema, ns_lcm_op_occ_schema, \
     ns_list_schema, ns_schema, ns_lcm_op_occ_list_schema
 
@@ -51,7 +51,7 @@ class OnapTestCase(unittest.TestCase):
         res = self.client().post('/nfvo/1/ns_instances?__code=201', json=mock_ns)
         # TODO check it !
         try:
-            validate(res.json, ns_create_schema)  # why ns_create_schema
+            validate(res.json, ns_schema)  # why was ns_create_schema ???
         except (ValidationError, SchemaError) as e:
             self.fail(msg=e.message)
         self.assertEqual(res.status_code, 201)
@@ -62,19 +62,16 @@ class OnapTestCase(unittest.TestCase):
 
     # Check status codes 202, 400, 404, headers and payload for instantiate_ns()
     def test_instantiate_ns_202(self):
-        res = self.client().post('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/instantiate?__code=202',
-                                 json=mock_ns_instantiate)
+        res = self.client().post('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/instantiate?__code=202')
         # TODO header add :) nad check
         self.assertEqual(res.status_code, 202)
 
     def test_instantiate_ns_400(self):
-        res = self.client().post('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/instantiate?__code=400',
-                                 json=mock_ns_instantiate)
+        res = self.client().post('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/instantiate?__code=400')
         self.assertEqual(res.status_code, 400)
 
     def test_instantiate_ns_404(self):
-        res = self.client().post('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/instantiate?__code=404',
-                                 json=mock_ns_instantiate)
+        res = self.client().post('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/instantiate?__code=404')
         self.assertEqual(res.status_code, 404)
 
     # Check status codes 202, 404, headers and payload for terminate_ns()
