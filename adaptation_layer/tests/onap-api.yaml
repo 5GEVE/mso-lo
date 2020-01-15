@@ -106,6 +106,12 @@ paths:
       responses:
         '201':
           description: Created
+          headers:
+            Location:
+              description: link with nsInstanceId of the instantiated NS
+              schema:
+                type: string
+                format: uri
           content:
             application/json:
               schema:
@@ -463,36 +469,6 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/NsInstanceInfo'
-        # properties:
-        #   id:
-        #     type: string
-        #     format: uuid
-        #   nsInstanceName:
-        #     description:
-        #     type: string
-        #   nsInstanceDescription:
-        #     description:
-        #     type: string
-        #   nsdId:
-        #     description:
-        #     type: string
-        #     format: uuid
-        #   nsState:
-        #     description:
-        #     type: string
-        #     enum:
-        #       - NOT_INSTANTIATED
-        #       - INSTANTIATED
-        #   vnfInstance:
-        #     description:
-        #     type: array
-        # required:
-        #   - id
-        #   - nsInstanceName
-        #   - nsInstanceDescription
-        #   - nsdId
-        #   - nsState
-        #   - vnfInstance
 #
     NsInstanceInfo:
       # description: info about single NS instance
@@ -519,7 +495,6 @@ components:
           type: array
           items:
             type: object
-            # TODO check it !!!
       required:
         - id
         - nsInstanceName
@@ -563,26 +538,6 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/ID_lcm_op_occs'
-        # properties:
-        #   id:
-        #     type: string
-        #     format: uuid
-        #   operationState:
-        #     description:
-        #     type: string
-        #   stateEnteredTime:
-        #     description:
-        #     type: string
-        #   nsInstanceId:
-        #     description:
-        #     type: string
-        #     format: uuid
-        #   lcmOperationType:
-        #     description:
-        #     type: string
-        #   startTime:
-        #     type: string
-        #     format: date-time
 #
     ID_lcm_op_occs:
       type: object

@@ -5,7 +5,7 @@ from jsonschema.exceptions import ValidationError, SchemaError
 
 from app import app
 from .request_mock import mock_ns, mock_ns_terminate
-from .response_schemas import ns_create_schema, ns_lcm_op_occ_schema, \
+from .response_schemas import ns_lcm_op_occ_schema, \
     ns_list_schema, ns_schema, ns_lcm_op_occ_list_schema
 
 # AUTHORIZATION unsupported by ONAP driver
@@ -49,9 +49,8 @@ class OnapTestCase(unittest.TestCase):
     # Check status codes 201, 404, headers and payload for create_ns()
     def test_create_ns_201(self):
         res = self.client().post('/nfvo/1/ns_instances?__code=201', json=mock_ns)
-        # TODO check it !
         try:
-            validate(res.json, ns_schema)  # why was ns_create_schema ???
+            validate(res.json, ns_schema)
         except (ValidationError, SchemaError) as e:
             self.fail(msg=e.message)
         self.assertEqual(res.status_code, 201)
@@ -63,7 +62,7 @@ class OnapTestCase(unittest.TestCase):
     # Check status codes 202, 400, 404, headers and payload for instantiate_ns()
     def test_instantiate_ns_202(self):
         res = self.client().post('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/instantiate?__code=202')
-        # TODO header add :) nad check
+        # TODO add header check method
         self.assertEqual(res.status_code, 202)
 
     def test_instantiate_ns_400(self):
