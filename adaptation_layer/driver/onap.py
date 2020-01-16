@@ -21,7 +21,9 @@ class ONAP(Driver):
 
     def __init__(self, nfvo_cred):
         self._nfvoId = nfvo_cred["nfvo_id"]
-        self._host = nfvo_cred["host"]
+        # self._onap_host = nfvo_cred["host"]
+        self._onap_host = '10.254.184.164'  # for tests only
+        self._ns_host = '10.254.184.215'  # for tests only
         self._onap_port = nfvo_cred["port"] if "port" in nfvo_cred else 30274
         self._ns_port = 8080
         self._nbi_ver = 4
@@ -31,8 +33,8 @@ class ONAP(Driver):
 
         if TESTING is False:
             self._onap_base_path = 'http://{0}:{1}/nbi/api/v{2}'.format(
-                self._host, self._onap_port, self._nbi_ver)
-            self._ns_base_path = 'http://{0}:{1}'.format(self._host, self._ns_port)
+                self._onap_host, self._onap_port, self._nbi_ver)
+            self._ns_base_path = 'http://{0}:{1}'.format(self._ns_host, self._ns_port)
         else:
             self._onap_base_path = 'http://{0}:{1}/nbi/api/v4'.format(PRISM_ALIAS, 9999)
             self._ns_base_path = 'http://{0}:{1}'.format(PRISM_ALIAS, 9999)
