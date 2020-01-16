@@ -121,7 +121,7 @@ class ONAP(Driver):
         except ResourceNotFound:
             raise BadRequest()
         # add serviceType from response to args
-        ns_name = response['name']
+        ns_name = response[0]['name']  # TODO test it!
         args['payload']['serviceType'] = ns_name
         # create ns instance
         _url = '{0}/create'.format(self._ns_base_path)
@@ -212,7 +212,7 @@ class ONAP(Driver):
                 if re_res[0][0] == 'ns_db_id':
                     headers['location'] = '/nfvo/{0}/ns_instances/{1}'.format(
                         self._nfvoId, re_res[0][1])
-                elif re_res[0][0] == 'lcm_id':
+                elif re_res[0][0] == 'ns_lcm_op_occs':
                     headers['location'] = '/nfvo/{0}/ns_lcm_op_occs/{1}'.format(
                         self._nfvoId, re_res[0][1])
         return headers
