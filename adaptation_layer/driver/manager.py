@@ -16,7 +16,7 @@ def get_driver(nfvo_id) -> Driver:
     if type == 'osm':
         return OSM(nfvo_cred)
     elif type == 'onap':
-        return ONAP()
+        return ONAP(nfvo_cred)
     else:
         raise NotImplementedError(
             'Driver type: {} is not implemented'.format(type))
