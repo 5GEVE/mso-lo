@@ -2,7 +2,7 @@ import os
 import re
 from typing import Dict, Tuple, List
 from urllib.parse import urlencode
-import logging  # for tests only
+
 import requests
 import urllib3
 from urllib3.exceptions import InsecureRequestWarning
@@ -179,9 +179,6 @@ class ONAP(Driver):
 
     def get_op_list(self, args: Dict = None) -> Tuple[BodyList, Headers]:
         nsId = args['args']['nsInstanceId'] if args['args'] and 'nsInstanceId' in args['args'] else None
-        # _url = "{0}/ns_lcm_op_occs".format(self._ns_base_path)
-        # _url = self._build_url_query(_url, args)
-        logging.error(nsId)
         if nsId is None:
             _url = "{0}/ns_lcm_op_occs".format(self._ns_base_path)
             _url = self._build_url_query(_url, args)
@@ -196,13 +193,6 @@ class ONAP(Driver):
         headers = self._build_headers(resp_headers)
         return op_list, headers
 
-        # doesn't support filtering
-        # _url = '{0}/ns_lcm_op_occs'.format(self._ns_base_path)
-        # _url = self._build_url_query(_url, args)
-        # op_list, resp_headers = self._exec_get(_url, headers=self._headers)
-        # headers = self._build_headers(resp_headers)
-        # return op_list, headers
-
     def get_op(self, nsLcmOpId, args: Dict = None) -> Tuple[Body, Headers]:
         _url = '{0}/ns_lcm_op_occs/lcm_id/{1}'.format(self._ns_base_path, nsLcmOpId)
         _url = self._build_url_query(_url, args)
@@ -213,7 +203,6 @@ class ONAP(Driver):
         headers = self._build_headers(resp_headers)
         return lcm_op, headers
 
-    #
     @staticmethod
     def _build_url_query(base, args):
         if args and args['args']:
@@ -234,40 +223,3 @@ class ONAP(Driver):
                     headers['location'] = '/nfvo/{0}/ns_lcm_op_occs/{1}'.format(
                         self._nfvoId, re_res[0][1])
         return headers
-
-    # old version
-    #
-    # def __init__(self):
-    #     self._client = ONAPclient()
-    #     self._agent = AGENTclient()
-    #     # self._client = ONAPclient(**self)
-    #
-    # def create_ns(self, args: Dict = None) -> Dict:
-    #     ns_name = self._client.check_ns_name(args['payload']['nsdId'])  # retrieve name of nsdId
-    #     return self._agent.ns_create(ns_name['name'], args=args)
-    #
-    # def get_ns_list(self, args=None) -> List[Dict]:
-    #     return self._agent.ns_list()
-    #
-    # def get_ns(self, nsId: str, args=None) -> Dict:
-    #     return self._agent.ns_get(nsId, args=args)
-    #
-    # def delete_ns(self, nsId: str, args: Dict = None) -> None:
-    #     return self._agent.ns_delete(nsId, args=args)
-    #
-    # def instantiate_ns(self, nsId: str, args: Dict = None) -> None:
-    #     return self._agent.ns_instantiate(nsId, args=args)
-    #
-    # # unsupported by ONAP
-    # def scale_ns(self, nsId: str, args: Dict = None) -> None:
-    #     pass
-    #
-    # def terminate_ns(self, nsId: str, args: Dict = None) -> None:
-    #     return self._agent.ns_terminate(nsId, args=args)
-    #
-    # def get_op_list(self, args: Dict = None) -> List[Dict]:
-    #     return self._agent.get_op_list()
-    #
-    # def get_op(self, nsLcmOpId: str, args: Dict = None) -> Dict:
-    #     return self._agent.get_op(nsLcmOpId, args=args)
-    #

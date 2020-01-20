@@ -165,7 +165,7 @@ def get_op_list(nfvo_id):
         abort(400, description=e.description)
     except Unauthorized as e:
         abort(401, description=e.description)
-    except NfvoNotFound as e:
+    except NsNotFound as e:
         abort(404, description=e.description)
     except ServerError as e:
         abort(500, description=e.description)
