@@ -179,13 +179,20 @@ class ONAP(Driver):
 
     def get_op_list(self, args: Dict = None) -> Tuple[BodyList, Headers]:
         nsId = args['args']['nsInstanceId'] if args['args'] and 'nsInstanceId' in args['args'] else None
-        _url = "{0}/ns_lcm_op_occs".format(self._base_path)
-        _url = self._build_url_query(_url, args)
+        # _url = "{0}/ns_lcm_op_occs".format(self._ns_base_path)
+        # _url = self._build_url_query(_url, args)
         logging.error(nsId)
-        try:
+        if nsId is None:
+            _url = "{0}/ns_lcm_op_occs".format(self._ns_base_path)
+            _url = self._build_url_query(_url, args)
             op_list, resp_headers = self._exec_get(_url, headers=self._headers)
-        except ResourceNotFound:
-            raise NsNotFound(ns_id=nsId)
+        else:
+            _url = "{0}/ns_lcm_op_occs/ns_id/{1}".format(self._ns_base_path, nsId)
+            _url = self._build_url_query(_url, args)
+            try:
+                op_list, resp_headers = self._exec_get(_url, headers=self._headers)
+            except ResourceNotFound:
+                raise NsNotFound(ns_id=nsId)
         headers = self._build_headers(resp_headers)
         return op_list, headers
 
@@ -197,7 +204,7 @@ class ONAP(Driver):
         # return op_list, headers
 
     def get_op(self, nsLcmOpId, args: Dict = None) -> Tuple[Body, Headers]:
-        _url = '{0}/ns_lcm_op_occs/{1}'.format(self._ns_base_path, nsLcmOpId)
+        _url = '{0}/ns_lcm_op_occs/lcm_id/{1}'.format(self._ns_base_path, nsLcmOpId)
         _url = self._build_url_query(_url, args)
         try:
             lcm_op, resp_headers = self._exec_get(_url, headers=self._headers)
