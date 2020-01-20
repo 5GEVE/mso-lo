@@ -112,6 +112,7 @@ paths:
               schema:
                 type: string
                 format: uri
+                example: /ns-server/ns_db_id/4e462039-e57b-44e4-8431-bc586f31b4cb
           content:
             application/json:
               schema:
@@ -150,6 +151,7 @@ paths:
               schema:
                 type: string
                 format: uri
+                example: /ns-server/ns_lcm_op_occs/4e462039-e57b-44e4-8431-bc586f31b4cb
           content:
             application/json:
               schema:
@@ -195,6 +197,7 @@ paths:
               schema:
                 type: string
                 format: uri
+                example: /ns-server/ns_lcm_op_occs/4e462039-e57b-44e4-8431-bc586f31b4cb
           content:
             application/json:
               schema:
