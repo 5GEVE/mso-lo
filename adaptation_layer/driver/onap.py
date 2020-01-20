@@ -2,7 +2,7 @@ import os
 import re
 from typing import Dict, Tuple, List
 from urllib.parse import urlencode
-
+import logging  # for tests only
 import requests
 import urllib3
 from urllib3.exceptions import InsecureRequestWarning
@@ -22,8 +22,8 @@ class ONAP(Driver):
     def __init__(self, nfvo_cred):
         self._nfvoId = nfvo_cred["nfvo_id"]
         # self._onap_host = nfvo_cred["host"]
-        self._onap_host = '10.254.184.164'  # for tests only
-        self._ns_host = '10.254.184.215'  # for tests only
+        self._onap_host = '127.0.0.1'  # '10.254.184.164'  # for tests only
+        self._ns_host = '127.0.0.1'  # '10.254.184.215'  # for tests only
         self._onap_port = nfvo_cred["port"] if "port" in nfvo_cred else 30274
         self._ns_port = 8080
         self._nbi_ver = 4
@@ -178,12 +178,23 @@ class ONAP(Driver):
         pass
 
     def get_op_list(self, args: Dict = None) -> Tuple[BodyList, Headers]:
-        # doesn't support filtering
-        _url = '{0}/ns_lcm_op_occs'.format(self._ns_base_path)
+        nsId = args['args']['nsInstanceId'] if args['args'] and 'nsInstanceId' in args['args'] else None
+        _url = "{0}/ns_lcm_op_occs".format(self._base_path)
         _url = self._build_url_query(_url, args)
-        op_list, resp_headers = self._exec_get(_url, headers=self._headers)
+        logging.error(nsId)
+        try:
+            op_list, resp_headers = self._exec_get(_url, headers=self._headers)
+        except ResourceNotFound:
+            raise NsNotFound(ns_id=nsId)
         headers = self._build_headers(resp_headers)
         return op_list, headers
+
+        # doesn't support filtering
+        # _url = '{0}/ns_lcm_op_occs'.format(self._ns_base_path)
+        # _url = self._build_url_query(_url, args)
+        # op_list, resp_headers = self._exec_get(_url, headers=self._headers)
+        # headers = self._build_headers(resp_headers)
+        # return op_list, headers
 
     def get_op(self, nsLcmOpId, args: Dict = None) -> Tuple[Body, Headers]:
         _url = '{0}/ns_lcm_op_occs/{1}'.format(self._ns_base_path, nsLcmOpId)
