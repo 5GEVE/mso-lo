@@ -1,6 +1,23 @@
 # 5G EVE - MSO-LO interface
 
-[OpenAPI spec](https://app.swaggerhub.com/apis/zvfvrv/MSO-LO-new/3.1)
+MSO-LO is a REST API application to provide an
+[ETSI SOL 005 v2.6.1](https://www.etsi.org/deliver/etsi_gs/NFV-SOL/001_099/001/02.06.01_60/gs_NFV-SOL001v020601p.pdf)
+compliant interface towards various NFV orchestrators.
+
+OpenAPI specification is provided on [Swagger Hub](https://app.swaggerhub.com/apis/zvfvrv/MSO-LO-new/) or in
+[openapi directory](openapi).
+
+The software is developed under the [5G EVE](https://www.5g-eve.eu/) project.
+
+List of authors/contributors:
+
+- Francesco Lombardo, CNIT
+- Matteo Pergolesi, CNIT
+- Grzesik Michal, Orange
+- Panek Grzegorz, Orange
+- Chabiera Michal, Orange
+
+Software is distributed under [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
 ## Install guide
 
