@@ -112,6 +112,7 @@ paths:
               schema:
                 type: string
                 format: uri
+                example: /ns-server/ns_db_id/4e462039-e57b-44e4-8431-bc586f31b4cb
           content:
             application/json:
               schema:
@@ -150,6 +151,7 @@ paths:
               schema:
                 type: string
                 format: uri
+                example: /ns-server/ns_lcm_op_occs/4e462039-e57b-44e4-8431-bc586f31b4cb
           content:
             application/json:
               schema:
@@ -189,6 +191,13 @@ paths:
       responses:
         '202':
           description: Accepted
+          headers:
+            Location:
+              description: link with nsLcmOpOccId of the instantiated NS
+              schema:
+                type: string
+                format: uri
+                example: /ns-server/ns_lcm_op_occs/4e462039-e57b-44e4-8431-bc586f31b4cb
           content:
             application/json:
               schema:
@@ -270,8 +279,42 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
+#  get a info lcm op occs for given ns_Id
+  '/ns_lcm_op_occs/ns_id/{ns_db_id}':
+    parameters:
+      - name: ns_db_id
+        in: path
+        required: true
+        description: get lcm Info
+        schema:
+          type : string
+    get:
+      tags:
+        - 'NS lcm'
+      summary: retrieve a lcm info for given ns_db_id
+      description: retrieve a lcm info for given ns_db_id
+      operationId: lcmNSid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/List_ns_lcm_op_occs'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '5XX':
+          $ref: '#/components/responses/UnexpectedError'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
 #  get a info lcm op occs with given ID
-  '/ns_lcm_op_occs/{lcm_id}':
+  '/ns_lcm_op_occs/lcm_id/{lcm_id}':
     parameters:
       - name: lcm_id
         in: path
@@ -403,6 +446,12 @@ components:
         text/plain:
           schema:
             $ref: '#/components/schemas/List_lcm_op_occs'
+    List_ns_lcm_op_occs:
+      description: list of lcm infos
+      content:
+        text/plain:
+          schema:
+            $ref: '#/components/schemas/List_ns_lcm_op_occs'
     ID_lcm_op_occs:
       description: lcm id info
       content:
@@ -535,6 +584,11 @@ components:
         - vnfInstance
 #
     List_lcm_op_occs:
+      type: array
+      items:
+        $ref: '#/components/schemas/ID_lcm_op_occs'
+#
+    List_ns_lcm_op_occs:
       type: array
       items:
         $ref: '#/components/schemas/ID_lcm_op_occs'
