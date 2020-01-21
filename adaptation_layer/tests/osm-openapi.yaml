@@ -1,6 +1,9 @@
 openapi: 3.0.0
 
 servers:
+# Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/matpergo/osm_nbi/6
   - description: OSM NB API
     url: https://osm.etsi.org/nbapi/v1.0.0
 
@@ -10,7 +13,7 @@ info:
     For more information on OSM, you can visit [http://osm.etsi.org](http://osm.etsi.org).
     You can send us your comments and questions to OSM_TECH@list.etsi.org
     or join the [OpenSourceMANO Slack Workplace](https://join.slack.com/t/opensourcemano/shared_invite/enQtMzQ3MzYzNTQ0NDIyLWVkNTE4ZjZjNWI0ZTQyN2VhOTI1MjViMzU1NWYwMWM3ODI4NTQyY2VlODA2ZjczMWIyYTFkZWNiZmFkM2M2ZDk)
-  version: "1.0.0"
+  version: "6"
   title: OSM NB API featuring ETSI NFV SOL005
   contact:
     email: OSM_TECH@list.etsi.org
@@ -40,7 +43,7 @@ tags:
 paths:
 
 # BEGIN NS Packages
-  '/nsd/v1/ns_descriptors':
+  '/osm/nsd/v1/ns_descriptors':
     get:
       tags:
         - "NS packages"
@@ -128,7 +131,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/nsd/v1/ns_descriptors/{nsdInfoId}':
+  '/osm/nsd/v1/ns_descriptors/{nsdInfoId}':
     parameters:
       - name: nsdInfoId
         in: path
@@ -244,7 +247,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/nsd/v1/ns_descriptors/{nsdInfoId}/nsd_content':
+  '/osm/nsd/v1/ns_descriptors/{nsdInfoId}/nsd_content':
     parameters:
       - name: nsdInfoId
         in: path
@@ -336,7 +339,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/nsd/v1/ns_descriptors/{nsdInfoId}/artifacts/{artifactPath}':
+  '/osm/nsd/v1/ns_descriptors/{nsdInfoId}/artifacts/{artifactPath}':
     parameters:
       - name: nsdInfoId
         in: path
@@ -399,7 +402,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/nsd/v1/ns_descriptors/{nsdInfoId}/nsd':
+  '/osm/nsd/v1/ns_descriptors/{nsdInfoId}/nsd':
     parameters:
       - name: nsdInfoId
         in: path
@@ -444,7 +447,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/nsd/v1/ns_descriptors_content':
+  '/osm/nsd/v1/ns_descriptors_content':
     post:
       tags:
         - "NS packages"
@@ -550,7 +553,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/nsd/v1/ns_descriptors_content/{nsdInfoId}':
+  '/osm/nsd/v1/ns_descriptors_content/{nsdInfoId}':
     parameters:
       - name: nsdInfoId
         in: path
@@ -669,7 +672,7 @@ paths:
 # END NS Packages
 
 # BEGIN VNF Packages
-  '/vnfpkgm/v1/vnf_packages':
+  '/osm/vnfpkgm/v1/vnf_packages':
     get:
       tags:
         - "VNF packages"
@@ -757,7 +760,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/vnfpkgm/v1/vnf_packages/{vnfPkgId}':
+  '/osm/vnfpkgm/v1/vnf_packages/{vnfPkgId}':
     parameters:
       - name: vnfPkgId
         in: path
@@ -873,7 +876,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/vnfpkgm/v1/vnf_packages/{vnfPkgId}/vnfd':
+  '/osm/vnfpkgm/v1/vnf_packages/{vnfPkgId}/vnfd':
     parameters:
       - name: vnfPkgId
         in: path
@@ -918,7 +921,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/vnfpkgm/v1/vnf_packages/{vnfPkgId}/package_content':
+  '/osm/vnfpkgm/v1/vnf_packages/{vnfPkgId}/package_content':
     parameters:
       - name: vnfPkgId
         in: path
@@ -1013,7 +1016,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/vnfpkgm/v1/vnf_packages/{vnfPkgId}/artifacts/{artifactPath}':
+  '/osm/vnfpkgm/v1/vnf_packages/{vnfPkgId}/artifacts/{artifactPath}':
     parameters:
       - name: vnfPkgId
         in: path
@@ -1076,7 +1079,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/vnfpkgm/v1/vnf_packages_content':
+  '/osm/vnfpkgm/v1/vnf_packages_content':
     post:
       tags:
         - "VNF packages"
@@ -1182,7 +1185,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/vnfpkgm/v1/vnf_packages_content/{packageContentId}':
+  '/osm/vnfpkgm/v1/vnf_packages_content/{packageContentId}':
     parameters:
       - name: packageContentId
         in: path
@@ -1301,7 +1304,7 @@ paths:
 # END VNF Packages
 
 # BEGIN NS Instances
-  '/nslcm/v1/ns_instances':
+  '/osm/nslcm/v1/ns_instances':
     get:
       tags:
         - "NS instances"
@@ -1356,8 +1359,12 @@ paths:
           headers:
             Location:
               schema:
+                description: |
+                  It must point to the new "NS Instance"
+                  resource, i.e. an URI like ".../ns_lcm_op_occs/{nsLcmOpOccId}"
                 type: string
                 format: uri
+                example: /osm/nslcm/v1/ns_instances/4e462039-e57b-44e4-8431-bc586f31b4cb
           content:
             application/json:
               schema:
@@ -1389,7 +1396,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/nslcm/v1/ns_instances/{nsInstanceId}':
+  '/osm/nslcm/v1/ns_instances/{nsInstanceId}':
     parameters:
       - name: nsInstanceId
         in: path
@@ -1470,7 +1477,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/nslcm/v1/ns_instances/{nsInstanceId}/instantiate':
+  '/osm/nslcm/v1/ns_instances/{nsInstanceId}/instantiate':
     parameters:
       - name: nsInstanceId
         in: path
@@ -1502,6 +1509,7 @@ paths:
               schema:
                 type: string
                 format: uri
+                example: /osm/nslcm/v1/ns_lcm_op_occs/d4888b76-d741-4387-b7ac-37813d513a5a
           content:
             application/json:
               schema:
@@ -1533,7 +1541,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/nslcm/v1/ns_instances/{nsInstanceId}/scale':
+  '/osm/nslcm/v1/ns_instances/{nsInstanceId}/scale':
     parameters:
       - name: nsInstanceId
         in: path
@@ -1565,6 +1573,7 @@ paths:
               schema:
                 type: string
                 format: uri
+                example: /osm/nslcm/v1/ns_lcm_op_occs/d4888b76-d741-4387-b7ac-37813d513a5a
           content:
             application/json:
               schema:
@@ -1596,7 +1605,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/nslcm/v1/ns_instances/{nsInstanceId}/terminate':
+  '/osm/nslcm/v1/ns_instances/{nsInstanceId}/terminate':
     parameters:
       - name: nsInstanceId
         in: path
@@ -1629,6 +1638,7 @@ paths:
               schema:
                 type: string
                 format: uri
+                example: /osm/nslcm/v1/ns_lcm_op_occs/d4888b76-d741-4387-b7ac-37813d513a5a
           content:
             application/json:
               schema:
@@ -1660,7 +1670,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/nslcm/v1/ns_instances/{nsInstanceId}/action':
+  '/osm/nslcm/v1/ns_instances/{nsInstanceId}/action':
     parameters:
       - name: nsInstanceId
         in: path
@@ -1695,6 +1705,7 @@ paths:
               schema:
                 type: string
                 format: uri
+                example: /osm/nslcm/v1/ns_lcm_op_occs/d4888b76-d741-4387-b7ac-37813d513a5a
           content:
             application/json:
               schema:
@@ -1726,7 +1737,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/nslcm/v1/ns_instances_content':
+  '/osm/nslcm/v1/ns_instances_content':
     get:
       tags:
         - "NS instances"
@@ -1814,7 +1825,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/nslcm/v1/ns_instances_content/{nsInstanceContentId}':
+  '/osm/nslcm/v1/ns_instances_content/{nsInstanceContentId}':
     parameters:
       - name: nsInstanceContentId
         in: path
@@ -1904,7 +1915,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/nslcm/v1/ns_lcm_op_occs':
+  '/osm/nslcm/v1/ns_lcm_op_occs':
     get:
       tags:
         - "NS instances"
@@ -1945,7 +1956,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/nslcm/v1/ns_lcm_op_occs/{nsLcmOpOccId}':
+  '/osm/nslcm/v1/ns_lcm_op_occs/{nsLcmOpOccId}':
     parameters:
       - name: nsLcmOpOccId
         in: path
@@ -1993,7 +2004,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/nslcm/v1/vnf_instances':
+  '/osm/nslcm/v1/vnf_instances':
     get:
       tags:
         - "NS instances"
@@ -2034,7 +2045,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/nslcm/v1/vnf_instances/{vnfInstanceId}':
+  '/osm/nslcm/v1/vnf_instances/{vnfInstanceId}':
     parameters:
       - name: vnfInstanceId
         in: path
@@ -2085,7 +2096,7 @@ paths:
 # END NS Instances
 
 # BEGIN NetSlice Templates
-  '/nst/v1/netslice_templates':
+  '/osm/nst/v1/netslice_templates':
     get:
       tags:
         - "NetSlice templates"
@@ -2173,7 +2184,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/nst/v1/netslice_templates/{netsliceTemplateId}':
+  '/osm/nst/v1/netslice_templates/{netsliceTemplateId}':
     parameters:
       - name: netsliceTemplateId
         in: path
@@ -2254,7 +2265,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/nst/v1/netslice_templates/{netsliceTemplateId}/artifacts/{artifactPath}':
+  '/osm/nst/v1/netslice_templates/{netsliceTemplateId}/artifacts/{artifactPath}':
     parameters:
       - name: netsliceTemplateId
         in: path
@@ -2317,7 +2328,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/nst/v1/netslice_templates/{netsliceTemplateId}/nst':
+  '/osm/nst/v1/netslice_templates/{netsliceTemplateId}/nst':
     parameters:
       - name: netsliceTemplateId
         in: path
@@ -2362,7 +2373,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/nst/v1/netslice_templates/{netsliceTemplateId}/nst_content':
+  '/osm/nst/v1/netslice_templates/{netsliceTemplateId}/nst_content':
     parameters:
       - name: netsliceTemplateId
         in: path
@@ -2454,7 +2465,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/nst/v1/netslice_templates_content':
+  '/osm/nst/v1/netslice_templates_content':
     post:
       tags:
         - "NetSlice templates"
@@ -2560,7 +2571,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/nst/v1/netslice_templates_content/{netsliceTemplateContentId}':
+  '/osm/nst/v1/netslice_templates_content/{netsliceTemplateContentId}':
     parameters:
       - name: netsliceTemplateContentId
         in: path
@@ -2679,7 +2690,7 @@ paths:
 # END NetSlice Templates
 
 # BEGIN NetSlice Instances
-  '/nsilcm/v1/netslice_instances':
+  '/osm/nsilcm/v1/netslice_instances':
     get:
       tags:
         - "NetSlice instances"
@@ -2767,7 +2778,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/nsilcm/v1/netslice_instances/{netsliceInstanceId}':
+  '/osm/nsilcm/v1/netslice_instances/{netsliceInstanceId}':
     parameters:
       - name: netsliceInstanceId
         in: path
@@ -2848,7 +2859,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/nsilcm/v1/netslice_instances/{netsliceInstanceId}/instantiate':
+  '/osm/nsilcm/v1/netslice_instances/{netsliceInstanceId}/instantiate':
     parameters:
       - name: netsliceInstanceId
         in: path
@@ -2911,7 +2922,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/nsilcm/v1/netslice_instances/{netsliceInstanceId}/terminate':
+  '/osm/nsilcm/v1/netslice_instances/{netsliceInstanceId}/terminate':
     parameters:
       - name: netsliceInstanceId
         in: path
@@ -2975,7 +2986,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/nsilcm/v1/netslice_instances/{netsliceInstanceId}/action':
+  '/osm/nsilcm/v1/netslice_instances/{netsliceInstanceId}/action':
     parameters:
       - name: netsliceInstanceId
         in: path
@@ -3041,7 +3052,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/nsilcm/v1/netslice_instances_content':
+  '/osm/nsilcm/v1/netslice_instances_content':
     get:
       tags:
         - "NetSlice instances"
@@ -3129,7 +3140,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/nsilcm/v1/netslice_instances_content/{netsliceInstanceContentId}':
+  '/osm/nsilcm/v1/netslice_instances_content/{netsliceInstanceContentId}':
     parameters:
       - name: netsliceInstanceContentId
         in: path
@@ -3219,7 +3230,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/nsilcm/v1/nsi_lcm_op_occs':
+  '/osm/nsilcm/v1/nsi_lcm_op_occs':
     get:
       tags:
         - "NetSlice instances"
@@ -3260,7 +3271,7 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  '/nsilcm/v1/nsi_lcm_op_occs/{nsiLcmOpOccId}':
+  '/osm/nsilcm/v1/nsi_lcm_op_occs/{nsiLcmOpOccId}':
     parameters:
       - name: nsiLcmOpOccId
         in: path
@@ -3320,6 +3331,47 @@ paths:
 # END PDU
 
 # BEGIN Admin
+  '/osm/admin/v1/vims':
+    get:
+      tags:
+        - "NS packages"
+      summary: Query information about multiple NS descriptor resources
+      description: Query information about multiple NS descriptor resources
+      operationId: getVIMs
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArrayOfVimInfo'
+            application/yaml:
+              schema:
+                $ref: '#/components/schemas/ArrayOfVimInfo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '5XX':
+          $ref: '#/components/responses/UnexpectedError'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
   # /admin/v1/tokens
   # /admin/v1/tokens/{tokenId}
   # /admin/v1/users
@@ -3494,30 +3546,181 @@ components:
         http://osm-download.etsi.org/ftp/osm-doc/nsd.html
       type: object
       properties:
+        _admin:
+          description: None
+          properties:
+            created:
+              description: None
+              example: 1571841183.1950924
+              type: number
+            modified:
+              description: None
+              example: 1571841183.1950924
+              type: number
+            onboardingState:
+              description: None
+              example: ONBOARDED
+              type: string
+            operationalState:
+              description: None
+              example: ENABLED
+              type: string
+            projects_read:
+              description: None
+              items:
+                description: None
+                example: 3f9cef5c-b729-45a8-a9a2-e8acbb24701d
+                type: string
+              type: array
+            projects_write:
+              description: None
+              items:
+                description: None
+                example: 3f9cef5c-b729-45a8-a9a2-e8acbb24701d
+                type: string
+              type: array
+            storage:
+              description: None
+              properties:
+                descriptor:
+                  description: None
+                  example: pingpong_ns/pingpong_nsd.yaml
+                  type: string
+                folder:
+                  description: None
+                  example: b5494f61-41f8-4630-9439-a053fb779411
+                  type: string
+                fs:
+                  description: None
+                  example: local
+                  type: string
+                path:
+                  description: None
+                  example: /app/storage/
+                  type: string
+                pkg-dir:
+                  description: None
+                  example: pingpong_ns
+                  type: string
+                zipfile:
+                  description: None
+                  example: pingpong_nsd.tar.gz
+                  type: string
+              type: object
+            usageState:
+              description: None
+              example: NOT_IN_USE
+              type: string
+            userDefinedData:
+              description: None
+              properties: {}
+              type: object
+          type: object
         _id:
-          description: |
-            Identifier of the onboarded individual NS descriptor
-            resource. This identifier is allocated by the NFVO.
+          description: None
+          example: b5494f61-41f8-4630-9439-a053fb779411
           type: string
-          format: uuid
+        constituent-vnfd:
+          description: None
+          items:
+            description: None
+            properties:
+              member-vnf-index:
+                description: None
+                example: '1'
+                type: string
+              vnfd-id-ref:
+                description: None
+                example: ping
+                type: string
+            type: object
+          type: array
+        description:
+          description: None
+          example: Ping-pong example nentwork scenario with two VNFs.
+          type: string
         id:
-          description: |
-            This identifier, which is allocated by the NSD
-            designer, identifies the NSD in a globally unique
-            way. It is copied from the NSD content and shall be
-            present after the NSD content is on-boarded.
+          description: None
+          example: pingpong
           type: string
         name:
-          description: |
-            Name of the onboarded NSD. This information is
-            copied from the NSD content and shall be present
-            after the NSD content is on-boarded.
+          description: None
+          example: pingpong
           type: string
-        description:
-          description: |
-            Description of the onboarded NSD.
-            This information is copied from the NSD content.
+        short-name:
+          description: None
+          example: pingpong
           type: string
+        vendor:
+          description: None
+          example: Paderborn University
+          type: string
+        version:
+          description: None
+          example: '1.1'
+          type: string
+        vld:
+          description: None
+          items:
+            description: None
+            properties:
+              description:
+                description: None
+                example: Management VL
+                type: string
+              id:
+                description: None
+                example: mgmt_vl
+                type: string
+              mgmt-network:
+                description: None
+                example: true
+                type: boolean
+              name:
+                description: None
+                example: mgmt_vl
+                type: string
+              short-name:
+                description: None
+                example: mgmt_vl
+                type: string
+              type:
+                description: None
+                example: ELAN
+                type: string
+              vendor:
+                description: None
+                example: Paderborn University
+                type: string
+              version:
+                description: None
+                example: '1.0'
+                type: string
+              vim-network-name:
+                description: None
+                example: default
+                type: string
+              vnfd-connection-point-ref:
+                description: None
+                items:
+                  description: None
+                  properties:
+                    member-vnf-index-ref:
+                      description: None
+                      example: '1'
+                      type: string
+                    vnfd-connection-point-ref:
+                      description: None
+                      example: ping/cp0
+                      type: string
+                    vnfd-id-ref:
+                      description: None
+                      example: ping
+                      type: string
+                  type: object
+                type: array
+            type: object
+          type: array
       required:
         - _id
         - id
@@ -3525,6 +3728,28 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/NsdInfo'
+    VimInfo:
+      description: |
+        Vim Information
+        Only generic fields (_id, uuid, vim_type) 
+      type: object
+      properties:
+        _id:
+          description: None
+          example: b5494f61-41f8-4630-9439-a053fb779411
+          type: string
+        uuid:
+          description: None
+          example: b5494f61-41f8-4630-9439-a053fb779411
+          type: string
+        vim_type:
+          description: None
+          example: openstack
+          type: string
+    ArrayOfVimInfo:
+      type: array
+      items:
+        $ref: '#/components/schemas/VimInfo'
     ProblemDetails:
       type: object
       properties:
@@ -3579,20 +3804,205 @@ components:
         http://osm-download.etsi.org/ftp/osm-doc/vnfd.html
       type: object
       properties:
+        _admin:
+          description: None
+          properties:
+            created:
+              description: None
+              example: 1579084026.2760458
+              type: number
+            modified:
+              description: None
+              example: 1579084026.2760458
+              type: number
+            onboardingState:
+              description: None
+              example: ONBOARDED
+              type: string
+            operationalState:
+              description: None
+              example: ENABLED
+              type: string
+            projects_read:
+              description: None
+              items:
+                description: None
+                example: 3f9cef5c-b729-45a8-a9a2-e8acbb24701d
+                type: string
+              type: array
+            projects_write:
+              description: None
+              items:
+                description: None
+                example: 3f9cef5c-b729-45a8-a9a2-e8acbb24701d
+                type: string
+              type: array
+            storage:
+              description: None
+              properties:
+                descriptor:
+                  description: None
+                  example: pong_vnf/pong_vnfd.yaml
+                  type: string
+                folder:
+                  description: None
+                  example: f6ebc290-8a6a-4753-bc4c-0af8bdcc0219
+                  type: string
+                fs:
+                  description: None
+                  example: local
+                  type: string
+                path:
+                  description: None
+                  example: /app/storage/
+                  type: string
+                pkg-dir:
+                  description: None
+                  example: pong_vnf
+                  type: string
+                zipfile:
+                  description: None
+                  example: pong.tar.gz
+                  type: string
+              type: object
+            type:
+              description: None
+              example: vnfd
+              type: string
+            usageState:
+              description: None
+              example: NOT_IN_USE
+              type: string
+            userDefinedData:
+              description: None
+              properties: {}
+              type: object
+          type: object
         _id:
-          description: |
-            Identifier of the VNF package. This identifier is allocated by the NFVO.
+          description: None
+          example: f6ebc290-8a6a-4753-bc4c-0af8bdcc0219
           type: string
-          format: uuid
-        id:
-          description: VNF Package Identifier
-          type: string
-        name:
-          description: VNF Package Name
-          type: string
+        connection-point:
+          description: None
+          items:
+            description: None
+            properties:
+              name:
+                description: None
+                example: pong/cp0
+                type: string
+              type:
+                description: None
+                example: VPORT
+                type: string
+            type: object
+          type: array
         description:
-          description: VNF Package description
+          description: None
+          example: Empty example container VNF
           type: string
+        id:
+          description: None
+          example: pong
+          type: string
+        mgmt-interface:
+          description: None
+          properties:
+            cp:
+              description: None
+              example: pong/cp0
+              type: string
+          type: object
+        name:
+          description: None
+          example: pong
+          type: string
+        short-name:
+          description: None
+          example: pong
+          type: string
+        vdu:
+          description: None
+          items:
+            description: None
+            properties:
+              count:
+                description: None
+                example: '1'
+                type: string
+              description:
+                description: None
+                example: Ubuntu Trusty default Docker container
+                type: string
+              id:
+                description: None
+                example: ubuntu
+                type: string
+              image:
+                description: None
+                example: ubuntu:trusty
+                type: string
+              interface:
+                description: None
+                items:
+                  description: None
+                  properties:
+                    external-connection-point-ref:
+                      description: None
+                      example: pong/cp0
+                      type: string
+                    name:
+                      description: None
+                      example: pong0
+                      type: string
+                    position:
+                      description: None
+                      example: 0
+                      type: integer
+                    virtual-interface:
+                      description: None
+                      properties:
+                        type:
+                          description: None
+                          example: VIRTIO
+                          type: string
+                      type: object
+                  type: object
+                type: array
+              name:
+                description: None
+                example: ubuntu
+                type: string
+              vm-flavor:
+                description: None
+                properties:
+                  memory-mb:
+                    description: None
+                    example: '512'
+                    type: string
+                  storage-gb:
+                    description: None
+                    example: '10'
+                    type: string
+                  vcpu-count:
+                    description: None
+                    example: 1
+                    type: integer
+                type: object
+            type: object
+          type: array
+        vendor:
+          description: None
+          example: Paderborn University
+          type: string
+        version:
+          description: None
+          example: '1.1'
+          type: string
+
+
+
+
       required:
         - _id
         - id
@@ -3633,35 +4043,381 @@ components:
         http://osm-download.etsi.org/ftp/osm-doc/nsr.html
       type: object
       properties:
+        _admin:
+          description: None
+          properties:
+            created:
+              description: None
+              example: 1578590425.0391562
+              type: number
+            deployed:
+              description: None
+              properties:
+                RO:
+                  description: None
+                  properties:
+                    nsd_id:
+                      description: None
+                      example: ''
+                      type: string
+                    vnfd:
+                      description: None
+                      items:
+                        description: None
+                        properties:
+                          id:
+                            description: None
+                            example: ''
+                            type: string
+                          member-vnf-index:
+                            description: None
+                            example: '1'
+                            type: string
+                        type: object
+                      type: array
+                  type: object
+                VCA:
+                  description: None
+                  items:
+                    description: None
+                  type: array
+              type: object
+            modified:
+              description: None
+              example: 1578590425.0391562
+              type: number
+            nsState:
+              description: None
+              example: INSTANTIATED
+              type: string
+            nslcmop:
+              description: None
+              example: ''
+              type: string
+            projects_read:
+              description: None
+              items:
+                description: None
+                example: 3f9cef5c-b729-45a8-a9a2-e8acbb24701d
+                type: string
+              type: array
+            projects_write:
+              description: None
+              items:
+                description: None
+                example: 3f9cef5c-b729-45a8-a9a2-e8acbb24701d
+                type: string
+              type: array
+          type: object
         _id:
-          description: Identifier of the NS instance.
+          description: None
+          example: 1de0e9c3-b238-44da-b01b-b249a7784b03
           type: string
-          format: uuid
-        id:
-          description: Identifier of the NS instance.
+        additionalParamsForNs:
+          description: None
+          example: ''
           type: string
-          format: uuid
-        name:
-          description: Human readable name of the NS instance.
+        admin-status:
+          description: None
+          example: ENABLED
+          type: string
+        config-status:
+          description: None
+          example: terminating
+          type: string
+        constituent-vnfr-ref:
+          description: None
+          items:
+            description: None
+            example: c418cc62-f3b4-43c6-b684-d38bfbd2d7f6
+            type: string
+          type: array
+        create-time:
+          description: None
+          example: 1578590425.0305958
+          type: number
+        datacenter:
+          description: None
+          example: 30659dc0-0984-4ac7-83b9-7f34ce832e6e
           type: string
         description:
-          description: Human readable description of the NS instance.
+          description: None
+          example: ''
           type: string
-        nsd-id:
-          description: Identifier of the NSD.
+        detailed-status:
+          description: None
+          example: Done
           type: string
-          format: uuid
-        _admin:
-          type: object
+        id:
+          description: None
+          example: 1de0e9c3-b238-44da-b01b-b249a7784b03
+          type: string
+        instantiate_params:
+          description: None
           properties:
-            nsState:
+            nsName:
+              description: None
+              example: test
               type: string
-              description: "State of the NS instance. Permitted values:\n * `NOT_INSTANTIATED`:\
-                \ The NS instance is terminated or not instantiated.\n * `INSTANTIATED`: The\
-                \ NS instance is instantiated.\n \n"
-              enum:
-              - NOT_INSTANTIATED
-              - INSTANTIATED
+            nsdId:
+              description: None
+              example: b5494f61-41f8-4630-9439-a053fb779411
+              type: string
+            vimAccountId:
+              description: None
+              example: 30659dc0-0984-4ac7-83b9-7f34ce832e6e
+              type: string
+          type: object
+        name:
+          description: None
+          example: test
+          type: string
+        name-ref:
+          description: None
+          example: test
+          type: string
+        ns-instance-config-ref:
+          description: None
+          example: 1de0e9c3-b238-44da-b01b-b249a7784b03
+          type: string
+        nsd:
+          description: None
+          properties:
+            _admin:
+              description: None
+              properties:
+                created:
+                  description: None
+                  example: 1571841183.1950924
+                  type: number
+                modified:
+                  description: None
+                  example: 1571841183.1950924
+                  type: number
+                onboardingState:
+                  description: None
+                  example: ONBOARDED
+                  type: string
+                operationalState:
+                  description: None
+                  example: ENABLED
+                  type: string
+                projects_read:
+                  description: None
+                  items:
+                    description: None
+                    example: 3f9cef5c-b729-45a8-a9a2-e8acbb24701d
+                    type: string
+                  type: array
+                projects_write:
+                  description: None
+                  items:
+                    description: None
+                    example: 3f9cef5c-b729-45a8-a9a2-e8acbb24701d
+                    type: string
+                  type: array
+                storage:
+                  description: None
+                  properties:
+                    descriptor:
+                      description: None
+                      example: pingpong_ns/pingpong_nsd.yaml
+                      type: string
+                    folder:
+                      description: None
+                      example: b5494f61-41f8-4630-9439-a053fb779411
+                      type: string
+                    fs:
+                      description: None
+                      example: local
+                      type: string
+                    path:
+                      description: None
+                      example: /app/storage/
+                      type: string
+                    pkg-dir:
+                      description: None
+                      example: pingpong_ns
+                      type: string
+                    zipfile:
+                      description: None
+                      example: pingpong_nsd.tar.gz
+                      type: string
+                  type: object
+                usageState:
+                  description: None
+                  example: NOT_IN_USE
+                  type: string
+                userDefinedData:
+                  description: None
+                  properties: {}
+                  type: object
+              type: object
+            _id:
+              description: None
+              example: b5494f61-41f8-4630-9439-a053fb779411
+              type: string
+            constituent-vnfd:
+              description: None
+              items:
+                description: None
+                properties:
+                  member-vnf-index:
+                    description: None
+                    example: '1'
+                    type: string
+                  vnfd-id-ref:
+                    description: None
+                    example: ping
+                    type: string
+                type: object
+              type: array
+            description:
+              description: None
+              example: Ping-pong example nentwork scenario with two VNFs.
+              type: string
+            id:
+              description: None
+              example: pingpong
+              type: string
+            name:
+              description: None
+              example: pingpong
+              type: string
+            short-name:
+              description: None
+              example: pingpong
+              type: string
+            vendor:
+              description: None
+              example: Paderborn University
+              type: string
+            version:
+              description: None
+              example: '1.1'
+              type: string
+            vld:
+              description: None
+              items:
+                description: None
+                properties:
+                  description:
+                    description: None
+                    example: Management VL
+                    type: string
+                  id:
+                    description: None
+                    example: mgmt_vl
+                    type: string
+                  mgmt-network:
+                    description: None
+                    example: true
+                    type: boolean
+                  name:
+                    description: None
+                    example: mgmt_vl
+                    type: string
+                  short-name:
+                    description: None
+                    example: mgmt_vl
+                    type: string
+                  type:
+                    description: None
+                    example: ELAN
+                    type: string
+                  vendor:
+                    description: None
+                    example: Paderborn University
+                    type: string
+                  version:
+                    description: None
+                    example: '1.0'
+                    type: string
+                  vim-network-name:
+                    description: None
+                    example: default
+                    type: string
+                  vnfd-connection-point-ref:
+                    description: None
+                    items:
+                      description: None
+                      properties:
+                        member-vnf-index-ref:
+                          description: None
+                          example: '1'
+                          type: string
+                        vnfd-connection-point-ref:
+                          description: None
+                          example: ping/cp0
+                          type: string
+                        vnfd-id-ref:
+                          description: None
+                          example: ping
+                          type: string
+                      type: object
+                    type: array
+                type: object
+              type: array
+          type: object
+        nsd-id:
+          description: None
+          example: b5494f61-41f8-4630-9439-a053fb779411
+          type: string
+        nsd-name-ref:
+          description: None
+          example: pingpong
+          type: string
+        nsd-ref:
+          description: None
+          example: pingpong
+          type: string
+        operational-events:
+          description: None
+          items:
+            description: None
+          type: array
+        operational-status:
+          description: None
+          example: terminated
+          type: string
+        orchestration-progress:
+          description: None
+          properties: {}
+          type: object
+        resource-orchestrator:
+          description: None
+          example: osmopenmano
+          type: string
+        short-name:
+          description: None
+          example: test
+          type: string
+        ssh-authorized-key:
+          description: None
+          example: ''
+          type: string
+        vld:
+          description: None
+          items:
+            description: None
+            properties:
+              id:
+                description: None
+                example: mgmt_vl
+                type: string
+              vim-network-name:
+                description: None
+                example: default
+                type: string
+            type: object
+          type: array
+        vnfd-id:
+          description: None
+          items:
+            description: None
+            example: 7c252170-ff12-4ee5-979c-6ddf3346839a
+            type: string
+          type: array
       required:
         - _id
         - id
@@ -3781,56 +4537,118 @@ components:
     NsLcmOpOcc:
       type: object
       properties:
-        _id:
-          type: string
-          format: uuid
-        id:
-          type: string
-          format: uuid
-        lcmOperationType:
-          type: string
-        nsInstanceId:
-          type: string
-          format: uuid
-        isAutomaticInvocation:
-          type: boolean
-        isCancelPending:
-          type: boolean
-        startTime:
-          type: number
-          format: float
-        statusEnteredTime:
-          type: number
-          format: float
-        operationParams:
-          type: object
+        _admin:
+          description: None
           properties:
-            nsName:
+            created:
+              description: None
+              example: 1578590587.939928
+              type: number
+            modified:
+              description: None
+              example: 1578590587.939928
+              type: number
+            projects_read:
+              description: None
+              items:
+                description: None
+                example: 3f9cef5c-b729-45a8-a9a2-e8acbb24701d
+                type: string
+              type: array
+            projects_write:
+              description: None
+              items:
+                description: None
+                example: 3f9cef5c-b729-45a8-a9a2-e8acbb24701d
+                type: string
+              type: array
+            worker:
+              description: None
+              example: 523cf616a79e
               type: string
-            nsdId:
-              type: string
-              format: uuid
-            vimAccountId:
-              type: string
-              format: uuid
-            nsInstanceId:
-              type: string
-              format: uuid
-            lcmOperationType:
-              type: string
-        operationState:
+          type: object
+        _id:
+          description: None
+          example: d4888b76-d741-4387-b7ac-37813d513a5a
           type: string
         detailed-status:
+          description: None
+          example: 'FAILED Deploying ns at VIM: b"---\nerror:\n    code: 503\n    description:
+            ''VIM Exception vimconnConnectionException ConnectFailure: Unable\n        to
+            establish connection to http://10.0.0.161:6001/v2.0/tokens: HTTPConnectionPool(host=''''10.0.0.161'''',\n        port=6001):
+            Max retries exceeded with url: /v2.0/tokens (Caused by NewConnectionError(''''<urllib3.connection.HTTPConnection\n        object
+            at 0x7f2acbd52ed0>: Failed to establish a new connection: [Errno 113]\n        No
+            route to host'''',)). (True, '''' Rollback successful.'''')''\n    type: 503 Service
+            Unavailable\n"'
+          type: string
+        id:
+          description: None
+          example: d4888b76-d741-4387-b7ac-37813d513a5a
+          type: string
+        isAutomaticInvocation:
+          description: None
+          example: false
+          type: boolean
+        isCancelPending:
+          description: None
+          example: false
+          type: boolean
+        lcmOperationType:
+          description: None
+          example: instantiate
           type: string
         links:
-          type: object
+          description: None
           properties:
-            self:
-              type: string
-              format: path   # uri?
             nsInstance:
+              description: None
+              example: /osm/nslcm/v1/ns_instances/1de0e9c3-b238-44da-b01b-b249a7784b03
               type: string
-              format: path   # uri?
+            self:
+              description: None
+              example: /osm/nslcm/v1/ns_lcm_op_occs/d4888b76-d741-4387-b7ac-37813d513a5a
+              type: string
+          type: object
+        nsInstanceId:
+          description: None
+          example: 1de0e9c3-b238-44da-b01b-b249a7784b03
+          type: string
+        operationParams:
+          description: None
+          properties:
+            lcmOperationType:
+              description: None
+              example: instantiate
+              type: string
+            nsInstanceId:
+              description: None
+              example: 1de0e9c3-b238-44da-b01b-b249a7784b03
+              type: string
+            nsName:
+              description: None
+              example: test
+              type: string
+            nsdId:
+              description: None
+              example: b5494f61-41f8-4630-9439-a053fb779411
+              type: string
+            vimAccountId:
+              description: None
+              example: 30659dc0-0984-4ac7-83b9-7f34ce832e6e
+              type: string
+          type: object
+        operationState:
+          description: None
+          example: FAILED
+          type: string
+        startTime:
+          description: None
+          example: 1578590587.9398713
+          type: number
+        statusEnteredTime:
+          description: None
+          example: 1578590602.153433
+          type: number
     ArrayOfNsLcmOpOcc:
       type: array
       items:
@@ -3843,12 +4661,170 @@ components:
         http://osm-download.etsi.org/ftp/osm-doc/vnfr.html
       type: object
       properties:
+        _admin:
+          description: None
+          properties:
+            created:
+              description: None
+              example: 1579084053.351542
+              type: number
+            modified:
+              description: None
+              example: 1579084053.351542
+              type: number
+            nsState:
+              description: None
+              example: NOT_INSTANTIATED
+              type: string
+            projects_read:
+              description: None
+              items:
+                description: None
+                example: 3f9cef5c-b729-45a8-a9a2-e8acbb24701d
+                type: string
+              type: array
+            projects_write:
+              description: None
+              items:
+                description: None
+                example: 3f9cef5c-b729-45a8-a9a2-e8acbb24701d
+                type: string
+              type: array
+          type: object
         _id:
+          description: None
+          example: 44a7feb9-127a-40fa-ace8-dc9e6ac28db2
           type: string
-          format: uuid
+        additionalParamsForVnf:
+          description: None
+          example: ''
+          type: string
+        connection-point:
+          description: None
+          items:
+            description: None
+            properties:
+              connection-point-id:
+                description: None
+                example: ''
+                type: string
+              id:
+                description: None
+                example: ''
+                type: string
+              name:
+                description: None
+                example: pong/cp0
+                type: string
+            type: object
+          type: array
+        created-time:
+          description: None
+          example: 1579084053.3458812
+          type: number
         id:
+          description: None
+          example: 44a7feb9-127a-40fa-ace8-dc9e6ac28db2
           type: string
-          format: uuid
+        ip-address:
+          description: None
+          example: "172.17.0.3"
+          type: string
+        member-vnf-index-ref:
+          description: None
+          example: '2'
+          type: string
+        nsr-id-ref:
+          description: None
+          example: 066a14fe-c71b-4973-b181-b38b9de3bd7f
+          type: string
+        vdur:
+          description: None
+          items:
+            description: None
+            properties:
+              _id:
+                description: None
+                example: fe347be9-e3e1-4ce0-837c-b38f63bfb343
+                type: string
+              count-index:
+                description: None
+                example: 0
+                type: integer
+              interfaces:
+                description: None
+                items:
+                  description: None
+                  properties:
+                    ip-address:
+                      description: None
+                      example: "172.17.0.3"
+                      type: string
+                    mac-address:
+                      description: None
+                      example: "12:9c:50:61:b3:9c"
+                      type: string
+                    mgmt-vnf:
+                      description: None
+                      example: true
+                      type: boolean
+                    name:
+                      description: None
+                      example: pong0
+                      type: string
+                    ns-vld-id:
+                      description: None
+                      example: mgmt_vl
+                      type: string
+                  type: object
+                type: array
+              internal-connection-point:
+                description: None
+                items:
+                  description: None
+                type: array
+              ip-address:
+                description: None
+                example: "172.17.0.3"
+                type: string
+              name:
+                description: None
+                example: test-2-ubuntu-1
+                type: string
+              status:
+                description: None
+                example: ACTIVE
+                type: string
+              status-detailed:
+                description: None
+                example: ''
+                type: string
+              vdu-id-ref:
+                description: None
+                example: ubuntu
+                type: string
+              vim-id:
+                description: None
+                example: a4ed31e0-67c0-4204-95f6-e37ce5a7a475
+                type: string
+            type: object
+          type: array
+        vim-account-id:
+          description: None
+          example: 0b429855-7c09-490b-927a-8dbacefaffb7
+          type: string
+        vnfd-id:
+          description: None
+          example: f6ebc290-8a6a-4753-bc4c-0af8bdcc0219
+          type: string
+        vnfd-ref:
+          description: None
+          example: pong
+          type: string
+
+
+
+
     ArrayOfVnfInstanceInfo:
       type: array
       items:

@@ -1,48 +1,50 @@
+#  Copyright 2019 CNIT, Francesco Lombardo, Matteo Pergolesi
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+from error_handler import NfvoNotFound
+from models import NFVO, NFVO_CREDENTIALS
 from .interface import Driver
-from .osm import OSM
 from .onap import ONAP
-from error_handler import  NfvoNotFound, NsNotFound, Unauthorized, BadRequest
-
-# mock nvfo list
-nfvo_list = [
-    {
-        "id": "d290f1ee-6c54-4b01-90e6-d701748f0851",
-        "name": "OSM-Turin",
-        "nfvoType": "OSM",
-        "location": "Italy",
-        "uri": "https://osm-turin.5g-eve.eu",
-        "createdAt": "2019-06-29T09:12:33.001Z",
-        "updatedAt": "2019-06-29T09:12:33.001Z"
-    }
-]
-
-nfvo_mock_osm = {
-    'host': 'localhost',
-    'user': 'admin',
-    'password': 'admin',
-    'project': 'admin'
-}
+from .osm import OSM
 
 
 def get_driver(nfvo_id) -> Driver:
-    # checks the nfvo_id against the database and gets the type
-    type = 'osm'
-
+    nfvo = NFVO.query.filter_by(id=nfvo_id).first()
+    nfvo_cred = NFVO_CREDENTIALS.query.filter_by(nfvo_id=nfvo_id).first()
+    if nfvo is None or nfvo_cred is None:
+        raise NfvoNotFound(nfvo_id=nfvo_id)
+    nfvo = nfvo.serialize
+    nfvo_cred = nfvo_cred.serialize
+    type = nfvo['type'].casefold()
     if type == 'osm':
-        return OSM(nfvo_mock_osm)
+        return OSM(nfvo_cred)
     elif type == 'onap':
-        return ONAP()
+        return ONAP(nfvo_cred)
     else:
         raise NotImplementedError(
             'Driver type: {} is not implemented'.format(type))
 
 
 def get_nfvo_list(args=None) -> list:
-    # return a mock list
+    results = NFVO.query.all()
+    nfvo_list = [result.serialize for result in results]
+
     return nfvo_list
 
 
 def get_nfvo(nfvo_id, args=None) -> dict:
-
-    # return a mock nvfo data
-    return nfvo_list[0]
+    nfvo = NFVO.query.filter_by(id=nfvo_id).first()
+    if nfvo is None:
+        raise NfvoNotFound(nfvo_id=nfvo_id)
+    return nfvo.serialize

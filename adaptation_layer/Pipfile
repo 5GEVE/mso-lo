@@ -5,13 +5,19 @@ verify_ssl = true
 
 [dev-packages]
 flake8 = "*"
-nodeenv = "*"
+autopep8 = "*"
 
 [packages]
 flask = "==1.0.2"
 pycurl = "*"
 requests = "*"
 pyaml = "*"
+uwsgi = "*"
+flask-script = "*"
+flask-sqlalchemy = "*"
+flask-migrate = "*"
+pytest = "*"
+jsonschema = "*"
 
 [requires]
-python_version = "3"
+python_version = "3.6"

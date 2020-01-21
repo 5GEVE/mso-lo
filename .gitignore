@@ -107,16 +107,13 @@ venv.bak/
 .DS_Store
 
 # Idea
-.idea/**/workspace.xml
-.idea/**/tasks.xml
-.idea/**/usage.statistics.xml
-.idea/**/dictionaries
-.idea/**/shelf
-.idea/**/libraries
-.idea/**/modules.xml
+.idea/
 *.iml
 
 # vscode
 .vscode/
 
 adaptation_layer/tests/node_modules/
+
+*.db
+

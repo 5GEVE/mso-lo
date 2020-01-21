@@ -1,0 +1,32 @@
+version: '3.7'
+services:
+  prism-osm:
+    image: stoplight/prism:3.1.1
+    container_name: prism-osm
+    command: mock --host 0.0.0.0 --port 9999 /etc/osm-openapi.yaml
+    volumes:
+      - ./adaptation_layer/tests/osm-openapi.yaml:/etc/osm-openapi.yaml
+    networks:
+      mso-lo-net:
+        aliases:
+          - prism-osm
+    # export prism port for debugging
+    ports:
+      - 9999:9999
+  test-osm:
+    build:
+      context: .
+      target: base
+    container_name: test-osm
+    depends_on:
+      - prism-osm
+    environment:
+      TESTING: "True"
+      PRISM_ALIAS: prism-osm
+    command: ["./tests/wait-for-it.sh", "prism-osm:9999", "--", "pipenv", "run", "pytest", "-v", "tests/test_osm.py"]
+    networks:
+      mso-lo-net:
+        aliases:
+          - test-osm
+networks:
+    mso-lo-net:

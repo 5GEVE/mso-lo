@@ -1,3 +1,17 @@
+#  Copyright 2019 CNIT, Francesco Lombardo, Matteo Pergolesi
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
 from flask import make_response, jsonify
 
 
@@ -33,6 +47,15 @@ class ResourceNotFound(Error):
     def __init__(self):
         self.description = 'Resource not found.'
 
+class VimNotFound(Error):
+    def __init__(self):
+        self.description = 'Resource not found.'
+
+
+class NsOpNotFound(Error):
+    def __init__(self, ns_op_id=None):
+        self.description = 'NS LCM operatione {0} not found.'.format(ns_op_id)
+
 
 class NsNotFound(Error):
     def __init__(self, ns_id=None):
@@ -42,6 +65,11 @@ class NsNotFound(Error):
 class VnfNotFound(Error):
     def __init__(self, vnf_id=None):
         self.description = 'VNF instance {0} not found.'.format(vnf_id)
+
+
+class VnfPkgNotFound(Error):
+    def __init__(self, vnfpkg_id=None):
+        self.description = 'VNF package {0} not found.'.format(vnfpkg_id)
 
 
 class Unauthorized(Error):

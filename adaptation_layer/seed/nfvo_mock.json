@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "name": "turin_osm",
+    "site": "Italy",
+    "type": "OSM",
+    "uri": "https://osm-turin.5g-eve.eu"
+  },
+  {
+    "id": 2,
+    "name": "paris_onap",
+    "site": "France",
+    "type": "ONAP",
+    "uri": "https://onap-paris.5g-eve.eu"
+  }
+]

@@ -12,4 +12,22 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-# module to manage authentication
+import os
+from flask import Flask
+from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
+from error_handler import init_errorhandler
+
+
+class Config(object):
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
+        'sqlite:///' + os.path.join(basedir, 'data/mso-lo.db')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+
+app = Flask(__name__)
+app.config.from_object(Config)
+init_errorhandler(app)
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
