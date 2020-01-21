@@ -21,8 +21,8 @@ class ONAP(Driver):
 
     def __init__(self, nfvo_cred):
         self._nfvoId = nfvo_cred["nfvo_id"]
-        # self._onap_host = nfvo_cred["host"]
-        self._onap_host = '127.0.0.1'  # '10.254.184.164'  # for tests only
+        self._onap_host = nfvo_cred["host"]
+        # self._onap_host = '127.0.0.1'  # '10.254.184.164'  # for tests only
         self._ns_host = '127.0.0.1'  # '10.254.184.215'  # for tests only
         self._onap_port = nfvo_cred["port"] if "port" in nfvo_cred else 30274
         self._ns_port = 8080
