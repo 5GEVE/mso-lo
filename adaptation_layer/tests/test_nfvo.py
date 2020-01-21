@@ -21,8 +21,9 @@ class NFVOTestCase(unittest.TestCase):
     def test_get_nfvo_list_200(self):
         res = self.client().get('/nfvo')
         self.assertEqual(res.status_code, 200)
-        del res.json[0]['created_at']
-        del res.json[0]['updated_at']
+        for nfvo in res.json:
+            del nfvo['created_at']
+            del nfvo['updated_at']
         self.assertCountEqual(self.mock_nfvo_list, res.json)
 
     @unittest.skip('skip 401 test as we do not have authorization yet')
@@ -39,12 +40,10 @@ class NFVOTestCase(unittest.TestCase):
         self.assertDictEqual(self.mock_nfvo, res.json)
 
     def test_get_nfvo_404(self):
-        res = self.client().get('/nfvo/2')
+        res = self.client().get('/nfvo/-1')
         self.assertEqual(res.status_code, 404)
 
     @unittest.skip('skip 401 test as we do not have authorization yet')
     def test_get_nfvo_401(self):
         res = self.client().get('/nfvo/nfvo_osm1?__code=401')
         self.assertEqual(res.status_code, 401)
-
-
