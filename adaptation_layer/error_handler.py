@@ -47,6 +47,7 @@ class ResourceNotFound(Error):
     def __init__(self):
         self.description = 'Resource not found.'
 
+
 class VimNotFound(Error):
     def __init__(self):
         self.description = 'Resource not found.'
@@ -60,6 +61,11 @@ class NsOpNotFound(Error):
 class NsNotFound(Error):
     def __init__(self, ns_id=None):
         self.description = 'NS instance {0} not found.'.format(ns_id)
+
+
+class NsdNotFound(Error):
+    def __init__(self, nsd_id=None):
+        self.description = 'NS descriptor {0} not found.'.format(nsd_id)
 
 
 class VnfNotFound(Error):
