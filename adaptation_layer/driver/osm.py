@@ -20,13 +20,13 @@ from typing import Dict, Tuple, List
 from urllib.parse import urlencode
 
 import requests
-import yaml as YAML
 import urllib3
+import yaml as YAML
 from urllib3.exceptions import InsecureRequestWarning
 
 from error_handler import ResourceNotFound, NsNotFound, VnfNotFound, \
     Unauthorized, BadRequest, ServerError, NsOpNotFound, VnfPkgNotFound, \
-    VimNotFound
+    VimNotFound, NsdNotFound
 from .interface import Driver, Headers, BodyList, Body
 
 urllib3.disable_warnings(InsecureRequestWarning)
@@ -174,6 +174,15 @@ class OSM(Driver):
         except ResourceNotFound:
             raise VnfPkgNotFound(vnfpkg_id=vnfPkgId)
 
+    def _get_nsdpkg(self, nsdId, args=None):
+        _url = "{0}/nsd/v1/ns_descriptors".format(
+            self._base_path, nsdId)
+        _url = self._build_url_query(_url, args)
+        try:
+            return self._exec_get(_url, headers=self._headers)
+        except ResourceNotFound:
+            raise NsdNotFound(nsd_id=nsdId)
+
     def get_ns_list(self, args=None) -> Tuple[BodyList, Headers]:
         _url = "{0}/nslcm/v1/ns_instances".format(self._base_path)
         _url = self._build_url_query(_url, args)
@@ -187,6 +196,9 @@ class OSM(Driver):
     def create_ns(self, args=None) -> Tuple[Body, Headers]:
         _url = "{0}/nslcm/v1/ns_instances".format(self._base_path)
         _url = self._build_url_query(_url, args)
+        osm_nsdpkg, headerz = self._get_nsdpkg(args["payload"]["nsdId"],
+                                               args={"args": {"id": (args["payload"]["nsdId"])}})
+        args["payload"]["nsdId"] = osm_nsdpkg[0]["_id"]
         args['payload']['vimAccountId'] = self._select_vim()
         osm_ns, osm_headers = self._exec_post(
             _url, json=args['payload'], headers=self._headers)
