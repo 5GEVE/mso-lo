@@ -174,14 +174,16 @@ class OSM(Driver):
         except ResourceNotFound:
             raise VnfPkgNotFound(vnfpkg_id=vnfPkgId)
 
-    def _get_nsdpkg(self, nsdId, args=None):
-        _url = "{0}/nsd/v1/ns_descriptors".format(
-            self._base_path, nsdId)
+    def _get_nsdpkg(self, args=None):
+        _url = "{0}/nsd/v1/ns_descriptors".format(self._base_path)
         _url = self._build_url_query(_url, args)
-        try:
-            return self._exec_get(_url, headers=self._headers)
-        except ResourceNotFound:
-            raise NsdNotFound(nsd_id=nsdId)
+        nsdpkg_list, headers = self._exec_get(_url, headers=self._headers)
+        if not nsdpkg_list:
+            raise NsdNotFound(nsd_id=args["args"]["id"])
+        elif len(nsdpkg_list) > 1:
+            raise ServerError(description="Multiple NSD with id={} found in OSM".
+                              format(args["args"]["id"]))
+        return nsdpkg_list[0], headers
 
     def get_ns_list(self, args=None) -> Tuple[BodyList, Headers]:
         _url = "{0}/nslcm/v1/ns_instances".format(self._base_path)
@@ -196,13 +198,16 @@ class OSM(Driver):
     def create_ns(self, args=None) -> Tuple[Body, Headers]:
         _url = "{0}/nslcm/v1/ns_instances".format(self._base_path)
         _url = self._build_url_query(_url, args)
-        osm_nsdpkg, headerz = self._get_nsdpkg(args["payload"]["nsdId"],
-                                               args={"args": {"id": (args["payload"]["nsdId"])}})
-        args["payload"]["nsdId"] = osm_nsdpkg[0]["_id"]
+        nsdId_req = args["payload"]["nsdId"]
+        osm_nsdpkg, headerz = self._get_nsdpkg(args={"args": {
+            "id": args["payload"]["nsdId"]}
+        })
+        args["payload"]["nsdId"] = osm_nsdpkg["_id"]
         args['payload']['vimAccountId'] = self._select_vim()
         osm_ns, osm_headers = self._exec_post(
             _url, json=args['payload'], headers=self._headers)
         headers = self._build_headers(osm_headers)
+        args["payload"]["nsdId"] = nsdId_req
         sol_ns = self._ns_im_resource(osm_ns, args['payload'])
         return sol_ns, headers
 
