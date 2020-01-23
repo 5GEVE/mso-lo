@@ -16,7 +16,7 @@ from flask import jsonify, abort, request, make_response
 
 import config
 import driver.manager as manager
-from error_handler import NfvoNotFound, NsNotFound
+from error_handler import NfvoNotFound, NsNotFound, NsdNotFound
 from error_handler import Unauthorized, BadRequest, ServerError, NsOpNotFound
 
 app = config.app
@@ -58,6 +58,8 @@ def create_ns(nfvo_id):
     except Unauthorized as e:
         abort(401, description=e.description)
     except NfvoNotFound as e:
+        abort(404, description=e.description)
+    except NsdNotFound as e:
         abort(404, description=e.description)
     except ServerError as e:
         abort(500, description=e.description)
