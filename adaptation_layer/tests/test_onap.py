@@ -111,11 +111,11 @@ class OnapTestCase(unittest.TestCase):
                                  json=mock_ns_terminate)
         self.assertEqual(res.status_code, 404)
 
-    # Check status codes 202, 404, headers and payload for delete_ns()
-    def test_delete_ns_202(self):
+    # Check status codes 204, 404, headers and payload for delete_ns()
+    def test_delete_ns_204(self):
         res = self.client().delete(
-            '/nfvo/2/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7?__code=202')
-        self.assertEqual(res.status_code, 202)
+            '/nfvo/2/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7?__code=204')
+        self.assertEqual(res.status_code, 204)
 
     def test_delete_ns_404(self):
         res = self.client().delete(
