@@ -27,7 +27,7 @@ def get_nfvo_list():
     try:
         nfvo_list = manager.get_nfvo_list(
             args={'args': request.args.to_dict()})
-        return jsonify(nfvo_list)
+        return make_response(jsonify(nfvo_list), 200)
     except Unauthorized as e:
         abort(401, description=e.description)
     except ServerError as e:
@@ -38,7 +38,7 @@ def get_nfvo_list():
 def get_nfvo(nfvo_id):
     try:
         nfvo = manager.get_nfvo(nfvo_id, args={'args': request.args.to_dict()})
-        return jsonify(nfvo)
+        return make_response(jsonify(nfvo), 200)
     except Unauthorized as e:
         abort(401, description=e.description)
     except NfvoNotFound as e:
