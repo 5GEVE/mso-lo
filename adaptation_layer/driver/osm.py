@@ -62,13 +62,15 @@ class OSM(Driver):
                                 verify=False, stream=True, headers=headers)
         except Exception as e:
             raise ServerError(str(e))
-        if resp.status_code in (200, 201, 202, 204):
+        if resp.status_code in (200, 201, 202):
             if 'application/json' in resp.headers['content-type']:
                 return resp.json(), resp.headers
             elif 'application/yaml' in resp.headers['content-type']:
                 return YAML.load(resp.text, Loader=YAML.SafeLoader), resp.headers
             else:
                 return resp.text, resp.headers
+        elif resp.status_code == 204:
+            return None, resp.headers
         elif resp.status_code == 400:
             raise BadRequest()
         elif resp.status_code == 401:
@@ -90,13 +92,15 @@ class OSM(Driver):
                                  verify=False, headers=headers)
         except Exception as e:
             raise ServerError(str(e))
-        if resp.status_code in (200, 201, 202, 204):
+        if resp.status_code in (200, 201, 202):
             if 'application/json' in resp.headers['content-type']:
                 return resp.json(), resp.headers
             elif 'application/yaml' in resp.headers['content-type']:
                 return YAML.load(resp.text, Loader=YAML.SafeLoader), resp.headers
             else:
                 return resp.text, resp.headers
+        elif resp.status_code == 204:
+            return None, resp.headers
         elif resp.status_code == 400:
             raise BadRequest()
         elif resp.status_code == 401:
@@ -118,13 +122,15 @@ class OSM(Driver):
                 url, params=params, verify=False, headers=headers)
         except Exception as e:
             raise ServerError(str(e))
-        if resp.status_code in (200, 201, 202, 204):
+        if resp.status_code in (200, 201, 202):
             if 'application/json' in resp.headers['content-type']:
                 return resp.json(), resp.headers
             elif 'application/yaml' in resp.headers['content-type']:
                 return YAML.load(resp.text, Loader=YAML.SafeLoader), resp.headers
             else:
                 return resp.text, resp.headers
+        elif resp.status_code == 204:
+            return None, resp.headers
         elif resp.status_code == 400:
             raise BadRequest()
         elif resp.status_code == 401:
@@ -229,6 +235,7 @@ class OSM(Driver):
         _url = self._build_url_query(_url, args)
         req_headers = copy.deepcopy(self._headers)
         del req_headers["Content-Type"]
+        del req_headers["Accept"]
         try:
             empty_body, osm_headers = self._exec_delete(
                 _url, params=None, headers=req_headers)
