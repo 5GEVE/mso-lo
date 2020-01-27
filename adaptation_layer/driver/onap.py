@@ -14,16 +14,15 @@
 
 import os
 import re
-from typing import Dict, Tuple, List
+from typing import Dict, Tuple
 from urllib.parse import urlencode
 
 import requests
 import urllib3
 from urllib3.exceptions import InsecureRequestWarning
 
-from error_handler import ResourceNotFound, NsNotFound,\
-     BadRequest, ServerError, NsOpNotFound
-
+from error_handler import ResourceNotFound, NsNotFound, \
+    BadRequest, ServerError, NsOpNotFound
 from .interface import Driver, Headers, BodyList, Body
 
 urllib3.disable_warnings(InsecureRequestWarning)
@@ -60,11 +59,13 @@ class ONAP(Driver):
         except Exception as e:
             raise ServerError(str(e))
 
-        if resp.status_code in (200, 201, 202, 204, 206):
+        if resp.status_code in (200, 201, 202, 206):
             if 'application/json' in resp.headers['content-type']:
                 return resp.json(), resp.headers
             else:
                 return resp.text, resp.headers
+        elif resp.status_code == 204:
+            return None, resp.headers
         elif resp.status_code == 400:
             raise BadRequest()
         elif resp.status_code == 404:
@@ -80,11 +81,13 @@ class ONAP(Driver):
         except Exception as e:
             raise ServerError(str(e))
 
-        if resp.status_code in (200, 201, 202, 204, 206):
+        if resp.status_code in (200, 201, 202, 206):
             if 'application/json' in resp.headers['content-type']:
                 return resp.json(), resp.headers
             else:
                 return resp.text, resp.headers
+        elif resp.status_code == 204:
+            return None, resp.headers
         elif resp.status_code == 400:
             raise BadRequest()
         elif resp.status_code == 404:
@@ -103,11 +106,13 @@ class ONAP(Driver):
         except Exception as e:
             raise ServerError(str(e))
 
-        if resp.status_code in (200, 201, 202, 204, 206):  # response code 206 was added
+        if resp.status_code in (200, 201, 202, 206):  # response code 206 was added
             if 'application/json' in resp.headers['content-type']:
                 return resp.json(), resp.headers
             else:
                 return resp.text, resp.headers
+        elif resp.status_code == 204:
+            return None, resp.headers
         elif resp.status_code == 400:
             raise BadRequest()
         elif resp.status_code == 404:
@@ -160,7 +165,7 @@ class ONAP(Driver):
         _url = self._build_url_query(_url, args)
         try:
             empty_body, resp_headers = self._exec_delete(
-                _url, params=None, headers={"Accept": "application/json"})
+                _url, params=None, headers={})
         except ResourceNotFound:
             raise NsNotFound(ns_id=nsId)
         headers = self._build_headers(resp_headers)

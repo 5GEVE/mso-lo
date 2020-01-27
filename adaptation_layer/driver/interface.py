@@ -51,7 +51,7 @@ class Driver(ABC):
         raise NotImplementedError("The method is not implemented")
 
     @abstractmethod
-    def get_op_list(self, nsId: str, args: Dict = None) -> Tuple[BodyList, Headers]:
+    def get_op_list(self, args: Dict = None) -> Tuple[BodyList, Headers]:
         raise NotImplementedError("The method is not implemented")
 
     @abstractmethod
