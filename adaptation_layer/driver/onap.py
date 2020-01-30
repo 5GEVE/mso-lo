@@ -22,7 +22,7 @@ import urllib3
 from urllib3.exceptions import InsecureRequestWarning
 
 from error_handler import ResourceNotFound, NsNotFound, \
-    BadRequest, ServerError, NsOpNotFound
+    BadRequest, ServerError, NsOpNotFound, NsdNotFound
 from .interface import Driver, Headers, BodyList, Body
 
 urllib3.disable_warnings(InsecureRequestWarning)
@@ -34,22 +34,20 @@ class ONAP(Driver):
 
     def __init__(self, nfvo_cred):
         self._nfvoId = nfvo_cred["nfvo_id"]
-        self._onap_host = nfvo_cred["host"]
-        # self._onap_host = '127.0.0.1'  # '10.254.184.164'  # for tests only
-        self._ns_host = '127.0.0.1'  # '10.254.184.215'  # for tests only
-        self._onap_port = nfvo_cred["port"] if "port" in nfvo_cred else 30274
+        self._ns_host = nfvo_cred["host"]
+        # self._onap_port = nfvo_cred["port"] if "port" in nfvo_cred else 30274
         self._ns_port = 8080
-        self._nbi_ver = 4
-        self._customer = 'generic'  # when blank, default 'generic' ; IMPORTANT!
+        # self._nbi_ver = 4
+        # self._customer = 'generic'  # when blank, default 'generic' ; IMPORTANT!
         self._headers = {"Content-Type": "application/json",
                          "Accept": "application/json"}
 
         if TESTING is False:
-            self._onap_base_path = 'http://{0}:{1}/nbi/api/v{2}'.format(
-                self._onap_host, self._onap_port, self._nbi_ver)
+            # self._onap_base_path = 'http://{0}:{1}/nbi/api/v{2}'.format(
+            #     self._onap_host, self._onap_port, self._nbi_ver)
             self._ns_base_path = 'http://{0}:{1}'.format(self._ns_host, self._ns_port)
         else:
-            self._onap_base_path = 'http://{0}:{1}/nbi/api/v4'.format(PRISM_ALIAS, 9999)
+            # self._onap_base_path = 'http://{0}:{1}/nbi/api/v4'.format(PRISM_ALIAS, 9999)
             self._ns_base_path = 'http://{0}:{1}'.format(PRISM_ALIAS, 9999)
 
     def _exec_delete(self, url=None, params=None, headers=None):
@@ -131,22 +129,14 @@ class ONAP(Driver):
         return ns_list, headers
 
     def create_ns(self, args=None) -> Tuple[Body, Headers]:
-        # check the name od nsdId
-        nsd_Id = args['payload']['nsdId']
-        _url = '{0}/serviceSpecification/{1}?fields=name'.format(self._onap_base_path, nsd_Id)
-        _url = self._build_url_query(_url, args)
-        try:
-            response = self._exec_get(_url, headers=self._headers)
-        except ResourceNotFound:
-            raise BadRequest()
-        # add serviceType from response to args
-        ns_name = response[0]['name']  # TODO test it!
-        args['payload']['serviceType'] = ns_name
-        # create ns instance
         _url = '{0}/create'.format(self._ns_base_path)
         _url = self._build_url_query(_url, args)
-        created_ns, resp_headers = self._exec_post(
-            _url, json=args['payload'], headers=self._headers)
+        try:
+            created_ns, resp_headers = self._exec_post(
+                _url, json=args['payload'], headers=self._headers)
+        except ResourceNotFound:
+            nsd_Id = args['payload']['nsdId']
+            raise NsdNotFound(nsd_id=nsd_Id)
         headers = self._build_headers(resp_headers)
         return created_ns, headers
 
@@ -233,7 +223,7 @@ class ONAP(Driver):
         headers = {}
         if 'location' in resp_headers:
             re_res = re.findall(
-                r"/ns-server/(ns_db_id|ns_lcm_op_occs)/([A-Za-z0-9\-]+)", resp_headers['location'])
+                r"/(ns_db_id|ns_lcm_op_occs)/([A-Za-z0-9\-]+)", resp_headers['location'])
             if len(re_res):
                 if re_res[0][0] == 'ns_db_id':
                     headers['location'] = '/nfvo/{0}/ns_instances/{1}'.format(
