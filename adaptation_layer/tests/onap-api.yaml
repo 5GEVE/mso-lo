@@ -154,7 +154,7 @@ paths:
             Content-Type:
               schema:
                 type: string
-                example: text/html; charset=utf-8
+                example: text/html
         '400':
           $ref: '#/components/responses/BadRequest'
         '404':
@@ -200,7 +200,7 @@ paths:
             Content-Type:
               schema:
                 type: string
-                example: text/html; charset=utf-8
+                example: text/html
         '400':
           $ref: '#/components/responses/BadRequest'
         '404':
