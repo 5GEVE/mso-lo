@@ -151,6 +151,10 @@ paths:
                 type: string
                 format: uri
                 example: /ns_lcm_op_occs/4e462039-e57b-44e4-8431-bc586f31b4cb
+            Content-Type:
+              schema:
+                type: string
+                example: text/html; charset=utf-8
         '400':
           $ref: '#/components/responses/BadRequest'
         '404':
@@ -193,6 +197,10 @@ paths:
                 type: string
                 format: uri
                 example: /ns_lcm_op_occs/4e462039-e57b-44e4-8431-bc586f31b4cb
+            Content-Type:
+              schema:
+                type: string
+                example: text/html; charset=utf-8
         '400':
           $ref: '#/components/responses/BadRequest'
         '404':
