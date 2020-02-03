@@ -2,7 +2,7 @@
 swagger: "2.0"
 info:
   description: 5G-EVE Adaptation Layer API spec.
-  version: "3.2"
+  version: "3.3"
   title: 5G-EVE Adaptation Layer API
   contact: {}
 host: example.com
@@ -899,6 +899,11 @@ definitions:
         $ref: '#/definitions/VnfInstance_instantiatedVnfInfo'
     description: |
       This type represents a VNF instance.
+  VnfOperationalStateType:
+    type: string
+    enum:
+    - STARTED
+    - STOPPED
   VnfExtCpInfo:
     type: object
     required:
@@ -1241,6 +1246,10 @@ definitions:
   VnfInstance_instantiatedVnfInfo:
     type: object
     properties:
+      vnfState:
+        description: |
+          The state of the VNF instance.
+        $ref: '#/definitions/VnfOperationalStateType'
       extCpInfo:
         type: array
         description: |
