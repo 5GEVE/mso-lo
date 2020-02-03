@@ -11,18 +11,27 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+import fnmatch
+import os
 
 from prance import ResolvingParser
 
-spec = ResolvingParser(
-    "../../openapi/MSO-LO-3.3-swagger-resolved.yaml").specification
-id_schema = spec["definitions"]["Identifier"]
-ns_schema = spec["definitions"]["NsInstance"]
+file_path = None
+openapi_dir = '../../openapi/'
+for file in os.listdir(openapi_dir):
+    if fnmatch.fnmatch(file, 'MSO-LO-?.?-swagger-resolved.yaml'):
+        file_path = os.path.join(openapi_dir, file)
+if file_path is None:
+    raise FileNotFoundError("Openapi file not found.")
+
+openapi = ResolvingParser(file_path).specification
+id_schema = openapi["definitions"]["Identifier"]
+ns_schema = openapi["definitions"]["NsInstance"]
 ns_list_schema = {
     "type": "array",
     "items": ns_schema
 }
-ns_lcm_op_occ_schema = spec["definitions"]["NsLcmOpOcc"]
+ns_lcm_op_occ_schema = openapi["definitions"]["NsLcmOpOcc"]
 ns_lcm_op_occ_list_schema = {
     "type": "array",
     "items": ns_lcm_op_occ_schema
