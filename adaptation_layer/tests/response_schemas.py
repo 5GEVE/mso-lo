@@ -12,40 +12,17 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-id_schema = {"type": "string",
-             "pattern": "^[a-fA-F0-9]{8}(-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}$"}
+from prance import ResolvingParser
 
-ns_schema = {
-    "type": "object",
-    "properties": {
-        "id": {"type": "string"},
-        "nsInstanceName": {"type": "string"},
-        "nsInstanceDescription": {"type": "string"},
-        "nsdId": {"type": "string"},
-        "nsState": {"type": "string"},
-        "vnfInstance": {"type": "array"}
-    },
-    "required": ["id", "nsInstanceName", "nsInstanceDescription", "nsdId", "nsState"],
-    "additionalProperties": False
-}
-
+spec = ResolvingParser(
+    "../../openapi/MSO-LO-3.3-swagger-resolved.yaml").specification
+id_schema = spec["definitions"]["Identifier"]
+ns_schema = spec["definitions"]["NsInstance"]
 ns_list_schema = {
     "type": "array",
     "items": ns_schema
 }
-
-ns_lcm_op_occ_schema = {
-    "type": "object",
-    "properties": {
-        "id": {"type": "string"},
-        "operationState": {"type": "string"},
-        "stateEnteredTime": {"type": "string", "format": "date-time"},
-        "nsInstanceId": {"type": "string"},
-        "lcmOperationType": {"type": "string"},
-        "startTime": {"type": "string", "format": "date-time"}
-    }
-}
-
+ns_lcm_op_occ_schema = spec["definitions"]["NsLcmOpOcc"]
 ns_lcm_op_occ_list_schema = {
     "type": "array",
     "items": ns_lcm_op_occ_schema
