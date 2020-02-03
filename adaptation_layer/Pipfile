@@ -18,6 +18,8 @@ flask-sqlalchemy = "*"
 flask-migrate = "*"
 pytest = "*"
 jsonschema = "*"
+prance = "*"
+openapi-spec-validator = "*"
 
 [requires]
 python_version = "3.6"
