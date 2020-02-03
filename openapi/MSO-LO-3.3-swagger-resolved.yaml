@@ -802,9 +802,10 @@ definitions:
     - type
     properties:
       id:
-        type: string
-        format: uuid
+        type: object
         example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        allOf:
+        - $ref: '#/definitions/Identifier'
       name:
         type: string
         example: OSM-Turin
@@ -836,9 +837,10 @@ definitions:
     - nsdId
     properties:
       id:
-        type: string
-        format: uuid
+        type: object
         description: Identifier of the NS instance.
+        allOf:
+        - $ref: '#/definitions/Identifier'
       nsInstanceName:
         type: string
         description: Human readable name of the NS instance.
@@ -847,8 +849,8 @@ definitions:
         description: Human readable description of the NS instance.
       nsdId:
         type: string
-        format: uuid
         description: Identifier of the NSD on which the NS instance is based.
+        pattern: ^[a-fA-F0-9]{8}(-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}$
       nsState:
         $ref: '#/definitions/NsStateType'
       vnfInstance:
@@ -901,6 +903,8 @@ definitions:
       This type represents a VNF instance.
   VnfOperationalStateType:
     type: string
+    description: |
+      The state of the VNF instance.
     enum:
     - STARTED
     - STOPPED
@@ -976,10 +980,12 @@ definitions:
       An IPV4 or IPV6 address. Representation: In case of an IPV4 address, string that consists of four decimal integers separated by dots, each integer ranging from 0 to 255. In case of an IPV6 address, string that consists of groups of zero to four hexadecimal digits, separated by colons.
   IdentifierInVnf:
     type: string
+    format: uuid
     description: |
       An identifier that is unique for the respective type within a VNF instance, but may not be globally unique.
   Identifier:
     type: string
+    format: uuid
     description: |
       An identifier with the intention of being globally unique.
   NsStateType:
@@ -1108,8 +1114,10 @@ definitions:
     - id
     properties:
       id:
-        type: string
+        type: object
         description: An identifier with the intention of being globally unique.
+        allOf:
+        - $ref: '#/definitions/Identifier'
       filter:
         $ref: '#/definitions/NSInstanceSubscription_filter'
       callbackUri:
@@ -1247,8 +1255,6 @@ definitions:
     type: object
     properties:
       vnfState:
-        description: |
-          The state of the VNF instance.
         $ref: '#/definitions/VnfOperationalStateType'
       extCpInfo:
         type: array
