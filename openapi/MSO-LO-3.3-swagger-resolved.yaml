@@ -907,6 +907,7 @@ definitions:
     enum:
     - STARTED
     - STOPPED
+    example: STARTED
   VnfExtCpInfo:
     type: object
     required:
