@@ -16,13 +16,20 @@ import os
 
 from prance import ResolvingParser
 
-file_path = None
-openapi_dir = '../../openapi/'
-for file in os.listdir(openapi_dir):
-    if fnmatch.fnmatch(file, 'MSO-LO-?.?-swagger-resolved.yaml'):
-        file_path = os.path.join(openapi_dir, file)
+
+def _get_file_path(directory: str) -> str:
+    for file in os.listdir(directory):
+        if fnmatch.fnmatch(file, 'MSO-LO-?.?-swagger-resolved.yaml'):
+            return os.path.join(directory, file)
+
+
+# Test in container
+file_path = _get_file_path('./openapi/')
 if file_path is None:
-    raise FileNotFoundError("Openapi file not found.")
+    # Test in dev environment
+    file_path = _get_file_path('../../openapi/')
+if file_path is None:
+    raise FileNotFoundError("Openapi directory not found.")
 
 openapi = ResolvingParser(file_path).specification
 id_schema = openapi["definitions"]["Identifier"]
