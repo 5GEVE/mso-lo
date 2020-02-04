@@ -18,9 +18,12 @@ from prance import ResolvingParser
 
 
 def _get_file_path(directory: str) -> str:
-    for file in os.listdir(directory):
-        if fnmatch.fnmatch(file, 'MSO-LO-?.?-swagger-resolved.yaml'):
-            return os.path.join(directory, file)
+    try:
+        for file in os.listdir(directory):
+            if fnmatch.fnmatch(file, 'MSO-LO-?.?-swagger-resolved.yaml'):
+                return os.path.join(directory, file)
+    except FileNotFoundError:
+        pass
 
 
 # Test in container
