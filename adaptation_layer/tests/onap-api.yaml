@@ -480,8 +480,6 @@ components:
             - INSTANTIATED
         vnfInstance:
           type: array
-          items:
-            type: object
       required:
         - id
         - nsInstanceName
@@ -511,8 +509,6 @@ components:
             - NOT_INSTANTIATED
         vnfInstance:
           type: array
-          items:
-            type: object
       required:
         - id
         - nsInstanceName
@@ -540,6 +536,7 @@ components:
           example: 1de0e9c3-b238-44da-b01b-b249a7784b03
         operationState:
           type: string
+          example: PROCESSING
         stateEnteredTime:
           type: string
         nsInstanceId:
@@ -548,6 +545,7 @@ components:
           example: c418cc62-f3b4-43c6-b684-d38bfbd2d7f6
         lcmOperationType:
           type: string
+          example: INSTANTIATE
         startTime:
           type: string
           format: date-time
