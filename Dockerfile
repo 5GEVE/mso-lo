@@ -18,6 +18,9 @@ RUN ["rm", "-f", "data/mso-lo.db"]
 RUN ["pipenv", "run", "flask", "db", "upgrade"]
 RUN ["pipenv", "run", "python", "manage.py", "seed"]
 
+FROM base as test
+COPY ./openapi ./openapi
+
 FROM base as prod
 COPY ./uWSGI/app.ini .
 CMD ["pipenv", "run", "uwsgi", "--ini", "app.ini"]
