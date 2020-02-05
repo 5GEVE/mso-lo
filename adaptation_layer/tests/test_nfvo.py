@@ -28,9 +28,6 @@ class NFVOTestCase(unittest.TestCase):
         """Define test variables and initialize app."""
         self.app = app
         self.client = self.app.test_client
-        with open('seed/nfvo_mock.json', 'r') as f:
-            self.mock_nfvo_list = json.load(f)
-        self.mock_nfvo = self.mock_nfvo_list[0]
 
     def tearDown(self):
         """teardown all initialized variables."""
