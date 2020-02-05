@@ -802,9 +802,8 @@ definitions:
     - type
     properties:
       id:
-        example: d290f1ee-6c54-4b01-90e6-d701748f0851
-        allOf:
-        - $ref: '#/definitions/Identifier'
+        example: 1
+        type: integer
       name:
         type: string
         example: OSM-Turin
@@ -903,6 +902,7 @@ definitions:
     enum:
     - STARTED
     - STOPPED
+    example: STARTED
   VnfExtCpInfo:
     type: object
     required:

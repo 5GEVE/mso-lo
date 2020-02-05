@@ -35,13 +35,24 @@ if file_path is None:
     raise FileNotFoundError("Openapi directory not found.")
 
 openapi = ResolvingParser(file_path).specification
+
+nfvo_schema = openapi["definitions"]["NFVO"]
+nfvo_list_schema = {
+    "type": "array",
+    "items": nfvo_schema
+}
+
 id_schema = openapi["definitions"]["Identifier"]
+
 ns_schema = openapi["definitions"]["NsInstance"]
+
 ns_list_schema = {
     "type": "array",
     "items": ns_schema
 }
+
 ns_lcm_op_occ_schema = openapi["definitions"]["NsLcmOpOcc"]
+
 ns_lcm_op_occ_list_schema = {
     "type": "array",
     "items": ns_lcm_op_occ_schema

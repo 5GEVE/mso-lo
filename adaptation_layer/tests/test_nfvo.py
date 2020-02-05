@@ -16,6 +16,9 @@
 
 import json
 import unittest
+from jsonschema import validate
+from jsonschema.exceptions import ValidationError, SchemaError
+from .response_schemas import nfvo_schema, nfvo_list_schema
 from app import app
 
 
@@ -32,14 +35,14 @@ class NFVOTestCase(unittest.TestCase):
     def tearDown(self):
         """teardown all initialized variables."""
 
-    # Check status codes 200, 401, 404, headers and payload for get_nfvo_list()
+    # Check status codes 200, 401, headers and payload for get_nfvo_list()
     def test_get_nfvo_list_200(self):
         res = self.client().get('/nfvo')
         self.assertEqual(res.status_code, 200)
-        for nfvo in res.json:
-            del nfvo['created_at']
-            del nfvo['updated_at']
-        self.assertCountEqual(self.mock_nfvo_list, res.json)
+        try:
+            validate(res.json, nfvo_list_schema)
+        except (ValidationError, SchemaError) as e:
+            self.fail(msg=e.message)
 
     @unittest.skip('skip 401 test as we do not have authorization yet')
     def test_get_nfvo_list_401(self):
@@ -50,9 +53,10 @@ class NFVOTestCase(unittest.TestCase):
     def test_get_nfvo_200(self):
         res = self.client().get('/nfvo/1')
         self.assertEqual(res.status_code, 200)
-        del res.json['created_at']
-        del res.json['updated_at']
-        self.assertDictEqual(self.mock_nfvo, res.json)
+        try:
+            validate(res.json, nfvo_schema)
+        except (ValidationError, SchemaError) as e:
+            self.fail(msg=e.message)
 
     def test_get_nfvo_404(self):
         res = self.client().get('/nfvo/-1')
