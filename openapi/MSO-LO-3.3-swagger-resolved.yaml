@@ -1,1354 +1,12 @@
-swagger: '2.0'
+---
+swagger: "2.0"
 info:
-  version: "3.2"
-  title: 5G-EVE Adaptation Layer API
   description: 5G-EVE Adaptation Layer API spec.
+  version: "3.3"
+  title: 5G-EVE Adaptation Layer API
   contact: {}
 host: example.com
 basePath: /api
-schemes: []
-consumes:
-- application/json
-produces:
-- application/json
-paths:
-  /nfvo:
-    get:
-      description: >
-        By passing in the appropriate options, you can search for available Local Orchestrators
-      summary: Retrieve list of local NFVO.
-      tags:
-      - Local NFVO
-      operationId: NFVO.fetch
-      deprecated: false
-      produces:
-      - application/json
-      parameters:
-      - name: NFVO parameters
-        in: query
-        required: false
-        type: string
-        description: nfvo identifier
-      - name: Pagination parameters
-        in: query
-        required: false
-        type: string
-        description: The parameters are used to create pagination
-      responses:
-        200:
-          description: search results matching criteria
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/NFVO'
-          headers: {}
-        400:
-          description: The request is malformed
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-  /nfvo/{nfvoId}:
-    get:
-      description: >
-        By passing in the appropriate options, you can search for available Local Orchestrators
-      summary: Read an individual NFVO.
-      tags:
-      - Local NFVO
-      operationId: NFVO.getById
-      deprecated: false
-      produces:
-      - application/json
-      parameters:
-      - name: nfvoId
-        in: path
-        required: true
-        type: string
-        description: Identifier of a Nfvo
-      responses:
-        200:
-          description: NFVO found
-          schema:
-            $ref: '#/definitions/NFVO'
-          headers: {}
-        400:
-          description: The request is malformed
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        401:
-          description: Unauthorized, Invalid credentials (client or user)
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        404:
-          description: The specified resource was not found
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-  /nfvo/{nfvoId}/ns_instances:
-    get:
-      description: >
-        This operation allows to retrieve the list of NS from a specific Nfvo
-      summary: Retrieve list of NS instances.
-      tags:
-      - NS instances
-      operationId: Nfvo.NS.list
-      deprecated: false
-      produces:
-      - application/json
-      parameters:
-      - name: nfvoId
-        in: path
-        required: true
-        type: string
-        description: Identifier of a Nfvo
-      - name: Pagination parameters
-        in: query
-        required: false
-        type: string
-        description: The parameters are used to create pagination
-      responses:
-        200:
-          description: search results matching criteria
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/NsInstance'
-          headers: {}
-        400:
-          description: The request is malformed
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        401:
-          description: Unauthorized, Invalid credentials (client or user)
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-    post:
-      description: Creates and returns a Network Service identifier (nsId) in a Nfvo
-      summary: Create a new NS instance ID.
-      tags:
-      - NS instances
-      operationId: Nfvo.NS.onboard
-      deprecated: false
-      produces:
-      - application/json
-      parameters:
-      - name: nfvoId
-        in: path
-        required: true
-        type: string
-        description: Identifier of a Nfvo
-      - name: body
-        in: body
-        required: false
-        description: Create NS request body
-        schema:
-          $ref: '#/definitions/NfvoNsInstancesRequest'
-      responses:
-        201:
-          description: >
-            201 Created
-
-            A NS Instance identifier has been created successfully. The response body shall contain a representation of the created NS instance, as defined in clause 6.5.2.8. The HTTP response shall include a "Location" HTTP header that contains the resource URI of the created NS instance.
-          schema:
-            $ref: '#/definitions/NsInstance'
-          headers:
-            Location:
-              description: nsInstanceId of the created NS
-              type: string
-        400:
-          description: The request is malformed
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        401:
-          description: Unauthorized, Invalid credentials (client or user)
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-  /nfvo/{nfvoId}/ns_instances/{nsInstanceId}:
-    get:
-      description: >
-        This operation allows to retrieve an existing NS from a specific Nfvo.
-      summary: Read an individual NS instance resource.
-      tags:
-      - NS instances
-      operationId: Nfvo.NS.fetch
-      deprecated: false
-      produces:
-      - application/json
-      parameters:
-      - name: nsInstanceId
-        in: path
-        required: true
-        type: string
-        description: Identifier of the network service
-      - name: nfvoId
-        in: path
-        required: true
-        type: string
-        description: Identifier of a Nfvo
-      responses:
-        200:
-          description: NS
-          schema:
-            $ref: '#/definitions/NsInstance'
-          headers: {}
-        400:
-          description: The request is malformed
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        401:
-          description: Unauthorized, Invalid credentials (client or user)
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        404:
-          description: The specified resource was not found
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-    delete:
-      description: >
-        Delete an individual NS instance resource.
-      summary: Delete an individual NS instance resource.
-      tags:
-      - NS instances
-      operationId: Nfvo.NS.terminate
-      deprecated: false
-      produces:
-      - application/json
-      parameters:
-      - name: nsInstanceId
-        in: path
-        required: true
-        type: string
-        description: Identifier of the network service
-      - name: nfvoId
-        in: path
-        required: true
-        type: string
-        description: Identifier of a Nfvo
-      responses:
-        204:
-          description: >
-            204 No Content The NS instance resource and the associated NS identifier were deleted successfully. The response body shall be empty.
-          headers: {}
-        400:
-          description: The request is malformed
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        401:
-          description: Unauthorized, Invalid credentials (client or user)
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        404:
-          description: The specified resource was not found
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-  /nfvo/{nfvoId}/ns_instances/{nsInstanceId}/instantiate:
-    post:
-      description: >
-        Instantiate a NS. The precondition is that the NS instance must have
-
-        been created and must be in NOT_INSTANTIATED state. As a result of the
-
-        success of this operation, the NFVO creates a "NS Lifecycle Operation
-
-        Occurrence" resource for the request, and the NS instance state becomes
-
-        INSTANTIATED.
-      summary: Instantiate a NS instance.
-      tags:
-      - NS instances
-      operationId: Nfvo.NS.instantiate
-      deprecated: false
-      produces:
-      - application/json
-      parameters:
-      - name: nsInstanceId
-        in: path
-        required: true
-        type: string
-        description: Identifier of the network service
-      - name: nfvoId
-        in: path
-        required: true
-        type: string
-        description: Identifier of a Nfvo
-      responses:
-        202:
-          description: >
-            202 ACCEPTED
-          headers:
-            Location:
-              description: nsLcmOpOccId of the instantiated NS
-              type: string
-        400:
-          description: The request is malformed
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        401:
-          description: Unauthorized, Invalid credentials (client or user)
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        404:
-          description: The specified resource was not found
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-  /nfvo/{nfvoId}/ns_instances/{nsInstanceId}/scale:
-    post:
-      description: >
-        Scale a NS instance. The precondition is that the NS instance must have
-
-        been created and must be in INSTANTIATED state. As a result of the
-
-        success of this operation, the NFVO creates a "NS Lifecycle Operation
-
-        Occurrence" resource for the request, and the NS instance state remains
-
-        INSTANTIATED.
-      summary: Scale NS instance.
-      tags:
-      - NS instances
-      operationId: Nfvo.NS.scale
-      deprecated: false
-      produces:
-      - application/json
-      parameters:
-      - name: nsInstanceId
-        in: path
-        required: true
-        type: string
-        description: Identifier of the network service
-      - name: nfvoId
-        in: path
-        required: true
-        type: string
-        description: Identifier of a Nfvo
-      - name: body
-        in: body
-        required: false
-        description: Scale NS request body
-        schema:
-          $ref: '#/definitions/NfvoNsInstancesScaleRequest'
-      responses:
-        202:
-          description: >
-            202 ACCEPTED
-          headers: {}
-        400:
-          description: The request is malformed
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        401:
-          description: Unauthorized, Invalid credentials (client or user)
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        404:
-          description: The specified resource was not found
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-  /nfvo/{nfvoId}/ns_instances/{nsInstanceId}/terminate:
-    post:
-      description: >
-        Terminate NS task.   The POST method terminates a NS instance. This method can only be  used with a NS instance in the INSTANTIATED state. Terminating a NS instance does not delete the NS instance identifier,  but rather transitions the NS into the NOT_INSTANTIATED state.
-      summary: Terminate a NS instance.
-      tags:
-      - NS instances
-      operationId: terminateNSinstance
-      deprecated: false
-      produces:
-      - application/json
-      parameters:
-      - name: nsInstanceId
-        in: path
-        required: true
-        type: string
-        description: Identifier of the network service
-      - name: nfvoId
-        in: path
-        required: true
-        type: string
-        description: Identifier of a Nfvo
-      - name: body
-        in: body
-        required: false
-        description: ''
-        schema:
-          $ref: '#/definitions/TerminateNsRequest'
-      responses:
-        202:
-          description: >
-            202 ACCEPTED
-          headers: {}
-        400:
-          description: The request is malformed
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        401:
-          description: Unauthorized, Invalid credentials (client or user)
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        404:
-          description: The specified resource was not found
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-
-  /nfvo/{nfvoId}/ns_lcm_op_occs:
-    get:
-      tags: 
-        - NS LCM Operations
-      operationId: Nfvo.NS_LCM_OP.list
-      summary: Query multiple NS LCM operation occurrences.
-      description: >
-        Get Operation Status.
-        The client can use this method to query status information about multiple NS lifecycle management operation
-        occurrences.
-        This method shall follow the provisions specified in the Tables 6.4.9.3.2-1 and 6.4.9.3.2-2 for URI query parameters,
-        request and response data structures, and response codes.
-      deprecated: false
-      produces:
-      - application/json
-      parameters:
-      - name: filter
-        in: query
-        required: false
-        type: string
-        description: >
-          Only 'nsInstanceId' is supported.
-          
-          Attribute-based filtering expression according to clause 5.2 of ETSI GS NFV SOL 013.
-          The NFVO shall support receiving this parameter as part of the URI query string.
-          The OSS/BSS may supply this parameter.
-          All attribute names that appear in the NsLcmOpOcc and in data types referenced
-          from it shall be supported by the NFVO in the filter expression.
-      - name: nfvoId
-        in: path
-        required: true
-        type: string
-        description: Identifier of a Nfvo
-      - name: Accept
-        description: >
-            Content-Types that are acceptable for the response.
-            Reference: IETF RFC 7231
-        in: header
-        required: true
-        type: string
-      responses:
-        200:
-          description: >
-            200 OK
-
-            Status information for zero or more NS lifecycle management operation 
-            occurrences has been queried successfully.
-            The response body shall contain in an array the representations of
-            zero or more NS instances, as defined in clause 6.5.2.3.
-
-            If the "filter" URI parameter or one of the "all_fields", "fields",
-            "exclude_fields" or "exclude_default" URI parameters was supplied in
-            the request and is supported, the data in the response body shall have
-            been transformed according to the rules specified in clauses 5.2.2 and
-            5.3.2 of ETSI GS NFV SOL 013, respectively.
-
-            If the NFVO supports alternative 2 (paging) according to 
-            clause 5.4.2.1 of ETSI GS NFV SOL 013 for this resource, inclusion of the Link HTTP header
-            in this response shall follow the provisions in clause 5.4.2.3 of ETSI GS NFV SOL 013.
-          headers:
-            Content-Type:
-              description: The MIME type of the body of the response.
-              type: string
-              maximum: 1
-              minimum: 1
-          schema:
-            type: array
-            items:
-              $ref: "#/definitions/NsLcmOpOcc"
-        400:
-          description: The request is malformed
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        401:
-          description: Unauthorized, Invalid credentials (client or user)
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-  
-  /nfvo/{nfvoId}/ns_lcm_op_occs/{nsLcmOpOccId}:
-    get:
-      tags: 
-      - NS LCM Operations
-      operationId: Nfvo.NS_LCM_OP.fetch
-      deprecated: false
-      summary: Read an individual NS LCM operation occurrence resource.
-      description: >
-        The client can use this method to retrieve status information about
-        a NS lifecycle management operation occurrence by
-        reading an individual "NS LCM operation occurrence" resource.
-        This method shall follow the provisions specified in the
-        Tables 6.4.10.3.2-1 and 6.4.10.3.2-2 for URI query parameters,
-        request and response data structures, and response codes.
-      produces:
-      - application/json
-      parameters:
-      - name: nfvoId
-        in: path
-        required: true
-        type: string
-        description: Identifier of a Nfvo
-      - name: nsLcmOpOccId
-        description: >
-          Identifier of a NS lifecycle management operation occurrence.
-        in: path
-        type: string
-        required: true
-      - name: Accept
-        description: >
-          Content-Types that are acceptable for the response.
-          Reference: IETF RFC 7231
-        in: header
-        required: true
-        type: string
-      responses:
-        200:
-          description: >
-            200 OK
-
-            Information about a NS LCM operation occurrence has been
-            queried successfully.
-            The response body shall contain status information about a NS 
-            lifecycle management operation occurrence (see clause 6.5.2.3).
-          schema:
-            $ref: "#/definitions/NsLcmOpOcc"
-          headers:
-            Content-Type:
-              type: string
-              description: >
-                The MIME type of the body of the response.This header
-                field shall be present if the response has a non-empty message body.
-              maximum: 1
-              minimum: 1
-            WWW-Authenticate:
-              type: string
-              description: >
-                Challenge if the corresponding HTTP request has not provided
-                authorization, or error details if the corresponding HTTP request
-                has provided an invalid authorization token.
-              maximum: 1
-              minimum: 0
-            Version:
-              description: >
-                Version of the API used in the response.
-              type: string
-              maximum: 1
-              minimum: 1
-        400:
-          description: The request is malformed
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        401:
-          description: Unauthorized, Invalid credentials (client or user)
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-  
-  /nfvo/{nfvoId}/subscriptions:
-    get:
-      description: >
-        Query Subscription Information.
-
-        The GET method queries the list of active subscriptions of the functional block that invokes the method. It can be used e.g. for resynchronization after error situations.
-      summary: Query multiple subscriptions.
-      tags:
-      - NS Subscriptions
-      operationId: NfvoSubscriptionsByNfvoIdGet
-      deprecated: false
-      produces:
-      - application/json
-      parameters:
-      - name: nfvoId
-        in: path
-        required: true
-        type: string
-        description: Identifier of a Nfvo
-      - name: filter
-        in: query
-        required: false
-        type: string
-        description: Attribute-based filtering expression according to clause 5.2 of ETSI GS NFV SOL 013. The NFVO shall support receiving this parameter as part of the URI query string. The OSS/BSS may supply this parameter. All attribute names that appear in the LccnSubscription and in data types  referenced from it shall be supported by the NFVO in the filter expression.
-      responses:
-        200:
-          description: >
-            200 OK
-
-            The list of subscriptions has been queried successfully. The response body shall contain the representations of all active  subscriptions of the functional block that invokes the method. If the NFVO supports alternative 2 (paging) according to  clause 5.4.2.1 of ETSI GS NFV SOL 013 for this resource, inclusion of the Link HTTP header in this response shall follow the provisions in clause 5.4.2.3 of ETSI GS NFV SOL 013.
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/NSInstanceSubscription'
-          headers: {}
-        400:
-          description: The request is malformed
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        401:
-          description: Unauthorized, Invalid credentials (client or user)
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        404:
-          description: The specified resource was not found
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-    post:
-      description: >
-        The POST method creates a new subscription. If subscription already exists, it returns a "303 See Other" response code referencing the existing subscription resource.
-      summary: Subscribe to NS lifecycle change notifications.
-      tags:
-      - NS Subscriptions
-      operationId: NfvoSubscriptionsByNfvoIdPost
-      deprecated: false
-      produces:
-      - application/json
-      parameters:
-      - name: nfvoId
-        in: path
-        required: true
-        type: string
-        description: Identifier of a Nfvo
-      - name: body
-        in: body
-        required: false
-        description: ''
-        schema:
-          $ref: '#/definitions/NfvoSubscriptionsRequest'
-      responses:
-        201:
-          description: "201 Created. The subscription has been created successfully."
-          schema:
-            $ref: '#/definitions/NSInstanceSubscription'
-          headers: {}
-        400:
-          description: The request is malformed
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        401:
-          description: Unauthorized, Invalid credentials (client or user)
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        404:
-          description: The specified resource was not found
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-  /nfvo/{nfvoId}/subscriptions/{subscriptionId}:
-    get:
-      description: >
-        The GET method retrieves information about a subscription by reading an individual subscription resource. This method shall support the URI query parameters, request and response data structures, and response codes, as specified in the Tables 6.4.17.3.2-1 and 6.4.17.3.2-2
-      summary: Read an individual subscription resource.
-      tags:
-      - NS Subscriptions
-      operationId: NfvoSubscriptionsByNfvoIdAndSubscriptionIdGet
-      deprecated: false
-      produces:
-      - application/json
-      parameters:
-      - name: nfvoId
-        in: path
-        required: true
-        type: string
-        description: Identifier of a Nfvo
-      - name: subscriptionId
-        in: path
-        required: true
-        type: string
-        description: Identifier of this subscription.
-      responses:
-        200:
-          description: >
-            200 OK. The operation has completed successfully. The response body shall contain a representation of the subscription resource.
-          schema:
-            $ref: '#/definitions/NSInstanceSubscription'
-          headers: {}
-        400:
-          description: The request is malformed
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        401:
-          description: Unauthorized, Invalid credentials (client or user)
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        404:
-          description: The specified resource was not found
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-    delete:
-      description: >
-        The DELETE method terminates an individual subscription. This method shall support the URI query parameters, request and response data structures, and response codes, as specified in the Tables 6.4.17.3.5-1 and 6.4.17.3.5-2.
-      summary: Terminate a subscription.
-      tags:
-      - NS Subscriptions
-      operationId: NfvoSubscriptionsByNfvoIdAndSubscriptionIdDelete
-      deprecated: false
-      produces:
-      - application/json
-      parameters:
-      - name: nfvoId
-        in: path
-        required: true
-        type: string
-        description: Identifier of a Nfvo
-      - name: subscriptionId
-        in: path
-        required: true
-        type: string
-        description: Identifier of this subscription.
-      responses:
-        204:
-          description: >
-            204 NO CONTENT. The subscription resource has been deleted successfully. The response body shall be empty.
-          headers: {}
-        400:
-          description: The request is malformed
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        401:
-          description: Unauthorized, Invalid credentials (client or user)
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        404:
-          description: The specified resource was not found
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-  /URI_is_provided_by_the_client_when_creating_the_subscription-NsIdentifierCreationNotification:
-    get:
-      description: >
-        Query NS Instances.
-
-        The GET method queries information about multiple NS instances. This method shall support the URI query parameters, request and response data structures, and response codes, as specified in the Tables 6.4.2.3.2-1 and 6.4.2.3.2-2.
-      summary: Test the notification endpoint.
-      tags:
-      - Notification send
-      operationId: URIIsProvidedByTheClientWhenCreatingTheSubscriptionNsIdentifierCreationNotificationGet
-      deprecated: false
-      produces:
-      - application/json
-      parameters: []
-      responses:
-        204:
-          description: >
-            204 No Content
-
-            Shall be returned when the notification endpoint has been tested successfully. The response body shall be empty.
-          headers: {}
-        400:
-          description: The request is malformed
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        401:
-          description: Unauthorized, Invalid credentials (client or user)
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        404:
-          description: The specified resource was not found
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-    post:
-      description: >
-        The POST method delivers a notification from the server to the client. This method shall support the URI query parameters, request and response data structures, and response codes, as specified in the Tables 6.4.18.3.1-1 and 6.4.18.3.1-2.
-      summary: Notify about NS creation
-      tags:
-      - Notification send
-      operationId: URIIsProvidedByTheClientWhenCreatingTheSubscriptionNsIdentifierCreationNotificationPost
-      deprecated: false
-      produces:
-      - application/json
-      parameters:
-      - name: body
-        in: body
-        required: true
-        description: A notification about the creation of a NS identifier and the related NS instance resource.
-        schema:
-          $ref: '#/definitions/body'
-      responses:
-        204:
-          description: >
-            204 No Content
-
-            Shall be returned when the notification has been delivered successfully.
-          headers: {}
-        400:
-          description: The request is malformed
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        401:
-          description: Unauthorized, Invalid credentials (client or user)
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        404:
-          description: The specified resource was not found
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-  /URI_is_provided_by_the_client_when_creating_the_subscription-NsIdentifierDeletionNotification:
-    get:
-      description: >
-        Query NS Instances.
-
-        The GET method queries information about multiple NS instances. This method shall support the URI query parameters, request and response data structures, and response codes, as specified in the Tables 6.4.2.3.2-1 and 6.4.2.3.2-2.
-      summary: Test the notification endpoint.1
-      tags:
-      - Notification send
-      operationId: URIIsProvidedByTheClientWhenCreatingTheSubscriptionNsIdentifierDeletionNotificationGet
-      deprecated: false
-      produces:
-      - application/json
-      parameters: []
-      responses:
-        204:
-          description: >
-            204 No Content
-
-            Shall be returned when the notification endpoint has been tested successfully. The response body shall be empty.
-          headers: {}
-        400:
-          description: The request is malformed
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        401:
-          description: Unauthorized, Invalid credentials (client or user)
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        404:
-          description: The specified resource was not found
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-    post:
-      description: >
-        The POST method delivers a notification from the server to the client. This method shall support the URI query parameters, request and response data structures, and response codes, as specified in the Tables 6.4.18.3.1-1 and 6.4.18.3.1-2.
-      summary: Notify about NS lifecycle change
-      tags:
-      - Notification send
-      operationId: URIIsProvidedByTheClientWhenCreatingTheSubscriptionNsIdentifierDeletionNotificationPost
-      deprecated: false
-      produces:
-      - application/json
-      parameters:
-      - name: body
-        in: body
-        required: true
-        description: A notification about the deletion of a NS identifier and the related NS instance resource.
-        schema:
-          $ref: '#/definitions/body_1'
-      responses:
-        204:
-          description: >
-            204 No Content Shall be returned when the notification has been delivered successfully.
-          headers: {}
-        400:
-          description: The request is malformed
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        401:
-          description: Unauthorized, Invalid credentials (client or user)
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        404:
-          description: The specified resource was not found
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-definitions:
-  NFVO:
-    title: NFVO
-    type: object
-    properties:
-      id:
-        example: d290f1ee-6c54-4b01-90e6-d701748f0851
-        type: string
-        format: uuid
-      name:
-        example: OSM-Turin
-        type: string
-      type:
-        example: OSM
-        type: string
-      site:
-        example: ITALY_TURIN
-        type: string
-      uri:
-        example: https://osm-turin.5g-eve.eu
-        type: string
-      createdAt:
-        example: 2016-08-29T09:12:33.001Z
-        type: string
-        format: date-time
-      updatedAt:
-        example: 2016-08-29T09:12:33.001Z
-        type: string
-        format: date-time
-    required:
-    - id
-    - name
-    - type
-    - site
-  NsInstance:
-    title: NsInstance
-    type: object
-    properties:
-      id:
-        description: Identifier of the NS instance.
-        type: string
-        format: uuid
-      nsInstanceName:
-        description: Human readable name of the NS instance.
-        type: string
-      nsInstanceDescription:
-        description: Human readable description of the NS instance.
-        type: string
-      nsdId:
-        description: Identifier of the NSD on which the NS instance is based.
-        type: string
-        format: uuid
-      nsState:
-        $ref: '#/definitions/NsStateType'
-      vnfInstance:
-        description: >
-          Information on constituent VNF(s) of the NS instance.
-        type: array
-        items:
-          $ref: "#/definitions/VnfInstance"
-    required:
-    - id
-    - nsInstanceName
-    - nsInstanceDescription
-    - nsdId
-    - nsState
-    
-  VnfInstance:
-    description: >
-      This type represents a VNF instance.
-    type: object
-    required:
-      - id
-      - vnfdId
-      - vnfProductName
-      - instantiationState
-    properties:
-      id:
-        description: >
-          Identifier of the VNF instance.
-        allOf:
-          - $ref: "#/definitions/Identifier"
-      vnfdId:
-        description: >
-          Identifier of the VNFD on which the VNF instance is based.
-        allOf:
-          - $ref: "#/definitions/Identifier"
-      vnfProductName:
-        description: >
-          Name to identify the VNF Product. The value is copied from the VNFD.
-        type: string
-      vimId:
-        description: >
-          Identifier of a VIM that manages resources for the VNF instance.
-        allOf:
-          - $ref: "#/definitions/Identifier"
-      instantiationState:
-        description: >
-          The instantiation state of the VNF.
-        type: string
-        enum:
-          - NOT_INSTANTIATED
-          - INSTANTIATED
-      instantiatedVnfInfo:
-        description: >
-          Information specific to an instantiated VNF instance. This attribute
-          shall be present if the instantiateState attribute value is INSTANTIATED.
-        type: object
-        properties:
-          extCpInfo:
-            description: >
-              Information about the external CPs exposed by the VNF instance.
-            type: array
-            minItems: 1
-            items:
-              $ref: "#/definitions/VnfExtCpInfo"
-
-  VnfExtCpInfo:
-    description: >
-      This type represents information about an external CP of a VNF. It shall comply 
-      with the provisions defined in Table 6.5.3.70-1.
-    type: object
-    required:
-      - id
-    properties:
-      id:
-        description: >
-          Identifier of the external CP instance and the related information instance.
-        allOf:
-          - $ref: "#/definitions/IdentifierInVnf"
-      cpProtocolInfo:
-        description: >
-          Network protocol information for this CP.
-        type: array
-        minItems: 1
-        items:
-          $ref: "#/definitions/CpProtocolInfo"
-
-  CpProtocolInfo:
-    description: >
-      This type describes the protocol layer(s) that a CP or SAP uses together with protocol-related information, like
-      addresses. It shall comply with the provisions defined in Table 6.5.3.58-1.
-    type: object
-    required:
-      - layerProtocol
-      - ipOverEthernet
-    properties:
-      layerProtocol:
-        description: >
-          The identifier of layer(s) and protocol(s)
-          associated to the network address information.
-          Permitted values: IP_OVER_ETHERNET See note.
-        type: string
-        enum:
-          - IP_OVER_ETHERNET
-      ipOverEthernet:
-        description: >
-          IP addresses over Ethernet to assign to the CP
-          or SAP instance. Shall be present if
-          layerProtocol is equal to "
-          IP_OVER_ETHERNET", and shall be absent otherwise.
-        allOf:
-          - $ref: "#/definitions/IpOverEthernetAddressInfo"
-  
-  IpOverEthernetAddressInfo:
-    description: >
-      This type represents information about a network address that has been assigned.
-      It shall comply with the provisions defined in Table 6.5.3.18-1.
-    type: object
-    required:
-      - macAddress
-      - ipAddresses
-    properties:
-      macAddress:
-        description: >
-          Assigned MAC address.
-        allOf:
-          - $ref: "#/definitions/MacAddress"
-      ipAddresses:
-        description: >
-          Addresses assigned to the CP instance. Each entry represents IP
-          addresses assigned by fixed or dynamic IP address assignment per
-          subnet.
-        type: array
-        items:
-          type: object
-          required:
-            - type
-          properties:
-            type:
-              description: >
-                The type of the IP addresses.
-                Permitted values: IPV4, IPV6.
-              type: string
-              enum:
-                - IPV4
-                - IPV6
-            addresses:
-              description: >
-                Fixed addresses assigned (from the subnet defined by
-                "subnetId" if provided).
-              type: array
-              items:
-                $ref: "#/definitions/IpAddress"
-
-  MacAddress:
-    description: >
-      A MAC address. Representation: string that consists of groups of two hexadecimal digits,
-      separated by hyphens or colons.
-    type: string
-    format: MAC
-
-  IpAddress:
-    description: >
-      An IPV4 or IPV6 address. Representation: In case of an IPV4 address, string that consists of four decimal
-      integers separated by dots, each integer ranging from 0 to 255. In case of an IPV6 address, string that
-      consists of groups of zero to four hexadecimal digits, separated by colons.
-    type: string
-    format: IP
-
-  IdentifierInVnf:
-    description: >
-      An identifier that is unique for the respective type within a VNF
-      instance, but may not be globally unique.
-    type: string
-  
-  Identifier:
-    description: >
-      An identifier with the intention of being globally unique.
-    type: string
-
-  NsStateType:
-    title: NsStateType
-    description: >-
-      State of the NS instance. Permitted values:
-       * `NOT_INSTANTIATED`: The NS instance is terminated or not instantiated.
-       * `INSTANTIATED`: The NS instance is instantiated.
-    example: NOT_INSTANTIATED
-    type: string
-    enum:
-    - NOT_INSTANTIATED
-    - INSTANTIATED
-  InstantiateNsRequest:
-    title: InstantiateNsRequest
-    type: object
-    properties:
-      nsFlavourId:
-        description: Identifier of the NS deployment flavour to be instantiated.
-        type: string
-      nsInstantiationLevelId:
-        description: af
-        type: string
-    required:
-    - nsFlavourId
-    - nsInstantiationLevelId
-  
-  NsLcmOpOcc:
-    description: >
-      This type represents a request a NS lifecycle operation occurrence.
-      It shall comply with the provisions defined in Table 6.5.2.3-1.
-    type: object
-    required:
-      - id
-      - operationState
-      - stateEnteredTime
-      - nsInstanceId
-      - lcmOperationType
-      - startTime
-    properties:
-      id:
-        description: >
-          Identifier of this NS lifecycle operation occurrence.
-        allOf:
-          - $ref: "#/definitions/Identifier"
-      operationState:
-        allOf:
-          - $ref: "#/definitions/NsLcmOperationStateType"
-      stateEnteredTime:
-        description: >
-          Date-time when the current state has been entered.
-        type: string
-        format: date-time
-      nsInstanceId:
-        description: >
-          Identifier of the NS instance to which the operation applies.
-        allOf:
-          - $ref: "#/definitions/Identifier"
-      lcmOperationType:
-        allOf:
-          - $ref: "#/definitions/NsLcmOpType"
-      startTime:
-        description: >
-          Date-time of the start of the operation.
-        type: string
-        format: date-time
-      
-  NsLcmOperationStateType:
-    description: >
-      The enumeration NsLcmOperationStateType shall comply with the provisions defined in Table 6.5.4.4-1.
-      
-      Value | Description
-      
-      ------|------------
-      
-      PROCESSING | The LCM operation is currently in execution.
-      
-      COMPLETED | The LCM operation has been completed successfully.
-      
-      FAILED | The LCM operation has failed and it cannot be retried or rolled back, as it is determined that such action won't succeed.
-      
-    type: string
-    enum:
-      - PROCESSING
-      - COMPLETED 
-      - FAILED
-  
-  NsLcmOpType:
-    description: >
-      The enumeration NsLcmOpType represents those lifecycle operations that trigger a NS lifecycle management operation
-      occurrence notification.
-      
-      Value | Description
-      
-      ------|------------
-      
-      INSTANTIATE | Represents the "Instantiate NS" LCM operation.
-      
-      SCALE | Represents the "Scale NS" LCM operation.
-      
-      TERMINATE | Represents the "Terminate NS" LCM operation.
-
-    type: string
-    enum:
-      - INSTANTIATE
-      - SCALE
-      - TERMINATE
-  
-  ErrorResponse:
-    title: ErrorResponse
-    description: Error rappresentation
-    type: object
-    properties:
-      code:
-        description: human-readable  (es. 'PageNotFound', 'BadArguments')
-        type: string
-      message:
-        type: string
-      target:
-        type: string
-      details:
-        type: array
-        items:
-          $ref: '#/definitions/ErrorResponse_details'
-  TerminateNsRequest:
-    title: TerminateNsRequest
-    type: object
-    properties:
-      terminationTime:
-        description: >-
-          Timestamp indicating the end time of the NS, i.e. the NS will be terminated
-
-          automatically at this timestamp. Cardinality "0" indicates the NS termination
-
-          takes place immediately.
-        type: string
-        format: date-time
-  NSInstanceSubscription:
-    title: NSInstanceSubscription
-    type: object
-    properties:
-      id:
-        description: An identifier with the intention of being globally unique.
-        type: string
-      filter:
-        $ref: '#/definitions/NSInstanceSubscription_filter'
-      callbackUri:
-        description: String formatted according to IETF RFC 3986.
-        type: string
-    required:
-    - id
-    - callbackUri
-  nsInstanceSubscriptionFilter1:
-    title: nsInstanceSubscriptionFilter1
-    description: This type represents subscription filter criteria to match NS instances.
-    type: object
-    properties:
-      nsInstanceIds:
-        description: If present, match NS instances with an instance identifier listed in this attribute.
-        type: array
-        items:
-          type: string
-  NFVOparameters:
-    title: NFVOparameters
-    type: object
-    properties:
-      nfvo_id:
-        description: nfvo identifier
-        type: integer
-        format: int32
-  Paginationparameters:
-    title: Paginationparameters
-    type: object
-    properties:
-      offset:
-        description: FROM pagination
-        type: integer
-        format: int32
-      limit:
-        description: COUNT pagination
-        type: integer
-        format: int32
-  body:
-    title: body
-    type: object
-    properties:
-      notificationType:
-        description: Discriminator for the different notification types. Shall be set to "NsIdentifierCreationNotification" for this notification type.
-        example: NsIdentifierCreationNotification
-        type: string
-      subscriptionId:
-        description: An identifier with the intention of being globally unique.
-        type: string
-      timestamp:
-        description: 'Date-time stamp. Representation: String formatted according toas defined by the date-time production in IETF RFC 3339.'
-        type: string
-        format: date-time
-      nsInstanceId:
-        description: An identifier with the intention of being globally unique.
-        type: string
-    required:
-    - subscriptionId
-    - nsInstanceId
-  body_1:
-    title: body_1
-    type: object
-    properties:
-      notificationType:
-        description: Discriminator for the different notification types. Shall be set to "NsIdentifierDeletionNotification" for this notification type.
-        example: NsIdentifierDeletionNotification
-        type: string
-      subscriptionId:
-        description: An identifier with the intention of being globally unique.
-        type: string
-      timestamp:
-        description: 'Date-time stamp. Representation: String formatted according toas defined by the date-time production in IETF RFC 3339.'
-        type: string
-        format: date-time
-      nsInstanceId:
-        description: An identifier with the intention of being globally unique.
-        type: string
-    required:
-    - subscriptionId
-    - nsInstanceId
-  ErrorResponse_details:
-    title: ErrorResponse_details
-    type: object
-    properties:
-      code:
-        type: string
-      target:
-        type: string
-      message:
-        type: string
-  NSInstanceSubscription_filter:
-    title: NSInstanceSubscription_filter
-    type: object
-    properties:
-      nsInstanceSubscriptionFilter:
-        $ref: '#/definitions/nsInstanceSubscriptionFilter1'
-  NfvoNsInstancesRequest:
-    title: NfvoNsInstancesRequest
-    type: object
-    properties:
-      nsdId:
-        type: object
-      nsName:
-        type: string
-      nsDescription:
-        type: string
-  NfvoNsInstancesScaleRequest:
-    title: NfvoNsInstancesScaleRequest
-    type: object
-    properties:
-      scaleType:
-        $ref: '#/definitions/ScaleType'
-      scaleVnfData:
-        type: object
-      scaleNsData:
-        type: object
-  NfvoSubscriptionsRequest:
-    title: NfvoSubscriptionsRequest
-    type: object
-    properties:
-      filter:
-        $ref: '#/definitions/NSInstanceSubscription_filter'
-      callbackUri:
-        description: String formatted according to IETF RFC 3986.
-        type: string
-  ScaleType:
-    title: ScaleType
-    example: SCALE_NS
-    type: string
-    enum:
-    - SCALE_NS
-    - SCALE_VNF
 tags:
 - name: Local NFVO
   description: Local NFVO information
@@ -1358,3 +16,1257 @@ tags:
   description: Subscriptions to notifications about NS instances status
 - name: Notification send
   description: Operations for sending notifications to subscribed clients
+schemes: []
+consumes:
+- application/json
+produces:
+- application/json
+paths:
+  /nfvo:
+    get:
+      tags:
+      - Local NFVO
+      summary: Retrieve list of local NFVO.
+      description: |
+        By passing in the appropriate options, you can search for available Local Orchestrators
+      operationId: NFVO.fetch
+      produces:
+      - application/json
+      parameters:
+      - name: NFVO parameters
+        in: query
+        description: nfvo identifier
+        required: false
+        type: string
+      - name: Pagination parameters
+        in: query
+        description: The parameters are used to create pagination
+        required: false
+        type: string
+      responses:
+        "200":
+          description: search results matching criteria
+          headers: {}
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/NFVO'
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+  /nfvo/{nfvoId}:
+    get:
+      tags:
+      - Local NFVO
+      summary: Read an individual NFVO.
+      description: |
+        By passing in the appropriate options, you can search for available Local Orchestrators
+      operationId: NFVO.getById
+      produces:
+      - application/json
+      parameters:
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        type: string
+      responses:
+        "200":
+          description: NFVO found
+          headers: {}
+          schema:
+            $ref: '#/definitions/NFVO'
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+  /nfvo/{nfvoId}/ns_instances:
+    get:
+      tags:
+      - NS instances
+      summary: Retrieve list of NS instances.
+      description: |
+        This operation allows to retrieve the list of NS from a specific Nfvo
+      operationId: Nfvo.NS.list
+      produces:
+      - application/json
+      parameters:
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        type: string
+      - name: Pagination parameters
+        in: query
+        description: The parameters are used to create pagination
+        required: false
+        type: string
+      responses:
+        "200":
+          description: search results matching criteria
+          headers: {}
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/NsInstance'
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+    post:
+      tags:
+      - NS instances
+      summary: Create a new NS instance ID.
+      description: Creates and returns a Network Service identifier (nsId) in a Nfvo
+      operationId: Nfvo.NS.onboard
+      produces:
+      - application/json
+      parameters:
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        type: string
+      - in: body
+        name: body
+        description: Create NS request body
+        required: false
+        schema:
+          $ref: '#/definitions/NfvoNsInstancesRequest'
+      responses:
+        "201":
+          description: |
+            201 Created
+            A NS Instance identifier has been created successfully. The response body shall contain a representation of the created NS instance, as defined in clause 6.5.2.8. The HTTP response shall include a "Location" HTTP header that contains the resource URI of the created NS instance.
+          headers:
+            Location:
+              type: string
+              description: nsInstanceId of the created NS
+          schema:
+            $ref: '#/definitions/NsInstance'
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+  /nfvo/{nfvoId}/ns_instances/{nsInstanceId}:
+    get:
+      tags:
+      - NS instances
+      summary: Read an individual NS instance resource.
+      description: |
+        This operation allows to retrieve an existing NS from a specific Nfvo.
+      operationId: Nfvo.NS.fetch
+      produces:
+      - application/json
+      parameters:
+      - name: nsInstanceId
+        in: path
+        description: Identifier of the network service
+        required: true
+        type: string
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        type: string
+      responses:
+        "200":
+          description: NS
+          headers: {}
+          schema:
+            $ref: '#/definitions/NsInstance'
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+    delete:
+      tags:
+      - NS instances
+      summary: Delete an individual NS instance resource.
+      description: |
+        Delete an individual NS instance resource.
+      operationId: Nfvo.NS.terminate
+      produces:
+      - application/json
+      parameters:
+      - name: nsInstanceId
+        in: path
+        description: Identifier of the network service
+        required: true
+        type: string
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        type: string
+      responses:
+        "204":
+          description: |
+            204 No Content The NS instance resource and the associated NS identifier were deleted successfully. The response body shall be empty.
+          headers: {}
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+  /nfvo/{nfvoId}/ns_instances/{nsInstanceId}/instantiate:
+    post:
+      tags:
+      - NS instances
+      summary: Instantiate a NS instance.
+      description: |
+        Instantiate a NS. The precondition is that the NS instance must have
+        been created and must be in NOT_INSTANTIATED state. As a result of the
+        success of this operation, the NFVO creates a "NS Lifecycle Operation
+        Occurrence" resource for the request, and the NS instance state becomes
+        INSTANTIATED.
+      operationId: Nfvo.NS.instantiate
+      produces:
+      - application/json
+      parameters:
+      - name: nsInstanceId
+        in: path
+        description: Identifier of the network service
+        required: true
+        type: string
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        type: string
+      responses:
+        "202":
+          description: |
+            202 ACCEPTED
+          headers:
+            Location:
+              type: string
+              description: nsLcmOpOccId of the instantiated NS
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+  /nfvo/{nfvoId}/ns_instances/{nsInstanceId}/scale:
+    post:
+      tags:
+      - NS instances
+      summary: Scale NS instance.
+      description: |
+        Scale a NS instance. The precondition is that the NS instance must have
+        been created and must be in INSTANTIATED state. As a result of the
+        success of this operation, the NFVO creates a "NS Lifecycle Operation
+        Occurrence" resource for the request, and the NS instance state remains
+        INSTANTIATED.
+      operationId: Nfvo.NS.scale
+      produces:
+      - application/json
+      parameters:
+      - name: nsInstanceId
+        in: path
+        description: Identifier of the network service
+        required: true
+        type: string
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        type: string
+      - in: body
+        name: body
+        description: Scale NS request body
+        required: false
+        schema:
+          $ref: '#/definitions/NfvoNsInstancesScaleRequest'
+      responses:
+        "202":
+          description: |
+            202 ACCEPTED
+          headers: {}
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+  /nfvo/{nfvoId}/ns_instances/{nsInstanceId}/terminate:
+    post:
+      tags:
+      - NS instances
+      summary: Terminate a NS instance.
+      description: |
+        Terminate NS task.   The POST method terminates a NS instance. This method can only be  used with a NS instance in the INSTANTIATED state. Terminating a NS instance does not delete the NS instance identifier,  but rather transitions the NS into the NOT_INSTANTIATED state.
+      operationId: terminateNSinstance
+      produces:
+      - application/json
+      parameters:
+      - name: nsInstanceId
+        in: path
+        description: Identifier of the network service
+        required: true
+        type: string
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        type: string
+      - in: body
+        name: body
+        description: ""
+        required: false
+        schema:
+          $ref: '#/definitions/TerminateNsRequest'
+      responses:
+        "202":
+          description: |
+            202 ACCEPTED
+          headers: {}
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+  /nfvo/{nfvoId}/ns_lcm_op_occs:
+    get:
+      tags:
+      - NS LCM Operations
+      summary: Query multiple NS LCM operation occurrences.
+      description: |
+        Get Operation Status. The client can use this method to query status information about multiple NS lifecycle management operation occurrences. This method shall follow the provisions specified in the Tables 6.4.9.3.2-1 and 6.4.9.3.2-2 for URI query parameters, request and response data structures, and response codes.
+      operationId: Nfvo.NS_LCM_OP.list
+      produces:
+      - application/json
+      parameters:
+      - name: filter
+        in: query
+        description: |
+          Only 'nsInstanceId' is supported.
+          Attribute-based filtering expression according to clause 5.2 of ETSI GS NFV SOL 013. The NFVO shall support receiving this parameter as part of the URI query string. The OSS/BSS may supply this parameter. All attribute names that appear in the NsLcmOpOcc and in data types referenced from it shall be supported by the NFVO in the filter expression.
+        required: false
+        type: string
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        type: string
+      - name: Accept
+        in: header
+        description: |
+          Content-Types that are acceptable for the response. Reference: IETF RFC 7231
+        required: true
+        type: string
+      responses:
+        "200":
+          description: |
+            200 OK
+            Status information for zero or more NS lifecycle management operation  occurrences has been queried successfully. The response body shall contain in an array the representations of zero or more NS instances, as defined in clause 6.5.2.3.
+            If the "filter" URI parameter or one of the "all_fields", "fields", "exclude_fields" or "exclude_default" URI parameters was supplied in the request and is supported, the data in the response body shall have been transformed according to the rules specified in clauses 5.2.2 and 5.3.2 of ETSI GS NFV SOL 013, respectively.
+            If the NFVO supports alternative 2 (paging) according to  clause 5.4.2.1 of ETSI GS NFV SOL 013 for this resource, inclusion of the Link HTTP header in this response shall follow the provisions in clause 5.4.2.3 of ETSI GS NFV SOL 013.
+          headers:
+            Content-Type:
+              type: string
+              description: The MIME type of the body of the response.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/NsLcmOpOcc'
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+  /nfvo/{nfvoId}/ns_lcm_op_occs/{nsLcmOpOccId}:
+    get:
+      tags:
+      - NS LCM Operations
+      summary: Read an individual NS LCM operation occurrence resource.
+      description: |
+        The client can use this method to retrieve status information about a NS lifecycle management operation occurrence by reading an individual "NS LCM operation occurrence" resource. This method shall follow the provisions specified in the Tables 6.4.10.3.2-1 and 6.4.10.3.2-2 for URI query parameters, request and response data structures, and response codes.
+      operationId: Nfvo.NS_LCM_OP.fetch
+      produces:
+      - application/json
+      parameters:
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        type: string
+      - name: nsLcmOpOccId
+        in: path
+        description: |
+          Identifier of a NS lifecycle management operation occurrence.
+        required: true
+        type: string
+      - name: Accept
+        in: header
+        description: |
+          Content-Types that are acceptable for the response. Reference: IETF RFC 7231
+        required: true
+        type: string
+      responses:
+        "200":
+          description: |
+            200 OK
+            Information about a NS LCM operation occurrence has been queried successfully. The response body shall contain status information about a NS  lifecycle management operation occurrence (see clause 6.5.2.3).
+          headers:
+            Content-Type:
+              type: string
+              description: |
+                The MIME type of the body of the response.This header field shall be present if the response has a non-empty message body.
+            WWW-Authenticate:
+              type: string
+              description: |
+                Challenge if the corresponding HTTP request has not provided authorization, or error details if the corresponding HTTP request has provided an invalid authorization token.
+            Version:
+              type: string
+              description: |
+                Version of the API used in the response.
+          schema:
+            $ref: '#/definitions/NsLcmOpOcc'
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+  /nfvo/{nfvoId}/subscriptions:
+    get:
+      tags:
+      - NS Subscriptions
+      summary: Query multiple subscriptions.
+      description: |
+        Query Subscription Information.
+        The GET method queries the list of active subscriptions of the functional block that invokes the method. It can be used e.g. for resynchronization after error situations.
+      operationId: NfvoSubscriptionsByNfvoIdGet
+      produces:
+      - application/json
+      parameters:
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        type: string
+      - name: filter
+        in: query
+        description: Attribute-based filtering expression according to clause 5.2 of ETSI GS NFV SOL 013. The NFVO shall support receiving this parameter as part of the URI query string. The OSS/BSS may supply this parameter. All attribute names that appear in the LccnSubscription and in data types  referenced from it shall be supported by the NFVO in the filter expression.
+        required: false
+        type: string
+      responses:
+        "200":
+          description: |
+            200 OK
+            The list of subscriptions has been queried successfully. The response body shall contain the representations of all active  subscriptions of the functional block that invokes the method. If the NFVO supports alternative 2 (paging) according to  clause 5.4.2.1 of ETSI GS NFV SOL 013 for this resource, inclusion of the Link HTTP header in this response shall follow the provisions in clause 5.4.2.3 of ETSI GS NFV SOL 013.
+          headers: {}
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/NSInstanceSubscription'
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+    post:
+      tags:
+      - NS Subscriptions
+      summary: Subscribe to NS lifecycle change notifications.
+      description: |
+        The POST method creates a new subscription. If subscription already exists, it returns a "303 See Other" response code referencing the existing subscription resource.
+      operationId: NfvoSubscriptionsByNfvoIdPost
+      produces:
+      - application/json
+      parameters:
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        type: string
+      - in: body
+        name: body
+        description: ""
+        required: false
+        schema:
+          $ref: '#/definitions/NfvoSubscriptionsRequest'
+      responses:
+        "201":
+          description: 201 Created. The subscription has been created successfully.
+          headers: {}
+          schema:
+            $ref: '#/definitions/NSInstanceSubscription'
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+  /nfvo/{nfvoId}/subscriptions/{subscriptionId}:
+    get:
+      tags:
+      - NS Subscriptions
+      summary: Read an individual subscription resource.
+      description: |
+        The GET method retrieves information about a subscription by reading an individual subscription resource. This method shall support the URI query parameters, request and response data structures, and response codes, as specified in the Tables 6.4.17.3.2-1 and 6.4.17.3.2-2
+      operationId: NfvoSubscriptionsByNfvoIdAndSubscriptionIdGet
+      produces:
+      - application/json
+      parameters:
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        type: string
+      - name: subscriptionId
+        in: path
+        description: Identifier of this subscription.
+        required: true
+        type: string
+      responses:
+        "200":
+          description: |
+            200 OK. The operation has completed successfully. The response body shall contain a representation of the subscription resource.
+          headers: {}
+          schema:
+            $ref: '#/definitions/NSInstanceSubscription'
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+    delete:
+      tags:
+      - NS Subscriptions
+      summary: Terminate a subscription.
+      description: |
+        The DELETE method terminates an individual subscription. This method shall support the URI query parameters, request and response data structures, and response codes, as specified in the Tables 6.4.17.3.5-1 and 6.4.17.3.5-2.
+      operationId: NfvoSubscriptionsByNfvoIdAndSubscriptionIdDelete
+      produces:
+      - application/json
+      parameters:
+      - name: nfvoId
+        in: path
+        description: Identifier of a Nfvo
+        required: true
+        type: string
+      - name: subscriptionId
+        in: path
+        description: Identifier of this subscription.
+        required: true
+        type: string
+      responses:
+        "204":
+          description: |
+            204 NO CONTENT. The subscription resource has been deleted successfully. The response body shall be empty.
+          headers: {}
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+  /URI_is_provided_by_the_client_when_creating_the_subscription-NsIdentifierCreationNotification:
+    get:
+      tags:
+      - Notification send
+      summary: Test the notification endpoint.
+      description: |
+        Query NS Instances.
+        The GET method queries information about multiple NS instances. This method shall support the URI query parameters, request and response data structures, and response codes, as specified in the Tables 6.4.2.3.2-1 and 6.4.2.3.2-2.
+      operationId: URIIsProvidedByTheClientWhenCreatingTheSubscriptionNsIdentifierCreationNotificationGet
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        "204":
+          description: |
+            204 No Content
+            Shall be returned when the notification endpoint has been tested successfully. The response body shall be empty.
+          headers: {}
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+    post:
+      tags:
+      - Notification send
+      summary: Notify about NS creation
+      description: |
+        The POST method delivers a notification from the server to the client. This method shall support the URI query parameters, request and response data structures, and response codes, as specified in the Tables 6.4.18.3.1-1 and 6.4.18.3.1-2.
+      operationId: URIIsProvidedByTheClientWhenCreatingTheSubscriptionNsIdentifierCreationNotificationPost
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: A notification about the creation of a NS identifier and the related NS instance resource.
+        required: true
+        schema:
+          $ref: '#/definitions/body'
+      responses:
+        "204":
+          description: |
+            204 No Content
+            Shall be returned when the notification has been delivered successfully.
+          headers: {}
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+  /URI_is_provided_by_the_client_when_creating_the_subscription-NsIdentifierDeletionNotification:
+    get:
+      tags:
+      - Notification send
+      summary: Test the notification endpoint.1
+      description: |
+        Query NS Instances.
+        The GET method queries information about multiple NS instances. This method shall support the URI query parameters, request and response data structures, and response codes, as specified in the Tables 6.4.2.3.2-1 and 6.4.2.3.2-2.
+      operationId: URIIsProvidedByTheClientWhenCreatingTheSubscriptionNsIdentifierDeletionNotificationGet
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        "204":
+          description: |
+            204 No Content
+            Shall be returned when the notification endpoint has been tested successfully. The response body shall be empty.
+          headers: {}
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+    post:
+      tags:
+      - Notification send
+      summary: Notify about NS lifecycle change
+      description: |
+        The POST method delivers a notification from the server to the client. This method shall support the URI query parameters, request and response data structures, and response codes, as specified in the Tables 6.4.18.3.1-1 and 6.4.18.3.1-2.
+      operationId: URIIsProvidedByTheClientWhenCreatingTheSubscriptionNsIdentifierDeletionNotificationPost
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: A notification about the deletion of a NS identifier and the related NS instance resource.
+        required: true
+        schema:
+          $ref: '#/definitions/body_1'
+      responses:
+        "204":
+          description: |
+            204 No Content Shall be returned when the notification has been delivered successfully.
+          headers: {}
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+definitions:
+  NFVO:
+    type: object
+    required:
+    - id
+    - name
+    - site
+    - type
+    properties:
+      id:
+        type: integer
+        example: 1
+      name:
+        type: string
+        example: OSM-Turin
+      type:
+        type: string
+        example: OSM
+      site:
+        type: string
+        example: ITALY_TURIN
+      uri:
+        type: string
+        example: https://osm-turin.5g-eve.eu
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+    title: NFVO
+  NsInstance:
+    type: object
+    required:
+    - id
+    - nsInstanceDescription
+    - nsInstanceName
+    - nsState
+    - nsdId
+    properties:
+      id:
+        description: Identifier of the NS instance.
+        allOf:
+        - $ref: '#/definitions/Identifier'
+      nsInstanceName:
+        type: string
+        description: Human readable name of the NS instance.
+      nsInstanceDescription:
+        type: string
+        description: Human readable description of the NS instance.
+      nsdId:
+        type: string
+        description: Identifier of the NSD on which the NS instance is based.
+        pattern: ^[a-fA-F0-9]{8}(-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}$
+      nsState:
+        $ref: '#/definitions/NsStateType'
+      vnfInstance:
+        type: array
+        description: |
+          Information on constituent VNF(s) of the NS instance.
+        items:
+          $ref: '#/definitions/VnfInstance'
+    title: NsInstance
+  VnfInstance:
+    type: object
+    required:
+    - id
+    - instantiationState
+    - vnfProductName
+    - vnfdId
+    properties:
+      id:
+        description: |
+          Identifier of the VNF instance.
+        allOf:
+        - $ref: '#/definitions/Identifier'
+      vnfdId:
+        description: |
+          Identifier of the VNFD on which the VNF instance is based.
+        allOf:
+        - $ref: '#/definitions/Identifier'
+      vnfProductName:
+        type: string
+        description: |
+          Name to identify the VNF Product. The value is copied from the VNFD.
+      vimId:
+        description: |
+          Identifier of a VIM that manages resources for the VNF instance.
+        allOf:
+        - $ref: '#/definitions/Identifier'
+      instantiationState:
+        type: string
+        description: |
+          The instantiation state of the VNF.
+        enum:
+        - NOT_INSTANTIATED
+        - INSTANTIATED
+      instantiatedVnfInfo:
+        $ref: '#/definitions/VnfInstance_instantiatedVnfInfo'
+    description: |
+      This type represents a VNF instance.
+  VnfOperationalStateType:
+    type: string
+    description: |
+      The state of the VNF instance.
+    enum:
+    - STARTED
+    - STOPPED
+    example: STARTED
+  VnfExtCpInfo:
+    type: object
+    required:
+    - id
+    properties:
+      id:
+        description: |
+          Identifier of the external CP instance and the related information instance.
+        allOf:
+        - $ref: '#/definitions/IdentifierInVnf'
+      cpProtocolInfo:
+        type: array
+        description: |
+          Network protocol information for this CP.
+        items:
+          $ref: '#/definitions/CpProtocolInfo'
+        minItems: 1
+    description: |
+      This type represents information about an external CP of a VNF. It shall comply  with the provisions defined in Table 6.5.3.70-1.
+  CpProtocolInfo:
+    type: object
+    required:
+    - ipOverEthernet
+    - layerProtocol
+    properties:
+      layerProtocol:
+        type: string
+        description: |
+          The identifier of layer(s) and protocol(s) associated to the network address information. Permitted values: IP_OVER_ETHERNET See note.
+        enum:
+        - IP_OVER_ETHERNET
+      ipOverEthernet:
+        description: |
+          IP addresses over Ethernet to assign to the CP or SAP instance. Shall be present if layerProtocol is equal to " IP_OVER_ETHERNET", and shall be absent otherwise.
+        allOf:
+        - $ref: '#/definitions/IpOverEthernetAddressInfo'
+    description: |
+      This type describes the protocol layer(s) that a CP or SAP uses together with protocol-related information, like addresses. It shall comply with the provisions defined in Table 6.5.3.58-1.
+  IpOverEthernetAddressInfo:
+    type: object
+    required:
+    - ipAddresses
+    - macAddress
+    properties:
+      macAddress:
+        description: |
+          Assigned MAC address.
+        allOf:
+        - $ref: '#/definitions/MacAddress'
+      ipAddresses:
+        type: array
+        description: |
+          Addresses assigned to the CP instance. Each entry represents IP addresses assigned by fixed or dynamic IP address assignment per subnet.
+        items:
+          $ref: '#/definitions/IpOverEthernetAddressInfo_ipAddresses'
+    description: |
+      This type represents information about a network address that has been assigned. It shall comply with the provisions defined in Table 6.5.3.18-1.
+  MacAddress:
+    type: string
+    format: MAC
+    description: |
+      A MAC address. Representation: string that consists of groups of two hexadecimal digits, separated by hyphens or colons.
+  IpAddress:
+    type: string
+    format: IP
+    description: |
+      An IPV4 or IPV6 address. Representation: In case of an IPV4 address, string that consists of four decimal integers separated by dots, each integer ranging from 0 to 255. In case of an IPV6 address, string that consists of groups of zero to four hexadecimal digits, separated by colons.
+  IdentifierInVnf:
+    type: string
+    format: uuid
+    description: |
+      An identifier that is unique for the respective type within a VNF instance, but may not be globally unique.
+  Identifier:
+    type: string
+    format: uuid
+    description: |
+      An identifier with the intention of being globally unique.
+  NsStateType:
+    type: string
+    title: NsStateType
+    description: |-
+      State of the NS instance. Permitted values:
+       * `NOT_INSTANTIATED`: The NS instance is terminated or not instantiated.
+       * `INSTANTIATED`: The NS instance is instantiated.
+    example: NOT_INSTANTIATED
+    enum:
+    - NOT_INSTANTIATED
+    - INSTANTIATED
+  InstantiateNsRequest:
+    type: object
+    required:
+    - nsFlavourId
+    - nsInstantiationLevelId
+    properties:
+      nsFlavourId:
+        type: string
+        description: Identifier of the NS deployment flavour to be instantiated.
+      nsInstantiationLevelId:
+        type: string
+        description: af
+    title: InstantiateNsRequest
+  NsLcmOpOcc:
+    type: object
+    required:
+    - id
+    - lcmOperationType
+    - nsInstanceId
+    - operationState
+    - startTime
+    - stateEnteredTime
+    properties:
+      id:
+        description: |
+          Identifier of this NS lifecycle operation occurrence.
+        allOf:
+        - $ref: '#/definitions/Identifier'
+      operationState:
+        allOf:
+        - $ref: '#/definitions/NsLcmOperationStateType'
+      stateEnteredTime:
+        type: string
+        format: date-time
+        description: |
+          Date-time when the current state has been entered.
+      nsInstanceId:
+        description: |
+          Identifier of the NS instance to which the operation applies.
+        allOf:
+        - $ref: '#/definitions/Identifier'
+      lcmOperationType:
+        allOf:
+        - $ref: '#/definitions/NsLcmOpType'
+      startTime:
+        type: string
+        format: date-time
+        description: |
+          Date-time of the start of the operation.
+    description: |
+      This type represents a request a NS lifecycle operation occurrence. It shall comply with the provisions defined in Table 6.5.2.3-1.
+  NsLcmOperationStateType:
+    type: string
+    description: |
+      The enumeration NsLcmOperationStateType shall comply with the provisions defined in Table 6.5.4.4-1.
+      Value | Description
+      ------|------------
+      PROCESSING | The LCM operation is currently in execution.
+      COMPLETED | The LCM operation has been completed successfully.
+      FAILED | The LCM operation has failed and it cannot be retried or rolled back, as it is determined that such action won't succeed.
+    enum:
+    - PROCESSING
+    - COMPLETED
+    - FAILED
+  NsLcmOpType:
+    type: string
+    description: |
+      The enumeration NsLcmOpType represents those lifecycle operations that trigger a NS lifecycle management operation occurrence notification.
+      Value | Description
+      ------|------------
+      INSTANTIATE | Represents the "Instantiate NS" LCM operation.
+      SCALE | Represents the "Scale NS" LCM operation.
+      TERMINATE | Represents the "Terminate NS" LCM operation.
+    enum:
+    - INSTANTIATE
+    - SCALE
+    - TERMINATE
+  ErrorResponse:
+    type: object
+    properties:
+      code:
+        type: string
+        description: human-readable  (es. 'PageNotFound', 'BadArguments')
+      message:
+        type: string
+      target:
+        type: string
+      details:
+        type: array
+        items:
+          $ref: '#/definitions/ErrorResponse_details'
+    title: ErrorResponse
+    description: Error rappresentation
+  TerminateNsRequest:
+    type: object
+    properties:
+      terminationTime:
+        type: string
+        format: date-time
+        description: |-
+          Timestamp indicating the end time of the NS, i.e. the NS will be terminated
+          automatically at this timestamp. Cardinality "0" indicates the NS termination
+          takes place immediately.
+    title: TerminateNsRequest
+  NSInstanceSubscription:
+    type: object
+    required:
+    - callbackUri
+    - id
+    properties:
+      id:
+        description: An identifier with the intention of being globally unique.
+        allOf:
+        - $ref: '#/definitions/Identifier'
+      filter:
+        $ref: '#/definitions/NSInstanceSubscription_filter'
+      callbackUri:
+        type: string
+        description: String formatted according to IETF RFC 3986.
+    title: NSInstanceSubscription
+  nsInstanceSubscriptionFilter1:
+    type: object
+    properties:
+      nsInstanceIds:
+        type: array
+        description: If present, match NS instances with an instance identifier listed in this attribute.
+        items:
+          type: string
+    title: nsInstanceSubscriptionFilter1
+    description: This type represents subscription filter criteria to match NS instances.
+  NFVOparameters:
+    type: object
+    properties:
+      nfvo_id:
+        type: integer
+        format: int32
+        description: nfvo identifier
+    title: NFVOparameters
+  Paginationparameters:
+    type: object
+    properties:
+      offset:
+        type: integer
+        format: int32
+        description: FROM pagination
+      limit:
+        type: integer
+        format: int32
+        description: COUNT pagination
+    title: Paginationparameters
+  body:
+    type: object
+    required:
+    - nsInstanceId
+    - subscriptionId
+    properties:
+      notificationType:
+        type: string
+        example: NsIdentifierCreationNotification
+        description: Discriminator for the different notification types. Shall be set to "NsIdentifierCreationNotification" for this notification type.
+      subscriptionId:
+        type: string
+        description: An identifier with the intention of being globally unique.
+      timestamp:
+        type: string
+        format: date-time
+        description: 'Date-time stamp. Representation: String formatted according toas defined by the date-time production in IETF RFC 3339.'
+      nsInstanceId:
+        type: string
+        description: An identifier with the intention of being globally unique.
+    title: body
+  body_1:
+    type: object
+    required:
+    - nsInstanceId
+    - subscriptionId
+    properties:
+      notificationType:
+        type: string
+        example: NsIdentifierDeletionNotification
+        description: Discriminator for the different notification types. Shall be set to "NsIdentifierDeletionNotification" for this notification type.
+      subscriptionId:
+        type: string
+        description: An identifier with the intention of being globally unique.
+      timestamp:
+        type: string
+        format: date-time
+        description: 'Date-time stamp. Representation: String formatted according toas defined by the date-time production in IETF RFC 3339.'
+      nsInstanceId:
+        type: string
+        description: An identifier with the intention of being globally unique.
+    title: body_1
+  ErrorResponse_details:
+    type: object
+    properties:
+      code:
+        type: string
+      target:
+        type: string
+      message:
+        type: string
+    title: ErrorResponse_details
+  NSInstanceSubscription_filter:
+    type: object
+    properties:
+      nsInstanceSubscriptionFilter:
+        $ref: '#/definitions/nsInstanceSubscriptionFilter1'
+    title: NSInstanceSubscription_filter
+  NfvoNsInstancesRequest:
+    type: object
+    properties:
+      nsdId:
+        type: object
+        properties: {}
+      nsName:
+        type: string
+      nsDescription:
+        type: string
+    title: NfvoNsInstancesRequest
+  NfvoNsInstancesScaleRequest:
+    type: object
+    properties:
+      scaleType:
+        $ref: '#/definitions/ScaleType'
+      scaleVnfData:
+        type: object
+        properties: {}
+      scaleNsData:
+        type: object
+        properties: {}
+    title: NfvoNsInstancesScaleRequest
+  NfvoSubscriptionsRequest:
+    type: object
+    properties:
+      filter:
+        $ref: '#/definitions/NSInstanceSubscription_filter'
+      callbackUri:
+        type: string
+        description: String formatted according to IETF RFC 3986.
+    title: NfvoSubscriptionsRequest
+  ScaleType:
+    type: string
+    title: ScaleType
+    example: SCALE_NS
+    enum:
+    - SCALE_NS
+    - SCALE_VNF
+  VnfInstance_instantiatedVnfInfo:
+    type: object
+    required:
+    - vnfState
+    properties:
+      vnfState:
+        $ref: '#/definitions/VnfOperationalStateType'
+      extCpInfo:
+        type: array
+        description: |
+          Information about the external CPs exposed by the VNF instance.
+        items:
+          $ref: '#/definitions/VnfExtCpInfo'
+        minItems: 1
+    description: |
+      Information specific to an instantiated VNF instance. This attribute shall be present if the instantiateState attribute value is INSTANTIATED.
+  IpOverEthernetAddressInfo_ipAddresses:
+    type: object
+    required:
+    - type
+    properties:
+      type:
+        type: string
+        description: |
+          The type of the IP addresses. Permitted values: IPV4, IPV6.
+        enum:
+        - IPV4
+        - IPV6
+      addresses:
+        type: array
+        description: |
+          Fixed addresses assigned (from the subnet defined by "subnetId" if provided).
+        items:
+          $ref: '#/definitions/IpAddress'

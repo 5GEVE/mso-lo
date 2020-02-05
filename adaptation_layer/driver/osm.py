@@ -394,6 +394,7 @@ class OSM(Driver):
             }
             if vnf_instance["instantiationState"] == "INSTANTIATED":
                 vnf_instance["instantiatedVnfInfo"] = {
+                    "vnfState": "STARTED",
                     "extCpInfo": self._cpinfo_converter(osm_vnf)
                 }
             sol_ns["vnfInstance"].append(vnf_instance)

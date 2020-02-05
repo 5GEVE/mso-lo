@@ -16,7 +16,7 @@ services:
   test-onap:
     build:
       context: .
-      target: base
+      target: test
     container_name: test-onap
     depends_on:
       - prism-onap
@@ -30,3 +30,4 @@ services:
           - test-onap
 networks:
     mso-lo-net:
+
