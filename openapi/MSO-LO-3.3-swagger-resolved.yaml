@@ -835,7 +835,6 @@ definitions:
     - nsdId
     properties:
       id:
-        type: object
         description: Identifier of the NS instance.
         allOf:
         - $ref: '#/definitions/Identifier'
@@ -867,13 +866,11 @@ definitions:
     - vnfdId
     properties:
       id:
-        type: object
         description: |
           Identifier of the VNF instance.
         allOf:
         - $ref: '#/definitions/Identifier'
       vnfdId:
-        type: object
         description: |
           Identifier of the VNFD on which the VNF instance is based.
         allOf:
@@ -883,7 +880,6 @@ definitions:
         description: |
           Name to identify the VNF Product. The value is copied from the VNFD.
       vimId:
-        type: object
         description: |
           Identifier of a VIM that manages resources for the VNF instance.
         allOf:
@@ -903,7 +899,6 @@ definitions:
     type: string
     description: |
       The state of the VNF instance.
-    example: STARTED
     enum:
     - STARTED
     - STOPPED
@@ -914,7 +909,6 @@ definitions:
     - id
     properties:
       id:
-        type: object
         description: |
           Identifier of the external CP instance and the related information instance.
         allOf:
@@ -941,7 +935,6 @@ definitions:
         enum:
         - IP_OVER_ETHERNET
       ipOverEthernet:
-        type: object
         description: |
           IP addresses over Ethernet to assign to the CP or SAP instance. Shall be present if layerProtocol is equal to " IP_OVER_ETHERNET", and shall be absent otherwise.
         allOf:
@@ -955,7 +948,6 @@ definitions:
     - macAddress
     properties:
       macAddress:
-        type: object
         description: |
           Assigned MAC address.
         allOf:
@@ -1023,13 +1015,11 @@ definitions:
     - stateEnteredTime
     properties:
       id:
-        type: object
         description: |
           Identifier of this NS lifecycle operation occurrence.
         allOf:
         - $ref: '#/definitions/Identifier'
       operationState:
-        type: object
         allOf:
         - $ref: '#/definitions/NsLcmOperationStateType'
       stateEnteredTime:
@@ -1038,13 +1028,11 @@ definitions:
         description: |
           Date-time when the current state has been entered.
       nsInstanceId:
-        type: object
         description: |
           Identifier of the NS instance to which the operation applies.
         allOf:
         - $ref: '#/definitions/Identifier'
       lcmOperationType:
-        type: object
         allOf:
         - $ref: '#/definitions/NsLcmOpType'
       startTime:
@@ -1114,7 +1102,6 @@ definitions:
     - id
     properties:
       id:
-        type: object
         description: An identifier with the intention of being globally unique.
         allOf:
         - $ref: '#/definitions/Identifier'
