@@ -819,11 +819,9 @@ definitions:
       createdAt:
         type: string
         format: date-time
-        example: 2016-08-29T09:12:33.001Z
       updatedAt:
         type: string
         format: date-time
-        example: 2016-08-29T09:12:33.001Z
     title: NFVO
   NsInstance:
     type: object
