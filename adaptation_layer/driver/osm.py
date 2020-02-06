@@ -66,7 +66,8 @@ class OSM(Driver):
             if 'application/json' in resp.headers['content-type']:
                 return resp.json(), resp.headers
             elif 'application/yaml' in resp.headers['content-type']:
-                return YAML.load(resp.text, Loader=YAML.SafeLoader), resp.headers
+                return YAML.load(resp.text, Loader=YAML.SafeLoader), \
+                       resp.headers
             else:
                 return resp.text, resp.headers
         elif resp.status_code == 204:
@@ -96,7 +97,8 @@ class OSM(Driver):
             if 'application/json' in resp.headers['content-type']:
                 return resp.json(), resp.headers
             elif 'application/yaml' in resp.headers['content-type']:
-                return YAML.load(resp.text, Loader=YAML.SafeLoader), resp.headers
+                return YAML.load(resp.text, Loader=YAML.SafeLoader), \
+                       resp.headers
             else:
                 return resp.text, resp.headers
         elif resp.status_code == 204:
@@ -126,7 +128,8 @@ class OSM(Driver):
             if 'application/json' in resp.headers['content-type']:
                 return resp.json(), resp.headers
             elif 'application/yaml' in resp.headers['content-type']:
-                return YAML.load(resp.text, Loader=YAML.SafeLoader), resp.headers
+                return YAML.load(resp.text, Loader=YAML.SafeLoader), \
+                       resp.headers
             else:
                 return resp.text, resp.headers
         elif resp.status_code == 204:
@@ -187,8 +190,9 @@ class OSM(Driver):
         if not nsdpkg_list:
             raise NsdNotFound(nsd_id=args["args"]["id"])
         elif len(nsdpkg_list) > 1:
-            raise ServerError(description="Multiple NSD with id={} found in OSM".
-                              format(args["args"]["id"]))
+            raise ServerError(
+                description="Multiple NSD with id={} found in OSM".format(
+                    args["args"]["id"]))
         return nsdpkg_list[0], headers
 
     def get_ns_list(self, args=None) -> Tuple[BodyList, Headers]:
@@ -217,7 +221,8 @@ class OSM(Driver):
         sol_ns, headerz = self.get_ns(osm_ns["id"])
         return sol_ns, headers
 
-    def get_ns(self, nsId: str, args=None, skip_sol=False) -> Tuple[Body, Headers]:
+    def get_ns(self, nsId: str, args=None, skip_sol=False) \
+            -> Tuple[Body, Headers]:
         _url = "{0}/nslcm/v1/ns_instances/{1}".format(self._base_path, nsId)
         _url = self._build_url_query(_url, args)
         try:
@@ -283,7 +288,8 @@ class OSM(Driver):
         return None, headers
 
     def get_op_list(self, args: Dict = None) -> Tuple[BodyList, Headers]:
-        nsId = args['args']['nsInstanceId'] if args['args'] and 'nsInstanceId' in args['args'] else None
+        nsId = args['args']['nsInstanceId'] \
+            if args['args'] and 'nsInstanceId' in args['args'] else None
         _url = "{0}/nslcm/v1/ns_lcm_op_occs".format(self._base_path)
         _url = self._build_url_query(_url, args)
         try:
@@ -317,8 +323,10 @@ class OSM(Driver):
             return cp_info
         for vdur in osm_vnf["vdur"]:
             for if_vdur in vdur["interfaces"]:
-                [if_pkg] = [if_pkg for vdu in vnfpkg["vdu"] for if_pkg in vdu["interface"]
-                            if vdu["id"] == vdur["vdu-id-ref"] and if_pkg["name"] == if_vdur["name"]]
+                [if_pkg] = [if_pkg for vdu in vnfpkg["vdu"]
+                            for if_pkg in vdu["interface"]
+                            if vdu["id"] == vdur["vdu-id-ref"]
+                            and if_pkg["name"] == if_vdur["name"]]
                 [cp] = [val for key, val in if_pkg.items(
                 ) if key.endswith("-connection-point-ref")]
                 try:
@@ -393,10 +401,12 @@ class OSM(Driver):
         sol_op = {
             "id": osm_op["id"],
             "operationState": osm_op["operationState"].upper(),
-            "stateEnteredTime": datetime.utcfromtimestamp(osm_op["statusEnteredTime"]).isoformat("T") + "Z",
+            "stateEnteredTime": datetime.utcfromtimestamp(
+                osm_op["statusEnteredTime"]).isoformat("T") + "Z",
             "nsInstanceId": osm_op["nsInstanceId"],
             "lcmOperationType": osm_op["lcmOperationType"].upper(),
-            "startTime": datetime.utcfromtimestamp(osm_op["startTime"]).isoformat("T") + "Z",
+            "startTime": datetime.utcfromtimestamp(
+                osm_op["startTime"]).isoformat("T") + "Z",
         }
         return sol_op
 
@@ -411,7 +421,8 @@ class OSM(Driver):
         headers = {}
         if 'location' in osm_headers:
             re_res = re.findall(
-                r"/osm/nslcm/v1/(ns_instances|ns_lcm_op_occs)/([A-Za-z0-9\-]+)", osm_headers['location'])
+                r"/osm/nslcm/v1/(ns_instances|ns_lcm_op_occs)/([A-Za-z0-9\-]+)",
+                osm_headers['location'])
             if len(re_res):
                 if re_res[0][0] == 'ns_instances':
                     headers['location'] = '/nfvo/{0}/ns_instances/{1}'.format(
