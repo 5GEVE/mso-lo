@@ -845,7 +845,6 @@ definitions:
       nsdId:
         type: string
         description: Identifier of the NSD on which the NS instance is based.
-        pattern: ^[a-fA-F0-9]{8}(-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}$
       nsState:
         $ref: '#/definitions/NsStateType'
       vnfInstance:
