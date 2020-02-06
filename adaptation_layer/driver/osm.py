@@ -62,13 +62,16 @@ class OSM(Driver):
                                 verify=False, stream=True, headers=headers)
         except Exception as e:
             raise ServerError(str(e))
-        if resp.status_code in (200, 201, 202, 204):
+        if resp.status_code in (200, 201, 202):
             if 'application/json' in resp.headers['content-type']:
                 return resp.json(), resp.headers
             elif 'application/yaml' in resp.headers['content-type']:
-                return YAML.load(resp.text, Loader=YAML.SafeLoader), resp.headers
+                return YAML.load(resp.text, Loader=YAML.SafeLoader), \
+                       resp.headers
             else:
                 return resp.text, resp.headers
+        elif resp.status_code == 204:
+            return None, resp.headers
         elif resp.status_code == 400:
             raise BadRequest()
         elif resp.status_code == 401:
@@ -90,13 +93,16 @@ class OSM(Driver):
                                  verify=False, headers=headers)
         except Exception as e:
             raise ServerError(str(e))
-        if resp.status_code in (200, 201, 202, 204):
+        if resp.status_code in (200, 201, 202):
             if 'application/json' in resp.headers['content-type']:
                 return resp.json(), resp.headers
             elif 'application/yaml' in resp.headers['content-type']:
-                return YAML.load(resp.text, Loader=YAML.SafeLoader), resp.headers
+                return YAML.load(resp.text, Loader=YAML.SafeLoader), \
+                       resp.headers
             else:
                 return resp.text, resp.headers
+        elif resp.status_code == 204:
+            return None, resp.headers
         elif resp.status_code == 400:
             raise BadRequest()
         elif resp.status_code == 401:
@@ -118,13 +124,16 @@ class OSM(Driver):
                 url, params=params, verify=False, headers=headers)
         except Exception as e:
             raise ServerError(str(e))
-        if resp.status_code in (200, 201, 202, 204):
+        if resp.status_code in (200, 201, 202):
             if 'application/json' in resp.headers['content-type']:
                 return resp.json(), resp.headers
             elif 'application/yaml' in resp.headers['content-type']:
-                return YAML.load(resp.text, Loader=YAML.SafeLoader), resp.headers
+                return YAML.load(resp.text, Loader=YAML.SafeLoader), \
+                       resp.headers
             else:
                 return resp.text, resp.headers
+        elif resp.status_code == 204:
+            return None, resp.headers
         elif resp.status_code == 400:
             raise BadRequest()
         elif resp.status_code == 401:
@@ -181,8 +190,9 @@ class OSM(Driver):
         if not nsdpkg_list:
             raise NsdNotFound(nsd_id=args["args"]["id"])
         elif len(nsdpkg_list) > 1:
-            raise ServerError(description="Multiple NSD with id={} found in OSM".
-                              format(args["args"]["id"]))
+            raise ServerError(
+                description="Multiple NSD with id={} found in OSM".format(
+                    args["args"]["id"]))
         return nsdpkg_list[0], headers
 
     def get_ns_list(self, args=None) -> Tuple[BodyList, Headers]:
@@ -198,20 +208,21 @@ class OSM(Driver):
     def create_ns(self, args=None) -> Tuple[Body, Headers]:
         _url = "{0}/nslcm/v1/ns_instances".format(self._base_path)
         _url = self._build_url_query(_url, args)
-        nsdId_req = args["payload"]["nsdId"]
-        osm_nsdpkg, headerz = self._get_nsdpkg(args={"args": {
+        osm_nsdpkg, headers_nsdpkg = self._get_nsdpkg(args={"args": {
             "id": args["payload"]["nsdId"]}
         })
         args["payload"]["nsdId"] = osm_nsdpkg["_id"]
         args['payload']['vimAccountId'] = self._select_vim()
         osm_ns, osm_headers = self._exec_post(
             _url, json=args['payload'], headers=self._headers)
+        # Get location header from OSM
         headers = self._build_headers(osm_headers)
-        args["payload"]["nsdId"] = nsdId_req
-        sol_ns = self._ns_im_resource(osm_ns, args['payload'])
+        # Get NS info from OSM
+        sol_ns, headerz = self.get_ns(osm_ns["id"])
         return sol_ns, headers
 
-    def get_ns(self, nsId: str, args=None, skip_sol=False) -> Tuple[Body, Headers]:
+    def get_ns(self, nsId: str, args=None, skip_sol=False) \
+            -> Tuple[Body, Headers]:
         _url = "{0}/nslcm/v1/ns_instances/{1}".format(self._base_path, nsId)
         _url = self._build_url_query(_url, args)
         try:
@@ -229,6 +240,7 @@ class OSM(Driver):
         _url = self._build_url_query(_url, args)
         req_headers = copy.deepcopy(self._headers)
         del req_headers["Content-Type"]
+        del req_headers["Accept"]
         try:
             empty_body, osm_headers = self._exec_delete(
                 _url, params=None, headers=req_headers)
@@ -276,7 +288,8 @@ class OSM(Driver):
         return None, headers
 
     def get_op_list(self, args: Dict = None) -> Tuple[BodyList, Headers]:
-        nsId = args['args']['nsInstanceId'] if args['args'] and 'nsInstanceId' in args['args'] else None
+        nsId = args['args']['nsInstanceId'] \
+            if args['args'] and 'nsInstanceId' in args['args'] else None
         _url = "{0}/nslcm/v1/ns_lcm_op_occs".format(self._base_path)
         _url = self._build_url_query(_url, args)
         try:
@@ -310,8 +323,10 @@ class OSM(Driver):
             return cp_info
         for vdur in osm_vnf["vdur"]:
             for if_vdur in vdur["interfaces"]:
-                [if_pkg] = [if_pkg for vdu in vnfpkg["vdu"] for if_pkg in vdu["interface"]
-                            if vdu["id"] == vdur["vdu-id-ref"] and if_pkg["name"] == if_vdur["name"]]
+                [if_pkg] = [if_pkg for vdu in vnfpkg["vdu"]
+                            for if_pkg in vdu["interface"]
+                            if vdu["id"] == vdur["vdu-id-ref"]
+                            and if_pkg["name"] == if_vdur["name"]]
                 [cp] = [val for key, val in if_pkg.items(
                 ) if key.endswith("-connection-point-ref")]
                 try:
@@ -338,18 +353,6 @@ class OSM(Driver):
                 })
         return cp_info
 
-    @staticmethod
-    def _ns_im_resource(osm_ns: Dict, req_payload: Dict) -> Dict:
-        sol_ns = {
-            "id": osm_ns['id'],
-            "nsInstanceName": req_payload['nsName'],
-            "nsInstanceDescription": req_payload['nsDescription'],
-            "nsdId": req_payload['nsdId'],
-            "nsState": "NOT_INSTANTIATED",
-            "vnfInstance": []
-        }
-        return sol_ns
-
     def _select_vim(self):
         osm_vims, osm_vim_h = self._get_vim_list()
         if osm_vims and len(osm_vims) > 0:
@@ -362,7 +365,7 @@ class OSM(Driver):
             "id": osm_ns['id'],
             "nsInstanceName": osm_ns['name'],
             "nsInstanceDescription": osm_ns['description'],
-            "nsdId": osm_ns['nsd-id'],
+            "nsdId": osm_ns['nsd-ref'],
             "nsState": osm_ns['_admin']['nsState'],
             "vnfInstance": []
         }
@@ -387,6 +390,7 @@ class OSM(Driver):
             }
             if vnf_instance["instantiationState"] == "INSTANTIATED":
                 vnf_instance["instantiatedVnfInfo"] = {
+                    "vnfState": "STARTED",
                     "extCpInfo": self._cpinfo_converter(osm_vnf)
                 }
             sol_ns["vnfInstance"].append(vnf_instance)
@@ -397,10 +401,12 @@ class OSM(Driver):
         sol_op = {
             "id": osm_op["id"],
             "operationState": osm_op["operationState"].upper(),
-            "stateEnteredTime": datetime.utcfromtimestamp(osm_op["statusEnteredTime"]).isoformat("T") + "Z",
+            "stateEnteredTime": datetime.utcfromtimestamp(
+                osm_op["statusEnteredTime"]).isoformat("T") + "Z",
             "nsInstanceId": osm_op["nsInstanceId"],
             "lcmOperationType": osm_op["lcmOperationType"].upper(),
-            "startTime": datetime.utcfromtimestamp(osm_op["startTime"]).isoformat("T") + "Z",
+            "startTime": datetime.utcfromtimestamp(
+                osm_op["startTime"]).isoformat("T") + "Z",
         }
         return sol_op
 
@@ -415,7 +421,8 @@ class OSM(Driver):
         headers = {}
         if 'location' in osm_headers:
             re_res = re.findall(
-                r"/osm/nslcm/v1/(ns_instances|ns_lcm_op_occs)/([A-Za-z0-9\-]+)", osm_headers['location'])
+                r"/osm/nslcm/v1/(ns_instances|ns_lcm_op_occs)/([A-Za-z0-9\-]+)",
+                osm_headers['location'])
             if len(re_res):
                 if re_res[0][0] == 'ns_instances':
                     headers['location'] = '/nfvo/{0}/ns_instances/{1}'.format(

@@ -27,7 +27,7 @@ def get_nfvo_list():
     try:
         nfvo_list = manager.get_nfvo_list(
             args={'args': request.args.to_dict()})
-        return jsonify(nfvo_list)
+        return make_response(jsonify(nfvo_list), 200)
     except Unauthorized as e:
         abort(401, description=e.description)
     except ServerError as e:
@@ -38,7 +38,7 @@ def get_nfvo_list():
 def get_nfvo(nfvo_id):
     try:
         nfvo = manager.get_nfvo(nfvo_id, args={'args': request.args.to_dict()})
-        return jsonify(nfvo)
+        return make_response(jsonify(nfvo), 200)
     except Unauthorized as e:
         abort(401, description=e.description)
     except NfvoNotFound as e:
@@ -104,7 +104,7 @@ def delete_ns(nfvo_id, ns_id):
     try:
         empty_body, headers = manager.get_driver(nfvo_id).delete_ns(
             ns_id, args={'args': request.args.to_dict()})
-        return make_response('', 202, headers)
+        return make_response('', 204, headers)
     except BadRequest as e:
         abort(400, description=e.description)
     except Unauthorized as e:

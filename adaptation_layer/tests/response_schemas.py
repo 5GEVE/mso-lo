@@ -11,40 +11,47 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+import fnmatch
+import os
 
-id_schema = {"type": "string",
-             "pattern": "^[a-fA-F0-9]{8}(-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}$"}
+from prance import ResolvingParser
 
-ns_schema = {
-    "type": "object",
-    "properties": {
-        "id": {"type": "string"},
-        "nsInstanceName": {"type": "string"},
-        "nsInstanceDescription": {"type": "string"},
-        "nsdId": {"type": "string"},
-        "nsState": {"type": "string"},
-        "vnfInstance": {"type": "array"}
-    },
-    "required": ["id", "nsInstanceName", "nsInstanceDescription", "nsdId", "nsState"],
-    "additionalProperties": False
+
+def _get_file_path(directory: str) -> str:
+    try:
+        for file in os.listdir(directory):
+            if fnmatch.fnmatch(file, 'MSO-LO-?.?-swagger-resolved.yaml'):
+                return os.path.join(directory, file)
+    except FileNotFoundError:
+        pass
+
+
+# Test in container
+file_path = _get_file_path('./openapi/')
+if file_path is None:
+    # Test in dev environment
+    file_path = _get_file_path('../../openapi/')
+if file_path is None:
+    raise FileNotFoundError("Openapi directory not found.")
+
+openapi = ResolvingParser(file_path).specification
+
+nfvo_schema = openapi["definitions"]["NFVO"]
+nfvo_list_schema = {
+    "type": "array",
+    "items": nfvo_schema
 }
+
+id_schema = openapi["definitions"]["Identifier"]
+
+ns_schema = openapi["definitions"]["NsInstance"]
 
 ns_list_schema = {
     "type": "array",
     "items": ns_schema
 }
 
-ns_lcm_op_occ_schema = {
-    "type": "object",
-    "properties": {
-        "id": {"type": "string"},
-        "operationState": {"type": "string"},
-        "stateEnteredTime": {"type": "string", "format": "date-time"},
-        "nsInstanceId": {"type": "string"},
-        "lcmOperationType": {"type": "string"},
-        "startTime": {"type": "string", "format": "date-time"}
-    }
-}
+ns_lcm_op_occ_schema = openapi["definitions"]["NsLcmOpOcc"]
 
 ns_lcm_op_occ_list_schema = {
     "type": "array",

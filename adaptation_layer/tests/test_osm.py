@@ -90,10 +90,10 @@ class OSMTestCase(unittest.TestCase):
         res = self.client().get('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7?__code=401')
         self.assertEqual(res.status_code, 401)
 
-    # Check status codes 202, 401, 404, headers and payload for delete_ns()
-    def test_delete_ns_202(self):
-        res = self.client().delete('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7?__code=202')
-        self.assertEqual(res.status_code, 202)
+    # Check status codes 204, 401, 404, headers and payload for delete_ns()
+    def test_delete_ns_204(self):
+        res = self.client().delete('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7?__code=204')
+        self.assertEqual(res.status_code, 204)
 
     def test_delete_ns_404(self):
         res = self.client().delete('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7?__code=404')
