@@ -10,7 +10,7 @@ info:
   description:
     ONAP's ns-server API
     version with Celery and rabbitMQ
-  version: "3"
+  version: "1.4"
   title: ONAP's NS-server API
   contact:
     email: michal.grzesik@orange.com
@@ -480,6 +480,8 @@ components:
             - INSTANTIATED
         vnfInstance:
           type: array
+          items:
+            $ref: '#/components/schemas/vnfInstance'
       required:
         - id
         - nsInstanceName
@@ -487,6 +489,98 @@ components:
         - nsdId
         - nsState
         - vnfInstance
+#
+    vnfInstance:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        vnfdId:
+          type: string
+          format: uuid
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        vnfProductName:
+          type: string
+        vimId:
+          type: string
+          format: uuid
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        instantiationState:
+          type: string
+          enum:
+            - NOT_INSTANTIATED
+            - INSTANTIATED
+        instantiatedVnfInfo:
+          type: object
+          properties:
+            vnfState:
+               type: string
+               example: STARTED
+            extCpInfo:
+              type: array
+              items:
+                $ref: '#/components/schemas/VnfExtCpInfo'
+#
+    VnfExtCpInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        cpProtocolInfo:
+          type: array
+          items:
+            $ref: '#/components/schemas/CpProtocolInfo'
+#
+    CpProtocolInfo:
+      type: object
+      required:
+      - ipOverEthernet
+      - layerProtocol
+      properties:
+        layerProtocol:
+          type: string
+          enum:
+            - IP_OVER_ETHERNET
+        ipOverEthernet:
+          allOf:
+          - $ref: '#/components/schemas/IpOverEthernetAddressInfo'
+#
+    IpOverEthernetAddressInfo:
+      type: object
+      required:
+      - ipAddresses
+      - macAddress
+      properties:
+        macAddress:
+          type: string
+          format: MAC
+        ipAddresses:
+           type: array
+           items:
+              $ref: '#/components/schemas/IpOverEthernetAddressInfo_ipAddresses'
+#
+    IpOverEthernetAddressInfo_ipAddresses:
+      type: object
+      required:
+      - type
+      properties:
+        macAddress:
+          type: string
+          enum:
+          - IPV4
+          - IPV6
+        addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/IpAddress'
+#
+    IpAddress:
+      type: string
+      format: IP
 #
     NsInstanceIdCreated:
       type: object
@@ -509,6 +603,8 @@ components:
             - NOT_INSTANTIATED
         vnfInstance:
           type: array
+          items:
+            $ref: '#/components/schemas/vnfInstance'
       required:
         - id
         - nsInstanceName
