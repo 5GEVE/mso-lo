@@ -568,7 +568,7 @@ components:
       required:
       - type
       properties:
-        macAddress:
+        type:
           type: string
           enum:
           - IPV4
