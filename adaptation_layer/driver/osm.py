@@ -382,8 +382,8 @@ class OSM(Driver):
         for osm_vnf in osm_vnfs:
             vnf_instance = {
                 "id": osm_vnf["id"],
-                "vnfdId": osm_vnf["vnfd-id"],
-                "vnfProductName": osm_vnf["vnfd-ref"],
+                "vnfdId": osm_vnf["vnfd-ref"],
+                "vnfProductName": "",
                 "vimId": osm_vnf["vim-account-id"],
                 # same as the NS
                 "instantiationState": osm_ns['_admin']['nsState'],
