@@ -2,7 +2,7 @@
 swagger: "2.0"
 info:
   description: 5G-EVE Adaptation Layer API spec.
-  version: "3.3"
+  version: "3.4"
   title: 5G-EVE Adaptation Layer API
   contact: {}
 host: example.com
