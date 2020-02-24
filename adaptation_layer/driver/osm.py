@@ -16,6 +16,7 @@ import copy
 import os
 import re
 from datetime import datetime
+from functools import wraps
 from typing import Dict, Tuple, List
 from urllib.parse import urlencode
 
@@ -34,6 +35,27 @@ TESTING = os.environ.get("TESTING", False)
 PRISM_ALIAS = os.environ.get("PRISM_ALIAS", "prism-osm")
 
 
+def _authenticate(func):
+    @wraps(func)
+    def wrapper(self, *args, **kwargs):
+        if TESTING:
+            pass
+        elif not self._token or datetime.fromtimestamp(
+                self._token["expires"]) > datetime.utcnow():
+            auth_payload = {'username': self._user,
+                            'password': self._password,
+                            'project_id': self._project}
+            token_url = "{0}/{1}".format(self._base_path,
+                                         self._token_endpoint)
+            self._token, headers = self._exec_post(token_url,
+                                                   json=auth_payload)
+            self._headers["Authorization"] = 'Bearer {}'.format(
+                self._token['id'])
+        return func(self, *args, **kwargs)
+
+    return wrapper
+
+
 class OSM(Driver):
 
     def __init__(self, nfvo_cred):
@@ -47,14 +69,13 @@ class OSM(Driver):
         self._project = nfvo_cred["project"]
         self._headers = {"Content-Type": "application/json",
                          "Accept": "application/json"}
-        if TESTING is False:
-            self._base_path = 'https://{0}:{1}/osm'.format(
-                self._host, self._so_port)
-            token, headers = self._authenticate()
-            self._headers['Authorization'] = 'Bearer {}'.format(token['id'])
+        self._token = None
+        if not TESTING:
+            self._base_path = 'https://{0}:{1}/osm'.format(self._host,
+                                                           self._so_port)
         else:
-            self._base_path = 'http://{0}:{1}/osm'.format(
-                PRISM_ALIAS, self._so_port)
+            self._base_path = 'http://{0}:{1}/osm'.format(PRISM_ALIAS,
+                                                          self._so_port)
 
     def _exec_get(self, url=None, params=None, headers=None):
         try:
@@ -149,18 +170,13 @@ class OSM(Driver):
                 error = resp.text
             raise ServerError(error)
 
-    def _authenticate(self):
-        auth_payload = {'username': self._user,
-                        'password': self._password,
-                        'project_id': self._project}
-        token_url = "{0}/{1}".format(self._base_path, self._token_endpoint)
-        return self._exec_post(token_url, json=auth_payload)
-
+    @_authenticate
     def _get_vnf_list(self, args=None):
         _url = "{0}/nslcm/v1/vnf_instances".format(self._base_path)
         _url = self._build_url_query(_url, args)
         return self._exec_get(_url, headers=self._headers)
 
+    @_authenticate
     def _get_vnf(self, vnfId: str, args=None):
         _url = "{0}/nslcm/v1/vnf_instances/{1}".format(self._base_path, vnfId)
         _url = self._build_url_query(_url, args)
@@ -169,11 +185,13 @@ class OSM(Driver):
         except ResourceNotFound:
             raise VnfNotFound(vnf_id=vnfId)
 
+    @_authenticate
     def _get_vim_list(self):
         _url = "{0}/admin/v1/vims".format(self._base_path)
         _url = self._build_url_query(_url, None)
         return self._exec_get(_url, headers=self._headers)
 
+    @_authenticate
     def _get_vnfpkg(self, vnfPkgId, args=None):
         _url = "{0}/vnfpkgm/v1/vnf_packages/{1}".format(
             self._base_path, vnfPkgId)
@@ -183,6 +201,7 @@ class OSM(Driver):
         except ResourceNotFound:
             raise VnfPkgNotFound(vnfpkg_id=vnfPkgId)
 
+    @_authenticate
     def _get_nsdpkg(self, args=None):
         _url = "{0}/nsd/v1/ns_descriptors".format(self._base_path)
         _url = self._build_url_query(_url, args)
@@ -195,6 +214,7 @@ class OSM(Driver):
                     args["args"]["id"]))
         return nsdpkg_list[0], headers
 
+    @_authenticate
     def get_ns_list(self, args=None) -> Tuple[BodyList, Headers]:
         _url = "{0}/nslcm/v1/ns_instances".format(self._base_path)
         _url = self._build_url_query(_url, args)
@@ -205,6 +225,7 @@ class OSM(Driver):
         headers = self._build_headers(osm_headers)
         return sol_ns_list, headers
 
+    @_authenticate
     def create_ns(self, args=None) -> Tuple[Body, Headers]:
         _url = "{0}/nslcm/v1/ns_instances".format(self._base_path)
         _url = self._build_url_query(_url, args)
@@ -221,6 +242,7 @@ class OSM(Driver):
         sol_ns, headerz = self.get_ns(osm_ns["id"])
         return sol_ns, headers
 
+    @_authenticate
     def get_ns(self, nsId: str, args=None, skip_sol=False) \
             -> Tuple[Body, Headers]:
         _url = "{0}/nslcm/v1/ns_instances/{1}".format(self._base_path, nsId)
@@ -235,6 +257,7 @@ class OSM(Driver):
         sol_ns = self._ns_im_converter(osm_ns)
         return sol_ns, headers
 
+    @_authenticate
     def delete_ns(self, nsId: str, args: Dict = None) -> Tuple[None, Headers]:
         _url = "{0}/nslcm/v1/ns_instances/{1}".format(self._base_path, nsId)
         _url = self._build_url_query(_url, args)
@@ -249,6 +272,7 @@ class OSM(Driver):
         headers = self._build_headers(osm_headers)
         return None, headers
 
+    @_authenticate
     def instantiate_ns(self, nsId: str, args=None) -> Tuple[None, Headers]:
         _url = "{0}/nslcm/v1/ns_instances/{1}/instantiate".format(
             self._base_path, nsId)
@@ -263,6 +287,7 @@ class OSM(Driver):
         headers = self._build_headers(osm_headers)
         return None, headers
 
+    @_authenticate
     def terminate_ns(self, nsId: str, args=None) -> Tuple[None, Headers]:
         _url = "{0}/nslcm/v1/ns_instances/{1}/terminate".format(
             self._base_path, nsId)
@@ -275,6 +300,7 @@ class OSM(Driver):
         headers = self._build_headers(osm_headers)
         return None, headers
 
+    @_authenticate
     def scale_ns(self, nsId: str, args=None) -> Tuple[None, Headers]:
         _url = "{0}/nslcm/v1/ns_instances/{1}/scale".format(
             self._base_path, nsId)
@@ -287,6 +313,7 @@ class OSM(Driver):
         headers = self._build_headers(osm_headers)
         return None, headers
 
+    @_authenticate
     def get_op_list(self, args: Dict = None) -> Tuple[BodyList, Headers]:
         nsId = args['args']['nsInstanceId'] \
             if args['args'] and 'nsInstanceId' in args['args'] else None
@@ -303,6 +330,7 @@ class OSM(Driver):
         headers = self._build_headers(osm_headers)
         return sol_op_list, headers
 
+    @_authenticate
     def get_op(self, nsLcmOpId, args: Dict = None) -> Tuple[Body, Headers]:
         _url = "{0}/nslcm/v1/ns_lcm_op_occs/{1}".format(
             self._base_path, nsLcmOpId)
