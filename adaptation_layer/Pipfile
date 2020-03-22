@@ -20,6 +20,7 @@ pytest = "*"
 jsonschema = "*"
 prance = "*"
 openapi-spec-validator = "*"
+robotframework = "*"
 
 [requires]
 python_version = "3.6"
