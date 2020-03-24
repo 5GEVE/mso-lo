@@ -36,6 +36,7 @@ We use Docker Compose for deployment (it will also take care of database initial
 From the repository main directory, run:
 
 ```
+docker pull python:3.6
 docker-compose build
 docker-compose up
 ```
