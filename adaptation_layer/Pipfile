@@ -20,7 +20,13 @@ pytest = "*"
 jsonschema = "*"
 prance = "*"
 openapi-spec-validator = "*"
+
 robotframework = "*"
+RESTinstance = "*"
+robotframework-dependencylibrary = "*"
+robotframework-jsonlibrary = "*"
+robotframework-jsonschemalibrary = "*"
+robotframework-mockserver = "*"
 
 [requires]
 python_version = "3.6"
