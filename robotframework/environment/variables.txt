@@ -1,19 +1,17 @@
 *** Variables ***
-${VNFM_HOST}      localhost    # Hostname of the VNFM
-${VNFM_PORT}      8080    # Listening port of the VNFM
 ${NFVO_HOST}      localhost    # Hostname of the NFVO
-${NFVO_PORT}      8081    # Listening port of the NFVO
-${VNFM_SCHEMA}    https
-${NFVO_SCHEMA}    https
+${NFVO_PORT}      80	    # Listening port of the NFVO
+${NFVO_SCHEMA}    http
 
 ${AUTHORIZATION}    Bearer    QWxhZGRpbjpvcGVuIHNlc2FtZQ==
 ${CONTENT_TYPE}    application/json
 ${CONTENT_TYPE_PATCH}    application/merge-patch+json
 ${ACCEPT_JSON}         application/json
 ${ACCEPT}         application/json
-${apiRoot}        /
-${apiName}        nslcm
-${apiVersion}     v1
+${apiRoot}        /nfvo/
+${nfvoId}         1
+${apiName}
+${apiVersion}
 ${AUTH_USAGE}     1
 ${WRONG_AUTHORIZATION}    Bearer    XXXXXWRONGXXXXX
 ${nsInstanceId}       6fc3539c-e602-4afa-8e13-962fb5a7d81f
