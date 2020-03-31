@@ -1,0 +1,39 @@
+{
+  "type": "array",
+  "items": {
+		"description": "This type represents a subscription related to notifications about NS lifecycle changes.  It shall comply with the provisions defined in Table 6.5.2.4-1.\n",
+		"type": "object",
+		"required": [
+			"id",
+			"callbackUri",
+			"_links"
+		],
+		"properties": {
+			"id": {
+				"description": "Identifier of this subscription resource.\n",
+				"$ref": "SOL005_def.yaml#/definitions/Identifier"
+			},
+			"filter": {
+				"description": "Filter settings for this subscription, to define the subset of all notifications this subscription relates to. A particular notification is sent to the subscriber if the filter matches, or if there is no filter.\n",
+				"$ref": "#/definitions/LifecycleChangeNotificationsFilter"
+			},
+			"callbackUri": {
+				"description": "The URI of the endpoint to send the notification to.\n",
+				"$ref": "SOL005_def.yaml#/definitions/Uri"
+			},
+			"_links": {
+				"description": "Links to resources related to this resource.\n",
+				"type": "object",
+				"required": [
+					"self"
+				],
+				"properties": {
+					"self": {
+						"description": "URI of this resource.\n",
+						"$ref": "SOL005_def.yaml#/definitions/Link"
+					}
+				}
+			}
+		}
+	}
+}

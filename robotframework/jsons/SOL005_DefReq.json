@@ -1,0 +1,2880 @@
+
+{
+	"definitions": {
+		"CreateNsRequest": {
+			"type": "object",
+			"required": [
+				"nsdId",
+				"nsName",
+				"nsDescription"
+			],
+			"properties": {
+				"nsdId": {
+					"description": "Identifier of the NSD that defines the NS instance to be created.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"nsName": {
+					"description": "Human-readable name of the NS instance to be created.\n",
+					"type": "string"
+				},
+				"nsDescription": {
+					"description": "Human-readable description of the NS instance to be created.\n",
+					"type": "string"
+				}
+			}
+		},
+		"NsInstance": {
+			"description": "This type represents a response for Query NS operation.  It shall comply with the provisions defined in Table 6.5.2.10-1.\n",
+			"type": "object",
+			"required": [
+				"id",
+				"nsInstanceName",
+				"nsInstanceDescription",
+				"nsdId",
+				"nsdInfoId",
+				"nsState"
+			],
+			"properties": {
+				"id": {
+					"description": "Identifier of the NS instance.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"nsInstanceName": {
+					"description": "Human readable name of the NS instance.\n",
+					"type": "string"
+				},
+				"nsInstanceDescription": {
+					"description": "Human readable description of the NS instance.\n",
+					"type": "string"
+				},
+				"nsdId": {
+					"description": "Identifier of the NSD on which the NS instance is based.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"nsdInfoId": {
+					"description": "Identifier of the NSD information object on which the NS instance is based. This identifier was allocated by the NFVO.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"flavourId": {
+					"description": "Identifier of the NS deployment flavor applied to the NS instance. This attribute shall be present if the nsState attribute value is INSTANTIATED.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNsd"
+				},
+				"vnfInstance": {
+					"description": "Information on constituent VNF(s) of the NS instance.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/VnfInstance"
+					}
+				},
+				"pnfInfo": {
+					"description": "Information on the PNF(s) that are part of the NS instance.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/PnfInfo"
+					}
+				},
+				"virtualLinkInfo": {
+					"description": "Information on the VL(s) of the NS instance. This attribute shall be present if the nsState attribute value is INSTANTIATED and if the NS instance has specified connectivity.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/NsVirtualLinkInfo"
+					}
+				},
+				"vnffgInfo": {
+					"description": "Information on the VNFFG(s) of the NS instance.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/VnffgInfo"
+					}
+				},
+				"sapInfo": {
+					"description": "Information on the SAP(s) of the NS instance.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/SapInfo"
+					}
+				},
+				"nestedNsInstanceId": {
+					"description": "Identifier of the nested NS(s) of the NS instance.\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/Identifier"
+					}
+				},
+				"nsState": {
+					"description": "The state of the NS instance. Permitted values: NOT_INSTANTIATED: The NS instance is terminated or not instantiated. INSTANTIATED: The NS instance is instantiated.\n",
+					"type": "string",
+					"enum": [
+						"NOT_INSTANTIATED",
+						"INSTANTIATED"
+					]
+				},
+				"nsScaleStatus": {
+					"description": "Status of each NS scaling aspect declared in the applicable DF, how \"big\" the NS instance has been scaled w.r.t. that aspect. This attribute shall be present if the nsState attribute value is INSTANTIATED.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/NsScaleInfo"
+					}
+				},
+				"additionalAffinityOrAntiAffinityRule": {
+					"description": "Information on the additional affinity or anti-affinity rule from NS instantiation operation. Shall not conflict with rules already specified in the NSD.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/AffinityOrAntiAffinityRule"
+					}
+				},
+				"_links": {
+					"type": "object",
+					"description": "Links to resources related to this resource.",
+					"required": [
+						"self"
+					],
+					"properties": {
+						"self": {
+							"description": "URI of this resource.\n",
+							"$ref": "SOL005_def.yaml#/definitions/Link"
+						},
+						"nestedNsInstances": {
+							"description": "Links to resources related to this notification.\n",
+							"type": "array",
+							"items": {
+								"$ref": "SOL005_def.yaml#/definitions/Link"
+							}
+						},
+						"instantiate": {
+							"description": "Link to the \"instantiate\" task resource, if the related operation is possible based on the current status of this NS instance resource (i.e. NS instance in NOT_INSTANTIATED state).\n",
+							"$ref": "SOL005_def.yaml#/definitions/Link"
+						},
+						"terminate": {
+							"description": "Link to the \"terminate\" task resource, if the related operation is possible based on the current status of this NS instance resource (i.e. NS instance is in INSTANTIATED state).\n",
+							"$ref": "SOL005_def.yaml#/definitions/Link"
+						},
+						"update": {
+							"description": "Link to the \"update\" task resource, if the related operation is possible based on the current status of this NS instance resource (i.e. NS instance is in INSTANTIATED state).\n",
+							"$ref": "SOL005_def.yaml#/definitions/Link"
+						},
+						"scale": {
+							"description": "Link to the \"scale\" task resource, if the related operation is supported for this NS instance, and is possible based on the current status of this NS instance resource (i.e. NS instance is in INSTANTIATED state).\n",
+							"$ref": "SOL005_def.yaml#/definitions/Link"
+						},
+						"heal": {
+							"description": "Link to the \"heal\" task resource, if the related operation is supported for this NS instance, and is possible based on the current status of this NS instance resource (i.e. NS instance is in INSTANTIATED state).\n",
+							"$ref": "SOL005_def.yaml#/definitions/Link"
+						}
+					}
+				}
+			}
+		},
+		"VnfInstance": {
+			"description": "This type represents a VNF instance.\n",
+			"type": "object",
+			"required": [
+				"id",
+				"vnfdId",
+				"vnfProvider",
+				"vnfProductName",
+				"vnfSoftwareVersion",
+				"vnfdVersion",
+				"vnfPkgId",
+				"instantiationState"
+			],
+			"properties": {
+				"id": {
+					"description": "Identifier of the VNF instance.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"vnfInstanceName": {
+					"description": "Name of the VNF instance. This attribute can be modified with the PATCH method.\n",
+					"type": "string"
+				},
+				"vnfInstanceDescription": {
+					"description": "Human-readable description of the VNF instance. This attribute can be modified with the PATCH method.\n",
+					"type": "string"
+				},
+				"vnfdId": {
+					"description": "Identifier of the VNFD on which the VNF instance is based.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"vnfProvider": {
+					"description": "Provider of the VNF and the VNFD. The value is copied from the VNFD.\n",
+					"type": "string"
+				},
+				"vnfProductName": {
+					"description": "Name to identify the VNF Product. The value is copied from the VNFD.\n",
+					"type": "string"
+				},
+				"vnfSoftwareVersion": {
+					"description": "Software version of the VNF. The value is copied from the VNFD.\n",
+					"$ref": "#/definitions/Version"
+				},
+				"vnfdVersion": {
+					"description": "Identifies the version of the VNFD. The value is copied from the VNFD.\n",
+					"$ref": "#/definitions/Version"
+				},
+				"vnfPkgId": {
+					"description": "Identifier of information held by the NFVO about the specific VNF package on which the VNF is based. This identifier was allocated by the NFVO. This attribute can be modified with the PATCH method.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"vnfConfigurableProperties": {
+					"description": "Current values of the configurable properties of the VNF instance.  Configurable properties referred in this attribute are declared in the VNFD. ETSI GS NFV-SOL 001 specifies the structure and format of the VNFD based on TOSCA specifications. VNF configurable properties are sometimes also referred to as configuration parameters applicable to a VNF. Some of these are set prior to instantiation and cannot be modified if the VNF is instantiated, some are set prior to instantiation (are part of initial configuration) and can be modified later, and others can be set only after instantiation. The applicability of certain configuration may depend on the VNF and the required operation of the VNF at a certain point in time. These configurable properties include the following standard attributes, which are declared in the VNFD if auto-scaling and/or auto-healing are supported by the VNF:  * isAutoscaleEnabled: If present, the VNF supports auto-scaling. If set to true, auto-scaling is currently enabled. If set to false, auto-scaling is currently disabled.  * isAutohealEnabled: If present, the VNF supports auto-healing. If set to true, auto-healing is currently enabled. If set to false, auto-healing is currently disabled.  This attribute can be modified with the PATCH method.\n",
+					"$ref": "SOL005_def.yaml#/definitions/KeyValuePairs"
+				},
+				"vimId": {
+					"description": "Identifier of a VIM that manages resources for the VNF instance.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"instantiationState": {
+					"description": "The instantiation state of the VNF.\n",
+					"type": "string",
+					"enum": [
+						"NOT_INSTANTIATED",
+						"INSTANTIATED"
+					]
+				},
+				"instantiatedVnfInfo": {
+					"description": "Information specific to an instantiated VNF instance. This attribute shall be present if the instantiateState attribute value is INSTANTIATED.\n",
+					"type": "object",
+					"required": [
+						"flavourId",
+						"vnfState"
+					],
+					"properties": {
+						"flavourId": {
+							"description": "Identifier of the VNF deployment flavor applied to this VNF instance.\n",
+							"$ref": "SOL005_def.yaml#/definitions/IdentifierInVnfd"
+						},
+						"vnfState": {
+							"description": "The state of the VNF instance.\n",
+							"$ref": "#/definitions/VnfOperationalStateType"
+						},
+						"scaleStatus": {
+							"description": "Scale status of the VNF, one entry per aspect. Represents for every scaling aspect how \"big\" the VNF has been scaled w.r.t. that aspect.\n",
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/VnfScaleInfo"
+							}
+						},
+						"extCpInfo": {
+							"description": "Information about the external CPs exposed by the VNF instance.\n",
+							"type": "array",
+							"minItems": 1,
+							"items": {
+								"type": "object",
+								"required": [
+									"id",
+									"cpdId"
+								],
+								"properties": {
+									"id": {
+										"description": "Identifier of the external CP instance and the related information instance.\n",
+										"$ref": "SOL005_def.yaml#/definitions/IdentifierInVnf"
+									},
+									"cpdId": {
+										"description": "Identifier of the external CPD, VnfExtCpd, in the VNFD.\n",
+										"$ref": "SOL005_def.yaml#/definitions/IdentifierInVnfd"
+									},
+									"cpProtocolInfo": {
+										"description": "Network protocol information for this CP.\n",
+										"type": "array",
+										"items": {
+											"$ref": "#/definitions/CpProtocolInfo"
+										}
+									},
+									"extLinkPortId": {
+										"description": "Identifier of the \"extLinkPortInfo\" structure inside the  the \"extVirtualLinkInfo\" structure. Shall be present if the CP is associated to a link port.\n",
+										"$ref": "SOL005_def.yaml#/definitions/Identifier"
+									}
+								}
+							}
+						},
+						"extVirtualLinkInfo": {
+							"description": "Information about the external VLs the VNF instance is connected to.\n",
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/ExtVirtualLinkInfo"
+							}
+						},
+						"extManagedVirtualLinkInfo": {
+							"description": "External virtual links the VNF instance is connected to.\n",
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/ExtManagedVirtualLinkInfo"
+							}
+						},
+						"monitoringParameters": {
+							"description": "Active monitoring parameters.\n",
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/MonitoringParameter"
+							}
+						},
+						"localizationLanguage": {
+							"description": "Information about localization language of the VNF (includes e.g. strings in the VNFD). The localization languages supported by a VNF can be declared in the VNFD, and localization language selection can take place at instantiation time. The value shall comply with the format defined in IETF RFC 5646.\n",
+							"type": "string"
+						},
+						"vnfcResourceInfo": {
+							"description": "Information about the virtualised compute and storage resources used by the VNFCs of the VNF instance.\n",
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/VnfcResourceInfo"
+							}
+						},
+						"virtualLinkResourceInfo": {
+							"description": "Information about the virtualised network resources used by the VLs of the VNF instance.\n",
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/VnfVirtualLinkResourceInfo"
+							}
+						},
+						"virtualStorageResourceInfo": {
+							"description": "Information on the virtualised storage resource(s) used as storage for the VNF instance.\n",
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/VirtualStorageResourceInfo"
+							}
+						}
+					}
+				},
+				"metadata": {
+					"description": "Additional VNF-specific metadata describing the VNF instance. Metadata that are writeable are declared in the VNFD. This attribute can be modified with the PATCH method.\n",
+					"$ref": "SOL005_def.yaml#/definitions/KeyValuePairs"
+				},
+				"extensions": {
+					"description": "VNF-specific attributes that affect the lifecycle management of this VNF instance by the VNFM, or the lifecycle management scripts. Extensions that are writeable are declared in the VNFD. This attribute can be modified with the PATCH method.\n",
+					"$ref": "SOL005_def.yaml#/definitions/KeyValuePairs"
+				}
+			}
+		},
+		"LccnLinks": {
+			"description": "This type represents the links to resources that a notification can contain.\n",
+			"type": "object",
+			"required": [
+				"nsInstance"
+			],
+			"properties": {
+				"nsInstance": {
+					"description": "Link to the resource representing the NS instance to which the notified change applies..\n",
+					"$ref": "SOL005_def.yaml#/definitions/Link"
+				},
+				"subscription": {
+					"description": "Link to the subscription that triggered this notification.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Link"
+				},
+				"lcOpOcc": {
+					"description": "Link to the lifecycle operation occurrence that this notification is related to. Shall be present if there is a related lifecycle operation occurrence\n",
+					"$ref": "SOL005_def.yaml#/definitions/Link"
+				}
+			}
+		},
+		"Version": {
+			"description": "A Version.\n",
+			"type": "string"
+		},
+		"VnfOperationalStateType": {
+			"type": "string",
+			"enum": [
+				"STARTED",
+				"STOPPED"
+			]
+		},
+		"VnfScaleInfo": {
+			"required": [
+				"aspectId",
+				"scaleLevel"
+			],
+			"type": "object",
+			"properties": {
+				"aspectId": {
+					"description": "Identifier of the scaling aspect.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInVnfd"
+				},
+				"scaleLevel": {
+					"description": "Indicates the scale level. The minimum value shall be 0 and the maximum value shall be <= maxScaleLevel as described in the VNFD.\n",
+					"type": "integer"
+				}
+			}
+		},
+		"PnfInfo": {
+			"description": "This type represents the information about a PNF that is part of an NS instance.  It shall comply with the provisions defined in Table 6.5.3.13-1.\n",
+			"type": "object",
+			"required": [
+				"pnfId",
+				"pnfdId",
+				"pnfdInfoId",
+				"pnfProfileId"
+			],
+			"properties": {
+				"pnfId": {
+					"description": "Identifier of the PNF. This identifier is allocated by the OSS/BSS.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"pnfName": {
+					"description": "Name of the PNF.\n",
+					"type": "string"
+				},
+				"pnfdId": {
+					"description": "Identifier of the PNFD on which the PNF is based.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"pnfdInfoId": {
+					"description": "Identifier of the PNFD information onject related to this PNF. This identifier is allocated by the NFVO\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"pnfProfileId": {
+					"description": "Identifier of the related PnfProfile in the NSD on which the PNF is based.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNsd"
+				},
+				"cpInfo": {
+					"description": "Information on the external CP of the PNF.\n",
+					"$ref": "#/definitions/PnfExtCpInfo"
+				}
+			}
+		},
+		"PnfExtCpInfo": {
+			"description": "This type represents the information about the external CP of the PNF.  It shall comply with the provisions defined in Table 6.5.3.17-1.\n",
+			"type": "object",
+			"required": [
+				"cpInstanceId",
+				"cpdId"
+			],
+			"properties": {
+				"cpInstanceId": {
+					"description": "Identifier of the CP in the scope of the PNF.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInPnf"
+				},
+				"cpdId": {
+					"description": "Identifier of (reference to) the Connection Point Descriptor (CPD) for this CP.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNsd"
+				},
+				"cpProtocolData": {
+					"description": "Parameters for configuring the network protocols on the CP.\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/CpProtocolData"
+					}
+				}
+			}
+		},
+		"NsVirtualLinkInfo": {
+			"description": "This type specifies the information about an NS VL instance.  It shall comply with the provisions defined in Table 6.5.3.53-1\n",
+			"type": "object",
+			"required": [
+				"id",
+				"nsVirtualLinkDescId"
+			],
+			"properties": {
+				"id": {
+					"description": "Identifier of the VL instance.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNs"
+				},
+				"nsVirtualLinkDescId": {
+					"description": "Identifier of the VLD in the NSD.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNsd"
+				},
+				"resourceHandle": {
+					"description": "Identifier(s) of the virtualised network resource(s) realizing the VL instance. See note.\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/ResourceHandle"
+					}
+				},
+				"linkPort": {
+					"description": "Link ports of the VL instance. Cardinality of zero indicates that no port has yet been created for the VL instance.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/NsLinkPortInfo"
+					}
+				}
+			}
+		},
+		"VnffgInfo": {
+			"description": "Information on the VNFFG(s) of the NS instance.\n",
+			"type": "object",
+			"required": [
+				"id",
+				"vnffgdId",
+				"vnfInstanceId",
+				"pnfInfoId"
+			],
+			"properties": {
+				"id": {
+					"description": "Identifier of this VNFFG instance.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"vnffgdId": {
+					"description": "Identifier of the VNFFGD in the NSD.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNsd"
+				},
+				"vnfInstanceId": {
+					"description": "Identifier(s) of the constituent VNF instance(s) of this VNFFG instance.\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/Identifier"
+					}
+				},
+				"pnfdInfoId": {
+					"description": "Identifier(s) of the constituent PNF instance(s) of this VNFFG instance.\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/Identifier"
+					}
+				},
+				"nsVirtualLinkInfoId": {
+					"description": "Identifier(s) of the constituent VL instance(s) of this VNFFG instance.\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/IdentifierInNs"
+					}
+				},
+				"nsCpHandle": {
+					"description": "Identifiers of the CP instances attached to the constituent VNFs and PNFs or the SAP instances of the VNFFG. See note.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/NsCpHandle"
+					}
+				}
+			}
+		},
+		"NsCpHandle": {
+			"description": "This type represents an identifier of the CP or SAP instance.  It shall comply with the provisions defined in Table 6.5.3.56-1.\n",
+			"type": "object",
+			"properties": {
+				"vnfInstanceId": {
+					"description": "Identifier of the VNF instance associated to the CP instance. This attribute shall be present if the CP instance is VNF external CP.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"vnfExtCpInstanceId": {
+					"description": "Identifier of the VNF external CP instance in the scope of the VNF instance. This attribute shall be present if the CP instance is VNF external CP. See notes 1 and 4.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInVnf"
+				},
+				"pnfInfoId": {
+					"description": "Identifier of the PNF instance associated to the CP instance. This attribute shall be present if the CP instance is PNF external CP. See notes 2 and 4.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"pnfExtCpInstanceId": {
+					"description": "Identifier of the PNF external CP instance in the scope of the PNF. This attribute shall be present if the CP instance is PNF external CP. See notes 2 and 4.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInPnf"
+				},
+				"nsInstanceId": {
+					"description": "Identifier of the NS instance associated to the SAP instance. This attribute shall be present if the CP instance is NS SAP. See notes 3 and 4.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"nsSapInstanceId": {
+					"description": "Identifier of the SAP instance in the scope of the NS instance. This attribute shall be present if the CP instance is NS SAP. See notes 3 and 4.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNs"
+				}
+			}
+		},
+		"SapInfo": {
+			"description": "This type represents an SAP instance. It shall comply with the provisions defined in Table 6.5.3.67-1.\n",
+			"type": "object",
+			"required": [
+				"id",
+				"sapdId",
+				"sapName",
+				"sapProtocolInfo"
+			],
+			"properties": {
+				"id": {
+					"description": "Identifier of the SAP instance.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNs"
+				},
+				"sapdId": {
+					"description": "Identifier of the SAPD in the NSD.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNsd"
+				},
+				"sapName": {
+					"description": "Human readable name for the SAP instance.\n",
+					"type": "string"
+				},
+				"description": {
+					"description": "Human readable description for the SAP instance.\n",
+					"type": "string"
+				},
+				"sapProtocolInfo": {
+					"description": "Network protocol information for this SAP.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/CpProtocolInfo"
+					}
+				}
+			}
+		},
+		"CpProtocolInfo": {
+			"description": "This type describes the protocol layer(s) that a CP or SAP uses together with protocol-related information, like addresses. It shall comply with the provisions defined in Table 6.5.3.58-1.\n",
+			"type": "object",
+			"required": [
+				"layerProtocol",
+				"ipOverEthernet"
+			],
+			"properties": {
+				"layerProtocol": {
+					"description": "The identifier of layer(s) and protocol(s) associated to the network address information. Permitted values: IP_OVER_ETHERNET See note.\n",
+					"type": "string",
+					"enum": [
+						"IP_OVER_ETHERNET"
+					]
+				},
+				"ipOverEthernet": {
+					"description": "IP addresses over Ethernet to assign to the CP or SAP instance. Shall be present if layerProtocol is equal to \" IP_OVER_ETHERNET\", and shall be absent otherwise.\n",
+					"$ref": "#/definitions/IpOverEthernetAddressInfo"
+				}
+			}
+		},
+		"IpOverEthernetAddressInfo": {
+			"description": "This type represents information about a network address that has been assigned.  It shall comply with the provisions defined in Table 6.5.3.18-1.\n",
+			"type": "object",
+			"required": [
+				"macAddress",
+				"ipAddresses",
+				"subnetId",
+				"addresses",
+				"addressRange"
+			],
+			"properties": {
+				"macAddress": {
+					"description": "Assigned MAC address.\n",
+					"$ref": "SOL005_def.yaml#/definitions/MacAddress"
+				},
+				"ipAddresses": {
+					"description": "Addresses assigned to the CP instance. Each entry represents IP addresses assigned by fixed or dynamic IP address assignment per subnet.\n",
+					"type": "array",
+					"items": {
+						"type": "object",
+						"required": [
+							"type"
+						],
+						"properties": {
+							"type": {
+								"description": "The type of the IP addresses. Permitted values: IPV4, IPV6.\n",
+								"type": "string",
+								"enum": [
+									"IPV4",
+									"IPV6"
+								]
+							},
+							"addresses": {
+								"description": "Fixed addresses assigned (from the subnet defined by \"subnetId\" if provided).\n",
+								"type": "array",
+								"items": {
+									"$ref": "SOL005_def.yaml#/definitions/IpAddress"
+								}
+							},
+							"isDynamic": {
+								"description": "Indicates whether this set of addresses was assigned dynamically (true) or based on address information provided as input from the API consumer (false). Shall be present if \"addresses\" is present and shall be absent otherwise.\n",
+								"type": "boolean"
+							},
+							"addressRange": {
+								"description": "An IP address range used, e.g., in case of egress connections. Exactly one of \"addresses\" or \"addressRange\" shall be present.\n",
+								"type": "object",
+								"required": [
+									"minAddress",
+									"maxAddress"
+								],
+								"properties": {
+									"minAddress": {
+										"description": "Lowest IP address belonging to the range.\n",
+										"$ref": "SOL005_def.yaml#/definitions/IpAddress"
+									},
+									"maxAddress": {
+										"description": "Highest IP address belonging to the range\n",
+										"$ref": "SOL005_def.yaml#/definitions/IpAddress"
+									}
+								}
+							},
+							"subnetId": {
+								"description": "Subnet defined by the identifier of the subnet resource in the VIM. In case this attribute is present, IP addresses are bound to that subnet.\n",
+								"$ref": "SOL005_def.yaml#/definitions/IdentifierInVim"
+							}
+						}
+					}
+				},
+				"type": {
+					"description": "The type of the IP addresses\n",
+					"type": "string",
+					"enum": [
+						"PV4",
+						"PV6"
+					]
+				},
+				"addresses": {
+					"description": "Fixed addresses assigned (from the subnet defined by \"subnetId\" if provided). See note.\n",
+					"type": "array",
+					"items": null,
+					"$ref": "SOL005_def.yaml#/definitions/IpAddress"
+				},
+				"isDynamic": {
+					"description": "Indicates whether this set of addresses was assigned dynamically (true) or based on address information provided as input from the API consumer (false). Shall be present if \"addresses\" is present and shall be absent otherwise.\n",
+					"type": "boolean"
+				},
+				"addressRange": {
+					"description": "An IP address range used, e.g. in case of egress connections. See note.\n",
+					"type": "object",
+					"required": [
+						"minAddress",
+						"maxAddress"
+					],
+					"properties": {
+						"minAddress": {
+							"description": "Lowest IP address belonging to the range.\n",
+							"$ref": "SOL005_def.yaml#/definitions/IpAddress"
+						},
+						"maxAddress": {
+							"description": "Highest IP address belonging to the range\n",
+							"$ref": "SOL005_def.yaml#/definitions/IpAddress"
+						}
+					}
+				},
+				"minAddress": {
+					"description": "Lowest IP address belonging to the range\n",
+					"$ref": "SOL005_def.yaml#/definitions/IpAddress"
+				},
+				"maxAddress": {
+					"description": "Highest IP address belonging to the range.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IpAddress"
+				},
+				"subnetId": {
+					"description": "Subnet defined by the identifier of the subnet resource in the VIM. In case this attribute is present, IP addresses are bound to that subnet.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInVim"
+				}
+			}
+		},
+		"ExtVirtualLinkInfo": {
+			"type": "object",
+			"required": [
+				"id",
+				"resourceHandle"
+			],
+			"properties": {
+				"id": {
+					"description": "Identifier of the external VL and the related external VL information instance. The identifier is assigned by the NFV-MANO entity that manages this VL instance.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"resourceHandle": {
+					"description": "Reference to the resource realizing this VL.\n",
+					"$ref": "SOL005_def.yaml#/definitions/ResourceHandle"
+				},
+				"extLinkPorts": {
+					"description": "Link ports of this VL.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/ExtLinkPortInfo"
+					}
+				}
+			}
+		},
+		"ExtLinkPortInfo": {
+			"description": "This type represents information about a link port of an external VL, i.e. a port providing connectivity for the VNF to an NS VL.\n",
+			"type": "object",
+			"required": [
+				"id",
+				"resourceHandle"
+			],
+			"properties": {
+				"id": {
+					"description": "Identifier of this link port as provided by the entity that has created the link port.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"resourceHandle": {
+					"description": "Reference to the virtualised resource realizing this link port.\n",
+					"$ref": "SOL005_def.yaml#/definitions/ResourceHandle"
+				},
+				"cpInstanceId": {
+					"description": "Identifier of the external CP of the VNF connected to this link port. There shall be at most one link port associated with any external connection point instance. The value refers to an \"extCpInfo\" item in the VnfInstance.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInVnf"
+				}
+			}
+		},
+		"ExtManagedVirtualLinkInfo": {
+			"type": "object",
+			"required": [
+				"id",
+				"vnfVirtualLinkDescId"
+			],
+			"properties": {
+				"id": {
+					"description": "Identifier of the externally-managed internal VL and the related externally-managed VL information instance. The identifier is assigned by the NFV-MANO entity that manages this VL instance.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"vnfVirtualLinkDescId": {
+					"description": "Identifier of the VNF Virtual Link Descriptor (VLD) in the VNFD.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInVnfd"
+				},
+				"networkResource": {
+					"description": "Reference to the VirtualNetwork resource.\n",
+					"$ref": "SOL005_def.yaml#/definitions/ResourceHandle"
+				},
+				"vnfLinkPorts": {
+					"description": "Link ports of this VL.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/VnfLinkPortInfo"
+					}
+				}
+			}
+		},
+		"VnfLinkPortInfo": {
+			"type": "object",
+			"required": [
+				"id",
+				"resourceHandle"
+			],
+			"properties": {
+				"id": {
+					"description": "Identifier of this link port as provided by the entity that has created the link port.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInVnf"
+				},
+				"resourceHandle": {
+					"description": "Reference to the virtualised network resource realizing this link port.\n",
+					"$ref": "SOL005_def.yaml#/definitions/ResourceHandle"
+				},
+				"cpInstanceId": {
+					"description": "When the link port is used for external connectivity by the VNF, this attribute represents the identifier of the external CP of the VNF to be connected to this link port. When the link port is used for internal connectivity in the VNF, this attribute represents the VNFC CP to be connected to this link port. Shall be present when the link port is used for external connectivity by the VNF. may be present if used to reference a VNFC CP instance. There shall be at most one link port associated with any external connection point instance or internal connection point (i.e. VNFC CP) instance. The value refers to an \"extCpInfo\" item in the VnfInstance or a \"vnfcCpInfo\" item of a \"vnfcResouceInfo\" item in the VnfInstance.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInVnf"
+				}
+			}
+		},
+		"MonitoringParameter": {
+			"type": "object",
+			"required": [
+				"id",
+				"value",
+				"timeStamp"
+			],
+			"properties": {
+				"id": {
+					"description": "Identifier of the monitoring parameter defined in the VNFD.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInVnfd"
+				},
+				"name": {
+					"description": "Human readable name of the monitoring parameter, as defined in the VNFD.\n",
+					"type": "string"
+				},
+				"value": {
+					"description": "Value of the monitoring parameter known to the VNFM (e.g. obtained for auto-scaling purposes). The type of the \"value\" attribute (i.e. scalar, structure (Object in JSON), or array (of scalars, arrays or structures/Objects)) is assumed to be defined in an external measurement specification.\n",
+					"type": "object"
+				},
+				"timeStamp": {
+					"description": "Represents the point in time when the measurement has been performed, as known to the VNFM. Should be formatted according to ETF RFC 3339.\n",
+					"type": "string"
+				}
+			}
+		},
+		"VnfcResourceInfo": {
+			"description": "This type represents the information on virtualised compute and storage resources used by a VNFC in a VNF instance.\n",
+			"type": "object",
+			"required": [
+				"id",
+				"vduId",
+				"computeResource"
+			],
+			"properties": {
+				"id": {
+					"description": "Identifier of this VnfcResourceInfo instance.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInVnf"
+				},
+				"vduId": {
+					"description": "Reference to the applicable VDU in the VNFD.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInVnfd"
+				},
+				"computeResource": {
+					"description": "Reference to the VirtualCompute resource.\n",
+					"$ref": "SOL005_def.yaml#/definitions/ResourceHandle"
+				},
+				"storageResourceIds": {
+					"description": "References to the VirtualStorage resources. The value refers to a VirtualStorageResourceInfo item in the VnfInstance.\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/Identifier"
+					}
+				},
+				"reservationId": {
+					"description": "The reservation identifier applicable to the resource. It shall be present when an applicable reservation exists.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"vnfcCpInfo": {
+					"description": "CPs of the VNFC instance. Shall be present when that particular CP of the VNFC instance is associated to an external CP of the VNF instance. May be present otherwise.\n",
+					"type": "array",
+					"items": {
+						"type": "object",
+						"required": [
+							"id",
+							"cpdId"
+						],
+						"properties": {
+							"id": {
+								"description": "Identifier of this VNFC CP instance and the associated array entry.\n",
+								"$ref": "SOL005_def.yaml#/definitions/IdentifierInVnf"
+							},
+							"cpdId": {
+								"description": "Identifier of the VDU CPD, cpdId, in the VNFD.\n",
+								"$ref": "SOL005_def.yaml#/definitions/IdentifierInVnfd"
+							},
+							"vnfExtCpId": {
+								"description": "When the VNFC CP is exposed as external CP of the VNF, the identifier of this external VNF CP.\n",
+								"$ref": "SOL005_def.yaml#/definitions/IdentifierInVnf"
+							},
+							"cpProtocolInfo": {
+								"description": "Network protocol information for this CP.\n",
+								"type": "array",
+								"items": {
+									"$ref": "#/definitions/CpProtocolInfo"
+								}
+							},
+							"vnfLinkPortId": {
+								"description": "Identifier of the \"vnfLinkPorts\" structure in the \"vnfVirtualLinkResourceInfo\" structure. Shall be present if the CP is associated to a link port.\n",
+								"$ref": "SOL005_def.yaml#/definitions/IdentifierInVnf"
+							}
+						}
+					}
+				},
+				"metadata": {
+					"description": "Metadata about this resource.\n",
+					"$ref": "SOL005_def.yaml#/definitions/KeyValuePairs"
+				}
+			}
+		},
+		"VnfVirtualLinkResourceInfo": {
+			"description": "This type represents the information that allows addressing a virtualised resource that is used by an internal VL instance in a VNF instance.\n",
+			"type": "object",
+			"required": [
+				"id",
+				"vnfVirtualLinkDescId",
+				"networkResource"
+			],
+			"properties": {
+				"id": {
+					"description": "Identifier of this VnfVirtualLinkResourceInfo instance.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInVnf"
+				},
+				"vnfVirtualLinkDescId": {
+					"description": "Identifier of the VNF Virtual Link Descriptor (VLD) in the VNFD.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInVnfd"
+				},
+				"networkResource": {
+					"description": "Reference to the VirtualNetwork resource.\n",
+					"$ref": "SOL005_def.yaml#/definitions/ResourceHandle"
+				},
+				"reservationId": {
+					"description": "The reservation identifier applicable to the resource. It shall be present when an applicable reservation exists.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"vnfLinkPorts": {
+					"description": "Links ports of this VL. Shall be present when the linkPort is used for external connectivity by the VNF (refer to VnfLinkPortInfo). May be present otherwise.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/VnfLinkPortInfo"
+					}
+				},
+				"metadata": {
+					"description": "Metadata about this resource.\n",
+					"$ref": "SOL005_def.yaml#/definitions/KeyValuePairs"
+				}
+			}
+		},
+		"VirtualStorageResourceInfo": {
+			"description": "This type represents the information that allows addressing a virtualised resource that is used by a VNF instance.\n",
+			"type": "object",
+			"required": [
+				"id",
+				"virtualStorageDescId",
+				"storageResource"
+			],
+			"properties": {
+				"id": {
+					"description": "Identifier of this VirtualStorageResourceInfo instance.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInVnf"
+				},
+				"virtualStorageDescId": {
+					"description": "Identifier of the VirtualStorageDesc in the VNFD.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInVnfd"
+				},
+				"storageResource": {
+					"description": "Reference to the VirtualStorage resource.\n",
+					"$ref": "SOL005_def.yaml#/definitions/ResourceHandle"
+				},
+				"reservationId": {
+					"description": "The reservation identifier applicable to the resource. It shall be present when an applicable reservation exists.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"metadata": {
+					"description": "Metadata about this resource.\n",
+					"$ref": "SOL005_def.yaml#/definitions/KeyValuePairs"
+				}
+			}
+		},
+		"NsLinkPortInfo": {
+			"description": "This type represents information about a link port of a VL instance.  It shall comply with the provisions defined in Table 6.5.3.55-1.\n",
+			"type": "object",
+			"required": [
+				"id",
+				"resourceHandle"
+			],
+			"properties": {
+				"id": {
+					"description": "Identifier of this link port as provided by the entity that has created the link port.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"resourceHandle": {
+					"description": "Identifier of the virtualised network resource realizing this link port.\n",
+					"$ref": "SOL005_def.yaml#/definitions/ResourceHandle"
+				},
+				"nsCpHandle": {
+					"description": "Identifier of the CP/SAP instance to be connected to this link port. The value refers to a vnfExtCpInfo item in the VnfInstance, or a pnfExtCpInfo item in the PnfInfo, or a sapInfo item in the NS instance. There shall be at most one link port associated with any connection point instance.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/NsCpHandle"
+					}
+				}
+			}
+		},
+		"AffinityOrAntiAffinityRule": {
+			"description": "This type describes the additional affinity or anti-affinity rule  applicable between the VNF instances to be instantiated in the NS instantiation operation request or between the VNF instances  to be instantiated in the NS instantiation operation request and the existing VNF instances..\n",
+			"type": "object",
+			"required": [
+				"affinityOrAntiAffiinty",
+				"scope"
+			],
+			"properties": {
+				"vnfdId": {
+					"description": "Reference to a VNFD. When the VNFD which is not used to instantiate VNF, it presents all VNF instances of this type as the subjects of the affinity or anti-affinity rule. The VNF instance which the VNFD presents is not necessary as a part of the NS to be instantiated.\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/Identifier"
+					}
+				},
+				"vnfProfileId": {
+					"description": "Reference to a vnfProfile defined in the NSD. At least one VnfProfile which is used to instantiate VNF for the NS to be instantiated as the subject of the affinity or anti-affinity rule shall be present. When the VnfProfile which is not used to instantiate VNF, it presents all VNF instances of this type as the subjects of the affinity or anti-affinity rule. The VNF instance which the VnfProfile presents is not necessary as a part of the NS to be instantiated.\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/IdentifierInNsd"
+					}
+				},
+				"vnfInstanceId": {
+					"description": "Reference to the existing VNF instance as the subject of the affinity or anti-affinity rule. The existing VNF instance is not necessary as a part of the NS to be instantiated.\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/Identifier"
+					}
+				},
+				"affinityOrAntiAffiinty": {
+					"description": "The type of the constraint. Permitted values: AFFINITY ANTI_AFFINITY.\n",
+					"type": "string",
+					"enum": [
+						"AFFINITY",
+						"ANTI_AFFINITY"
+					]
+				},
+				"scope": {
+					"description": "Specifies the scope of the rule where the placement constraint applies. Permitted values: NFVI_POP ZONE ZONE_GROUP NFVI_NODE.\n",
+					"type": "string",
+					"enum": [
+						"NFVI_POP",
+						"ZONE",
+						"ZONE_GROUP",
+						"NFVI_NODE"
+					]
+				}
+			}
+		},
+		"InstantiateNsRequest": {
+			"type": "object",
+			"required": [
+				"nsFlavourId"
+			],
+			"properties": {
+				"nsFlavourId": {
+					"description": "Identifier of the NS deployment flavor to be instantiated.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNsd"
+				},
+				"sapData": {
+					"description": "Create data concerning the SAPs of this NS.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/SapData"
+					}
+				},
+				"addpnfData": {
+					"description": "Information on the PNF(s) that are part of this NS.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/AddPnfData"
+					}
+				},
+				"vnfInstanceData": {
+					"description": "Specify an existing VNF instance to be used in the NS. If needed, the VNF Profile to be used for this VNF instance is also provided.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/VnfInstanceData"
+					}
+				},
+				"nestedNsInstanceId": {
+					"description": "Specify an existing NS instance to be used as a nested NS within the NS.\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/Identifier"
+					}
+				},
+				"localizationLanguage": {
+					"description": "Defines the location constraints for the VNF to be instantiated as part of the NS instantiation. An example can be a constraint for the VNF to be in a specific geographic location..\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/VnfLocationConstraint"
+					}
+				},
+				"additionalParamsForNs": {
+					"description": "Allows the OSS/BSS to provide additional parameter(s) at the NS level (as opposed to the VNF level, which is covered in additionalParamsForVnf)..\n",
+					"$ref": "SOL005_def.yaml#/definitions/KeyValuePairs"
+				},
+				"additionalParamsForVnf": {
+					"description": "Allows the OSS/BSS to provide additional parameter(s) per VNF instance (as opposed to the NS level, which is covered in additionalParamsForNs). This is for VNFs that are to be created by the NFVO as part of the NS instantiation and not for existing VNF that are referenced for reuse..\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/ParamsForVnf"
+					}
+				},
+				"startTime": {
+					"description": "Timestamp indicating the earliest time to instantiate the NS.  Cardinality \"0\" indicates the NS instantiation takes place immediately.\n",
+					"$ref": "SOL005_def.yaml#/definitions/DateTime"
+				},
+				"nsInstantiationLevelId": {
+					"description": "Identifies one of the NS instantiation levels declared in the DF applicable to this NS instance. If not present, the default NS instantiation level as declared in the NSD shall be used.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNsd"
+				},
+				"additionalAffinityOrAntiAffiniityRule": {
+					"description": "Specifies additional affinity or anti-affinity constraint for the VNF instances to be instantiated as part of the NS instantiation. Shall not conflict with rules already specified in the NSD.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/AffinityOrAntiAffinityRule"
+					}
+				}
+			}
+		},
+		"ParamsForVnf": {
+			"description": "This type defines the additional parameters for the VNF instance  to be created associated with an NS instance.  It shall comply with the provisions defined in Table 6.5.3.22-1.\n",
+			"type": "object",
+			"required": [
+				"vnfProfileId"
+			],
+			"properties": {
+				"vnfProfileId": {
+					"description": "Identifier of (reference to) a vnfProfile to which the additional parameters apply.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNsd"
+				},
+				"additionalParams": {
+					"description": "Additional parameters that are applied for the VNF instance to be created.\n",
+					"$ref": "SOL005_def.yaml#/definitions/KeyValuePairs"
+				}
+			}
+		},
+		"LocationConstraints": {
+			"description": "This type represents location constraints for a VNF to be instantiated.  The location constraints shall be presented as a country code, optionally followed by a civic address based on  the format defined by IETF RFC 4776 [13].\n",
+			"type": "object",
+			"required": [
+				"countryCode"
+			],
+			"properties": {
+				"countryCode": {
+					"description": "The two-letter ISO 3166 [29] country code in capital letters.\n",
+					"type": "string"
+				},
+				"civicAddressElement": {
+					"description": "Zero or more elements comprising the civic address.\n",
+					"type": "array",
+					"items": {
+						"type": "object",
+						"required": [
+							"caType",
+							"caValue"
+						],
+						"properties": {
+							"caType": {
+								"description": "Describe the content type of caValue. The value of caType shall comply with Section 3.4 of IETF RFC 4776 [13].\n",
+								"type": "integer"
+							},
+							"caValue": {
+								"description": "Content of civic address element corresponding to the caType. The format caValue shall comply with Section 3.4 of IETF RFC 4776 [13].\n",
+								"type": "string"
+							}
+						}
+					}
+				}
+			}
+		},
+		"VnfLocationConstraint": {
+			"description": "This type represents the association of location constraints to a VNF instance  to be created according to a specific VNF profile.  It shall comply with the provisions defined in Table 6.5.3.20-1.\n",
+			"type": "object",
+			"required": [
+				"vnfProfileId"
+			],
+			"properties": {
+				"vnfProfileId": {
+					"description": "Identifier of (reference to) a vnfProfile to which the additional parameters apply.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNsd"
+				},
+				"locationConstraints": {
+					"description": "Defines the location constraints for the VNF instance to be created based on the VNF profile.\n",
+					"$ref": "#/definitions/LocationConstraints"
+				}
+			}
+		},
+		"VnfInstanceData": {
+			"description": "This type specifies an existing VNF instance to be used in the NS instance and  if needed, the VNF Profile to use for this VNF instance.  It shall comply with the provisions defined in Table 6.5.3.19-1.\n",
+			"type": "object",
+			"required": [
+				"vnfInstanceId",
+				"vnfProfileId"
+			],
+			"properties": {
+				"vnfInstanceId": {
+					"description": "Identifier of the existing VNF instance to be used in the NS.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"vnfProfileId": {
+					"description": "Identifier of (Reference to) a vnfProfile defined in the NSD which the existing VNF instance shall be matched with. If not present, the NFVO will select the VnfProfile matching the information in the VNF instance.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNsd"
+				}
+			}
+		},
+		"SapData": {
+			"description": "This type represents the information related to a SAP of a NS.  It shall comply with the provisions defined in Table 6.5.3.10-1.\n",
+			"type": "object",
+			"required": [
+				"sapdId",
+				"sapName",
+				"description"
+			],
+			"properties": {
+				"sapdId": {
+					"description": "Reference to the SAPD for this SAP.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNsd"
+				},
+				"sapName": {
+					"description": "Human readable name for the SAP.\n",
+					"type": "string"
+				},
+				"description": {
+					"description": "Human readable description for the SAP.\n",
+					"type": "string"
+				},
+				"sapProtocolData": {
+					"description": "Parameters for configuring the network protocols on the SAP.\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/CpProtocolData"
+					}
+				}
+			}
+		},
+		"ScaleNsRequest": {
+			"description": "This type represents a request for the scale NS operation.\n",
+			"type": "object",
+			"required": [
+				"scaleType"
+			],
+			"properties": {
+				"scaleType": {
+					"description": "Indicates the type of scaling to be performed. Possible values: - SCALE_NS - SCALE_VNF\n",
+					"type": "string",
+					"enum": [
+						"SCALE_NS",
+						"SCALE_VNF"
+					]
+				},
+				"scaleNsData": {
+					"description": "The necessary information to scale the referenced NS instance. It shall be present when scaleType = SCALE_NS.\n",
+					"$ref": "#/definitions/ScaleNsData"
+				},
+				"scaleVnfData": {
+					"description": "The necessary information to scale the referenced NS instance. It shall be present when scaleType = SCALE_VNF.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/ScaleVnfData"
+					}
+				},
+				"scaleTime": {
+					"description": "Timestamp indicating the scale time of the NS, i.e. the NS will be scaled at this timestamp. Cardinality \"0\" indicates the NS scaling takes place immediately\".\n",
+					"$ref": "SOL005_def.yaml#/definitions/DateTime"
+				}
+			}
+		},
+		"UpdateNsRequest": {
+			"description": "This operation supports the update of a NS instance,  It shall comply with the provisions defined in Table 6.5.2.12-1.\n",
+			"type": "object",
+			"required": [
+				"updateType"
+			],
+			"properties": {
+				"updateType": {
+					"description": "The type of update. It determines also which one of the following parameters is present in the operation. Possible values include: * ADD_VNF: Adding existing VNF instance(s) * REMOVE_VNF: Removing VNF instance(s) * INSTANTIATE_VNF: Instantiating new VNF(s) * CHANGE_VNF_DF: Changing VNF DF * OPERATE_VNF: Changing VNF state, * MODIFY_VNF_INFORMATION: Modifying VNF information and/or the configurable properties of VNF instance(s) * CHANGE_EXTERNAL_VNF_CONNECTIVITY: Changing the external connectivity of VNF instance(s)ADD_SAP: Adding SAP(s) * REMOVE_SAP: Removing SAP(s) * ADD_NESTED_NS: Adding existing NS instance(s) as nested NS(s) * REMOVE_NESTED_NS: Removing existing nested NS instance(s) * ASSOC_NEW_NSD_VERSION: Associating a new NSD version to the NS instance * MOVE_VNF: Moving VNF instance(s) from one origin NS instance to another target NS instance * ADD_VNFFG: Adding VNFFG(s) * REMOVE_VNFFG: Removing VNFFG(s) * UPDATE_VNFFG: Updating VNFFG(s) * CHANGE_NS_DF: Changing NS DF * ADD_PNF: Adding PNF * MODIFY_PNF: Modifying PNF * REMOVE_PNF: Removing PNF\n",
+					"type": "string",
+					"enum": [
+						"ADD_VNF",
+						"REMOVE_VNF",
+						"INSTANTIATE_VNF",
+						"CHANGE_VNF_DF",
+						"OPERATE_VNF",
+						"MODIFY_VNF_INFORMATION",
+						"CHANGE_EXTERNAL_VNF_CONNECTIVITY",
+						"REMOVE_SAP",
+						"ADD_NESTED_NS",
+						"REMOVE_NESTED_NS",
+						"ASSOC_NEW_NSD_VERSION",
+						"MOVE_VNF",
+						"ADD_VNFFG",
+						"REMOVE_VNFFG",
+						"UPDATE_VNFFG",
+						"CHANGE_NS_DF",
+						"ADD_PNF",
+						"MODIFY_PNF",
+						"REMOVE_PNF"
+					]
+				},
+				"addVnfIstance": {
+					"description": "Identifies an existing VNF instance to be added to the NS instance. It shall be present only if updateType = \"ADD_VNF\".\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/VnfInstanceData"
+					}
+				},
+				"removeVnfInstanceId": {
+					"description": "Identifies an existing VNF instance to be removed from the NS instance. It contains the identifier(s) of the VNF instances to be removed. It shall be present only if updateType = \"REMOVE_VNF.\" Note: If a VNF instance is removed from a NS and this NS was the last one for which this VNF instance was a part, the VNF instance is terminated by the NFVO.\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/Identifier"
+					}
+				},
+				"instantiateVnfData": {
+					"description": "Identifies the new VNF to be instantiated. It can be used e.g. for the bottom-up NS creation. It shall be present only if updateType = \"INSTANTIATE_VNF\".\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/InstantiateVnfData"
+					}
+				},
+				"changeVnfFlavourData": {
+					"description": "Identifies the new DF of the VNF instance to be changed to. It shall be present only if updateType = \"CHANGE_VNF_DF\".\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/ChangeVnfFlavourData"
+					}
+				},
+				"operateVnfData": {
+					"description": "Identifies the state of the VNF instance to be changed.  It shall be present only if updateType = \"OPERATE_VNF\".\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/OperateVnfData"
+					}
+				},
+				"modifyVnfInfoData": {
+					"description": "Identifies the VNF information parameters and/or the configurable properties of VNF instance to be modified. It shall be present only if updateType = \"MODIFY_VNF_INFORMATION\".\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/ModifyVnfInfoData"
+					}
+				},
+				"changeExtVnfConnectivityData": {
+					"description": "Specifies the new external connectivity data of the VNF instance to be changed. It shall be present only if updateType = \"CHANGE_EXTERNAL_VNF_CONNECTIVITY\".\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/ChangeExtVnfConnectivityData"
+					}
+				},
+				"addSap": {
+					"description": "Identifies a new SAP to be added to the NS instance. It shall be present only if updateType = \"ADD_SAP.\"\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/SapData"
+					}
+				},
+				"removeSapId": {
+					"description": "The identifier an existing SAP to be removed from the NS instance. It shall be present only if updateType = \"REMOVE_SAP.\"\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/Identifier"
+					}
+				},
+				"addNestedNsId": {
+					"description": "The identifier of an existing nested NS instance to be added to (nested within) the NS instance. It shall be present only if updateType = \"ADD_NESTED_NS\".\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/Identifier"
+					}
+				},
+				"removeNestedNsId": {
+					"description": "The identifier of an existing nested NS instance to be removed from the NS instance. It shall be present only if updateType = \"REMOVE_NESTED_NS\".\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/IdentifierInNs"
+					}
+				},
+				"assocNewNsdVersionData": {
+					"description": "Specify the new NSD to be used for the NS instance. It shall be present only if updateType = ASSOC_NEW_NSD_VERSION\".\n",
+					"$ref": "#/definitions/AssocNewNsdVersionData"
+				},
+				"moveVnfInstanceData": {
+					"description": "Specify existing VNF instance to be moved from one NS instance to another NS instance. It shall be present only if updateType = MOVE_VNF\".\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/MoveVnfInstanceData"
+					}
+				},
+				"addVnffg": {
+					"description": "Specify the new VNFFG to be created to the NS Instance. It shall be present only if updateType = \"ADD_VNFFG\".\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/AddVnffgData"
+					}
+				},
+				"removeVnffgId": {
+					"description": "Identifier of an existing VNFFG to be removed from the NS Instance. It shall be present only if updateType = \"REMOVE_VNFFG\".\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/Identifier"
+					}
+				},
+				"updateVnffg": {
+					"description": "Specify the new VNFFG Information data to be updated for a VNFFG of the NS Instance. It shall be present only if updateType = \"UPDATE_VNFFG\".\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/UpdateVnffgData"
+					}
+				},
+				"changeNsFlavourData": {
+					"description": "Specifies the new DF to be applied to the NS instance. It shall be present only if updateType = \"CHANGE_NS_DF\".\n",
+					"$ref": "#/definitions/ChangeNsFlavourData"
+				},
+				"addPnfData": {
+					"description": "specifies the PNF to be added into the NS instance.  It shall be present only if updateType = \"ADD_PNF\".\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/AddPnfData"
+					}
+				},
+				"modifyPnfData": {
+					"description": "Specifies the PNF to be modified in the NS instance.  It shall be present only if updateType = \"MODIFY_PNF\".\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/ModifyPnfData"
+					}
+				},
+				"removePnfId": {
+					"description": "Identifier of the PNF to be deleted from the NS instance. It shall be present only if updateType = \"REMOVE_PNF\".\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/Identifier"
+					}
+				},
+				"updateTime": {
+					"description": "Timestamp indicating the update time of the NS, i.e. the NS will be updated at this timestamp. Cardinality \"0\" indicates the NS update takes place immediately.\n",
+					"$ref": "SOL005_def.yaml#/definitions/DateTime"
+				}
+			}
+		},
+		"InstantiateVnfData": {
+			"description": "This type represents the information related to a SAP of a NS. The InstantiateVnfData data type specifies the parameters that are needed for VNF instantiation. This information element is used for the bottom-up NS creation when the OSS/BSS explicitly requests VNF instantiation for a given NS. When the NFVO invokes the Instantiate VNF update operation, a set of these parameters are then passed by the NFVO to the VNFM. It shall comply with the provisions defined in Table 6.5.3.24-1.\n",
+			"type": "object",
+			"required": [
+				"vnfdId",
+				"vnfFlavourId"
+			],
+			"properties": {
+				"vnfdId": {
+					"description": "Information sufficient to identify the VNFD which defines the VNF to be instantiated.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"vnfFlavourId": {
+					"description": "Identifier of the VNF deployment flavor to be instantiated.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInVnfd"
+				},
+				"vnfInstantiationLevelId": {
+					"description": "Identifier of the instantiation level of the deployment flavor to be instantiated. If not present, the default instantiation level as declared in the VNFD is instantiated.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInVnfd"
+				},
+				"vnfInstanceName": {
+					"description": "Human-readable name of the VNF instance to be created.\n",
+					"type": "string"
+				},
+				"vnfInstanceDescription": {
+					"description": "Human-readable description of the VNF instance to be created.\n",
+					"type": "string"
+				},
+				"extVirtualLinks": {
+					"description": "Information about external VLs to connect the VNF to.\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/ExtVirtualLinkData"
+					}
+				},
+				"extManagedVirtualLinks": {
+					"description": "Information about internal VLs that are managed by other entities than the VNFM.\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/ExtManagedVirtualLinkData"
+					}
+				},
+				"localizationLanguage": {
+					"description": "Localization language of the VNF to be instantiated. The value shall comply with the format defined in IETF RFC 5646 [16].\n",
+					"type": "string"
+				},
+				"additionalParams": {
+					"description": "Additional input parameters for the instantiation process, specific to the VNF being instantiated.\n",
+					"$ref": "SOL005_def.yaml#/definitions/KeyValuePairs"
+				}
+			}
+		},
+		"ChangeVnfFlavourData": {
+			"description": "The type represents the information that is requested to be changed  deployment flavor for an existing VNF instance.  It shall comply with the provisions defined in Table 6.5.3.25-1.\n",
+			"type": "object",
+			"required": [
+				"vnfInstanceId",
+				"newFlavourId"
+			],
+			"properties": {
+				"vnfInstanceId": {
+					"description": "Identifier of the VNF instance to be modified.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"newFlavourId": {
+					"description": "Identifier of the VNF deployment flavor to be instantiated.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInVnfd"
+				},
+				"instantiationLevelId": {
+					"description": "Identifier of the instantiation level of the deployment flavor to be instantiated. If not present, the default instantiation level as declared in the VNFD is instantiated.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInVnfd"
+				},
+				"extVirtualLinks": {
+					"description": "Information about external VLs to connect the VNF to.\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/ExtVirtualLinkData"
+					}
+				},
+				"extManagedVirtualLinks": {
+					"description": "information about internal VLs that are managed by NFVO.\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/ExtManagedVirtualLinkData"
+					}
+				},
+				"additionalParams": {
+					"description": "Additional input parameters for the flavor change process, specific to the VNF being modified, as declared in the VNFD as part of \"ChangeVnfFlavourOpConfig\".\n",
+					"$ref": "SOL005_def.yaml#/definitions/KeyValuePairs"
+				}
+			}
+		},
+		"OperateVnfData": {
+			"description": "This type represents a VNF instance for which the operational state  needs to be changed and the requested new state. It shall comply with the provisions defined in Table 6.5.3.31-1.\n",
+			"type": "object",
+			"required": [
+				"vnfInstanceId",
+				"changeStateTo"
+			],
+			"properties": {
+				"vnfInstanceId": {
+					"description": "Identifier of the VNF instance.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"changeStateTo": {
+					"description": "The desired operational state (i.e. started or stopped) to change the VNF to.\n",
+					"$ref": "#/definitions/OperationalStates"
+				},
+				"stopType": {
+					"description": "It signals whether forceful or graceful stop is requested.\n",
+					"$ref": "#/definitions/StopType"
+				},
+				"gracefulStopTimeout": {
+					"description": "The time interval (in seconds) to wait for the VNF to be taken out of service during graceful stop, before stopping the VNF.\n",
+					"type": "integer"
+				}
+			}
+		},
+		"OperationalStates": {
+			"description": "STARTED - The VNF instance is up and running. STOPPED - The VNF instance has been shut down.\n",
+			"type": "string",
+			"enum": [
+				"STARTED",
+				"STOPPED"
+			]
+		},
+		"StopType": {
+			"description": "* FORCEFUL: The VNFM will stop the VNF immediately after accepting the  request.\n* GRACEFUL: The VNFM will first arrange to take the VNF out of service  after accepting the request. Once that operation is successful or once\n  the timer value specified in the \"gracefulStopTimeout\" attribute\n  expires, the VNFM will stop the VNF.\n",
+			"type": "string",
+			"enum": [
+				"FORCEFUL",
+				"GRACEFUL"
+			]
+		},
+		"ModifyVnfInfoData": {
+			"description": "This type represents the information that is requested to be modified for a VNF instance. The information to be modified shall comply with the associated NSD. EXAMPLE. The vnfPkgId attribute value for a particular VNF instance can only be updated with a value that matches the identifier value of a VNF package whose vnfdId is present in the associated profile of the NSD.\n",
+			"type": "object",
+			"required": [
+				"vnfInstanceId"
+			],
+			"properties": {
+				"vnfInstanceId": {
+					"description": "Identifier of the VNF instance.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"vnfInstanceName": {
+					"description": "New value of the \"vnfInstanceName\" attribute in \"VnfInstance\", or \"null\" to remove the attribute.\n",
+					"type": "string"
+				},
+				"vnfInstanceDescription": {
+					"description": "New value of the \"vnfInstanceDescription\" attribute in \"VnfInstance\", or \"null\" to remove the attribute.\n",
+					"type": "string"
+				},
+				"vnfPkgId": {
+					"description": "New value of the \"vnfPkgId\" attribute in \"VnfInstance\". The value \"null\" is not permitted\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"vnfConfigurableProperties": {
+					"description": "Modifications to entries in the \"vnfConfigurableProperties\" list, as defined below this Table.\n",
+					"$ref": "SOL005_def.yaml#/definitions/KeyValuePairs"
+				},
+				"Metadata": {
+					"description": "Modifications to entries in the \"metadata\" list, as defined below this Table.\n",
+					"$ref": "SOL005_def.yaml#/definitions/KeyValuePairs"
+				},
+				"Extensions": {
+					"description": "Modifications to entries in the \"extensions\" list, as defined below this Table.\n",
+					"$ref": "SOL005_def.yaml#/definitions/KeyValuePairs"
+				}
+			}
+		},
+		"ChangeExtVnfConnectivityData": {
+			"description": "This type describes the information invoked by the NFVO to change the external VNF connectivity information maintained by the VNFM. The types of changes that this operation supports are: 1) Disconnect the external CPs that are connected to a particular external VL, and connect them to a different external VL. 2) Change the connectivity parameters of the existing external CPs, including changing addresses. NOTE: Depending on the capabilities of the underlying VIM resources, certain changes (e.g. modifying the IP address assignment) might not be supported without deleting the resource and creating another one with the modified configuration. This type shall comply with the provisions defined in Table 6.5.3.33-1.\n",
+			"type": "object",
+			"required": [
+				"vnfInstanceId",
+				"extVirtualLink"
+			],
+			"properties": {
+				"vnfInstanceId": {
+					"description": "Identifier of the VNF instance.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"extVirtualLink": {
+					"description": "Information about external VLs to change (e.g. connect the VNF to).\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/ExtVirtualLinkData"
+					}
+				},
+				"additionalParams": {
+					"description": "Additional parameters passed by the OSS as input to the external connectivity change process, specific to the VNF instance being changed.\n",
+					"$ref": "SOL005_def.yaml#/definitions/KeyValuePairs"
+				}
+			}
+		},
+		"AssocNewNsdVersionData": {
+			"description": "This type specifies a new NSD version that is associated to the NS instance. After issuing the Update NS operation with updateType = \"AssocNewNsdVersion\", the NFVO shall use the referred NSD as a basis for the given NS instance. Different versions of the same NSD have same nsdInvariantId, but different nsdId attributes, therefore if the nsdInvariantId of the NSD version that is to be associated to this NS instance is different from the one used before, the NFVO shall reject the request. Only new versions of the same NSD can be associated to an existing NS instance. This data type shall comply with the provisions defined in Table 6.5.3.34-1.\n",
+			"type": "object",
+			"required": [
+				"newNsdId"
+			],
+			"properties": {
+				"newNsdId": {
+					"description": "Identifier of the new NSD version that is to be associated to the NS instance.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"sync": {
+					"description": "Specify whether the NS instance shall be automatically synchronized to the new NSD by the NFVO (in case of true value) or the NFVO shall not do any action (in case of a false value) and wait for further guidance from OSS/BSS (i.e. waiting for OSS/BSS to issue NS lifecycle management operation to explicitly add/remove VNFs and modify information of VNF instances according to the new NSD). The synchronization to the new NSD means e.g. instantiating/adding those VNFs whose VNFD is referenced by the new NSD version but not referenced by the old one, terminating/removing those VNFs whose VNFD is referenced by the old NSD version but not referenced by the new NSD version, modifying information of VNF instances to the new applicable VNFD provided in the new NSD version. A cardinality of 0 indicates that synchronization shall not be done.\n",
+					"type": "boolean"
+				}
+			}
+		},
+		"MoveVnfInstanceData": {
+			"description": "This type specifies existing VNF instances to be moved from one NS instance (source) to another NS instance (destination). The NS instance defined in the Update NS operation indicates the source NS instance and the destination NS instance is specified in this data type (referred to targetNsInstanceId).  It shall comply with the provisions defined in Table 6.5.3.35-1.\n",
+			"type": "object",
+			"required": [
+				"targetNsInstanceId"
+			],
+			"properties": {
+				"targetNsInstanceId": {
+					"description": "Specify the target NS instance where the VNF instances are moved to.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"vnfInstanceId": {
+					"description": "Specify the VNF instance that is moved.\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/Identifier"
+					}
+				}
+			}
+		},
+		"AddVnffgData": {
+			"description": "This type specifies the parameters used for the creation of a new VNFFG instance.  It shall comply with the provisions defined in Table 6.5.3.36-1.\n",
+			"type": "object",
+			"required": [
+				"vnffgdId",
+				"vnffgName",
+				"description"
+			],
+			"properties": {
+				"targetNsInstanceId": {
+					"description": "Identifier of the VNFFGD used to create this VNFFG instance.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNsd"
+				},
+				"vnffgName": {
+					"description": "Human readable name for the VNFFG.\n",
+					"type": "string"
+				},
+				"description": {
+					"description": "Human readable description for the VNFFG.\n",
+					"type": "string"
+				}
+			}
+		},
+		"UpdateVnffgData": {
+			"description": "This type specifies the parameters used for the update of an existing VNFFG instance.  It shall comply with the provisions defined in Table 6.5.3.37-1.\n",
+			"type": "object",
+			"required": [
+				"vnffgInfoId"
+			],
+			"properties": {
+				"vnffgInfoId": {
+					"description": "Identifier of an existing VNFFG to be updated for the NS Instance.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNs"
+				},
+				"nfp": {
+					"description": "Indicate the desired new NFP(s) for a given VNFFG after the operations of addition/removal of NS components (e.g. VNFs, VLs, etc.) have been completed, or indicate the updated or newly created NFP classification and selection rule which applied to an existing NFP.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/NfpData"
+					}
+				},
+				"nfpInfoId": {
+					"description": "Identifier(s) of the NFP to be deleted from a given VNFFG.\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/IdentifierInNs"
+					}
+				}
+			}
+		},
+		"NfpData": {
+			"description": "This type contains information used to create or modify NFP instance parameters  for the update of an existing VNFFG instance.  It shall comply with the provisions defined in Table 6.5.3.38-1.\n",
+			"type": "object",
+			"properties": {
+				"nfpInfoId": {
+					"description": "Identifier of the NFP to be modified. It shall be present for modified NFPs and shall be absent for the new NFP.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNs"
+				},
+				"nfpName": {
+					"description": "Human readable name for the NFP. It shall be present for the new NFP, and it may be present otherwise.\n",
+					"type": "string"
+				},
+				"description": {
+					"description": "Human readable description for the NFP. It shall be present for the new NFP, and it may be present otherwise.\n",
+					"type": "string"
+				},
+				"nsCpHandle": {
+					"description": "Identifier(s) of the CPs and SAPs which the NFP passes by.  Cardinality can be 0 if only updated or newly created NFP classification and selection rule which applied to an existing NFP is provided.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/NsCpHandle"
+					}
+				},
+				"nfpRule": {
+					"description": "NFP classification and selection rule. See note 1.\n",
+					"$ref": "#/definitions/NfpRule"
+				}
+			}
+		},
+		"NfpRule": {
+			"description": "The NfpRule data type is an expression of the conditions that shall be met  in order for the NFP to be applicable to the packet. The condition acts as a flow classifier and  it is met only if all the values expressed in the condition are matched by those in the packet. It shall comply with the provisions defined in Table 6.5.3.40-1.\n",
+			"type": "object",
+			"properties": {
+				"etherDestinationAddress": {
+					"description": "Indicates a destination Mac address.\n",
+					"$ref": "SOL005_def.yaml#/definitions/MacAddress"
+				},
+				"etherSourceAddress": {
+					"description": "Indicates a source Mac address.\n",
+					"$ref": "SOL005_def.yaml#/definitions/MacAddress"
+				},
+				"etherType": {
+					"description": "Human readable description for the VNFFG.\n",
+					"type": "string",
+					"enum": [
+						"IPV4",
+						"IPV6"
+					]
+				},
+				"vlanTag": {
+					"description": "Indicates a VLAN identifier in an IEEE 802.1Q-2014  tag [6] Multiple tags can be included for QinQ stacking. See note.\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/String"
+					}
+				},
+				"protocol": {
+					"description": "Indicates the L4 protocol, For IPv4 [7] this corresponds to the field called \"Protocol\" to identify the next level protocol. For IPv6 [28] this corresponds to the field is called the \"Next Header\" field. Permitted values: Any keyword defined in the IANA protocol registry [1], e.g.: TCP UDP ICMP\n",
+					"type": "string",
+					"enum": [
+						"TCP",
+						"UDP",
+						"ICMP"
+					]
+				},
+				"dscp": {
+					"description": "For IPv4 [7] a string of \"0\" and \"1\" digits that corresponds to the 6-bit Differentiated Services Code Point (DSCP) field of the IP header. For IPv6 [28] a string of \"0\" and \"1\" digits that corresponds to the 6 differentiated services bits of the traffic class header field\n",
+					"type": "string"
+				},
+				"sourcePortRange": {
+					"description": "Indicates a range of source ports\n",
+					"$ref": "SOL005_def.yaml#/definitions/PortRange"
+				},
+				"destinationPortRange": {
+					"description": "Indicates a range of destination ports.\n",
+					"$ref": "SOL005_def.yaml#/definitions/PortRange"
+				},
+				"sourceIpAddressPrefix": {
+					"description": "Indicates the source IP address range in CIDR format.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IpAddressPrefix"
+				},
+				"destinationIpAddressPrefix": {
+					"description": "Indicates the destination IP address range in CIDR format.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IpAddressPrefix"
+				},
+				"extendedCriteria": {
+					"description": "Indicates values of specific bits in a frame.\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/Mask"
+					}
+				}
+			}
+		},
+		"ChangeNsFlavourData": {
+			"description": "This type specifies an existing NS instance for which the DF needs to be changed.  This specifies the new DF, the instantiationLevel of the new DF that may be used and  the additional parameters as input for the flavour change.  It shall comply with the provisions defined in Table 6.5.3.39-1.\n",
+			"type": "object",
+			"required": [
+				"newNsFlavourId"
+			],
+			"properties": {
+				"newNsFlavourId": {
+					"description": "Identifier of an existing VNFFG to be updated for the NS Instance.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNsd"
+				},
+				"instantiationLevelId": {
+					"description": "Identifier of the instantiation level of the deployment flavour to be instantiated.  If not present, the default instantiation level as declared in the NSD is instantiated.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNsd"
+				}
+			}
+		},
+		"AddPnfData": {
+			"description": "This type specifies an PNF to be added to the NS instance and the PNF Profile  to use for this PNF. It shall comply with the provisions defined in Table 6.5.3.14-1.\n",
+			"type": "object",
+			"required": [
+				"pnfId",
+				"pnfName",
+				"pnfdId",
+				"pnfProfileId"
+			],
+			"properties": {
+				"pnfId": {
+					"description": "Identifier of the PNF. This identifier is allocated by the OSS/BSS.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"pnfName": {
+					"description": "Name of the PNF\n",
+					"type": "string"
+				},
+				"pnfdId": {
+					"description": "Identifier of the PNFD on which the PNF is based.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"pnfProfileId": {
+					"description": "Identifier of related PnfProfile in the NSD on which the PNF is based.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNsd"
+				},
+				"cpData": {
+					"description": "Address assigned for the PNF external CP(s).\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/PnfExtCpData"
+					}
+				}
+			}
+		},
+		"PnfExtCpData": {
+			"description": "This type represents the configuration data on the external CP of the PNF.  It shall comply with the provisions defined in Table 6.5.3.16-1.\n",
+			"type": "object",
+			"required": [
+				"cpProtocolData"
+			],
+			"properties": {
+				"cpInstanceI16": {
+					"description": "Identifier of the CP. Shall be present for existing CP.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInPnf"
+				},
+				"cpdId": {
+					"description": "Identifier of the Connection Point Descriptor (CPD) for this CP. Shall be present for new CP.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNsd"
+				},
+				"cpProtocolData": {
+					"description": "Address assigned for this CP.\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/CpProtocolData"
+					}
+				}
+			}
+		},
+		"ModifyPnfData": {
+			"description": "This type specifies an PNF to be modified in the NS instance.  It shall comply with the provisions defined in Table 6.5.3.15-1.\n",
+			"type": "object",
+			"required": [
+				"pnfId"
+			],
+			"properties": {
+				"pnfId": {
+					"description": "Identifier of the PNF. This identifier is allocated by the OSS/BSS.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"pnfName": {
+					"description": "Name of the PNF.\n",
+					"type": "string"
+				},
+				"cpData": {
+					"description": "Address assigned for the PNF external CP(s).\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/PnfExtCpData"
+					}
+				}
+			}
+		},
+		"AffectedVirtualLink": {
+			"description": "This type provides information about added, deleted, modified and temporary VLs.\n",
+			"type": "object",
+			"required": [
+				"id",
+				"virtualLinkDescId",
+				"changeType",
+				"networkResource"
+			],
+			"properties": {
+				"id": {
+					"description": "Identifier of the virtual link instance, identifying the applicable \"vnfVirtualLinkResourceInfo\" entry in the \"VnfInstance\" data type.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInVnf"
+				},
+				"virtualLinkDescId": {
+					"description": "Identifier of the related VLD in the VNFD.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInVnfd"
+				},
+				"changeType": {
+					"description": "Signals the type of change. Permitted values: * ADDED * REMOVED * MODIFIED * TEMPORARY * LINK_PORT_ADDED * LINK_PORT_REMOVED For a temporary resource, an AffectedVirtualLink structure exists as long as the temporary resource exists.\n",
+					"type": "string",
+					"enum": [
+						"ADDED",
+						"REMOVED",
+						"MODIFIED",
+						"TEMPORARY",
+						"LINK_PORT_ADDED",
+						"LINK_PORT_REMOVED"
+					]
+				},
+				"networkResource": {
+					"description": "Reference to the VirtualNetwork resource. Detailed information is (for new and modified resources) or has been (for removed resources) available from the VIM.\n",
+					"$ref": "SOL005_def.yaml#/definitions/ResourceHandle"
+				},
+				"metadata": {
+					"description": "Metadata about this resource. The content of this attribute shall be a copy of the content of the \"metadata\" attribute of the VnfVirtualLinkResourceInfo structure.\n",
+					"$ref": "SOL005_def.yaml#/definitions/KeyValuePairs"
+				}
+			}
+		},
+		"AffectedVirtualStorage": {
+			"description": "This type provides information about added, deleted, modified and temporary virtual storage resources.\n",
+			"type": "object",
+			"required": [
+				"id",
+				"virtualStorageDescId",
+				"changeType",
+				"storageResource"
+			],
+			"properties": {
+				"id": {
+					"description": "Identifier of the storage instance, identifying the applicable \"virtualStorageResourceInfo\" entry in the \"VnfInstance\" data type.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInVnf"
+				},
+				"virtualStorageDescId": {
+					"description": "Identifier of the related VirtualStorage descriptor in the VNFD.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInVnfd"
+				},
+				"changeType": {
+					"description": "Signals the type of change. Permitted values: * ADDED * REMOVED * MODIFIED * TEMPORARY For a temporary resource, an AffectedVirtualStorage structure exists as long as the temporary resource exists.\n",
+					"type": "string",
+					"enum": [
+						"ADDED",
+						"REMOVED",
+						"MODIFIED",
+						"TEMPORARY"
+					]
+				},
+				"storageResource": {
+					"description": "Reference to the VirtualStorage resource. Detailed information is  (for new and modified resources) or has been (for removed resources) available from the VIM.\n",
+					"$ref": "SOL005_def.yaml#/definitions/ResourceHandle"
+				},
+				"metadata": {
+					"description": "Metadata about this resource. The content of this attribute shall be a copy of the content of the \"metadata\" attribute of the VirtualStorageResourceInfo structure.\n",
+					"$ref": "SOL005_def.yaml#/definitions/KeyValuePairs"
+				}
+			}
+		},
+		"AffectedVnf": {
+			"description": "This type provides information about added, deleted and modified VNFs.  It shall comply with the provisions in Table 6.5.3.2-1.\n",
+			"type": "object",
+			"required": [
+				"vnfInstanceId",
+				"vnfdId",
+				"vnfProfileId"
+			],
+			"properties": {
+				"vnfInstanceId": {
+					"description": "Identifier of the VNF instance.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"vnfdId": {
+					"description": "Identifier of the VNFD of the VNF Instance.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"vnfProfileId": {
+					"description": "Identifier of the VNF profile of the NSD.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNsd"
+				},
+				"vnfName": {
+					"description": "Name of the VNF Instance.\n",
+					"type": "string"
+				},
+				"changeType": {
+					"description": "Signals the type of change Permitted values: - ADD - REMOVE - INSTANTIATE - TERMINATE - SCALE - CHANGE_FLAVOUR - HEAL - OPERATE - MODIFY_INFORMATION - CHANGE_EXTERNAL_VNF_CONNECTIVITY\n",
+					"type": "string",
+					"enum": [
+						"ADD",
+						"REMOVE",
+						"INSTANTIATE",
+						"TERMINATE",
+						"SCALE",
+						"CHANGE_FLAVOUR",
+						"HEAL",
+						"OPERATE",
+						"MODIFY_INFORMATION",
+						"CHANGE_EXTERNAL_VNF_CONNECTIVITY"
+					]
+				},
+				"changeResult": {
+					"description": "Signals the result of change identified by the \"changeType\" attribute. Permitted values: - COMPLETED - ROLLED_BACK - FAILED\n",
+					"type": "string",
+					"enum": [
+						"COMPLETED",
+						"ROLLED_BACK",
+						"FAILED"
+					]
+				},
+				"changedInfo": {
+					"description": "Information about the changed VNF instance information, including VNF configurable properties,if applicable. When the \"changedInfo\" attribute is present,  either the \"changedVnfInfo\" attribute or the \"changedExtConnectivity\" attribute or both shall be present.\n",
+					"type": "object",
+					"required": [
+						"self"
+					],
+					"properties": {
+						"changedVnfInfo": {
+							"description": "Information about the changed VNF instance information, including configurable properties,  if applicable.\n",
+							"$ref": "#/definitions/ModifyVnfInfoData"
+						},
+						"changedExtConnectivity": {
+							"description": "Information about changed external connectivity, if applicable.\n",
+							"$ref": "#/definitions/ExtVirtualLinkInfo"
+						}
+					}
+				}
+			}
+		},
+		"AffectedPnf": {
+			"description": "This type provides information about added, deleted and modified PNFs.  It shall comply with the provisions in Table 6.5.3.3-1.\n",
+			"type": "object",
+			"required": [
+				"pnfId",
+				"pnfdId",
+				"pnfProfileId",
+				"cpInstanceId"
+			],
+			"properties": {
+				"pnfId": {
+					"description": "Identifier of the affected PNF. This identifier is allocated by the OSS/BSS.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"pnfdId": {
+					"description": "Identifier of the PNFD on which the PNF is based.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNsd"
+				},
+				"pnfProfileId": {
+					"description": "Identifier of the VNF profile of the NSD.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNsd"
+				},
+				"pnfName": {
+					"description": "Name of the PNF.\n",
+					"type": "string"
+				},
+				"cpInstanceId": {
+					"description": "Identifier of the CP in the scope of the PNF.\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/IdentifierInPnf"
+					}
+				},
+				"changeType": {
+					"description": "Signals the type of change. Permitted values: - ADD - REMOVE - MODIFY\n",
+					"type": "string",
+					"enum": [
+						"ADD",
+						"REMOVE",
+						"MODIFY"
+					]
+				},
+				"changeResult": {
+					"description": "Signals the result of change identified by the \"changeType\" attribute. Permitted values: - COMPLETED - ROLLED_BACK - FAILED\n",
+					"type": "string",
+					"enum": [
+						"COMPLETED",
+						"ROLLED_BACK",
+						"FAILED"
+					]
+				}
+			}
+		},
+		"AffectedVl": {
+			"description": "This type provides information about added, deleted and modified VLs.  It shall comply with the provisions in Table 6.5.3.4-1.\n",
+			"type": "object",
+			"required": [
+				"nsVirtualLinkInstanceId",
+				"nsVirtualLinkDescId",
+				"vlProfileId"
+			],
+			"properties": {
+				"nsVirtualLinkInstanceId": {
+					"description": "Identifier of the VL Instance.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNs"
+				},
+				"nsVirtualLinkDescId": {
+					"description": "Identifier of the VLD in the NSD for this VL.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNsd"
+				},
+				"vlProfileId": {
+					"description": "Identifier of the VLD in the NSD for this VL.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNsd"
+				},
+				"changeType": {
+					"description": "Signals the type of change. Permitted values: - ADD - DELETE - MODIFY - ADD_LINK_PORT - REMOVE_LINK_PORT\n",
+					"type": "string",
+					"enum": [
+						"ADD",
+						"DELETE",
+						"MODIFY",
+						"ADD_LINK_PORT",
+						"REMOVE_LINK_PORT"
+					]
+				},
+				"changeResult": {
+					"description": "Signals the result of change identified by the \"changeType\" attribute. Permitted values: - COMPLETED - ROLLED_BACK - FAILED\n",
+					"type": "string",
+					"enum": [
+						"COMPLETED",
+						"ROLLED_BACK",
+						"FAILED"
+					]
+				}
+			}
+		},
+		"AffectedVnffg": {
+			"description": "This type provides information about added, deleted and modified VNFFG instances.  It shall comply with the provisions in Table 6.5.3.5-1.\n",
+			"type": "object",
+			"required": [
+				"vnffgInstanceId",
+				"vnffgdId"
+			],
+			"properties": {
+				"vnffgInstanceId": {
+					"description": "Identifier of the VNFFG instance.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNs"
+				},
+				"vnffgdId": {
+					"description": "Identifier of the VNFFGD of the VNFFG instance.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNsd"
+				},
+				"changeType": {
+					"description": "Signals the type of change. Permitted values: - ADD - DELETE - MODIFY\n",
+					"type": "string",
+					"enum": [
+						"ADD",
+						"DELETE",
+						"MODIFY"
+					]
+				},
+				"changeResult": {
+					"description": "Signals the result of change identified by the \"changeType\" attribute. Permitted values: - COMPLETED - ROLLED_BACK - FAILED\n",
+					"type": "string",
+					"enum": [
+						"COMPLETED",
+						"ROLLED_BACK",
+						"FAILED"
+					]
+				}
+			}
+		},
+		"AffectedNs": {
+			"description": "This type provides information about added, deleted and modified nested NSs.  It shall comply with the provisions in Table 6.5.3.6-1.\n",
+			"type": "object",
+			"required": [
+				"nsInstanceId",
+				"nsdId"
+			],
+			"properties": {
+				"nsInstanceId": {
+					"description": "Identifier of the nested NS instance.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"nsdId": {
+					"description": "Identifier of the NSD of the nested NS instance.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"changeType": {
+					"description": "Signals the type of lifecycle change. Permitted values: - ADD - REMOVE - INSTANTIATE - SCALE - UPDATE - HEAL - TERMINATE\n",
+					"type": "string",
+					"enum": [
+						"ADD",
+						"REMOVE",
+						"INSTANTIATE",
+						"SCALE",
+						"UPDATE",
+						"HEAL",
+						"TERMINATE"
+					]
+				},
+				"changeResult": {
+					"description": "Signals the result of change identified by the \"changeType\" attribute. Permitted values: - COMPLETED - ROLLED_BACK - FAILED - PARTIALLY_COMPLETED\n",
+					"type": "string",
+					"enum": [
+						"COMPLETED",
+						"ROLLED_BACK",
+						"FAILED",
+						"PARTIALLY_COMPLETED"
+					]
+				}
+			}
+		},
+		"AffectedSap": {
+			"description": "This type provides information about added, deleted and modified SAP of a NS.  It shall comply with the provisions in Table 6.5.3.7-1.\n",
+			"type": "object",
+			"required": [
+				"sapInstanceId",
+				"sapdId"
+			],
+			"properties": {
+				"sapInstanceId": {
+					"description": "Identifier of the nested NS instance.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"sapdId": {
+					"description": "Identifier of the NSD of the nested NS instance.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"sapName": {
+					"description": "Human readable name for the SAP.\n",
+					"type": "string"
+				},
+				"changeType": {
+					"description": "Signals the type of lifecycle change. Permitted values: - ADD - REMOVE - MODIFY\n",
+					"type": "string",
+					"enum": [
+						"ADD",
+						"REMOVE",
+						"MODIFY"
+					]
+				},
+				"changeResult": {
+					"description": "Signals the result of change identified by the \"changeType\" attribute. Permitted values: - COMPLETED - ROLLED_BACK - FAILED\n",
+					"type": "string",
+					"enum": [
+						"COMPLETED",
+						"ROLLED_BACK",
+						"FAILED"
+					]
+				}
+			}
+		},
+		"NsLcmOperationStateType": {
+			"description": "The enumeration NsLcmOperationStateType shall comply with the provisions defined in Table 6.5.4.4-1. Value | Description ------|------------ PROCESSING | The LCM operation is currently in execution. COMPLETED | The LCM operation has been completed successfully. PARTIALLY_COMPLETED | The LCM operation has been partially completed with accepTable errors. FAILED_TEMP | The LCM operation has failed and execution has stopped, but the execution of the operation is not considered to be closed. FAILED | The LCM operation has failed and it cannot be retried or rolled back, as it is determined that such action won't succeed. OLLING_BACK | The LCM operation is currently being rolled back. ROLLED_BACK | The LCM operation has been successfully rolled back, i.e. The state of the VNF prior to the original operation invocation has been restored as closely as possible.\n",
+			"type": "string",
+			"enum": [
+				"PROCESSING",
+				"COMPLETED",
+				"FAILED_TEMP",
+				"FAILED",
+				"ROLLING_BACK",
+				"ROLLED_BACK"
+			]
+		},
+		"NsLcmOpType": {
+			"description": "The enumeration NsLcmOpType represents those lifecycle operations that trigger a NS lifecycle management operation occurrence notification. Value | Description ------|------------ INSTANTIATE | Represents the \"Instantiate NS\" LCM operation. SCALE | Represents the \"Scale NS\" LCM operation. UPDATE | Represents the \"Update NS\" LCM operation. TERMINATE | Represents the \"Terminate NS\" LCM operation. HEAL | Represents the \"Heal NS\" LCM operation.\n",
+			"type": "string",
+			"enum": [
+				"INSTANTIATE",
+				"SCALE",
+				"UPDATE",
+				"TERMINATE",
+				"HEAL"
+			]
+		},
+		"LccnSubscriptionRequest": {
+			"description": "This type represents a subscription request related to notifications  about NS lifecycle changes. It shall comply with the provisions defined in Table 6.5.2.2-1..\n",
+			"type": "object",
+			"required": [
+				"callbackUri"
+			],
+			"properties": {
+				"filter": {
+					"description": "Filter settings for this subscription, to define the subset of all notifications this subscription relates to. A particular notification is sent to the subscriber if the filter matches, or if there is no filter.\n",
+					"$ref": "#/definitions/LifecycleChangeNotificationsFilter"
+				},
+				"callbackUri": {
+					"description": "The URI of the endpoint to send the notification to.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Uri"
+				},
+				"authentication": {
+					"description": "Authentication parameters to configure the use of Authorization when sending notifications corresponding to this subscription, as defined in clause 4.5.3.4. This attribute shall only be present if the subscriber requires authorization of notifications.\n",
+					"$ref": "SOL005_def.yaml#/definitions/SubscriptionAuthentication"
+				}
+			}
+		},
+		"LccnSubscription": {
+			"description": "This type represents a subscription related to notifications about NS lifecycle changes.  It shall comply with the provisions defined in Table 6.5.2.4-1.\n",
+			"type": "object",
+			"required": [
+				"id",
+				"callbackUri",
+				"_links"
+			],
+			"properties": {
+				"id": {
+					"description": "Identifier of this subscription resource.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"filter": {
+					"description": "Filter settings for this subscription, to define the subset of all notifications this subscription relates to. A particular notification is sent to the subscriber if the filter matches, or if there is no filter.\n",
+					"$ref": "#/definitions/LifecycleChangeNotificationsFilter"
+				},
+				"callbackUri": {
+					"description": "The URI of the endpoint to send the notification to.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Uri"
+				},
+				"_links": {
+					"description": "Links to resources related to this resource.\n",
+					"type": "object",
+					"required": [
+						"self"
+					],
+					"properties": {
+						"self": {
+							"description": "URI of this resource.\n",
+							"$ref": "SOL005_def.yaml#/definitions/Link"
+						}
+					}
+				}
+			}
+		},
+		"LifecycleChangeNotificationsFilter": {
+			"description": "This type represents a subscription filter related to notifications about  NS lifecycle changes. It shall comply with the provisions defined in Table 6.5.3.8-1. At a particular nesting level in the filter structure, the following applies:  All attributes shall match in order for the filter to match (logical \"and\" between different filter attributes).  If an attribute is an array, the attribute shall match if at least one of the values in the array matches (logical \"or\" between the values of one filter attribute).\n",
+			"type": "object",
+			"properties": {
+				"nsInstanceSubscriptionFilter": {
+					"description": "Filter criteria to select NS instances about which to notify.\n",
+					"$ref": "#/definitions/NsInstanceSubscriptionFilter"
+				},
+				"notificationTypes": {
+					"description": "Match particular notification types. Permitted values: - NsLcmOperationOccurenceNotification - NsIdentifierCreationNotification - NsIdentifierDeletionNotification - NsChangeNotification\n",
+					"type": "array",
+					"items": {
+						"type": "string",
+						"enum": [
+							"NsLcmOperationOccurenceNotification",
+							"NsIdentifierCreationNotification",
+							"NsIdentifierDeletionNotification",
+							"NsChangeNotification"
+						]
+					}
+				},
+				"operationTypes": {
+					"description": "Match particular NS lifecycle operation types for the notification of type NsLcmOperationOccurrenceNotification. May be present if the \"notificationTypes\" attribute contains the value \"NsLcmOperationOccurrenceNotification\", and shall be absent otherwise.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/NsLcmOpType"
+					}
+				},
+				"operationStates": {
+					"description": "Match particular LCM operation state values as reported in notifications of type NsLcmOperationOccurrenceNotification. May be present if the \"notificationTypes\" attribute contains the value \"NsLcmOperationOccurrenceNotification\", and shall be absent otherwise.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/LcmOperationStateType"
+					}
+				},
+				"nsComponentTypes": {
+					"description": "Match particular NS component types for the notification of type NsChangeNotification. May be present if the \"notificationTypes\" attribute contains the value \"NsChang.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/NsComponentType"
+					}
+				},
+				"lcmOpNameImpactingNsComponent": {
+					"description": "Match particular LCM operation names for the notification of type NsChangeNotification. May be present if the \"notificationTypes\" attribute contains the value \"NsChangeNotification\", and shall be absent otherwise.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/LcmOpNameForChangeNotificationType"
+					}
+				},
+				"lcmOpOccStatusImpactingNsComponent": {
+					"description": "Match particular LCM operation status values as reported in notifications of type NsChangeNotification. May be present if the \"notificationTypes\" attribute contains the value \"NsChangeNotification\", and shall be absent otherwise.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/LcmOpOccStatusForChangeNotificationType"
+					}
+				}
+			}
+		},
+		"NsLcmOperationOccurrenceNotification": {
+			"type": "object",
+			"required": [
+				"id",
+				"nsInstanceId",
+				"nsLcmOpOccId",
+				"subscriptionId"
+			],
+			"properties": {
+				"id": {
+					"description": "Identifier of this notification. If a notification is sent multiple times due to multiple subscriptions, the \"id\" attribute of all these notifications shall have the same value.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"nsInstanceId": {
+					"description": "The identifier of the NS instance affected.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"nsLcmOpOccId": {
+					"description": "The identifier of the NS lifecycle operation occurrence associated to the notification.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"operation": {
+					"description": "The lifecycle operation.\n",
+					"$ref": "#/definitions/NsLcmOpType"
+				},
+				"notificationType": {
+					"description": "Discriminator for the different notification types. Shall be set to \"NsLcmOperationOccurrenceNotification\" for this notification type.\n",
+					"type": "string"
+				},
+				"subscriptionId": {
+					"description": "Identifier of the subscription that this notification relates to.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"timestamp": {
+					"description": "Date-time of the generation of the notification.\n",
+					"$ref": "SOL005_def.yaml#/definitions/DateTime"
+				},
+				"notificationStatus": {
+					"description": "Indicates whether this notification reports about the start of a NS lifecycle operation or the result of a NS lifecycle operation. Permitted values: - START: Informs about the start of the NS LCM operation occurrence. - RESULT: Informs about the final or intermediate result of the NS LCM operation occurrence.\n",
+					"type": "string",
+					"enum": [
+						"START",
+						"RESULT"
+					]
+				},
+				"operationState": {
+					"description": "The state of the NS lifecycle operation occurrence.\n",
+					"$ref": "#/definitions/NsLcmOperationStateType"
+				},
+				"isAutomaticInvocation": {
+					"description": "Set to true if this NS LCM operation occurrence has been automatically triggered by the NFVO. This occurs in case of auto-scaling, auto-healing and when a nested NS is modified as a result of an operation on its composite NS. Set to false otherwise.\n",
+					"type": "boolean"
+				},
+				"affectedVnf": {
+					"description": "Information about the VNF instances that were affected during the lifecycle operation.\n",
+					"$ref": "#/definitions/AffectedVnf"
+				},
+				"affectedPnf": {
+					"description": "Information about the PNF instances that were affected during the lifecycle operation.\n",
+					"$ref": "#/definitions/AffectedPnf"
+				},
+				"affectedVl": {
+					"description": "Information about the VL instances that were affected during the lifecycle operation.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/AffectedVirtualLink"
+					}
+				},
+				"affectedVnffg": {
+					"description": "Information about the VNFFG instances that were affected during the lifecycle operation.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/AffectedVnffg"
+					}
+				},
+				"affectedNs": {
+					"description": "Information about the SAP instances that were affected during the lifecycle operation. See note.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/AffectedSap"
+					}
+				},
+				"affectedSap": {
+					"description": "The lifecycle operation.\n",
+					"$ref": "#/definitions/NsLcmOpType"
+				},
+				"error": {
+					"description": "Details of the latest error, if one has occurred during executing the LCM operation (see clause 4.3.5). Shall be present if operationState is \"FAILED_TEMP\" or \"FAILED\", and shall be absent otherwise.\n",
+					"$ref": "SOL005_def.yaml#/definitions/ProblemDetails"
+				},
+				"_links": {
+					"description": "Links to resources related to this notification.\n",
+					"$ref": "#/definitions/LccnLinks"
+				}
+			}
+		},
+		"NsIdentifierCreationNotification": {
+			"type": "object",
+			"required": [
+				"subscriptionId",
+				"nsInstanceId"
+			],
+			"properties": {
+				"notificationType": {
+					"description": "Discriminator for the different notification types. Shall be set to \"NsIdentifierDeletionNotification\" for this notification type.\n",
+					"type": "string"
+				},
+				"subscriptionId": {
+					"description": "Identifier of the subscription that this notification relates to.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"timestamp": {
+					"description": "Date-time of the generation of the notification.\n",
+					"$ref": "SOL005_def.yaml#/definitions/DateTime"
+				},
+				"nsInstanceId": {
+					"description": "The created NS instance identifier\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"_links": {
+					"description": "Links to resources related to this notification.\n",
+					"$ref": "#/definitions/LccnLinks"
+				}
+			}
+		},
+		"NsIdentifierDeletionNotification": {
+			"type": "object",
+			"required": [
+				"subscriptionId",
+				"nsInstanceId"
+			],
+			"properties": {
+				"notificationType": {
+					"description": "Discriminator for the different notification types. Shall be set to \"NsIdentifierDeletionNotification\" for this notification type.\n",
+					"type": "string"
+				},
+				"subscriptionId": {
+					"description": "Identifier of the subscription that this notification relates to.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"timestamp": {
+					"description": "Date-time of the generation of the notification.\n",
+					"$ref": "SOL005_def.yaml#/definitions/DateTime"
+				},
+				"nsInstanceId": {
+					"description": "The created NS instance identifier\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"_links": {
+					"description": "Links to resources related to this notification.\n",
+					"$ref": "#/definitions/LccnLinks"
+				}
+			}
+		},
+		"NsScaleInfo": {
+			"description": "This type represents the target NS Scale level for each NS scaling aspect of the current deployment flavor.\n",
+			"type": "object",
+			"required": [
+				"nsScalingAspectId",
+				"nsScaleLevelId"
+			],
+			"properties": {
+				"nsScalingAspectId": {
+					"description": "Identifier of the NS scaling aspect.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNsd"
+				},
+				"nsScaleLevelId": {
+					"description": "Identifier of the NS scale level.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNsd"
+				}
+			}
+		},
+		"ScaleNsData": {
+			"description": "This type represents the information to scale a NS.\n",
+			"type": "object",
+			"properties": {
+				"vnfInstanceToBeAdded": {
+					"description": "An existing VNF instance to be added to the NS instance as part of the scaling operation. If needed, the VNF Profile to be used for this VNF instance may also be provided.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/VnfInstanceData"
+					}
+				},
+				"vnfInstanceToBeRemoved": {
+					"description": "The VNF instance to be removed from the NS instance as part of the scaling operation.\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/Identifier"
+					}
+				},
+				"scaleNsByStepsData": {
+					"description": "The information used to scale an NS instance by one or more scaling steps.\n",
+					"$ref": "#/definitions/ScaleNsByStepsData"
+				},
+				"scaleNsToLevelData": {
+					"description": "The information used to scale an NS instance to a target size.\n",
+					"$ref": "#/definitions/ScaleNsToLevelData"
+				},
+				"additionalParamsForNs": {
+					"description": "Allows the OSS/BSS to provide additional parameter(s) at the NS level necessary for the NS scaling (as opposed to the VNF level, which is covered in additionalParamForVnf).\n",
+					"$ref": "#/definitions/ParamsForVnf"
+				},
+				"additionalParamsForVnf": {
+					"description": "Allows the OSS/BSS to provide additional parameter(s) per VNF instance (as opposed to the NS level, which is covered in additionalParamforNs). This is for VNFs that are to be created by the NFVO as part of the NS scaling and not for existing VNF that are covered by the scaleVnfData.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/ParamsForVnf"
+					}
+				},
+				"locationConstraints": {
+					"description": "The location constraints for the VNF to be instantiated as part of the NS scaling. An example can be a constraint for the VNF to be in a specific geographic location.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/VnfLocationConstraint"
+					}
+				}
+			}
+		},
+		"ScaleVnfData": {
+			"description": "This type represents defines the information to scale a VNF instance  to a given level, or to scale a VNF instance by steps.\n",
+			"type": "object",
+			"required": [
+				"vnfInstanceid",
+				"scaleVnfType"
+			],
+			"properties": {
+				"vnfInstanceid": {
+					"description": "Identifier of the VNF instance being scaled.\n",
+					"$ref": "SOL005_def.yaml#/definitions/Identifier"
+				},
+				"scaleVnfType": {
+					"description": "Type of the scale VNF operation requested. Allowed values are: - SCALE_OUT - SCALE_IN - SCALE_TO_INSTANTIATION_LEVEL - SCALE_TO_SCALE_LEVEL(S) The set of types actually supported depends on the capabilities of the VNF being managed.\n",
+					"type": "string",
+					"enum": [
+						"SCALE_OUT",
+						"SCALE_IN",
+						"SCALE_TO_INSTANTIATION_LEVEL",
+						"SCALE_TO_SCALE_LEVEL(S)"
+					]
+				},
+				"scaleToLevelData": {
+					"description": "The information used for scaling to a given level.\n",
+					"$ref": "#/definitions/ScaleToLevelData"
+				},
+				"scaleByStepData": {
+					"description": "The information used for scaling by steps.\n",
+					"$ref": "#/definitions/ScaleByStepData"
+				}
+			}
+		},
+		"ScaleNsByStepsData": {
+			"description": "This type represents the information used to scale an NS instance by one or more scaling steps, with respect to a particular NS scaling aspect. Performing a scaling step means increasing/decreasing the capacity of an NS instance in a discrete manner, i.e. moving from one NS scale level to another. The NS scaling aspects and their corresponding NS scale levels applicable to the NS instance are declared in the NSD.\n",
+			"type": "object",
+			"required": [
+				"scalingDirection",
+				"aspectId"
+			],
+			"properties": {
+				"scalingDirection": {
+					"description": "The scaling direction. Possible values are: - SCALE_IN - SCALE_OUT.\n",
+					"type": "string",
+					"enum": [
+						"SCALE_IN",
+						"SCALE_OUT"
+					]
+				},
+				"aspectId": {
+					"description": "The aspect of the NS that is requested to be scaled, as declared in the NSD.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNsd"
+				},
+				"numberOfSteps": {
+					"description": "The number of scaling steps to be performed. Defaults to 1.\n",
+					"type": "integer",
+					"default": 1
+				}
+			}
+		},
+		"ScaleNsToLevelData": {
+			"description": "This type represents the information used to scale an NS instance to a target size. The target size is either expressed as an NS instantiation level or as a list of NS scale levels, one per NS scaling aspect, of the current DF. The NS instantiation levels, the NS scaling aspects and their corresponding NS scale levels applicable to the NS instance are declared in the NSD.\n",
+			"type": "object",
+			"properties": {
+				"nsInstantiationLevel": {
+					"description": "Identifier of the target NS instantiation level of the current DF to which the NS instance is requested to be scaled.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInNsd"
+				},
+				"nsScaleInfo": {
+					"description": "For each NS scaling aspect of the current DF, defines the target NS scale level to which the NS instance is to be scaled.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/NsScaleInfo"
+					}
+				}
+			}
+		},
+		"ScaleToLevelData": {
+			"description": "This type describes the information used to scale a VNF instance to a target size. The target size is either expressed as an instantiation level of that DF as defined in the VNFD, or given as a list of scale levels, one per scaling aspect of that DF. Instantiation levels and scaling aspects are declared in the VNFD. The NFVO shall then invoke the ScaleVnfToLevel operation towards the appropriate VNFM..\n",
+			"type": "object",
+			"properties": {
+				"vnfInstantiationLevelId": {
+					"description": "Identifier of the target instantiation level of the current deployment flavor to which the VNF is requested to be scaled.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInVnfd"
+				},
+				"vnfScaleInfo": {
+					"description": "For each scaling aspect of the current deployment flavor, indicates the target scale level to which the VNF is to be scaled.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/VnfScaleInfo"
+					}
+				},
+				"additionalParams": {
+					"description": "Additional parameters passed by the NFVO as input to the scaling process, specific to the VNF being scaled.\n",
+					"$ref": "SOL005_def.yaml#/definitions/KeyValuePairs"
+				}
+			}
+		},
+		"ScaleByStepData": {
+			"description": "This type describes the information to scale a VNF instance by steps.  The NFVO shall then invoke the Scale VNF operation towards the appropriate VNFM.\n",
+			"type": "object",
+			"required": [
+				"aspectId"
+			],
+			"properties": {
+				"aspectId": {
+					"description": "Identifier of (reference to) the aspect of the VNF that is requested to be scaled, as declared in the VNFD.\n",
+					"$ref": "SOL005_def.yaml#/definitions/IdentifierInVnfd"
+				},
+				"numberOfSteps": {
+					"description": "Number of scaling steps. It shall be a positive number. Defaults to 1. The VNF provider defines in the VNFD whether or not a particular VNF supports performing more than one step at a time. Such a property in the VNFD applies for all instances of a particular VNF.\n",
+					"type": "integer",
+					"default": 1
+				},
+				"additionalParams": {
+					"description": "Additional parameters passed by the NFVO as input to the scaling process, specific to the VNF instance being scaled.\n",
+					"$ref": "SOL005_def.yaml#/definitions/KeyValuePairs"
+				}
+			}
+		},
+		"NsInstanceSubscriptionFilter": {
+			"description": "This type represents subscription filter criteria to match NS instances.  It shall comply with the provisions defined in Table 4.4.1.5-1.\n",
+			"type": "object",
+			"properties": {
+				"nsdIds": {
+					"description": "If present, match NS instances that were created based on a NSD identified by one of the nsdId values listed in this attribute.\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/Identifier"
+					}
+				},
+				"vnfdIds": {
+					"description": "If present, match NS instances that contain VNF instances that were created based on a VNFD identified by one of the vnfdId values listed in this attribute.\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/Identifier"
+					}
+				},
+				"pnfdIds": {
+					"description": "If present, match NS instances that contain PNFs that are represented by a PNFD identified by one of the pnfdId values listed in this attribute.\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/Identifier"
+					}
+				},
+				"nsInstanceIds": {
+					"description": "If present, match NS instances with an instance identifier listed in this attribute.\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/Identifier"
+					}
+				},
+				"nsInstanceNames": {
+					"description": "If present, match NS instances with a NS Instance Name listed in this attribute.\n",
+					"type": "array",
+					"items": {
+						"$ref": "SOL005_def.yaml#/definitions/String"
+					}
+				}
+			}
+		},
+		"LcmOperationStateType": {
+			"description": "Value | Description ------|------------ PROCESSING | The LCM operation is currently in execution. COMPLETED | The LCM operation has been completed successfully. PARTIALLY_COMPLETED | The LCM operation has been partially completed with accepTable errors. FAILED_TEMP | The LCM operation has failed and execution has stopped, but the execution of the operation is not considered to be closed. FAILED | The LCM operation has failed and it cannot be retried or rolled back, as it is determined that such action will not succeed. OLLING_BACK | The LCM operation is currently being rolled back. ROLLED_BACK | The LCM operation has been successfully rolled back, i.e. The state of the NS prior to the original operation invocation has been restored as closely as possible.\n",
+			"type": "string",
+			"enum": [
+				"PROCESSING",
+				"COMPLETED",
+				"PARTIALLY_COMPLETED",
+				"FAILED_TEMP",
+				"FAILED",
+				"ROLLING_BACK",
+				"ROLLED_BACK"
+			]
+		},
+		"NsComponentType": {
+			"description": "The enumeration NsComponentType represents the NS component type. It shall comply with the provisions defined in Table 6.5.4.5-1. Value | Description ------|------------ VNF | Represents the impacted NS component is a VNF. PNF | Represents the impacted NS component is a PNF. NS | Represents the impacted NS component is a nested NS.\n",
+			"type": "string",
+			"enum": [
+				"VNF",
+				"PNF",
+				"NS"
+			]
+		},
+		"LcmOpNameForChangeNotificationType": {
+			"description": "The enumeration LcmOpNameForChangeNotificationType represents the name of the lifecycle operation that impacts the NS component and trigger an NS change notification. It shall comply with the provisions defined in Table 6.5.4.6-1. Value | Description ------|------------ VNF_INSTANTIATE | Represents the \"Instantiate VNF\" LCM operation. VNF_SCALE | Represents the \"Scale VNF\" LCM operation. VNF_SCALE_TO_LEVEL | Represents the \"Scale VNF to Level\" LCM operation. VNF_CHANGE_FLAVOUR | Represents the \"Change VNF Flavor\" LCM operation. VNF_TERMINATE | Represents the \"Terminate VNF\" LCM operation. VNF_HEAL | Represents the \"Heal VNF\" LCM operation. VNF_OPERATE | Represents the \"Operate VNF\" LCM operation. VNF_CHANGE_EXT_CONN | Represents the \"Change external VNF connectivity\" LCM operation. VNF_MODIFY_INFO | Represents the \"Modify VNF Information\" LCM operation.            NS_INSTANTIATE | Represents the \"Instantiate NS\" LCM operation NS_SCALE | Represents the \"Scale NS\" LCM operation. NS_UPDATE | Represents the \"Update NS\" LCM operation. NS_TERMINATE | Represents the \"Terminate NS\" LCM operation. NS_HEAL | Represents the \"Heal NS\" LCM operation.\n",
+			"type": "string",
+			"enum": [
+				"VNF_INSTANTIATE",
+				"VNF_SCALE",
+				"VNF_SCALE_TO_LEVEL",
+				"VNF_CHANGE_FLAVOUR",
+				"VNF_TERMINATE",
+				"VNF_HEAL",
+				"VNF_OPERATE",
+				"VNF_CHANGE_EXT_CONN",
+				"VNF_MODIFY_INFO",
+				"NS_INSTANTIATE",
+				"NS_SCALE",
+				"NS_UPDATE",
+				"NS_TERMINATE",
+				"NS_HEAL"
+			]
+		},
+		"LcmOpOccStatusForChangeNotificationType": {
+			"description": "The enumeration LcmOpOccStatusForChangeNotificationType represents the status of the lifecycle management operation occurrence that impacts the NS component and triggers an NS change notification. It shall comply with the provisions defined in Table 6.5.4.7-1. Value | Description ------|------------ START | The impact on the NS component is identified. COMPLETED | The impact on the NS component stops and related lifecycle operation completes successfully. PARTIALLY_COMPLETED | The impact on the NS component stops and related lifecycle operation partially completes. Inconsistency state may exist on the NS component. FAILED | The impact on the NS component stops and related lifecycle operation fails. Inconsistency state may exist for the NS component. ROLLED_BACK | The impact on the NS component stops and related lifecycle operation is rolled back.\n",
+			"type": "string",
+			"enum": [
+				"START",
+				"COMPLETED",
+				"PARTIALLY_COMPLETED",
+				"FAILED",
+				"ROLLED_BACK"
+			]
+		}
+	}
+}

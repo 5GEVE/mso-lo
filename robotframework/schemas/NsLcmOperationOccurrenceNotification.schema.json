@@ -1,0 +1,96 @@
+{
+	"type": "object",
+	"required": [
+		"id",
+		"nsInstanceId",
+		"nsLcmOpOccId",
+		"subscriptionId"
+	],
+	"properties": {
+		"id": {
+			"description": "Identifier of this notification. If a notification is sent multiple times due to multiple subscriptions, the \"id\" attribute of all these notifications shall have the same value.\n",
+			"$ref": "SOL005_def.yaml#/definitions/Identifier"
+		},
+		"nsInstanceId": {
+			"description": "The identifier of the NS instance affected.\n",
+			"$ref": "SOL005_def.yaml#/definitions/Identifier"
+		},
+		"nsLcmOpOccId": {
+			"description": "The identifier of the NS lifecycle operation occurrence associated to the notification.\n",
+			"$ref": "SOL005_def.yaml#/definitions/Identifier"
+		},
+		"operation": {
+			"description": "The lifecycle operation.\n",
+			"$ref": "#/definitions/NsLcmOpType"
+		},
+		"notificationType": {
+			"description": "Discriminator for the different notification types. Shall be set to \"NsLcmOperationOccurrenceNotification\" for this notification type.\n",
+			"type": "string"
+		},
+		"subscriptionId": {
+			"description": "Identifier of the subscription that this notification relates to.\n",
+			"$ref": "SOL005_def.yaml#/definitions/Identifier"
+		},
+		"timestamp": {
+			"description": "Date-time of the generation of the notification.\n",
+			"$ref": "SOL005_def.yaml#/definitions/DateTime"
+		},
+		"notificationStatus": {
+			"description": "Indicates whether this notification reports about the start of a NS lifecycle operation or the result of a NS lifecycle operation. Permitted values: - START: Informs about the start of the NS LCM operation occurrence. - RESULT: Informs about the final or intermediate result of the NS LCM operation occurrence.\n",
+			"type": "string",
+			"enum": [
+				"START",
+				"RESULT"
+			]
+		},
+		"operationState": {
+			"description": "The state of the NS lifecycle operation occurrence.\n",
+			"$ref": "#/definitions/NsLcmOperationStateType"
+		},
+		"isAutomaticInvocation": {
+			"description": "Set to true if this NS LCM operation occurrence has been automatically triggered by the NFVO. This occurs in case of auto-scaling, auto-healing and when a nested NS is modified as a result of an operation on its composite NS. Set to false otherwise.\n",
+			"type": "boolean"
+		},
+		"affectedVnf": {
+			"description": "Information about the VNF instances that were affected during the lifecycle operation.\n",
+			"$ref": "#/definitions/AffectedVnf"
+		},
+		"affectedPnf": {
+			"description": "Information about the PNF instances that were affected during the lifecycle operation.\n",
+			"$ref": "#/definitions/AffectedPnf"
+		},
+		"affectedVl": {
+			"description": "Information about the VL instances that were affected during the lifecycle operation.\n",
+			"type": "array",
+			"items": {
+				"$ref": "#/definitions/AffectedVirtualLink"
+			}
+		},
+		"affectedVnffg": {
+			"description": "Information about the VNFFG instances that were affected during the lifecycle operation.\n",
+			"type": "array",
+			"items": {
+				"$ref": "#/definitions/AffectedVnffg"
+			}
+		},
+		"affectedNs": {
+			"description": "Information about the SAP instances that were affected during the lifecycle operation. See note.\n",
+			"type": "array",
+			"items": {
+				"$ref": "#/definitions/AffectedSap"
+			}
+		},
+		"affectedSap": {
+			"description": "The lifecycle operation.\n",
+			"$ref": "#/definitions/NsLcmOpType"
+		},
+		"error": {
+			"description": "Details of the latest error, if one has occurred during executing the LCM operation (see clause 4.3.5). Shall be present if operationState is \"FAILED_TEMP\" or \"FAILED\", and shall be absent otherwise.\n",
+			"$ref": "SOL005_def.yaml#/definitions/ProblemDetails"
+		},
+		"_links": {
+			"description": "Links to resources related to this notification.\n",
+			"$ref": "#/definitions/LccnLinks"
+		}
+	}
+}

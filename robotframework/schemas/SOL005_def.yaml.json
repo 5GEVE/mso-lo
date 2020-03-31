@@ -1,0 +1,449 @@
+{
+	"definitions": {
+		"Identifier": {
+			"description": "An identifier with the intention of being globally unique.\n",
+			"type": "string"
+		},
+		"subscriptionId": {
+			"description": "Identifier of the subscription that this notification relates to.\n",
+			"type": "string"
+		},
+		"nsInstanceId": {
+			"description": "The deleted NS instance identifier.\n",
+			"type": "string"
+		},
+		"Link": {
+			"description": "This type represents a link to a resource.\n",
+			"type": "object",
+			"required": [
+				"href"
+			],
+			"properties": {
+				"href": {
+					"description": "URI of the referenced resource.\n",
+					"type": "string",
+					"format": "url"
+				}
+			}
+		},
+		"DateTime": {
+			"description": "Date-time stamp.  Representation: String formatted according to IETF RFC 3339.\n",
+			"type": "string",
+			"format": "date-time"
+		},
+		"String": {
+			"description": "This type represents stack of string values\n",
+			"type": "string"
+		},
+		"KeyValuePairs": {
+			"description": "This type represents a list of key-value pairs. The order of the pairs in the list is not significant. In JSON, a set of key- value pairs is represented as an object. It shall comply with the provisions  defined in clause 4 of IETF RFC 7159.\n",
+			"type": "object"
+		},
+		"IdentifierInVnfd": {
+			"description": "Identifier of the VNF Virtual Link Descriptor (VLD) in the VNFD.\n",
+			"type": "string"
+		},
+		"IdentifierInVnf": {
+			"description": "An identifier that is unique for the respective type within a VNF instance, but may not be globally unique.\n",
+			"type": "string"
+		},
+		"IdentifierInNsd": {
+			"description": "An identifier that is unique within a NS descriptor. Representation: string of variable length.\n",
+			"type": "string"
+		},
+		"IdentifierInPnf": {
+			"description": "Identifier of the CP in the scope of the PNF.\n",
+			"type": "string"
+		},
+		"IdentifierInNs": {
+			"description": "An identifier that is unique with respect to a NS.  Representation: string of variable length.\n",
+			"type": "string"
+		},
+		"MacAddress": {
+			"description": "A MAC address. Representation: string that consists of groups of two hexadecimal digits, separated by hyphens or colons.\n",
+			"type": "string",
+			"format": "MAC"
+		},
+		"IpAddress": {
+			"description": "An IPV4 or IPV6 address. Representation: In case of an IPV4 address, string that consists of four decimal integers separated by dots, each integer ranging from 0 to 255. In case of an IPV6 address, string that  consists of groups of zero to four hexadecimal digits, separated by colons.\n",
+			"type": "string",
+			"format": "IP"
+		},
+		"IpAddressPrefix": {
+			"description": "An IPV4 or IPV6 address range in CIDR format. For IPV4 address range, refer to IETF RFC 4632 [12]. For IPV6 address range, refer to IETF RFC 4291 [11].\n",
+			"type": "string",
+			"format": "CIDR"
+		},
+		"IdentifierInVim": {
+			"description": "An identifier maintained by the VIM or other resource provider. It is expected to be unique within the VIM instance.\n",
+			"type": "string"
+		},
+		"ProblemDetails": {
+			"description": "The definition of the general \"ProblemDetails\" data structure from IETF RFC 7807 [19] is reproduced inthis structure. Compared to the general framework defined in IETF RFC 7807 [19], the \"status\" and \"detail\" attributes are mandated to be included by the present document, to ensure that the response contains additional textual information about an error. IETF RFC 7807 [19] foresees extensibility of the \"ProblemDetails\" type. It is possible that particular APIs in the present document, or particular implementations, define extensions to define additional attributes that provide more information about the error. The description column only provides some explanation of the meaning to Facilitate understanding of the design. For a full description, see IETF RFC 7807 [19].\n",
+			"type": "object",
+			"required": [
+				"status",
+				"detail"
+			],
+			"properties": {
+				"type": {
+					"description": "A URI reference according to IETF RFC 3986 [5] that identifies the problem type. It is encouraged that the URI provides human-readable documentation for the problem (e.g. using HTML) when dereferenced. When this member is not present, its value is assumed to be \"about:blank\".\n",
+					"type": "string",
+					"format": "URI"
+				},
+				"title": {
+					"description": "A short, human-readable summary of the problem type. It should not change from occurrence to occurrence of the problem, except for purposes of localization. If type is given and other than \"about:blank\", this attribute shall also be provided. A short, human-readable summary of the problem type.  It SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization (e.g., using proactive content negotiation; see [RFC7231], Section 3.4).\n",
+					"type": "string"
+				},
+				"status": {
+					"description": "The HTTP status code for this occurrence of the problem. The HTTP status code ([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.\n",
+					"type": "integer"
+				},
+				"detail": {
+					"description": "A human-readable explanation specific to this occurrence of the problem.\n",
+					"type": "string"
+				},
+				"instance": {
+					"description": "A URI reference that identifies the specific occurrence of the problem. It may yield further information if dereferenced.\n",
+					"type": "string",
+					"format": "URI"
+				}
+			}
+		},
+		"ResourceHandle": {
+			"required": [
+				"vimConnectionId",
+				"resourceId"
+			],
+			"type": "object",
+			"description": "This type represents the information that allows addressing a virtualised resource that is used by a VNF instance. Information about the resource is available from the VIM.\n",
+			"properties": {
+				"vimConnectionId": {
+					"description": "Identifier of the VIM connection to manage the resource. This attribute shall only be supported and present if VNF-related resource management in direct mode is applicable. The applicable \"VimConnectionInfo\" structure, which is referenced by vimConnectionId, can be obtained from the \"vimConnectionInfo\" attribute of the \"VnfInstance\" structure.\n",
+					"$ref": "#/definitions/Identifier"
+				},
+				"resourceProviderId": {
+					"description": "Identifier of the entity responsible for the management of the resource. This attribute shall only be supported and present when VNF-related resource management in indirect mode is applicable. The identification scheme is outside the scope of the present document.\n",
+					"$ref": "#/definitions/Identifier"
+				},
+				"resourceId": {
+					"description": "Identifier of the resource in the scope of the VIM or the resource provider.\n",
+					"$ref": "#/definitions/IdentifierInVim"
+				},
+				"vimLevelResourceType": {
+					"description": "Type of the resource in the scope of the VIM or the resource provider.\n",
+					"type": "string"
+				}
+			}
+		},
+		"CpProtocolData": {
+			"description": "This type represents network protocol data.\n",
+			"type": "object",
+			"required": [
+				"layerProtocol"
+			],
+			"properties": {
+				"layerProtocol": {
+					"description": "Identifier of layer(s) and protocol(s). Permitted values: IP_OVER_ETHERNET.\n",
+					"type": "string",
+					"enum": [
+						"IP_OVER_ETHERNET"
+					]
+				},
+				"ipOverEthernet": {
+					"description": "Network address data for IP over Ethernet to assign to the extCP instance. Shall be present if layerProtocol is equal to \"IP_OVER_ETHERNET\", and shall be absent otherwise.\n",
+					"$ref": "#/definitions/IpOverEthernetAddressData"
+				}
+			}
+		},
+		"IpOverEthernetAddressData": {
+			"description": "This type represents network address data for IP over Ethernet.\n",
+			"type": "object",
+			"properties": {
+				"macAddress": {
+					"description": "MAC address. If this attribute is not present, it shall be chosen by the NFV MANO.\n",
+					"$ref": "#/definitions/MacAddress"
+				},
+				"ipAddresses": {
+					"description": "List of IP addresses to assign to the CP instance. Each entry represents IP address data for fixed or dynamic IP address assignment per subnet. If this attribute is not present, no IP address shall be assigned.\n",
+					"type": "array",
+					"items": {
+						"type": "object",
+						"required": [
+							"type"
+						],
+						"properties": {
+							"type": {
+								"description": "The type of the IP addresses. Permitted values: IPV4, IPV6.\n",
+								"type": "string",
+								"enum": [
+									"IPV4",
+									"IPV6"
+								]
+							},
+							"fixedAddresses": {
+								"description": "Fixed addresses to assign (from the subnet defined by \"subnetId\" if provided). Exactly one of \"fixedAddresses\", \"numDynamicAddresses\" or \"ipAddressRange\" shall be present.\n",
+								"type": "array",
+								"items": {
+									"$ref": "#/definitions/IpAddress"
+								}
+							},
+							"numDynamicAddresses": {
+								"description": "Number of dynamic addresses to assign (from the subnet defined by \"subnetId\" if provided). Exactly one of \"fixedAddresses\", \"numDynamicAddresses\" or \"ipAddressRange\" shall be present.\n",
+								"type": "integer"
+							},
+							"addressRange": {
+								"description": "An IP address range to be used, e.g. in case of egress connections. In case this attribute is present, IP addresses from the range will be used.\n",
+								"type": "object",
+								"required": [
+									"minAddress",
+									"maxAddress"
+								],
+								"properties": {
+									"minAddress": {
+										"description": "Lowest IP address belonging to the range.\n",
+										"$ref": "#/definitions/IpAddress"
+									},
+									"maxAddress": {
+										"description": "Highest IP address belonging to the range.\n",
+										"$ref": "#/definitions/IpAddress"
+									}
+								}
+							},
+							"subnetId": {
+								"description": "Subnet defined by the identifier of the subnet resource in the VIM. In case this attribute is present, IP addresses from that subnet will be assigned; otherwise, IP addresses not bound to a subnet will be assigned.\n",
+								"$ref": "#/definitions/IdentifierInVim"
+							}
+						}
+					}
+				}
+			}
+		},
+		"ExtVirtualLinkData": {
+			"description": "This type represents an external VL. It shall comply with the provisions defined in Table 6.5.3.26-1.\n",
+			"type": "object",
+			"required": [
+				"resourceId",
+				"extCps"
+			],
+			"properties": {
+				"extVirtualLinkId": {
+					"description": "The identifier of the external VL instance, if provided.\n",
+					"$ref": "#/definitions/Identifier"
+				},
+				"vimId": {
+					"description": "Identifier of the VIM that manages this resource. This attribute shall only be supported and present if VNFrelated resource management in direct mode is applicable.\n",
+					"$ref": "#/definitions/Identifier"
+				},
+				"resourceProviderId": {
+					"description": "Identifies the entity responsible for the management of this resource. This attribute shall only be supported and present if VNF-related resource management in indirect mode is applicable. The identification scheme is outside the scope of the present document.\n",
+					"$ref": "#/definitions/Identifier"
+				},
+				"resourceId": {
+					"description": "The identifier of the resource in the scope of the VIM or the resource provider.\n",
+					"$ref": "#/definitions/IdentifierInVim"
+				},
+				"extCps": {
+					"description": "External CPs of the VNF to be connected to this external VL.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/VnfExtCpData"
+					}
+				},
+				"extLinkPorts": {
+					"description": "Externally provided link ports to be used to connect external connection points to this external VL.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/ExtLinkPortData"
+					}
+				}
+			}
+		},
+		"ExtManagedVirtualLinkData": {
+			"description": "This type represents an externally-managed internal VL.  It shall comply with the provisions defined in Table 6.5.3.27-1.\n",
+			"type": "object",
+			"required": [
+				"virtualLinkDescId",
+				"resourceId"
+			],
+			"properties": {
+				"extManagedVirtualLinkId": {
+					"description": "The identifier of the externally-managed internal VL instance, if provided.\n",
+					"$ref": "#/definitions/Identifier"
+				},
+				"virtualLinkDescId": {
+					"description": "The identifier of the VLD in the VNFD for this VL.\n",
+					"$ref": "#/definitions/IdentifierInVnfd"
+				},
+				"vimId": {
+					"description": "Identifier of the VIMthat manage this resource. This attribute shall only be supported and present if VNFrelated resource management in direct mode is applicable.\n",
+					"$ref": "#/definitions/Identifier"
+				},
+				"resourceProviderId": {
+					"description": "Identifies the entity responsible for the management of this resource. This attribute shall only be supported and present if VNF-related resource management in indirect mode is applicable. The identification scheme is outside the scope of the present document.\n",
+					"$ref": "#/definitions/Identifier"
+				},
+				"resourceId": {
+					"description": "The identifier of the resource in the scope of the VIM or the resource provider.\n",
+					"$ref": "#/definitions/IdentifierInVim"
+				}
+			}
+		},
+		"VnfExtCpData": {
+			"description": "This type represents configuration information for external CPs created from a CPD.\n",
+			"type": "object",
+			"required": [
+				"cpdId"
+			],
+			"properties": {
+				"cpdId": {
+					"description": "The identifier of the CPD in the VNFD.\n",
+					"$ref": "#/definitions/IdentifierInVnfd"
+				},
+				"cpConfig": {
+					"description": "List of instance data that need to be configured on the CP instances created from the respective CPD.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/VnfExtCpConfig"
+					}
+				}
+			}
+		},
+		"ExtLinkPortData": {
+			"description": "This type represents an externally provided link port to be used to connect an external connection point to an external VL.\n",
+			"type": "object",
+			"required": [
+				"id",
+				"resourceHandle"
+			],
+			"properties": {
+				"id": {
+					"description": "Identifier of this link port as provided by the entity that has created the link port.\n",
+					"$ref": "#/definitions/Identifier"
+				},
+				"resourceHandle": {
+					"description": "Reference to the virtualised resource realizing this link port.\n",
+					"$ref": "#/definitions/ResourceHandle"
+				}
+			}
+		},
+		"VnfExtCpConfig": {
+			"description": "This type represents an externally provided link port or network address information per instance of an external connection point. In case a link port is provided, the VNFM shall use that link port when connecting the external CP to the external VL. In a link port is not provided, the VNFM shall create a link port on the external VL, and use that link port to connect the external CP to the external VL.\n",
+			"type": "object",
+			"properties": {
+				"cpInstanceId": {
+					"description": "Identifier of the external CP instance to which this set of configuration parameters is requested to be applied.  Shall be present if this instance has already been created.\n",
+					"$ref": "#/definitions/IdentifierInVnf"
+				},
+				"linkPortId": {
+					"description": "Identifier of a pre-configured link port to which the external CP will be associated. The following conditions apply to the attributes \"linkPortId\" and \"cpProtocolData\":  * The \"linkPortId\" and \"cpProtocolData\" attributes shall both be  absent for the deletion of an existing external CP instance\n  addressed by cpInstanceId. \n* At least one of these attributes shall be present for a  to-be-created external CP instance or an existing external\n  CP instance.\n* If the \"linkPortId\" attribute is absent, the VNFM shall create a  link port.\n* If the \"cpProtocolData\" attribute is absent, the \"linkPortId\"  attribute shall be provided referencing a pre-created link port,\n  and the VNFM can use means outside the scope of the present\n  document to obtain the pre-configured address information for the\n  connection point from the resource representing the link port.\n* If both \"cpProtocolData\" and \"linkportId\" are provided, the API  consumer shall ensure that the cpProtocolData can be used with the\n  pre-created link port referenced by \"linkPortId\".\n",
+					"$ref": "#/definitions/Identifier"
+				},
+				"cpProtocolData": {
+					"description": "Parameters for configuring the network protocols on the link port that connects the CP to a VL.  The following conditions apply to the attributes \"linkPortId\" and \"cpProtocolData\":  * The \"linkPortId\" and \"cpProtocolData\" attributes shall both be  absent for the deletion of an existing external CP instance\n  addressed by cpInstanceId. \n* At least one of these attributes shall be present for a  to-be-created external CP instance or an existing external\n  CP instance.\n* If the \"linkPortId\" attribute is absent, the VNFM shall create a  link port.\n* If the \"cpProtocolData\" attribute is absent, the \"linkPortId\"  attribute shall be provided referencing a pre-created link port,\n  and the VNFM can use means outside the scope of the present\n  document to obtain the pre-configured address information for the\n  connection point from the resource representing the link port.\n* If both \"cpProtocolData\" and \"linkportId\" are provided, the API  consumer shall ensure that the cpProtocolData can be used with the\n  pre-created link port referenced by \"linkPortId\".\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/CpProtocolData"
+					}
+				}
+			}
+		},
+		"PortRange": {
+			"description": "The PortRange data type provides the lower and upper bounds of a range of Internet ports.  It shall comply with the provisions defined in Table 6.5.3.42-1.\n",
+			"type": "object",
+			"required": [
+				"lowerPort",
+				"upperPort"
+			],
+			"properties": {
+				"lowerPort": {
+					"description": "Identifies the lower bound of the port range. upperPort Integer\n",
+					"type": "integer"
+				},
+				"upperPort": {
+					"description": "Identifies the upper bound of the port range.\n",
+					"type": "integer"
+				}
+			}
+		},
+		"Mask": {
+			"description": "The Mask data type identifies the value to be matched for a sequence of  bits at a particular location in a frame. It shall comply with the provisions defined in Table 6.5.3.41-1.\n",
+			"type": "object",
+			"required": [
+				"startingPoint",
+				"length",
+				"value"
+			],
+			"properties": {
+				"startingPoint": {
+					"description": "Indicates the offset between the last bit of the source mac address and the first bit of the sequence of bits to be matched.\n",
+					"type": "integer"
+				},
+				"length": {
+					"description": "Indicates the number of bits to be matched.\n",
+					"type": "integer"
+				},
+				"value": {
+					"description": "Provide the sequence of bit values to be matched.\n",
+					"type": "string"
+				}
+			}
+		},
+		"Uri": {
+			"description": "String formatted according to IETF RFC 3986.\n",
+			"type": "string"
+		},
+		"SubscriptionAuthentication": {
+			"type": "object",
+			"required": [
+				"authType"
+			],
+			"properties": {
+				"authType": {
+					"description": "Defines the types of Authentication / Authorization which the API consumer is willing to accept when receiving a notification. Permitted values: * BASIC: In every HTTP request to the notification endpoint, use  HTTP Basic authentication with the client credentials. \n* OAUTH2_CLIENT_CREDENTIALS: In every HTTP request to the  notification endpoint, use an OAuth 2.0 Bearer token, obtained\n  using the client credentials grant type.\n* TLS_CERT: Every HTTP request to the notification endpoint is sent  over a mutually authenticated TLS session, i.e. not only the\n  server is authenticated, but also the client is authenticated\n  during the TLS tunnel setup.\n",
+					"type": "array",
+					"items": {
+						"type": "string",
+						"enum": [
+							"BASIC",
+							"OAUTH2_CLIENT_CREDENTIALS",
+							"TLS_CERT"
+						]
+					}
+				},
+				"paramsBasic": {
+					"description": "Parameters for authentication/authorization using BASIC. Shall be present if authType is \"BASIC\" and the contained information has not been provisioned out of band. Shall be absent otherwise.\n",
+					"type": "object",
+					"properties": {
+						"userName": {
+							"description": "Username to be used in HTTP Basic authentication. Shall be present if it has not been provisioned out of band.\n",
+							"type": "string"
+						},
+						"password": {
+							"description": "Password to be used in HTTP Basic authentication. Shall be present if it has not been provisioned out of band.\n",
+							"type": "string"
+						}
+					}
+				},
+				"paramsOauth2ClientCredentials": {
+					"description": "Parameters for authentication/authorization using OAUTH2_CLIENT_CREDENTIALS. Shall be present if authType is \"OAUTH2_CLIENT_CREDENTIALS\" and the contained information has not been provisioned out of band. Shall be absent otherwise.\n",
+					"type": "object",
+					"properties": {
+						"clientId": {
+							"description": "Client identifier to be used in the access token request of the OAuth 2.0 client credentials grant type.  Shall be present if it has not been provisioned out of band. The clientId and clientPassword passed in a subscription shall not be the same as the clientId and clientPassword that are used to obtain authorization for API requests. Client credentials may differ between subscriptions. The value of clientPassword should be generated by a random process.\n",
+							"type": "string"
+						},
+						"clientPassword": {
+							"description": "Client password to be used in the access token request of the OAuth 2.0 client credentials grant type.  Shall be present if it has not been provisioned out of band. The clientId and clientPassword passed in a subscription shall not be the same as the clientId and clientPassword that are used to obtain authorization for API requests. Client credentials may differ between subscriptions. The value of clientPassword should be generated by a random process.\n",
+							"type": "string"
+						},
+						"tokenEndpoint": {
+							"description": "The token endpoint from which the access token can be obtained. Shall be present if it has not been provisioned out of band.\n",
+							"$ref": "#/definitions/Uri"
+						}
+					}
+				}
+			}
+		}
+	}
+}

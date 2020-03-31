@@ -1,0 +1,10 @@
+{
+  "filter": {
+    "nsInstanceSubscriptionFilter": {
+      "nsdIds": [
+        "6fc3539c-e602-4afa-8e13-962fb5a7d81f"
+      ]
+    }
+  },
+  "callbackUri": "http://127.0.0.1/subscribe"
+}
