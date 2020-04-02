@@ -1,7 +1,7 @@
 *** Settings ***
 Resource    environment/variables.txt 
 Resource   NSLCMOperationKeywords.robot   
-Library    REST    ${HTTP}://${MSO-LO_HOST}:${MSO-LO_PORT} 
+Library    REST    ${MSO-LO_BASE_API} 
 Library    OperatingSystem
 Library    JSONLibrary
 Library    JSONSchemaLibrary    schemas/

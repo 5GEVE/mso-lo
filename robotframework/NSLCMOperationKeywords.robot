@@ -1,6 +1,6 @@
 *** Settings ***
 Resource   environment/variables.txt
-Library    REST     ${HTTP}://${MSO-LO_HOST}:${MSO-LO_PORT}
+Library    REST     ${MSO-LO_BASE_API}
 Library    JSONLibrary
 Library    Process
 Library    JSONSchemaLibrary    schemas/
