@@ -1,7 +1,7 @@
 *** Settings ***
 Resource   environment/variables.txt 
 Resource   NSLCMOperationKeywords.robot   
-Library    REST    ${NFVO_SCHEMA}://${NFVO_HOST}:${NFVO_PORT} 
+Library    REST    ${HTTP}://${MSO-LO_HOST}:${MSO-LO_PORT} 
 Library    OperatingSystem
 Library    JSONLibrary
 Library    JSONSchemaLibrary    schemas/
