@@ -35,8 +35,6 @@ services:
       mso-lo-net:
         aliases:
           - flask-app
-    ports:
-      - 5000:5000
     volumes:
       - mso-lo-data:/usr/src/app/data
 

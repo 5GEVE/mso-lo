@@ -1,7 +1,7 @@
 *** Settings ***
-Resource    environment/variables.txt 
-Resource   NSLCMOperationKeywords.robot   
-Library    REST    ${MSO-LO_BASE_API} 
+Resource    environment/variables.txt
+Resource   NSLCMOperationKeywords.robot
+Library    REST    ${MSO-LO_BASE_API}
 Library    OperatingSystem
 Library    JSONLibrary
 Library    JSONSchemaLibrary    schemas/
@@ -26,14 +26,17 @@ Terminate Flow of NS lifecycle management operations
     Check Operation Notification Status is    START
     Check Operation Notification Status is    RESULT
     Check resource not_instantiated
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+    #POST Terminate NSInstance
+    #Check HTTP Response Status Code Is    202
+    #Check HTTP Response Header Contains    Location
+    #Check resource not_instantiated
+
+
+
+
+
+
+
+
+

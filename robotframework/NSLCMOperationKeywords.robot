@@ -120,7 +120,6 @@ Check operation resource state is FAILED_TEMP
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
     Get    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}
     String    response body nsState    FAILED_TEMP
-
 Check operation resource state is not FAILED_TEMP
     Check operation resource state is FAILED_TEMP
     Set Headers    {"Accept":"${ACCEPT}"}
@@ -148,7 +147,8 @@ Check resource existence
     Set Headers    {"Accept":"${ACCEPT}"}
     Set Headers    {"Content-Type": "${CONTENT_TYPE}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Get    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}
+    ${queryParams}=     Create Dictionary      __code=200
+    Get    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId} ${queryParams}
     Integer    response status    200
 
 Check HTTP Response Status Code Is
@@ -180,7 +180,7 @@ POST New nsInstance
     Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
     ${body}=    Get File    jsons/CreateNsRequest.json
-    Post    ${apiRoot}/${nfvoId}/ns_instances  ${body}
+    Post    ${apiRoot}/${nfvoId}/ns_instances?__code=201    ${body}
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
@@ -234,6 +234,7 @@ Get NSInstances with fields attribute selector
     GET    ${apiRoot}/${nfvoId}/ns_instances?fields=${fields}
     ${output}=    Output    response
     Set Suite Variable    ${response}    ${output}
+
 Get NSInstances with exclude_fields attribute selector
     Log    Get the list of NSInstances, using fields
     Set Headers    {"Accept": "${ACCEPT_JSON}"}

@@ -159,4 +159,3 @@ The file will run two containers:
 2. A python container to execute unit tests
 
 Unit tests execution for a new driver can be added by copying and modifyng [docker-compose.test-osm.yml](docker-compose.test-osm.yml).
-

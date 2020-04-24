@@ -1,7 +1,7 @@
 *** Settings ***
-Resource    environment/variables.txt 
-Resource   NSLCMOperationKeywords.robot   
-Library    REST    ${MSO-LO_BASE_API} 
+Resource    environment/variables.txt
+Resource   NSLCMOperationKeywords.robot
+Library    REST    ${MSO-LO_BASE_API}
 Library    OperatingSystem
 Library    JSONLibrary
 Library    JSONSchemaLibrary    schemas/
@@ -18,20 +18,19 @@ Instantiate Flow of NS lifecycle management operations
     ...    Config ID: Config_prod_NFVO
     ...    Applicability: none
     ...    Post-Conditions: the resource is in INSTANTIATED state
-    Check resource existence
-    Check resource not_instantiated
+    #Check resource existence
+    #Check resource not_instantiated
     POST Instantiate nsInstance
     Check HTTP Response Status Code Is    202
-    Check Operation Occurrence Id
-    Check Operation Notification Status is    START
-    Check Operation Notification Status is    RESULT
-    Check resource instantiated
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    #Check Operation Occurrence Id
+    #Check Operation Notification Status is    START
+    #Check Operation Notification Status is    RESULT
+    #Check resource instantiated
+
+
+
+
+
+
+
+

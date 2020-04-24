@@ -1,7 +1,7 @@
 *** Settings ***
-Resource    environment/variables.txt 
-Resource   NSLCMOperationKeywords.robot   
-Library    REST    ${MSO-LO_BASE_API} 
+Resource    environment/variables.txt
+Resource   NSLCMOperationKeywords.robot
+Library    REST    ${MSO-LO_BASE_API}
 Library    OperatingSystem
 Library    JSONLibrary
 Library    JSONSchemaLibrary    schemas/
@@ -16,7 +16,7 @@ NS Instance Deletion
     ...    Config ID: Config_prod_NFVO
     ...    Applicability: none
     ...    Post-Conditions: none
-    Check resource not_instantiated
+    # Check resource not_instantiated
     DELETE IndividualNSInstance
     Check HTTP Response Status Code Is    204
     Check HTTP Response Body Json Schema Is    NsIdentifierDeletionNotification
