@@ -105,35 +105,36 @@ Check resource instantiated
     Set Headers    {"Content-Type": "${CONTENT_TYPE}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
     Get    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}
-    String    response body instantiationState    INSTANTIATED
+    String    response body nsState    INSTANTIATED
 
 Check resource not_instantiated
     Set Headers    {"Accept":"${ACCEPT}"}
     Set Headers    {"Content-Type": "${CONTENT_TYPE}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
     Get    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}
-    String    response body instantiationState    NOT_INSTANTIATED
+    String    response body nsState    NOT_INSTANTIATED
 
 Check operation resource state is FAILED_TEMP
     Set Headers    {"Accept":"${ACCEPT}"}
     Set Headers    {"Content-Type": "${CONTENT_TYPE}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
     Get    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}
-    String    response body instantiationState    FAILED_TEMP
+    String    response body nsState    FAILED_TEMP
+
 Check operation resource state is not FAILED_TEMP
     Check operation resource state is FAILED_TEMP
     Set Headers    {"Accept":"${ACCEPT}"}
     Set Headers    {"Content-Type": "${CONTENT_TYPE}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
     Get    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}
-    String  response body instantiationState  not  FAILED_TEMP
+    String  response body nsState  not  FAILED_TEMP
 
 Check resource is finally failed
     Set Headers    {"Accept":"${ACCEPT}"}
     Set Headers    {"Content-Type": "${CONTENT_TYPE}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
     Get    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}
-    String    response body instantiationState    FINALLY_FAILED
+    String    response body nsState    FINALLY_FAILED
 
 Launch another LCM operation
     Set Headers  {"Accept":"${ACCEPT}"}
@@ -179,7 +180,7 @@ POST New nsInstance
     Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
     ${body}=    Get File    jsons/CreateNsRequest.json
-    Post    ${apiRoot}/${nfvoId}/ns_instances    ${body}
+    Post    ${apiRoot}/${nfvoId}/ns_instances  ${body}
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
