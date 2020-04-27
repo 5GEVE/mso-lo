@@ -13,7 +13,9 @@ ${apiRoot}        nfvo
 ${nfvoId}         1
 ${AUTH_USAGE}     1
 ${WRONG_AUTHORIZATION}    Bearer    XXXXXWRONGXXXXX
+${nsdId}    5ac3539c-e602-4afa-8e13-962fb5a7d81f
 ${nsInstanceId}       6fc3539c-e602-4afa-8e13-962fb5a7d81f
+${nsInstanceIdinexistent}       6fc3539c-e602-4afa-8e13-962fb5a7d81xxxxxxx
 ${ConflictNsInstanceId}    007c111c-e602-4afa-8e13-962fb5a7d81d
 ${nsInstanceName}    Test-nsInstance
 ${nsInstanceDescription}    description ns
@@ -48,12 +50,9 @@ ${polling_interval}     10 sec
 ${notification_request}    []
 ${notification_response}    []
 
-${MOCK_SERVER_JAR}    ../../../bin/mockserver-netty-5.5.0-jar-with-dependencies.jar
 
 ${response}    {}
 
-${Etag}=    an etag
-${Etag_modified}=    a modified etag
 
 ${NEG_FILTER}    attribute_not_exist=some_value
 ${NEG_SELECTOR}    fields=wrong_field

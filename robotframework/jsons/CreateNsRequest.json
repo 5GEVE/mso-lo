@@ -1,24 +1,5 @@
 {
-"CreateNsRequest": {
-		"type": "object",
-		"required": [
-			"nsdId",
-			"nsName",
-			"nsDescription"
-		],
-		"properties": {
-			"nsdId": {
-				"description": "Identifier of the NSD that defines the NS instance to be created.\n",
-				"$ref": "SOL005_def.yaml#/definitions/Identifier"
-			},
-			"nsName": {
-				"description": "Human-readable name of the NS instance to be created.\n",
-				"type": "string"
-			},
-			"nsDescription": {
-				"description": "Human-readable description of the NS instance to be created.\n",
-				"type": "string"
-			}
-		}
-	}
+  "nsdId": "",
+	"nsName": "robot_ns_test",
+	"nsDescription": "Ns robotframework test"
 }

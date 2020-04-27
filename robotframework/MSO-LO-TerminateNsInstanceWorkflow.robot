@@ -5,8 +5,7 @@ Library    REST    ${MSO-LO_BASE_API}
 Library    OperatingSystem
 Library    JSONLibrary
 Library    JSONSchemaLibrary    schemas/
-Suite Setup       Initialize System
-Suite Teardown    Terminate All Processes    kill=true
+
 
 *** Test Cases ***
 Terminate Flow of NS lifecycle management operations

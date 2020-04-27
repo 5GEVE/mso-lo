@@ -5,23 +5,13 @@ Library    JSONLibrary
 Library    Process
 Library    JSONSchemaLibrary    schemas/
 Library    OperatingSystem
-Library    MockServerLibrary
+
 
 *** Keywords ***
-Initialize System
-    Start Process  java  -jar  ../../bin/mockserver-netty-5.5.0-jar-with-dependencies.jar  -serverPort  ${callback_port}  alias=mockInstance
-    Wait For Process  handle=mockInstance  timeout=5s  on_timeout=continue
-    Create Mock Session  ${callback_uri}:${callback_port}
 
 Check Operation Occurrence Id
-    ${occid}=    Get Value From Json    ${response[0]['headers']['Location']}  ${response}
-    Set Global Variable    @{nsLcmOpOccId}    ${occid}
+    Set Global Variable    ${nsLcmOpOccId}    ${response[0]['headers']['Location']}
     Should Not Be Empty    ${nsLcmOpOccId}
-
-Create Sessions
-    Start Process  java  -jar  ../../bin/mockserver-netty-5.5.0-jar-with-dependencies.jar  -serverPort  ${callback_port}  alias=mockInstance
-    Wait For Process  handle=mockInstance  timeout=5s  on_timeout=continue
-    Create Mock Session  ${callback_uri}:${callback_port}
 
 Check subscription existence
     Set Headers    {"Accept":"${ACCEPT}"}
@@ -147,8 +137,7 @@ Check resource existence
     Set Headers    {"Accept":"${ACCEPT}"}
     Set Headers    {"Content-Type": "${CONTENT_TYPE}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    ${queryParams}=     Create Dictionary      __code=200
-    Get    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId} ${queryParams}
+    Get    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}
     Integer    response status    200
 
 Check HTTP Response Status Code Is
@@ -164,7 +153,7 @@ Check HTTP Response Header Contains
 
 Check HTTP Response Body Json Schema Is
     [Arguments]    ${input}
-    ${schema} =    Catenate    ${input}    .schema.json
+    ${schema} =  Catenate  ${input}.schema.json
     Validate Json    ${schema}    ${response[0]['body']}
     Log    Json Schema Validation OK
 
@@ -180,7 +169,16 @@ POST New nsInstance
     Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
     ${body}=    Get File    jsons/CreateNsRequest.json
-    Post    ${apiRoot}/${nfvoId}/ns_instances?__code=201    ${body}
+    Post    ${apiRoot}/${nfvoId}/ns_instances  ${body}
+    ${outputResponse}=    Output    response
+	Set Global Variable    @{response}    ${outputResponse}
+
+POST New nsInstance with invalid request body
+    Log    Create NS instance by POST to ${apiRoot}/${nfvoId}/ns_instances with bad request body
+    Set Headers  {"Accept":"${ACCEPT}"}
+    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
+    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
+    Post    ${apiRoot}/${nfvoId}/ns_instances
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
@@ -227,6 +225,7 @@ Get NSInstances with exclude_default attribute selector
     GET    ${apiRoot}/${nfvoId}/ns_instances?exclude_default
     ${output}=    Output    response
     Set Suite Variable    ${response}    ${output}
+
 Get NSInstances with fields attribute selector
     Log    Get the list of NSInstances, using fields
     Set Headers    {"Accept": "${ACCEPT_JSON}"}
@@ -285,7 +284,15 @@ GET IndividualNSInstance
     Set Headers    {"Content-Type": "${CONTENT_TYPE}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
     Get    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}
-    ${Etag}=    Output    response headers Etag
+    ${outputResponse}=    Output    response
+	Set Global Variable    @{response}    ${outputResponse}
+
+GET IndividualNSInstance inexistent
+    Log    Trying to get information about an individual NS instance
+    Set Headers    {"Accept":"${ACCEPT}"}
+    Set Headers    {"Content-Type": "${CONTENT_TYPE}"}
+    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
+    Get    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceIdinexistent}
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
