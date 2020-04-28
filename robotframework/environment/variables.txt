@@ -11,10 +11,11 @@ ${ACCEPT_JSON}         application/json
 ${ACCEPT}         application/json
 ${apiRoot}        nfvo
 ${nfvoId}         1
+${nfvoIdinexistent}         80
 ${AUTH_USAGE}     1
 ${WRONG_AUTHORIZATION}    Bearer    XXXXXWRONGXXXXX
-${nsdId}    5ac3539c-e602-4afa-8e13-962fb5a7d81f
-${nsInstanceId}       6fc3539c-e602-4afa-8e13-962fb5a7d81f
+${nsdId}    82524264-7fc5-4985-a969-977063e55e9d
+${nsInstanceId}       xxxxxxxxx-e602-4afa-8e13-962fb5a7d81f
 ${nsInstanceIdinexistent}       6fc3539c-e602-4afa-8e13-962fb5a7d81xxxxxxx
 ${ConflictNsInstanceId}    007c111c-e602-4afa-8e13-962fb5a7d81d
 ${nsInstanceName}    Test-nsInstance

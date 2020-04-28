@@ -9,6 +9,10 @@ Library    OperatingSystem
 
 *** Keywords ***
 
+Check NS Id
+    Set Global Variable    ${nsInstanceId}    ${response[0]['body']['id']}
+    Should Not Be Empty    ${nsInstanceId}
+
 Check Operation Occurrence Id
     Set Global Variable    ${nsLcmOpOccId}    ${response[0]['headers']['Location']}
     Should Not Be Empty    ${nsLcmOpOccId}
@@ -19,31 +23,6 @@ Check subscription existence
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
     Get    ${apiRoot}/${nfvoId}/subscriptions/${subscriptionId}
     Integer    response status    200
-
-Check Fail not supported
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Get    ${apiRoot}/${nfvoId}/ns_lcm_op_occs/${nsLcmOpOccId}
-    # how to check if Fail is not supported? Also In Sol002
-
-Check Cancel not supported
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Get    ${apiRoot}/${nfvoId}/ns_lcm_op_occs/${nsLcmOpOccId}
-    # how to check if Cancel is not supported? Also In Sol002
-
-Check Continue not supported
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Get    ${apiRoot}/${nfvoId}/ns_lcm_op_occs/${nsLcmOpOccId}
-    # how to check if Continue is not supported? Also In Sol002
-
-Check retry not supported
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Get    ${apiRoot}/${nfvoId}/ns_lcm_op_occs/${nsLcmOpOccId}
-    # how to check if retry is not supported? Also In Sol002
-
-Check Rollback not supported
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Get    ${apiRoot}/${nfvoId}/ns_lcm_op_occs/${nsLcmOpOccId}
-    # how to check if rollback is not supported? Also In Sol002
 
 Check resource FAILED_TEMP
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
@@ -59,32 +38,6 @@ Check resource not
 Check Operation Notification Status is
     [Arguments]    ${status}
     Check Operation Notification    NsLcmOperationOccurrenceNotification   ${status}
-
-Check Operation Notification
-    [Arguments]    ${element}    ${status}=""
-    ${json}=	Get File	schemas/${element}.schema.json
-    Configure Notification Forward    ${element}    ${callback_endpoint}    ${callback_endpoint_fwd}
-    Configure Notification Status Handler    ${callback_endpoint_fwd}    ${status}
-    Wait Until Keyword Succeeds    2 min   10 sec   Verify Mock Expectation    ${notification_request}
-    Clear Requests    ${callback_endpoint}
-    Clear Requests    ${callback_endpoint_fwd}
-
-Configure Notification Forward
-    [Arguments]    ${element}    ${endpoint}    ${endpoint_fwd}
-    ${BODY}=	evaluate	json.loads('''${json}''')	json
-    Log  Creating mock HTTP forward to handle ${element}
-    &{notification_tmp}=  Create Mock Request Matcher	POST  ${endpoint}  body_type="JSON_SCHEMA"    body=${BODY}
-    &{notification_fwd}=  Create Mock Http Forward	${endpoint_fwd}
-    Create Mock Expectation With Http Forward  ${notification_tmp}  ${notification_fwd}
-
-Configure Notification Status Handler
-    [Arguments]    ${endpoint}    ${status}=""
-    Run Keyword If   ${status}!=""  set to dictionary    ${json["notificationStatus"]}    dp=${status}
-    ${BODY}=    evaluate    json.dumps(${json})    json
-    Log  Creating mock request and response to handle ${element}
-    &{notification_request}=  Create Mock Request Matcher	POST  ${endpoint}  body_type="JSON"    body=${BODY}
-    &{notification_response}=  Create Mock Response	headers="Content-Type: application/json"  status_code=204
-    Create Mock Expectation  ${notification_request}  ${notification_response}
 
 Check resource operationState is
     [Arguments]    ${state}
@@ -163,12 +116,40 @@ Check HTTP Response Header ContentType is
     Should Be Equal as Strings   ${response[0]['headers']['Content-Type']}    ${expected_contentType}
     Log    Content Type validated
 
+GET NFVO List
+    Log    Retrive NFVO list
+    Set Headers  {"Accept":"${ACCEPT}"}
+    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
+    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
+    Get    ${apiRoot}
+    ${outputResponse}=    Output    response
+	Set Global Variable    @{response}    ${outputResponse}
+
+GET IndividualNFVO
+    Log    Retrive NFVO
+    Set Headers  {"Accept":"${ACCEPT}"}
+    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
+    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
+    Get    ${apiRoot}/${nfvoId}
+    ${outputResponse}=    Output    response
+	Set Global Variable    @{response}    ${outputResponse}
+
+GET IndividualNFVO inexistent
+    Log    Retrive NFVO
+    Set Headers  {"Accept":"${ACCEPT}"}
+    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
+    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
+    Get    ${apiRoot}/${nfvoIdinexistent}
+    ${outputResponse}=    Output    response
+	Set Global Variable    @{response}    ${outputResponse}
+
 POST New nsInstance
     Log    Create NS instance by POST to ${apiRoot}/${nfvoId}/ns_instances
     Set Headers  {"Accept":"${ACCEPT}"}
     Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    ${body}=    Get File    jsons/CreateNsRequest.json
+    ${body}=    Load JSON From File    jsons/CreateNsRequest.json
+    ${body}=    Update Value To Json    ${body}    $.nsdId    ${nsdId}
     Post    ${apiRoot}/${nfvoId}/ns_instances  ${body}
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
@@ -191,93 +172,6 @@ GET NsInstances
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
-
-GET NsInstance Invalid Attribute-Based filtering parameter
-    Log    Query NS The GET method queries information about multiple NS instances.
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Get   ${apiRoot}/${nfvoId}/ns_instances?attribute_not_exist=some_value
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-GET NsInstance Invalid Attribute Selector
-    Log    Query NS The GET method queries information about multiple NS instances.
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Get    ${apiRoot}/${nfvoId}/ns_instances?fields=wrong_field
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-Get NSInstances with all_fields attribute selector
-    Log    Get the list of NSInstances, using fields
-    Set Headers    {"Accept": "${ACCEPT_JSON}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization": "${AUTHORIZATION}"}
-    GET    ${apiRoot}/${nfvoId}/ns_instances?exclude_default
-    ${output}=    Output    response
-    Set Suite Variable    ${response}    ${output}
-
-Get NSInstances with exclude_default attribute selector
-    Log    Get the list of NSInstances, using fields
-    Set Headers    {"Accept": "${ACCEPT_JSON}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization": "${AUTHORIZATION}"}
-    GET    ${apiRoot}/${nfvoId}/ns_instances?exclude_default
-    ${output}=    Output    response
-    Set Suite Variable    ${response}    ${output}
-
-Get NSInstances with fields attribute selector
-    Log    Get the list of NSInstances, using fields
-    Set Headers    {"Accept": "${ACCEPT_JSON}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization": "${AUTHORIZATION}"}
-    GET    ${apiRoot}/${nfvoId}/ns_instances?fields=${fields}
-    ${output}=    Output    response
-    Set Suite Variable    ${response}    ${output}
-
-Get NSInstances with exclude_fields attribute selector
-    Log    Get the list of NSInstances, using fields
-    Set Headers    {"Accept": "${ACCEPT_JSON}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization": "${AUTHORIZATION}"}
-    GET    ${apiRoot}/${nfvoId}/ns_instances?exclude_fields=${fields}
-    ${output}=    Output    response
-    Set Suite Variable    ${response}    ${output}
-
-PUT NSInstances
-    log    Trying to perform a PUT. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Put    ${apiRoot}/${nfvoId}/ns_instances
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-PATCH NSInstances
-    log    Trying to perform a PATCH. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Patch    ${apiRoot}/${nfvoId}/ns_instances
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-DELETE NSInstances
-    log    Trying to perform a DELETE. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Delete    ${apiRoot}/${nfvoId}/ns_instances
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-POST IndividualNSInstance
-    Log    Trying to perform a POST. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Post    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
 GET IndividualNSInstance
     Log    Trying to get information about an individual NS instance
     Set Headers    {"Accept":"${ACCEPT}"}
@@ -296,72 +190,10 @@ GET IndividualNSInstance inexistent
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
-
-PUT IndividualNSInstance
-    Log    Trying to perform a PUT. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Put    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-PATCH IndividualNSInstance
-    Log    Trying to perform a PATCH. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Patch    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
 DELETE IndividualNSInstance
-    log    Trying to delete an individual VNF instance
+    log    Trying to delete an individual NS instance
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
     Delete    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-
-DELETE IndividualNSInstance Conflict
-    log    Trying to delete an individual VNF instance
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Delete    ${apiRoot}/${nfvoId}/ns_instances/${ConflictNsInstanceId}
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-
-DELETE Instantiate NSInstance
-    log    Trying to delete an instantiate NS instance. This method should not be implemented
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Delete    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/instantiate
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-PATCH Instantiate NSInstance
-    log    Trying to patch an instantiate NS instance. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Patch    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/instantiate
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-PUT Instantiate NSInstance
-    log    Trying to put an instantiate NS instance. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Put    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/instantiate
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-GET Instantiate NSInstance
-    log    Trying to get an instantiate NS instance. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Get    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/instantiate
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
@@ -375,40 +207,6 @@ POST Instantiate nsInstance
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
-DELETE Scale NSInstance
-    log    Trying to delete an Scale NS instance. This method should not be implemented
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Delete    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/scale
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-PATCH Scale NSInstance
-    log    Trying to patch an Scale NS instance. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Patch    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/scale
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-PUT Scale NSInstance
-    log    Trying to put an Scale NS instance. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Put    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/scale
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-GET Scale NSInstance
-    log    Trying to get an Scale NS instance. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Get    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/scale
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
 POST scale nsInstance
 	Log    Trying to Instantiate a scale NS Instance
     Set Headers  {"Accept":"${ACCEPT}"}
@@ -416,40 +214,6 @@ POST scale nsInstance
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
     ${body}=    Get File    jsons/ScaleNsRequest.json
 	Post    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/scale    ${body}
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-DELETE Update NSInstance
-    log    Trying to delete an Update NS instance. This method should not be implemented
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Delete    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/update
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-PATCH Update NSInstance
-    log    Trying to patch an Update NS instance. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Patch    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/update
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-PUT Update NSInstance
-    log    Trying to put an Update NS instance. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Put    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/update
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-GET Update NSInstance
-    log    Trying to get an Update NS instance. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Get    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/update
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
@@ -463,40 +227,6 @@ POST Update NSInstance
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
-DELETE Heal NSInstance
-    log    Trying to Delete an Heal NS instance. This method should not be implemented
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Delete    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/heal
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-PATCH Heal NSInstance
-    log    Trying to patch an Heal NS instance. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Patch    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/heal
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-PUT Heal NSInstance
-    log    Trying to put an Heal NS instance. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Put    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/heal
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-GET Heal NSInstance
-    log    Trying to get an Heal NS instance. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Get    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/heal
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
 POST Heal NSInstance
 	Log    Trying to Instantiate a Heal NS Instance
     Set Headers  {"Accept":"${ACCEPT}"}
@@ -507,40 +237,6 @@ POST Heal NSInstance
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
-DELETE Terminate NSInstance
-    log    Trying to Delete an Terminate NS instance. This method should not be implemented
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Delete    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/terminate
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-PATCH Terminate NSInstance
-    log    Trying to patch an Terminate NS instance. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Patch    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/terminate
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-PUT Terminate NSInstance
-    log    Trying to put an Terminate NS instance. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Put    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/terminate
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-GET Terminate NSInstance
-    log    Trying to Get an Terminate NS instance. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Get    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/terminate
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
 POST Terminate NSInstance
 	Log    Trying to Instantiate a Terminate NS Instance
     Set Headers  {"Accept":"${ACCEPT}"}
@@ -548,38 +244,6 @@ POST Terminate NSInstance
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
     ${body}=    Get File    jsons/TerminateNsRequest.json
 	Post    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/terminate    ${body}
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-POST NS LCM OP Occurrences
-    log    Trying to perform a POST. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Post    ${apiRoot}/${nfvoId}/ns_lcm_op_occs
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-PUT NS LCM OP Occurrences
-    log    Trying to perform a PUT. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Put    ${apiRoot}/${nfvoId}/ns_lcm_op_occs
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-PATCH NS LCM OP Occurrences
-    log    Trying to perform a PATCH. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Patch    ${apiRoot}/${nfvoId}/ns_lcm_op_occs
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-DELETE NS LCM OP Occurrences
-    log    Trying to perform a DELETE. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Delete    ${apiRoot}/${nfvoId}/ns_lcm_op_occs
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
@@ -607,6 +271,7 @@ GET NS LCM OP Occurrences Invalid attribute selector
 	GET    ${apiRoot}/${nfvoId}/ns_lcm_op_occs?${NEG_SELECTOR}
 	${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
+
 Get NS LCM OP Occurrences with all_fields attribute selector
     Log    Query status information about multiple NS lifecycle management operation occurrences, using fields
     Set Headers    {"Accept": "${ACCEPT_JSON}"}
@@ -614,6 +279,7 @@ Get NS LCM OP Occurrences with all_fields attribute selector
     GET    ${apiRoot}/${nfvoId}/ns_lcm_op_occs?exclude_default
     ${output}=    Output    response
     Set Suite Variable    ${response}    ${output}
+
 Get NS LCM OP Occurrences with exclude_default attribute selector
     Log    Query status information about multiple NS lifecycle management operation occurrences using fields
     Set Headers    {"Accept": "${ACCEPT_JSON}"}
@@ -621,6 +287,7 @@ Get NS LCM OP Occurrences with exclude_default attribute selector
     GET    ${apiRoot}/${nfvoId}/ns_lcm_op_occs?exclude_default
     ${output}=    Output    response
     Set Suite Variable    ${response}    ${output}
+
 Get NS LCM OP Occurrences with fields attribute selector
     Log    Query status information about multiple NS lifecycle management operation occurrences, using fields
     Set Headers    {"Accept": "${ACCEPT_JSON}"}
@@ -628,6 +295,7 @@ Get NS LCM OP Occurrences with fields attribute selector
     GET    ${apiRoot}/${nfvoId}/ns_lcm_op_occs?fields=${fields}
     ${output}=    Output    response
     Set Suite Variable    ${response}    ${output}
+
 Get NS LCM OP Occurrences with exclude_fields attribute selector
     Log    Query status information about multiple NS lifecycle management operation occurrences, using fields
     Set Headers    {"Accept": "${ACCEPT_JSON}"}
@@ -677,67 +345,11 @@ GET Individual NS LCM OP Occurrence
 	${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
-GET Retry operation task
-    log    Trying to perform a GET. This method should not be implemented
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Get    ${apiRoot}/${nfvoId}/ns_lcm_op_occs/${nsLcmOpOccId}/retry
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-PUT Retry operation task
-    log    Trying to perform a PUT. This method should not be implemented
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Put    ${apiRoot}/${nfvoId}/ns_lcm_op_occs/${nsLcmOpOccId}/retry
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-PATCH Retry operation task
-    log    Trying to perform a PATCH. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Patch    ${apiRoot}/${nfvoId}/ns_lcm_op_occs/${nsLcmOpOccId}/retry
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-DELETE Retry operation task
-    log    Trying to perform a DELETE. This method should not be implemented
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Delete    ${apiRoot}/${nfvoId}/ns_lcm_op_occs/${nsLcmOpOccId}/retry
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
 POST Retry operation task
     Log    Retry a NS lifecycle operation if that operation has experienced a temporary failure
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
     Log    Execute Query and validate response
     Post    ${apiRoot}/${nfvoId}/ns_lcm_op_occs/${nsLcmOpOccId}/retry
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-GET Rollback operation task
-    log    Trying to perform a GET. This method should not be implemented
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Get    ${apiRoot}/${nfvoId}/ns_lcm_op_occs/${nsLcmOpOccId}/rollback
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-PUT Rollback operation task
-    log    Trying to perform a PUT. This method should not be implemented
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Put    ${apiRoot}/${nfvoId}/ns_lcm_op_occs/${nsLcmOpOccId}/rollback
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-PATCH Rollback operation task
-    log    Trying to perform a PATCH. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Patch    ${apiRoot}/${nfvoId}/ns_lcm_op_occs/${nsLcmOpOccId}/rollback
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-DELETE Rollback operation task
-    log    Trying to perform a DELETE. This method should not be implemented
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Delete    ${apiRoot}/${nfvoId}/ns_lcm_op_occs/${nsLcmOpOccId}/rollback
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
@@ -749,67 +361,11 @@ POST Rollback operation task
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
-GET Continue operation task
-    log    Trying to perform a GET. This method should not be implemented
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Get    ${apiRoot}/${nfvoId}/ns_lcm_op_occs/${nsLcmOpOccId}/continue
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-PUT Continue operation task
-    log    Trying to perform a PUT. This method should not be implemented
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Put    ${apiRoot}/${nfvoId}/ns_lcm_op_occs/${nsLcmOpOccId}/continue
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-PATCH Continue operation task
-    log    Trying to perform a PATCH. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Patch    ${apiRoot}/${nfvoId}/ns_lcm_op_occs/${nsLcmOpOccId}/continue
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-DELETE Continue operation task
-    log    Trying to perform a DELETE. This method should not be implemented
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Delete    ${apiRoot}/${nfvoId}/ns_lcm_op_occs/${nsLcmOpOccId}/continue
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
 POST Continue operation task
     Log    Continue a NS lifecycle operation task
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
     Log    Execute Query and validate response
     Post    ${apiRoot}/${nfvoId}/ns_lcm_op_occs/${nsLcmOpOccId}/continue
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-GET Fail operation task
-    log    Trying to perform a GET. This method should not be implemented
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Get    ${apiRoot}/${nfvoId}/ns_lcm_op_occs/${nsLcmOpOccId}/fail
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-PUT Fail operation task
-    log    Trying to perform a PUT. This method should not be implemented
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Put    ${apiRoot}/${nfvoId}/ns_lcm_op_occs/${nsLcmOpOccId}/fail
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-PATCH Fail operation task
-    log    Trying to perform a PATCH. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Patch    ${apiRoot}/${nfvoId}/ns_lcm_op_occs/${nsLcmOpOccId}/fail
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-DELETE Fail operation task
-    log    Trying to perform a DELETE. This method should not be implemented
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Delete    ${apiRoot}/${nfvoId}/ns_lcm_op_occs/${nsLcmOpOccId}/fail
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
@@ -821,67 +377,12 @@ POST Fail operation task
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
-GET Cancel operation task
-    log    Trying to perform a GET. This method should not be implemented
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Get    ${apiRoot}/${nfvoId}/ns_lcm_op_occs/${nsLcmOpOccId}/cancel
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-PUT Cancel operation task
-    log    Trying to perform a PUT. This method should not be implemented
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Put    ${apiRoot}/${nfvoId}/ns_lcm_op_occs/${nsLcmOpOccId}/cancel
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-PATCH Cancel operation task
-    Log    Trying to perform a PATCH. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Patch    ${apiRoot}/${nfvoId}/ns_lcm_op_occs/${nsLcmOpOccId}/cancel
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-DELETE Cancel operation task
-    Log    Trying to perform a DELETE. This method should not be implemented
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Delete    ${apiRoot}/${nfvoId}/ns_lcm_op_occs/${nsLcmOpOccId}/cancel
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
 POST Cancel operation task
     Log    Cancel a NS lifecycle operation task
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
     Log    Execute Query and validate response
     Post    ${apiRoot}/${nfvoId}/ns_lcm_op_occs/${nsLcmOpOccId}/cancel
     ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-PUT subscriptions
-    Log    Trying to perform a PUT. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Put    ${apiRoot}/${nfvoId}/subscriptions
-	${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-PATCH subscriptions
-    Log    Trying to perform a PATCH. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Patch    ${apiRoot}/${nfvoId}/subscriptions
-	${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-DELETE subscriptions
-    Log    Trying to perform a DELETE. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Delete    ${apiRoot}/${nfvoId}/subscriptions
-	${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
 POST subscriptions
@@ -916,7 +417,6 @@ POST subscriptions NO DUPLICATION
 	${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
-
 GET Subscriptions
     Log    Get the list of active subscriptions
     Set Headers  {"Accept":"${ACCEPT}"}
@@ -934,6 +434,7 @@ Get subscriptions with all_fields attribute selector
     GET    ${apiRoot}/${nfvoId}/subscriptions?all_fields
     ${output}=    Output    response
     Set Suite Variable    ${response}    ${output}
+
 Get subscriptions with exclude_default attribute selector
     Log    Get the list of active subscriptions, using fields
     Set Headers    {"Accept": "${ACCEPT_JSON}"}
@@ -941,6 +442,7 @@ Get subscriptions with exclude_default attribute selector
     GET    ${apiRoot}/${nfvoId}/subscriptions?exclude_default
     ${output}=    Output    response
     Set Suite Variable    ${response}    ${output}
+
 Get subscriptions with fields attribute selector
     Log    Get the list of active subscriptions, using fields
     Set Headers    {"Accept": "${ACCEPT_JSON}"}
@@ -948,6 +450,7 @@ Get subscriptions with fields attribute selector
     GET    ${apiRoot}/${nfvoId}/subscriptions?fields=${fields}
     ${output}=    Output    response
     Set Suite Variable    ${response}    ${output}
+
 Get subscriptions with exclude_fields attribute selector
     Log    Get the list of active subscriptions, using fields
     Set Headers    {"Accept": "${ACCEPT_JSON}"}
@@ -972,33 +475,6 @@ Get subscriptions - invalid filter
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
-POST Individual Subscription
-    log    Trying to perform a POST. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Post    ${apiRoot}/${nfvoId}/subscriptions/${subscriptionId}
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-PUT Individual Subscription
-    log    Trying to perform a PUT. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Put    ${apiRoot}/${nfvoId}/subscriptions/${subscriptionId}
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-PATCH Individual Subscription
-    log    Trying to perform a PATCH. This method should not be implemented
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Patch    ${apiRoot}/${nfvoId}/subscriptions/${subscriptionId}
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
 GET Individual subscription
     log    Trying to get information about an individual subscription
     Set Headers    {"Accept":"${ACCEPT}"}
@@ -1015,64 +491,3 @@ DELETE Individual subscription
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
-POST Operation occurrence
-    log    The POST method delivers a notification from the server to the client.
-    ${json}=	Get File	schemas/NsLcmOperationOccurrenceNotification.schema.json
-    ${BODY}=	evaluate	json.loads('''${json}''')	json
-    Log  Creating mock request and response to handle NSLcmOperationOccurrenceNotification
-    &{req}=  Create Mock Request Matcher	POST  ${callback_endpoint}  body_type="JSON_SCHEMA"    body=${BODY}
-    &{rsp}=  Create Mock Response	headers="Content-Type: application/json"  status_code=204
-    Create Mock Expectation  ${req}  ${rsp}
-    Sleep  ${sleep_interval}
-    Log  Verifying results
-    Verify Mock Expectation  ${req}
-    Log  Cleaning the endpoint
-    Clear Requests  ${callback_endpoint}
-
-POST Id creation
-    log    The POST method delivers a notification from the server to the client.
-    ${json}=	Get File	schemas/NsIdentifierCreationNotification.schema.json
-    ${BODY}=	evaluate	json.loads('''${json}''')	json
-    Log  Creating mock request and response to handle NsIdentifierCreationNotification
-    &{req}=  Create Mock Request Matcher	POST  ${callback_endpoint}}  body_type="JSON_SCHEMA"    body=${BODY}
-    &{rsp}=  Create Mock Response	headers="Content-Type: application/json"  status_code=204
-    Create Mock Expectation  ${req}  ${rsp}
-    Sleep  ${sleep_interval}
-    Log  Verifying results
-    Verify Mock Expectation  ${req}
-    Log  Cleaning the endpoint
-    Clear Requests  ${callback_endpoint}
-
-POST Id deletion
-    log    The POST method delivers a notification from the server to the client.
-    ${json}=	Get File	schemas/NsIdentifierDeletionNotification.schema.json
-    ${BODY}=	evaluate	json.loads('''${json}''')	json
-    Log  Creating mock request and response to handle NsIdentifierDeletionNotification
-    &{req}=  Create Mock Request Matcher	POST  ${callback_endpoint}  body_type="JSON_SCHEMA"    body=${BODY}
-    &{rsp}=  Create Mock Response	headers="Content-Type: application/json"  status_code=204
-    Create Mock Expectation  ${req}  ${rsp}
-    Sleep  ${sleep_interval}
-    Log  Verifying results
-    Verify Mock Expectation  ${req}
-    Log  Cleaning the endpoint
-    Clear Requests  ${callback_endpoint}
-
-GET Notification endpoint
-    log    The GET method allows the server to test the notification endpoint
-    &{req}=  Create Mock Request Matcher	GET  ${callback_endpoint}
-    &{rsp}=  Create Mock Response	headers="Content-Type: application/json"  status_code=204
-    Create Mock Expectation  ${req}  ${rsp}
-    Sleep  ${sleep_interval}
-    Verify Mock Expectation  ${req}
-    Clear Requests  ${callback_endpoint}
-
-PUT notification
-    Log  PUT Method not implemented
-    &{req}=  Create Mock Request Matcher	PUT  ${callback_endpoint}
-    &{rsp}=  Create Mock Response  status_code=405
-    Create Mock Expectation  ${req}  ${rsp}
-    Sleep  ${sleep_interval}
-    Log  Verifying results
-    Verify Mock Expectation  ${req}
-    Log  Cleaning the endpoint
-    Clear Requests  ${callback_endpoint}
