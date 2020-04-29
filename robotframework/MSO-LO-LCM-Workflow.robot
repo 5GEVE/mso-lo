@@ -1,6 +1,7 @@
 *** Settings ***
 Resource    environment/variables.txt
 Resource   NSLCMOperationKeywords.robot
+Resource   NFVOOperationKeywords.robot
 Library    REST    ${MSO-LO_BASE_API}
 Library    OperatingSystem
 Library    JSONLibrary
@@ -91,7 +92,7 @@ NS Instance Terminate
     Check Operation Occurrence Id
     # Check Operation Notification Status is    START
     # Check Operation Notification Status is    RESULT
-    Check resource not_instantiated
+    # Check resource not_instantiated
 
 NS Instance Deletion
     [Documentation]    Test ID: mso-lo-test-3.6

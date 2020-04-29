@@ -1,6 +1,7 @@
 *** Settings ***
 Resource    environment/variables.txt
 Resource   NSLCMOperationKeywords.robot
+Resource   NFVOOperationKeywords.robot
 Library    REST    ${MSO-LO_BASE_API}
 Library    OperatingSystem
 Library    JSONLibrary

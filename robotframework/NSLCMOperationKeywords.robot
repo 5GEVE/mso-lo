@@ -14,8 +14,12 @@ Check NS Id
     Should Not Be Empty    ${nsInstanceId}
 
 Check Operation Occurrence Id
-    Set Global Variable    ${nsLcmOpOccId}    ${response[0]['headers']['Location']}
+    ${nsLcmOpOcc}=    set variable    ${response[0]['headers']['Location']}
+    # using a basic regex, it can be improved
+    ${nsLcmOpOcc}=    evaluate    re.search(r'(/nfvo/.*/ns_lcm_op_occs/(.*))', '''${nsLcmOpOcc}''').group(2)    re
+    Set Global Variable    ${nsLcmOpOccId}    ${nsLcmOpOcc}
     Should Not Be Empty    ${nsLcmOpOccId}
+    Log    ${nsLcmOpOccId}
 
 Check subscription existence
     Set Headers    {"Accept":"${ACCEPT}"}
@@ -115,33 +119,6 @@ Check HTTP Response Header ContentType is
     Log    Validate content type
     Should Be Equal as Strings   ${response[0]['headers']['Content-Type']}    ${expected_contentType}
     Log    Content Type validated
-
-GET NFVO List
-    Log    Retrive NFVO list
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Get    ${apiRoot}
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-GET IndividualNFVO
-    Log    Retrive NFVO
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Get    ${apiRoot}/${nfvoId}
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-GET IndividualNFVO inexistent
-    Log    Retrive NFVO
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Get    ${apiRoot}/${nfvoIdinexistent}
-    ${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
 
 POST New nsInstance
     Log    Create NS instance by POST to ${apiRoot}/${nfvoId}/ns_instances
