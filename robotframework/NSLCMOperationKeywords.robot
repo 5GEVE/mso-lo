@@ -3,9 +3,9 @@ Resource   environment/variables.txt
 Library    REST     ${MSO-LO_BASE_API}
 Library    JSONLibrary
 Library    Process
-Library    JSONSchemaLibrary    schemas/
+Library    jsonschema
 Library    OperatingSystem
-
+Variables   ../adaptation_layer/tests/response_schemas.py
 
 *** Keywords ***
 
@@ -109,9 +109,8 @@ Check HTTP Response Header Contains
     Log    Header is present
 
 Check HTTP Response Body Json Schema Is
-    [Arguments]    ${input}
-    ${schema} =  Catenate  ${input}.schema.json
-    Validate Json    ${schema}    ${response[0]['body']}
+    [Arguments]    ${input_schema}
+    validate    instance=${response[0]['body']}    schema=${input_schema}
     Log    Json Schema Validation OK
 
 Check HTTP Response Header ContentType is

@@ -18,7 +18,7 @@ GET NFVO List
     ...    Post-Conditions: none
     GET NFVO List
     Check HTTP Response Status Code Is    200
-    Check HTTP Response Body Json Schema Is    NFVOs
+    Check HTTP Response Body Json Schema Is    ${nfvo_list_schema}
 
 GET Individual NFVO informations
     [Documentation]    Test ID: mso-lo-test-
@@ -28,7 +28,7 @@ GET Individual NFVO informations
     ...    Post-Conditions: none
     GET IndividualNFVO
     Check HTTP Response Status Code Is    200
-    Check HTTP Response Body Json Schema Is    NFVO
+    Check HTTP Response Body Json Schema Is    ${nfvo_schema}
 
 GET Individual NFVO informations inexistent
     [Documentation]    Test ID: mso-lo-test-
