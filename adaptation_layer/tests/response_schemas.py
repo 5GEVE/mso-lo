@@ -32,6 +32,8 @@ if file_path is None:
     # Test in dev environment
     file_path = _get_file_path('../../openapi/')
 if file_path is None:
+    file_path = _get_file_path('../openapi/')
+if file_path is None:
     raise FileNotFoundError("Openapi directory not found.")
 
 openapi = ResolvingParser(file_path).specification
