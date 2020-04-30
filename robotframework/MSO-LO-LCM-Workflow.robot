@@ -11,7 +11,7 @@ Library    JSONSchemaLibrary    schemas/
 
 *** Test Cases ***
 NS Instance Creation
-    [Tags]    create-instantiate
+    [Tags]    instantiate-terminate-workflow
     [Documentation]    Test ID: mso-lo-test-3.2
     ...    Test title: NS Instance Creation
     ...    Test objective: The objective is to test the workflow for Creating a NS instance
@@ -44,7 +44,7 @@ NS Instance List
     Check HTTP Response Body Json Schema Is    ${ns_list_schema}
 
 GET Information about an individual NS Instance
-    [Tags]    create-instantiate
+    [Tags]    instantiate-terminate-workflow
     [Documentation]    Test ID: mso-lo-test-3.3
     ...    Test title: GET Information about an individual NS Instance
     ...    Test objective: The objective is to test that GET method returns an individual NS instance
@@ -64,7 +64,7 @@ GET Information about an inexistent individual NS Instance
     Check HTTP Response Status Code Is    404
 
 NS Instance Instantiate
-    [Tags]    create-instantiate
+    [Tags]    instantiate-terminate-workflow
     [Documentation]    Test ID: mso-lo-test-3.4
     ...    Test title: NS Instance Instantiate
     ...    Test objective: The objective is to test the workflow for Instantiate a NS instance
@@ -78,7 +78,7 @@ NS Instance Instantiate
     Check Operation Occurrence Id
 
 NS LCM OP Occurrence Instantiate PROCESSING
-    [Tags]    create-instantiate
+    [Tags]    instantiate-terminate-workflow
     [Documentation]    Test ID: mso-lo-test-3.5
     ...    Test title: NS LCM OP Occurrence Instantiate PROCESSING
     ...    Test objective: The objective is to test the workflow for retrive NS LCM OP Occurrence
@@ -90,7 +90,7 @@ NS LCM OP Occurrence Instantiate PROCESSING
     Check resource operationState is    PROCESSING
 
 NS LCM OP Occurrence Instantiate COMPLETED
-    [Tags]    create-instantiate
+    [Tags]    instantiate-terminate-workflow
     [Documentation]    Test ID: mso-lo-test-3.6
     ...    Test title: NS LCM OP Occurrence Instantiate COMPLETED
     ...    Test objective: The objective is to test the workflow for retrive NS LCM OP Occurrence
@@ -101,6 +101,7 @@ NS LCM OP Occurrence Instantiate COMPLETED
     ...   AND   Check resource operationState is    COMPLETED
 
 NS Instance Terminate
+    [Tags]    instantiate-terminate-workflow
     [Documentation]    Test ID: mso-lo-test-3.
     ...    Test title: Terminate NS Instance
     ...    Test objective: The objective is to test the workflow for Terminate a NS instance
@@ -112,7 +113,8 @@ NS Instance Terminate
     Check HTTP Response Status Code Is    202
     Check Operation Occurrence Id
 
-NS LCM OP Occurrence Terminate
+NS LCM OP Occurrence Terminate PROCESSING
+    [Tags]    instantiate-terminate-workflow
     [Documentation]    Test ID: mso-lo-test-3.5
     ...    Test title: NS LCM OP Occurrence Terminate
     ...    Test objective: The objective is to test the workflow for retrive NS LCM OP Occurrence
@@ -121,6 +123,7 @@ NS LCM OP Occurrence Terminate
     GET Individual NS LCM OP Occurrence
     Check HTTP Response Status Code Is    200
     Check HTTP Response Body Json Schema Is  ${ns_lcm_op_occ_schema}
+    Check resource operationState is    PROCESSING
 
 NS LCM OP Occurrences
     [Documentation]    Test ID: mso-lo-test-3.5
@@ -133,6 +136,7 @@ NS LCM OP Occurrences
     Check HTTP Response Body Json Schema Is  ${ns_lcm_op_occ_list_schema}
 
 NS Instance Deletion
+    [Tags]    instantiate-terminate-workflow
     [Documentation]    Test ID: mso-lo-test-3.6
     ...    Test title: NS Instance Deletion
     ...    Test objective: The objective is to test the workflow for Deleting a NS instance
