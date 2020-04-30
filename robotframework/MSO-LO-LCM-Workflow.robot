@@ -10,17 +10,6 @@ Library    JSONSchemaLibrary    schemas/
 
 
 *** Test Cases ***
-
-NS Instance List
-    [Documentation]    Test ID: mso-lo-test-3.1
-    ...    Test title: NS Instance List
-    ...    Test objective: The objective is to test the workflow for retriving the NS instance list
-    ...    Pre-conditions: none
-    ...    Post-Conditions: none
-    GET NsInstances
-    Check HTTP Response Status Code Is    200
-    Check HTTP Response Body Json Schema Is    ${ns_list_schema}
-
 NS Instance Creation
     [Documentation]    Test ID: mso-lo-test-3.2
     ...    Test title: NS Instance Creation
@@ -42,6 +31,16 @@ NS Instance Creation Bad Request
     ...    Post-Conditions: Status code 400
     POST New nsInstance with invalid request body
     Check HTTP Response Status Code Is    400
+
+NS Instance List
+    [Documentation]    Test ID: mso-lo-test-3.1
+    ...    Test title: NS Instance List
+    ...    Test objective: The objective is to test the workflow for retriving the NS instance list
+    ...    Pre-conditions: none
+    ...    Post-Conditions: none
+    GET NsInstances
+    Check HTTP Response Status Code Is    200
+    Check HTTP Response Body Json Schema Is    ${ns_list_schema}
 
 GET Information about an individual NS Instance
     [Documentation]    Test ID: mso-lo-test-3.3
