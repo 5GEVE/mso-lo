@@ -1,5 +1,6 @@
 *** Settings ***
 Resource    environment/variables.txt
+Variables   ../adaptation_layer/tests/response_schemas.py
 Resource   NSLCMOperationKeywords.robot
 Resource   NFVOOperationKeywords.robot
 Library    REST    ${MSO-LO_BASE_API}

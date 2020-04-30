@@ -5,7 +5,6 @@ Library    JSONLibrary
 Library    Process
 Library    jsonschema
 Library    OperatingSystem
-Variables   ../adaptation_layer/tests/response_schemas.py
 
 *** Keywords ***
 
