@@ -7,5 +7,6 @@ services:
     container_name: test-nfvo
     environment:
       TESTING: "True"
+      OPENAPI_PATH: ./openapi/MSO-LO-swagger-resolved.yaml
     command: ["pipenv", "run", "pytest", "-v", "tests/test_nfvo.py"]
 
