@@ -70,6 +70,7 @@ GET NS LCM OP Occurrence Instantiate PROCESSING
     GET Individual NS LCM OP Occurrence
     Check HTTP Response Status Code Is    200
     Check HTTP Response Body Json Schema Is  ${ns_lcm_op_occ_schema}
+    Check resource lcmOperationType is  INSTANTIATE
     Check resource operationState is    PROCESSING
 
 GET NS LCM OP Occurrence Instantiate COMPLETED
@@ -99,14 +100,26 @@ POST NS Instance Terminate
 GET NS LCM OP Occurrence Terminate PROCESSING
     [Tags]    instantiate-terminate-workflow
     [Documentation]    Test ID: mso-lo-test-3.5
-    ...    Test title: NS LCM OP Occurrence Terminate
+    ...    Test title: NS LCM OP Occurrence Terminate PROCESSING
     ...    Test objective: The objective is to test the workflow for retrive NS LCM OP Occurrence
     ...    Pre-conditions: none
     ...    Post-Conditions: status code 200
     GET Individual NS LCM OP Occurrence
     Check HTTP Response Status Code Is    200
     Check HTTP Response Body Json Schema Is  ${ns_lcm_op_occ_schema}
+    Check resource lcmOperationType is  TERMINATE
     Check resource operationState is    PROCESSING
+
+GET NS LCM OP Occurrence Terminate PROCESSING
+    [Tags]    instantiate-terminate-workflow
+    [Documentation]    Test ID: mso-lo-test-3.5
+    ...    Test title: NS LCM OP Occurrence Terminate COMPLETED
+    ...    Test objective: The objective is to test the workflow for retrive NS LCM OP Occurrence
+    ...    Pre-conditions: none
+    ...    Post-Conditions: status code 200
+    Wait Until Keyword Succeeds    2 min    2 s    Run Keywords
+    ...   GET Individual NS LCM OP Occurrence
+    ...   AND   Check resource operationState is    COMPLETED
 
 POST NS Instance Delete
     [Tags]    instantiate-terminate-workflow
