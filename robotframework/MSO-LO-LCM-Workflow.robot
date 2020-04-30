@@ -80,7 +80,7 @@ NS Instance Instantiate
 NS LCM OP Occurrence Instantiate PROCESSING
     [Tags]    create-instantiate
     [Documentation]    Test ID: mso-lo-test-3.5
-    ...    Test title: NS LCM OP Occurrence Instantiate
+    ...    Test title: NS LCM OP Occurrence Instantiate PROCESSING
     ...    Test objective: The objective is to test the workflow for retrive NS LCM OP Occurrence
     ...    Pre-conditions: none
     ...    Post-Conditions: status code 200
@@ -92,6 +92,10 @@ NS LCM OP Occurrence Instantiate PROCESSING
 NS LCM OP Occurrence Instantiate COMPLETED
     [Tags]    create-instantiate
     [Documentation]    Test ID: mso-lo-test-3.6
+    ...    Test title: NS LCM OP Occurrence Instantiate COMPLETED
+    ...    Test objective: The objective is to test the workflow for retrive NS LCM OP Occurrence
+    ...    Pre-conditions: none
+    ...    Post-Conditions: status code 200
     Wait Until Keyword Succeeds    2 min    2 s    Run Keywords
     ...   GET Individual NS LCM OP Occurrence
     ...   AND   Check resource operationState is    COMPLETED
