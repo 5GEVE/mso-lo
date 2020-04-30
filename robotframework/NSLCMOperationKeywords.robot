@@ -32,19 +32,19 @@ Check resource FAILED_TEMP
     Get    ${apiRoot}/${nfvoId}/ns_lcm_op_occs/${nsLcmOpOccId}
     String    response body operationState    FAILED_TEMP
 
-Check resource not
-    [Arguments]   ${status}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Get    ${apiRoot}/${nfvoId}/ns_lcm_op_occs/${nsLcmOpOccId}
-    Should Not Be Equal As Strings  response body operationState    ${status}
+Check resource operationState is not
+    [Arguments]   ${state}
+    Should Be Not Equal As Strings    ${response[0]['body']['operationState']}    ${state}
+    Log     State is ${state}
+
+Check resource operationState is
+    [Arguments]   ${state}
+    Should Be Equal As Strings    ${response[0]['body']['operationState']}    ${state}
+    Log     State is ${state}
 
 Check Operation Notification Status is
     [Arguments]    ${status}
     Check Operation Notification    NsLcmOperationOccurrenceNotification   ${status}
-
-Check resource operationState is
-    [Arguments]    ${state}
-    String    ${response[0]['body']['operationState']}   ${state}
 
 Check resource instantiated
     Set Headers    {"Accept":"${ACCEPT}"}

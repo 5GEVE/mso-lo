@@ -11,6 +11,7 @@ Library    JSONSchemaLibrary    schemas/
 
 *** Test Cases ***
 NS Instance Creation
+    [Tags]    create-instantiate
     [Documentation]    Test ID: mso-lo-test-3.2
     ...    Test title: NS Instance Creation
     ...    Test objective: The objective is to test the workflow for Creating a NS instance
@@ -43,6 +44,7 @@ NS Instance List
     Check HTTP Response Body Json Schema Is    ${ns_list_schema}
 
 GET Information about an individual NS Instance
+    [Tags]    create-instantiate
     [Documentation]    Test ID: mso-lo-test-3.3
     ...    Test title: GET Information about an individual NS Instance
     ...    Test objective: The objective is to test that GET method returns an individual NS instance
@@ -62,6 +64,7 @@ GET Information about an inexistent individual NS Instance
     Check HTTP Response Status Code Is    404
 
 NS Instance Instantiate
+    [Tags]    create-instantiate
     [Documentation]    Test ID: mso-lo-test-3.4
     ...    Test title: NS Instance Instantiate
     ...    Test objective: The objective is to test the workflow for Instantiate a NS instance
@@ -75,14 +78,16 @@ NS Instance Instantiate
     Check Operation Occurrence Id
 
 NS LCM OP Occurrence Instantiate
+    [Tags]    create-instantiate
     [Documentation]    Test ID: mso-lo-test-3.5
     ...    Test title: NS LCM OP Occurrence Instantiate
     ...    Test objective: The objective is to test the workflow for retrive NS LCM OP Occurrence
-    ...    Pre-conditions: the resource is in NOT_INSTANTIATED state
+    ...    Pre-conditions: none
     ...    Post-Conditions: status code 200
     GET Individual NS LCM OP Occurrence
     Check HTTP Response Status Code Is    200
     Check HTTP Response Body Json Schema Is  ${ns_lcm_op_occ_schema}
+    Check resource operationState is    PROCESSING
 
 NS Instance Terminate
     [Documentation]    Test ID: mso-lo-test-3.
