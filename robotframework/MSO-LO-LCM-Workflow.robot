@@ -77,7 +77,7 @@ NS Instance Instantiate
     Check HTTP Response Header Contains    Location
     Check Operation Occurrence Id
 
-NS LCM OP Occurrence Instantiate
+NS LCM OP Occurrence Instantiate PROCESSING
     [Tags]    create-instantiate
     [Documentation]    Test ID: mso-lo-test-3.5
     ...    Test title: NS LCM OP Occurrence Instantiate
@@ -88,6 +88,13 @@ NS LCM OP Occurrence Instantiate
     Check HTTP Response Status Code Is    200
     Check HTTP Response Body Json Schema Is  ${ns_lcm_op_occ_schema}
     Check resource operationState is    PROCESSING
+
+NS LCM OP Occurrence Instantiate COMPLETED
+    [Tags]    create-instantiate
+    [Documentation]    Test ID: mso-lo-test-3.6
+    Wait Until Keyword Succeeds    2 min    2 s    Run Keywords
+    ...   GET Individual NS LCM OP Occurrence
+    ...   AND   Check resource operationState is    COMPLETED
 
 NS Instance Terminate
     [Documentation]    Test ID: mso-lo-test-3.
