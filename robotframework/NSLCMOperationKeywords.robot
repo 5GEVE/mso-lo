@@ -42,6 +42,11 @@ Check resource operationState is
     Should Be Equal As Strings    ${response[0]['body']['operationState']}    ${state}
     Log     State is ${state}
 
+Check resource lcmOperationType is
+    [Arguments]   ${type}
+    Should Be Equal As Strings    ${response[0]['body']['lcmOperationType']}    ${type}
+    Log     Type is ${type}
+
 Check Operation Notification Status is
     [Arguments]    ${status}
     Check Operation Notification    NsLcmOperationOccurrenceNotification   ${status}
