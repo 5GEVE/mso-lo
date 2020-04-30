@@ -80,7 +80,7 @@ NS LCM OP Occurrence Instantiate
     ...    Test title: NS LCM OP Occurrence Instantiate
     ...    Test objective: The objective is to test the workflow for retrive NS LCM OP Occurrence
     ...    Pre-conditions: the resource is in NOT_INSTANTIATED state
-    ...    Post-Conditions: status code 202
+    ...    Post-Conditions: status code 200
     GET Individual NS LCM OP Occurrence
     Check HTTP Response Status Code Is    200
     Check HTTP Response Body Json Schema Is  ${ns_lcm_op_occ_schema}
