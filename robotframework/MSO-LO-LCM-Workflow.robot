@@ -10,7 +10,7 @@ Library    JSONSchemaLibrary    schemas/
 
 
 *** Test Cases ***
-NS Instance Creation
+POST NS Instance Creation
     [Tags]    instantiate-terminate-workflow
     [Documentation]    Test ID: mso-lo-test-3.2
     ...    Test title: NS Instance Creation
@@ -24,16 +24,8 @@ NS Instance Creation
     Check NS Id
     Check resource not_instantiated
 
-NS Instance Creation Bad Request
-    [Documentation]    Test ID: mso-lo-test-3.2.1
-    ...    Test title: NS Instance Creation Bad Request
-    ...    Test objective: The objective is to test the workflow for Creating a NS instance with a bad request
-    ...    Pre-conditions: none
-    ...    Post-Conditions: Status code 400
-    POST New nsInstance with invalid request body
-    Check HTTP Response Status Code Is    400
-
-NS Instance List
+GET NS Instance List
+    [Tags]    instantiate-terminate-workflow
     [Documentation]    Test ID: mso-lo-test-3.1
     ...    Test title: NS Instance List
     ...    Test objective: The objective is to test the workflow for retriving the NS instance list
@@ -54,16 +46,7 @@ GET Information about an individual NS Instance
     Check HTTP Response Status Code Is    200
     Check HTTP Response Body Json Schema Is    ${ns_schema}
 
-GET Information about an inexistent individual NS Instance
-    [Documentation]    Test ID: mso-lo-test-3.3.1
-    ...    Test title: GET Information about an inexistent individual NS Instance
-    ...    Test objective: The objective is to test that GET method returns an inexistent individual NS instance
-    ...    Pre-conditions: none
-    ...    Post-Conditions: Status code 404
-    GET IndividualNSInstance inexistent
-    Check HTTP Response Status Code Is    404
-
-NS Instance Instantiate
+POST NS Instance Instantiate
     [Tags]    instantiate-terminate-workflow
     [Documentation]    Test ID: mso-lo-test-3.4
     ...    Test title: NS Instance Instantiate
@@ -77,7 +60,7 @@ NS Instance Instantiate
     Check HTTP Response Header Contains    Location
     Check Operation Occurrence Id
 
-NS LCM OP Occurrence Instantiate PROCESSING
+GET NS LCM OP Occurrence Instantiate PROCESSING
     [Tags]    instantiate-terminate-workflow
     [Documentation]    Test ID: mso-lo-test-3.5
     ...    Test title: NS LCM OP Occurrence Instantiate PROCESSING
@@ -89,7 +72,7 @@ NS LCM OP Occurrence Instantiate PROCESSING
     Check HTTP Response Body Json Schema Is  ${ns_lcm_op_occ_schema}
     Check resource operationState is    PROCESSING
 
-NS LCM OP Occurrence Instantiate COMPLETED
+GET NS LCM OP Occurrence Instantiate COMPLETED
     [Tags]    instantiate-terminate-workflow
     [Documentation]    Test ID: mso-lo-test-3.6
     ...    Test title: NS LCM OP Occurrence Instantiate COMPLETED
@@ -100,7 +83,7 @@ NS LCM OP Occurrence Instantiate COMPLETED
     ...   GET Individual NS LCM OP Occurrence
     ...   AND   Check resource operationState is    COMPLETED
 
-NS Instance Terminate
+POST NS Instance Terminate
     [Tags]    instantiate-terminate-workflow
     [Documentation]    Test ID: mso-lo-test-3.
     ...    Test title: Terminate NS Instance
@@ -113,7 +96,7 @@ NS Instance Terminate
     Check HTTP Response Status Code Is    202
     Check Operation Occurrence Id
 
-NS LCM OP Occurrence Terminate PROCESSING
+GET NS LCM OP Occurrence Terminate PROCESSING
     [Tags]    instantiate-terminate-workflow
     [Documentation]    Test ID: mso-lo-test-3.5
     ...    Test title: NS LCM OP Occurrence Terminate
@@ -125,7 +108,39 @@ NS LCM OP Occurrence Terminate PROCESSING
     Check HTTP Response Body Json Schema Is  ${ns_lcm_op_occ_schema}
     Check resource operationState is    PROCESSING
 
-NS LCM OP Occurrences
+POST NS Instance Delete
+    [Tags]    instantiate-terminate-workflow
+    [Documentation]    Test ID: mso-lo-test-3.6
+    ...    Test title: NS Instance Delete
+    ...    Test objective: The objective is to test the workflow for Deleting a NS instance
+    ...    Pre-conditions: the resource is in NOT_INSTANTIATED state
+    ...    Post-Conditions: status code 204
+    Check resource not_instantiated
+    DELETE IndividualNSInstance
+    Check HTTP Response Status Code Is    204
+
+POST NS Instance Creation Bad Request
+    [Tags]    standalone
+    [Documentation]    Test ID: mso-lo-test-3.2.1
+    ...    Test title: NS Instance Creation Bad Request
+    ...    Test objective: The objective is to test the workflow for Creating a NS instance with a bad request
+    ...    Pre-conditions: none
+    ...    Post-Conditions: Status code 400
+    POST New nsInstance with invalid request body
+    Check HTTP Response Status Code Is    400
+
+GET Information about an inexistent individual NS Instance
+    [Tags]    standalone
+    [Documentation]    Test ID: mso-lo-test-3.3.1
+    ...    Test title: GET Information about an inexistent individual NS Instance
+    ...    Test objective: The objective is to test that GET method returns an inexistent individual NS instance
+    ...    Pre-conditions: none
+    ...    Post-Conditions: Status code 404
+    GET IndividualNSInstance inexistent
+    Check HTTP Response Status Code Is    404
+
+GET NS LCM OP Occurrences
+    [Tags]    standalone
     [Documentation]    Test ID: mso-lo-test-3.5
     ...    Test title: NS LCM OP Occurrences
     ...    Test objective: The objective is to test the workflow for retrive NS LCM OP Occurrences
@@ -135,13 +150,3 @@ NS LCM OP Occurrences
     Check HTTP Response Status Code Is    200
     Check HTTP Response Body Json Schema Is  ${ns_lcm_op_occ_list_schema}
 
-NS Instance Deletion
-    [Tags]    instantiate-terminate-workflow
-    [Documentation]    Test ID: mso-lo-test-3.6
-    ...    Test title: NS Instance Deletion
-    ...    Test objective: The objective is to test the workflow for Deleting a NS instance
-    ...    Pre-conditions: the resource is in NOT_INSTANTIATED state
-    ...    Post-Conditions: status code 204
-    Check resource not_instantiated
-    DELETE IndividualNSInstance
-    Check HTTP Response Status Code Is    204
