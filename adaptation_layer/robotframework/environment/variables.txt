@@ -3,6 +3,7 @@ ${MSO-LO_HOST}      localhost    # Hostname of the MSO-LO
 ${MSO-LO_PORT}      80	    # Listening port of the MSO-LO
 ${HTTP}    http
 ${MSO-LO_BASE_API}  ${HTTP}://${MSO-LO_HOST}:${MSO-LO_PORT}
+${SCHEMAS_PATH}     ../tests/response_schemas.py
 
 ${AUTHORIZATION}    Bearer    QWxhZGRpbjpvcGVuIHNlc2FtZQ==
 ${CONTENT_TYPE}    application/json
