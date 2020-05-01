@@ -15,7 +15,9 @@ ${nfvoId}         1
 ${nfvoIdinexistent}         80
 ${AUTH_USAGE}     1
 ${WRONG_AUTHORIZATION}    Bearer    XXXXXWRONGXXXXX
-${nsdId}    82524264-7fc5-4985-a969-977063e55e9d
+${MAX_WAIT}   2 min
+${INTERVAL_WAIT}    2 s
+${nsdId}    pingpong
 ${nsInstanceId}       xxxxxxxxx-e602-4afa-8e13-962fb5a7d81f
 ${nsInstanceIdinexistent}       6fc3539c-e602-4afa-8e13-962fb5a7d81xxxxxxx
 ${ConflictNsInstanceId}    007c111c-e602-4afa-8e13-962fb5a7d81d

@@ -80,7 +80,7 @@ GET NS LCM OP Occurrence Instantiate COMPLETED
     ...    Test objective: The objective is to test the workflow for retrive NS LCM OP Occurrence
     ...    Pre-conditions: none
     ...    Post-Conditions: status code 200
-    Wait Until Keyword Succeeds    2 min    2 s    Run Keywords
+    Wait Until Keyword Succeeds    ${MAX_WAIT}    ${INTERVAL_WAIT}    Run Keywords
     ...   GET Individual NS LCM OP Occurrence
     ...   AND   Check resource operationState is    COMPLETED
 
@@ -117,7 +117,7 @@ GET NS LCM OP Occurrence Terminate COMPLETED
     ...    Test objective: The objective is to test the workflow for retrive NS LCM OP Occurrence
     ...    Pre-conditions: none
     ...    Post-Conditions: status code 200
-    Wait Until Keyword Succeeds    2 min    2 s    Run Keywords
+    Wait Until Keyword Succeeds    ${MAX_WAIT}    ${INTERVAL_WAIT}    Run Keywords
     ...   GET Individual NS LCM OP Occurrence
     ...   AND   Check resource operationState is    COMPLETED
 
