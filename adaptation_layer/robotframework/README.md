@@ -31,6 +31,6 @@ $ robot --outputdir output MSO-LO-LCM-Workflow.robot MSO-LO-NFVO-Workflow.robot
 
 Script [MSO-LO-LCM-Workflow.robot](./MSO-LO-LCM-Workflow.robot) contains a workflow that
 instantiates and terminates a Network Service on the configured NFVO.
-Some test cases include features to wait for the NS to be deployed. Mximum waiting time is set to
+Some test cases include features to wait for the NS to be deployed. Maximum waiting time is set to
 2 minutes. You can increase it if it is not enough by changing `${MAXIMUM_WAIT}` variable in
 [variables.txt](./environment/variables.txt).
