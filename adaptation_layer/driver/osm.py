@@ -40,7 +40,7 @@ def _authenticate(func):
     def wrapper(self, *args, **kwargs):
         if TESTING:
             pass
-        elif not self._token or datetime.fromtimestamp(
+        elif not self._token or datetime.utcfromtimestamp(
                 self._token["expires"]) < datetime.utcnow():
             auth_payload = {'username': self._user,
                             'password': self._password,
