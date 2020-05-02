@@ -145,16 +145,20 @@ status code.
 ### Unit Tests
 
 Unit tests can be executed by using Docker Compose files.
-*Note*: the `--build-arg` parameters are used to initialize the database with mock data.
+The following unit tests are currently available:
+
+- [docker-compose.test-nfvo.yml](docker-compose.test-nfvo.yml) Test NFVO information retrieve
+- [docker-compose.test-osm.yml](docker-compose.test-osm.yml) Test interactions with a mocked OSM
+- [docker-compose.test-onap.yml](docker-compose.test-onap.yml) Test interactions with a mocked ONAP
 
 Example:
+```
+docker-compose --file docker-compose.test-osm.yml --project-name test-osm build
+docker-compose --file docker-compose.test-osm.yml --project-name test-osm up
+```
 
-```
-docker-compose -f docker-compose.test-osm.yml -p test-osm build \
-    --build-arg DB_SEED_NFVO="seed/nfvo_mock.json" \
-    --build-arg DB_SEED_NFVO_CRED="seed/nfvo_credentials_mock.json"
-docker-compose -f docker-compose.test-osm.yml -p test-osm up
-```
+*Note*: the `--project-name` parameter is necessary to distinguish test execution from
+the main project.
 
 The file will run two containers:
 

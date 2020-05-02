@@ -17,6 +17,9 @@ services:
     build:
       context: .
       target: test
+      args:
+        DB_SEED_NFVO: seed/nfvo_mock.json
+        DB_SEED_NFVO_CRED: seed/nfvo_credentials_mock.json
     container_name: test-onap
     depends_on:
       - prism-onap
