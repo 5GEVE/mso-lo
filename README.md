@@ -88,7 +88,7 @@ To setup the environment use:
 
 ```
 git checkout development
-cd adaptation_layer/adaptation_layer
+cd adaptation_layer
 pipenv install --dev
 # Create database with mock data
 pipenv run flask db upgrade
@@ -120,19 +120,11 @@ class ONAP(Driver):
 Now you can start implementing the methods contained in the Driver interface.
 Your IDE should suggest you to create stubs for methods to be overriden.
 
-### Error handling
-
-When throwing exceptions, please use the ones defined in [error_handler.py](adaptation_layer/error_handler.py).
-This allows the application to correctly create the corresponding response and
-status code.
-
-### Update the driver manager
-
 To enable a newly created driver, edit [manager.py](adaptation_layer/driver/manager.py).
 The `get_driver()` method is simply a switch that returns an instance of the
 proper driver.
 
-### Tests
+### Add unit tests for a NFVO driver
 
 In order to test our software against an NFVO NBI, we need to mock it.
 For this purpose, we use [Prism](https://stoplight.io/open-source/prism/).
@@ -141,6 +133,16 @@ Example: `/nfvo/nfvo_osm1/ns?__code=200`
 
 To add unit tests for a driver, create a new python file in `adaptation_layer/tests`.
 Please refer to [test_osm.py](/adaptation_layer/tests/test_osm.py) for examples.
+
+### Error handling
+
+When throwing exceptions, please use the ones defined in [error_handler.py](adaptation_layer/error_handler.py).
+This allows the application to correctly create the corresponding response and
+status code.
+
+## Tests
+
+### Unit Tests
 
 Unit tests can be executed by using Docker Compose files.
 *Note*: the `--build-arg` parameters are used to initialize the database with mock data.
@@ -159,5 +161,10 @@ The file will run two containers:
 1. A Prism server mocking the OSM NBI
 2. A python container to execute unit tests
 
-Unit tests execution for a new driver can be added by copying and modifyng [docker-compose.test-osm.yml](docker-compose.test-osm.yml).
+Unit tests execution for a new driver can be added by copying and modifyng
+[docker-compose.test-osm.yml](docker-compose.test-osm.yml).
 
+### Integration tests
+
+Integration tests are run with [Robot Framework](https://robotframework.org/).
+Please refer to the specific [README](./adaptation_layer/robotframework/README.md).

@@ -412,7 +412,8 @@ class OSM(Driver):
                 "id": osm_vnf["id"],
                 "vnfdId": osm_vnf["vnfd-ref"],
                 "vnfProductName": "",
-                "vimId": osm_vnf["vim-account-id"],
+                "vimId": osm_vnf["vim-account-id"] if osm_vnf["vim-account-id"]
+                else '',
                 # same as the NS
                 "instantiationState": osm_ns['_admin']['nsState'],
             }
