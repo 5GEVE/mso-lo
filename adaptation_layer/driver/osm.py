@@ -41,7 +41,7 @@ def _authenticate(func):
         if TESTING:
             pass
         elif not self._token or datetime.fromtimestamp(
-                self._token["expires"]) > datetime.utcnow():
+                self._token["expires"]) < datetime.utcnow():
             auth_payload = {'username': self._user,
                             'password': self._password,
                             'project_id': self._project}
