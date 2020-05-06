@@ -627,8 +627,8 @@ components:
               type: object
 #
     VnfExtCpInfo:
-      nullable: true
-      # type: object
+#      nullable: true
+      type: object
     #   properties:
     #     id:
     #       type: string
