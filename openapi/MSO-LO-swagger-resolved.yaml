@@ -2,7 +2,7 @@
 swagger: "2.0"
 info:
   description: 5G-EVE Adaptation Layer API spec.
-  version: "3.3"
+  version: "3.4"
   title: 5G-EVE Adaptation Layer API
   contact: {}
 host: example.com
@@ -904,12 +904,18 @@ definitions:
     type: object
     required:
     - id
+    - cpdId
     properties:
       id:
         description: |
           Identifier of the external CP instance and the related information instance.
         allOf:
         - $ref: '#/definitions/IdentifierInVnf'
+      cpdId:
+        description: |
+          Identifier of the external CPD, VnfExtCpd, in the VNFD.
+        allOf:
+          - $ref: '#/definitions/IdentifierInVnfd'
       cpProtocolInfo:
         type: array
         description: |
@@ -972,6 +978,11 @@ definitions:
     format: uuid
     description: |
       An identifier that is unique for the respective type within a VNF instance, but may not be globally unique.
+  IdentifierInVnfd:
+    type: string
+    format: uuid
+    description: |
+      An identifier that is unique for the respective type within a VNF descriptor, but may not be globally unique.
   Identifier:
     type: string
     format: uuid
