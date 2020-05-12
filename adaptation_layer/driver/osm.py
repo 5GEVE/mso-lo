@@ -364,6 +364,7 @@ class OSM(Driver):
                     (ip_address, mac_address) = (None, None)
                 cp_info.append({
                     "id": cp,
+                    "cpdId": cp,
                     "cpProtocolInfo": [
                         {
                             "layerProtocol": "IP_OVER_ETHERNET",

@@ -2,47 +2,47 @@
 swagger: "2.0"
 info:
   description: 5G-EVE Adaptation Layer API spec.
-  version: "3.3"
+  version: "3.4"
   title: 5G-EVE Adaptation Layer API
   contact: {}
 host: example.com
 basePath: /api
 tags:
-- name: Local NFVO
-  description: Local NFVO information
-- name: NS instances
-  description: Network Service instance management
-- name: NS Subscriptions
-  description: Subscriptions to notifications about NS instances status
-- name: Notification send
-  description: Operations for sending notifications to subscribed clients
+  - name: Local NFVO
+    description: Local NFVO information
+  - name: NS instances
+    description: Network Service instance management
+  - name: NS Subscriptions
+    description: Subscriptions to notifications about NS instances status
+  - name: Notification send
+    description: Operations for sending notifications to subscribed clients
 schemes: []
 consumes:
-- application/json
+  - application/json
 produces:
-- application/json
+  - application/json
 paths:
   /nfvo:
     get:
       tags:
-      - Local NFVO
+        - Local NFVO
       summary: Retrieve list of local NFVO.
       description: |
         By passing in the appropriate options, you can search for available Local Orchestrators
       operationId: NFVO.fetch
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: NFVO parameters
-        in: query
-        description: nfvo identifier
-        required: false
-        type: string
-      - name: Pagination parameters
-        in: query
-        description: The parameters are used to create pagination
-        required: false
-        type: string
+        - name: NFVO parameters
+          in: query
+          description: nfvo identifier
+          required: false
+          type: string
+        - name: Pagination parameters
+          in: query
+          description: The parameters are used to create pagination
+          required: false
+          type: string
       responses:
         "200":
           description: search results matching criteria
@@ -59,19 +59,19 @@ paths:
   /nfvo/{nfvoId}:
     get:
       tags:
-      - Local NFVO
+        - Local NFVO
       summary: Read an individual NFVO.
       description: |
         By passing in the appropriate options, you can search for available Local Orchestrators
       operationId: NFVO.getById
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: nfvoId
-        in: path
-        description: Identifier of a Nfvo
-        required: true
-        type: string
+        - name: nfvoId
+          in: path
+          description: Identifier of a Nfvo
+          required: true
+          type: string
       responses:
         "200":
           description: NFVO found
@@ -94,24 +94,24 @@ paths:
   /nfvo/{nfvoId}/ns_instances:
     get:
       tags:
-      - NS instances
+        - NS instances
       summary: Retrieve list of NS instances.
       description: |
         This operation allows to retrieve the list of NS from a specific Nfvo
       operationId: Nfvo.NS.list
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: nfvoId
-        in: path
-        description: Identifier of a Nfvo
-        required: true
-        type: string
-      - name: Pagination parameters
-        in: query
-        description: The parameters are used to create pagination
-        required: false
-        type: string
+        - name: nfvoId
+          in: path
+          description: Identifier of a Nfvo
+          required: true
+          type: string
+        - name: Pagination parameters
+          in: query
+          description: The parameters are used to create pagination
+          required: false
+          type: string
       responses:
         "200":
           description: search results matching criteria
@@ -131,24 +131,24 @@ paths:
       deprecated: false
     post:
       tags:
-      - NS instances
+        - NS instances
       summary: Create a new NS instance ID.
       description: Creates and returns a Network Service identifier (nsId) in a Nfvo
       operationId: Nfvo.NS.onboard
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: nfvoId
-        in: path
-        description: Identifier of a Nfvo
-        required: true
-        type: string
-      - in: body
-        name: body
-        description: Create NS request body
-        required: false
-        schema:
-          $ref: '#/definitions/NfvoNsInstancesRequest'
+        - name: nfvoId
+          in: path
+          description: Identifier of a Nfvo
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Create NS request body
+          required: false
+          schema:
+            $ref: '#/definitions/NfvoNsInstancesRequest'
       responses:
         "201":
           description: |
@@ -172,24 +172,24 @@ paths:
   /nfvo/{nfvoId}/ns_instances/{nsInstanceId}:
     get:
       tags:
-      - NS instances
+        - NS instances
       summary: Read an individual NS instance resource.
       description: |
         This operation allows to retrieve an existing NS from a specific Nfvo.
       operationId: Nfvo.NS.fetch
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: nsInstanceId
-        in: path
-        description: Identifier of the network service
-        required: true
-        type: string
-      - name: nfvoId
-        in: path
-        description: Identifier of a Nfvo
-        required: true
-        type: string
+        - name: nsInstanceId
+          in: path
+          description: Identifier of the network service
+          required: true
+          type: string
+        - name: nfvoId
+          in: path
+          description: Identifier of a Nfvo
+          required: true
+          type: string
       responses:
         "200":
           description: NS
@@ -211,24 +211,24 @@ paths:
       deprecated: false
     delete:
       tags:
-      - NS instances
+        - NS instances
       summary: Delete an individual NS instance resource.
       description: |
         Delete an individual NS instance resource.
       operationId: Nfvo.NS.terminate
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: nsInstanceId
-        in: path
-        description: Identifier of the network service
-        required: true
-        type: string
-      - name: nfvoId
-        in: path
-        description: Identifier of a Nfvo
-        required: true
-        type: string
+        - name: nsInstanceId
+          in: path
+          description: Identifier of the network service
+          required: true
+          type: string
+        - name: nfvoId
+          in: path
+          description: Identifier of a Nfvo
+          required: true
+          type: string
       responses:
         "204":
           description: |
@@ -250,7 +250,7 @@ paths:
   /nfvo/{nfvoId}/ns_instances/{nsInstanceId}/instantiate:
     post:
       tags:
-      - NS instances
+        - NS instances
       summary: Instantiate a NS instance.
       description: |
         Instantiate a NS. The precondition is that the NS instance must have
@@ -260,18 +260,18 @@ paths:
         INSTANTIATED.
       operationId: Nfvo.NS.instantiate
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: nsInstanceId
-        in: path
-        description: Identifier of the network service
-        required: true
-        type: string
-      - name: nfvoId
-        in: path
-        description: Identifier of a Nfvo
-        required: true
-        type: string
+        - name: nsInstanceId
+          in: path
+          description: Identifier of the network service
+          required: true
+          type: string
+        - name: nfvoId
+          in: path
+          description: Identifier of a Nfvo
+          required: true
+          type: string
       responses:
         "202":
           description: |
@@ -296,7 +296,7 @@ paths:
   /nfvo/{nfvoId}/ns_instances/{nsInstanceId}/scale:
     post:
       tags:
-      - NS instances
+        - NS instances
       summary: Scale NS instance.
       description: |
         Scale a NS instance. The precondition is that the NS instance must have
@@ -306,24 +306,24 @@ paths:
         INSTANTIATED.
       operationId: Nfvo.NS.scale
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: nsInstanceId
-        in: path
-        description: Identifier of the network service
-        required: true
-        type: string
-      - name: nfvoId
-        in: path
-        description: Identifier of a Nfvo
-        required: true
-        type: string
-      - in: body
-        name: body
-        description: Scale NS request body
-        required: false
-        schema:
-          $ref: '#/definitions/NfvoNsInstancesScaleRequest'
+        - name: nsInstanceId
+          in: path
+          description: Identifier of the network service
+          required: true
+          type: string
+        - name: nfvoId
+          in: path
+          description: Identifier of a Nfvo
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Scale NS request body
+          required: false
+          schema:
+            $ref: '#/definitions/NfvoNsInstancesScaleRequest'
       responses:
         "202":
           description: |
@@ -345,30 +345,30 @@ paths:
   /nfvo/{nfvoId}/ns_instances/{nsInstanceId}/terminate:
     post:
       tags:
-      - NS instances
+        - NS instances
       summary: Terminate a NS instance.
       description: |
         Terminate NS task.   The POST method terminates a NS instance. This method can only be  used with a NS instance in the INSTANTIATED state. Terminating a NS instance does not delete the NS instance identifier,  but rather transitions the NS into the NOT_INSTANTIATED state.
       operationId: terminateNSinstance
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: nsInstanceId
-        in: path
-        description: Identifier of the network service
-        required: true
-        type: string
-      - name: nfvoId
-        in: path
-        description: Identifier of a Nfvo
-        required: true
-        type: string
-      - in: body
-        name: body
-        description: ""
-        required: false
-        schema:
-          $ref: '#/definitions/TerminateNsRequest'
+        - name: nsInstanceId
+          in: path
+          description: Identifier of the network service
+          required: true
+          type: string
+        - name: nfvoId
+          in: path
+          description: Identifier of a Nfvo
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: ""
+          required: false
+          schema:
+            $ref: '#/definitions/TerminateNsRequest'
       responses:
         "202":
           description: |
@@ -390,32 +390,32 @@ paths:
   /nfvo/{nfvoId}/ns_lcm_op_occs:
     get:
       tags:
-      - NS LCM Operations
+        - NS LCM Operations
       summary: Query multiple NS LCM operation occurrences.
       description: |
         Get Operation Status. The client can use this method to query status information about multiple NS lifecycle management operation occurrences. This method shall follow the provisions specified in the Tables 6.4.9.3.2-1 and 6.4.9.3.2-2 for URI query parameters, request and response data structures, and response codes.
       operationId: Nfvo.NS_LCM_OP.list
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: filter
-        in: query
-        description: |
-          Only 'nsInstanceId' is supported.
-          Attribute-based filtering expression according to clause 5.2 of ETSI GS NFV SOL 013. The NFVO shall support receiving this parameter as part of the URI query string. The OSS/BSS may supply this parameter. All attribute names that appear in the NsLcmOpOcc and in data types referenced from it shall be supported by the NFVO in the filter expression.
-        required: false
-        type: string
-      - name: nfvoId
-        in: path
-        description: Identifier of a Nfvo
-        required: true
-        type: string
-      - name: Accept
-        in: header
-        description: |
-          Content-Types that are acceptable for the response. Reference: IETF RFC 7231
-        required: true
-        type: string
+        - name: filter
+          in: query
+          description: |
+            Only 'nsInstanceId' is supported.
+            Attribute-based filtering expression according to clause 5.2 of ETSI GS NFV SOL 013. The NFVO shall support receiving this parameter as part of the URI query string. The OSS/BSS may supply this parameter. All attribute names that appear in the NsLcmOpOcc and in data types referenced from it shall be supported by the NFVO in the filter expression.
+          required: false
+          type: string
+        - name: nfvoId
+          in: path
+          description: Identifier of a Nfvo
+          required: true
+          type: string
+        - name: Accept
+          in: header
+          description: |
+            Content-Types that are acceptable for the response. Reference: IETF RFC 7231
+          required: true
+          type: string
       responses:
         "200":
           description: |
@@ -443,31 +443,31 @@ paths:
   /nfvo/{nfvoId}/ns_lcm_op_occs/{nsLcmOpOccId}:
     get:
       tags:
-      - NS LCM Operations
+        - NS LCM Operations
       summary: Read an individual NS LCM operation occurrence resource.
       description: |
         The client can use this method to retrieve status information about a NS lifecycle management operation occurrence by reading an individual "NS LCM operation occurrence" resource. This method shall follow the provisions specified in the Tables 6.4.10.3.2-1 and 6.4.10.3.2-2 for URI query parameters, request and response data structures, and response codes.
       operationId: Nfvo.NS_LCM_OP.fetch
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: nfvoId
-        in: path
-        description: Identifier of a Nfvo
-        required: true
-        type: string
-      - name: nsLcmOpOccId
-        in: path
-        description: |
-          Identifier of a NS lifecycle management operation occurrence.
-        required: true
-        type: string
-      - name: Accept
-        in: header
-        description: |
-          Content-Types that are acceptable for the response. Reference: IETF RFC 7231
-        required: true
-        type: string
+        - name: nfvoId
+          in: path
+          description: Identifier of a Nfvo
+          required: true
+          type: string
+        - name: nsLcmOpOccId
+          in: path
+          description: |
+            Identifier of a NS lifecycle management operation occurrence.
+          required: true
+          type: string
+        - name: Accept
+          in: header
+          description: |
+            Content-Types that are acceptable for the response. Reference: IETF RFC 7231
+          required: true
+          type: string
       responses:
         "200":
           description: |
@@ -500,25 +500,25 @@ paths:
   /nfvo/{nfvoId}/subscriptions:
     get:
       tags:
-      - NS Subscriptions
+        - NS Subscriptions
       summary: Query multiple subscriptions.
       description: |
         Query Subscription Information.
         The GET method queries the list of active subscriptions of the functional block that invokes the method. It can be used e.g. for resynchronization after error situations.
       operationId: NfvoSubscriptionsByNfvoIdGet
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: nfvoId
-        in: path
-        description: Identifier of a Nfvo
-        required: true
-        type: string
-      - name: filter
-        in: query
-        description: Attribute-based filtering expression according to clause 5.2 of ETSI GS NFV SOL 013. The NFVO shall support receiving this parameter as part of the URI query string. The OSS/BSS may supply this parameter. All attribute names that appear in the LccnSubscription and in data types  referenced from it shall be supported by the NFVO in the filter expression.
-        required: false
-        type: string
+        - name: nfvoId
+          in: path
+          description: Identifier of a Nfvo
+          required: true
+          type: string
+        - name: filter
+          in: query
+          description: Attribute-based filtering expression according to clause 5.2 of ETSI GS NFV SOL 013. The NFVO shall support receiving this parameter as part of the URI query string. The OSS/BSS may supply this parameter. All attribute names that appear in the LccnSubscription and in data types  referenced from it shall be supported by the NFVO in the filter expression.
+          required: false
+          type: string
       responses:
         "200":
           description: |
@@ -544,25 +544,25 @@ paths:
       deprecated: false
     post:
       tags:
-      - NS Subscriptions
+        - NS Subscriptions
       summary: Subscribe to NS lifecycle change notifications.
       description: |
         The POST method creates a new subscription. If subscription already exists, it returns a "303 See Other" response code referencing the existing subscription resource.
       operationId: NfvoSubscriptionsByNfvoIdPost
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: nfvoId
-        in: path
-        description: Identifier of a Nfvo
-        required: true
-        type: string
-      - in: body
-        name: body
-        description: ""
-        required: false
-        schema:
-          $ref: '#/definitions/NfvoSubscriptionsRequest'
+        - name: nfvoId
+          in: path
+          description: Identifier of a Nfvo
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: ""
+          required: false
+          schema:
+            $ref: '#/definitions/NfvoSubscriptionsRequest'
       responses:
         "201":
           description: 201 Created. The subscription has been created successfully.
@@ -585,24 +585,24 @@ paths:
   /nfvo/{nfvoId}/subscriptions/{subscriptionId}:
     get:
       tags:
-      - NS Subscriptions
+        - NS Subscriptions
       summary: Read an individual subscription resource.
       description: |
         The GET method retrieves information about a subscription by reading an individual subscription resource. This method shall support the URI query parameters, request and response data structures, and response codes, as specified in the Tables 6.4.17.3.2-1 and 6.4.17.3.2-2
       operationId: NfvoSubscriptionsByNfvoIdAndSubscriptionIdGet
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: nfvoId
-        in: path
-        description: Identifier of a Nfvo
-        required: true
-        type: string
-      - name: subscriptionId
-        in: path
-        description: Identifier of this subscription.
-        required: true
-        type: string
+        - name: nfvoId
+          in: path
+          description: Identifier of a Nfvo
+          required: true
+          type: string
+        - name: subscriptionId
+          in: path
+          description: Identifier of this subscription.
+          required: true
+          type: string
       responses:
         "200":
           description: |
@@ -625,24 +625,24 @@ paths:
       deprecated: false
     delete:
       tags:
-      - NS Subscriptions
+        - NS Subscriptions
       summary: Terminate a subscription.
       description: |
         The DELETE method terminates an individual subscription. This method shall support the URI query parameters, request and response data structures, and response codes, as specified in the Tables 6.4.17.3.5-1 and 6.4.17.3.5-2.
       operationId: NfvoSubscriptionsByNfvoIdAndSubscriptionIdDelete
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: nfvoId
-        in: path
-        description: Identifier of a Nfvo
-        required: true
-        type: string
-      - name: subscriptionId
-        in: path
-        description: Identifier of this subscription.
-        required: true
-        type: string
+        - name: nfvoId
+          in: path
+          description: Identifier of a Nfvo
+          required: true
+          type: string
+        - name: subscriptionId
+          in: path
+          description: Identifier of this subscription.
+          required: true
+          type: string
       responses:
         "204":
           description: |
@@ -664,14 +664,14 @@ paths:
   /URI_is_provided_by_the_client_when_creating_the_subscription-NsIdentifierCreationNotification:
     get:
       tags:
-      - Notification send
+        - Notification send
       summary: Test the notification endpoint.
       description: |
         Query NS Instances.
         The GET method queries information about multiple NS instances. This method shall support the URI query parameters, request and response data structures, and response codes, as specified in the Tables 6.4.2.3.2-1 and 6.4.2.3.2-2.
       operationId: URIIsProvidedByTheClientWhenCreatingTheSubscriptionNsIdentifierCreationNotificationGet
       produces:
-      - application/json
+        - application/json
       parameters: []
       responses:
         "204":
@@ -694,20 +694,20 @@ paths:
       deprecated: false
     post:
       tags:
-      - Notification send
+        - Notification send
       summary: Notify about NS creation
       description: |
         The POST method delivers a notification from the server to the client. This method shall support the URI query parameters, request and response data structures, and response codes, as specified in the Tables 6.4.18.3.1-1 and 6.4.18.3.1-2.
       operationId: URIIsProvidedByTheClientWhenCreatingTheSubscriptionNsIdentifierCreationNotificationPost
       produces:
-      - application/json
+        - application/json
       parameters:
-      - in: body
-        name: body
-        description: A notification about the creation of a NS identifier and the related NS instance resource.
-        required: true
-        schema:
-          $ref: '#/definitions/body'
+        - in: body
+          name: body
+          description: A notification about the creation of a NS identifier and the related NS instance resource.
+          required: true
+          schema:
+            $ref: '#/definitions/body'
       responses:
         "204":
           description: |
@@ -730,14 +730,14 @@ paths:
   /URI_is_provided_by_the_client_when_creating_the_subscription-NsIdentifierDeletionNotification:
     get:
       tags:
-      - Notification send
+        - Notification send
       summary: Test the notification endpoint.1
       description: |
         Query NS Instances.
         The GET method queries information about multiple NS instances. This method shall support the URI query parameters, request and response data structures, and response codes, as specified in the Tables 6.4.2.3.2-1 and 6.4.2.3.2-2.
       operationId: URIIsProvidedByTheClientWhenCreatingTheSubscriptionNsIdentifierDeletionNotificationGet
       produces:
-      - application/json
+        - application/json
       parameters: []
       responses:
         "204":
@@ -760,20 +760,20 @@ paths:
       deprecated: false
     post:
       tags:
-      - Notification send
+        - Notification send
       summary: Notify about NS lifecycle change
       description: |
         The POST method delivers a notification from the server to the client. This method shall support the URI query parameters, request and response data structures, and response codes, as specified in the Tables 6.4.18.3.1-1 and 6.4.18.3.1-2.
       operationId: URIIsProvidedByTheClientWhenCreatingTheSubscriptionNsIdentifierDeletionNotificationPost
       produces:
-      - application/json
+        - application/json
       parameters:
-      - in: body
-        name: body
-        description: A notification about the deletion of a NS identifier and the related NS instance resource.
-        required: true
-        schema:
-          $ref: '#/definitions/body_1'
+        - in: body
+          name: body
+          description: A notification about the deletion of a NS identifier and the related NS instance resource.
+          required: true
+          schema:
+            $ref: '#/definitions/body_1'
       responses:
         "204":
           description: |
@@ -796,10 +796,10 @@ definitions:
   NFVO:
     type: object
     required:
-    - id
-    - name
-    - site
-    - type
+      - id
+      - name
+      - site
+      - type
     properties:
       id:
         type: integer
@@ -826,16 +826,16 @@ definitions:
   NsInstance:
     type: object
     required:
-    - id
-    - nsInstanceDescription
-    - nsInstanceName
-    - nsState
-    - nsdId
+      - id
+      - nsInstanceDescription
+      - nsInstanceName
+      - nsState
+      - nsdId
     properties:
       id:
         description: Identifier of the NS instance.
         allOf:
-        - $ref: '#/definitions/Identifier'
+          - $ref: '#/definitions/Identifier'
       nsInstanceName:
         type: string
         description: Human readable name of the NS instance.
@@ -857,21 +857,21 @@ definitions:
   VnfInstance:
     type: object
     required:
-    - id
-    - instantiationState
-    - vnfProductName
-    - vnfdId
+      - id
+      - instantiationState
+      - vnfProductName
+      - vnfdId
     properties:
       id:
         description: |
           Identifier of the VNF instance.
         allOf:
-        - $ref: '#/definitions/Identifier'
+          - $ref: '#/definitions/Identifier'
       vnfdId:
         description: |
           Identifier of the VNFD on which the VNF instance is based.
         allOf:
-        - $ref: '#/definitions/Identifier'
+          - $ref: '#/definitions/Identifier'
       vnfProductName:
         type: string
         description: |
@@ -880,14 +880,14 @@ definitions:
         description: |
           Identifier of a VIM that manages resources for the VNF instance.
         allOf:
-        - $ref: '#/definitions/Identifier'
+          - $ref: '#/definitions/Identifier'
       instantiationState:
         type: string
         description: |
           The instantiation state of the VNF.
         enum:
-        - NOT_INSTANTIATED
-        - INSTANTIATED
+          - NOT_INSTANTIATED
+          - INSTANTIATED
       instantiatedVnfInfo:
         $ref: '#/definitions/VnfInstance_instantiatedVnfInfo'
     description: |
@@ -897,19 +897,25 @@ definitions:
     description: |
       The state of the VNF instance.
     enum:
-    - STARTED
-    - STOPPED
+      - STARTED
+      - STOPPED
     example: STARTED
   VnfExtCpInfo:
     type: object
     required:
-    - id
+      - id
+      - cpdId
     properties:
       id:
         description: |
           Identifier of the external CP instance and the related information instance.
         allOf:
-        - $ref: '#/definitions/IdentifierInVnf'
+          - $ref: '#/definitions/IdentifierInVnf'
+      cpdId:
+        description: |
+          Identifier of the external CPD, VnfExtCpd, in the VNFD.
+        allOf:
+          - $ref: '#/definitions/IdentifierInVnfd'
       cpProtocolInfo:
         type: array
         description: |
@@ -922,33 +928,33 @@ definitions:
   CpProtocolInfo:
     type: object
     required:
-    - ipOverEthernet
-    - layerProtocol
+      - ipOverEthernet
+      - layerProtocol
     properties:
       layerProtocol:
         type: string
         description: |
           The identifier of layer(s) and protocol(s) associated to the network address information. Permitted values: IP_OVER_ETHERNET See note.
         enum:
-        - IP_OVER_ETHERNET
+          - IP_OVER_ETHERNET
       ipOverEthernet:
         description: |
           IP addresses over Ethernet to assign to the CP or SAP instance. Shall be present if layerProtocol is equal to " IP_OVER_ETHERNET", and shall be absent otherwise.
         allOf:
-        - $ref: '#/definitions/IpOverEthernetAddressInfo'
+          - $ref: '#/definitions/IpOverEthernetAddressInfo'
     description: |
       This type describes the protocol layer(s) that a CP or SAP uses together with protocol-related information, like addresses. It shall comply with the provisions defined in Table 6.5.3.58-1.
   IpOverEthernetAddressInfo:
     type: object
     required:
-    - ipAddresses
-    - macAddress
+      - ipAddresses
+      - macAddress
     properties:
       macAddress:
         description: |
           Assigned MAC address.
         allOf:
-        - $ref: '#/definitions/MacAddress'
+          - $ref: '#/definitions/MacAddress'
       ipAddresses:
         type: array
         description: |
@@ -972,6 +978,11 @@ definitions:
     format: uuid
     description: |
       An identifier that is unique for the respective type within a VNF instance, but may not be globally unique.
+  IdentifierInVnfd:
+    type: string
+    format: uuid
+    description: |
+      An identifier that is unique for the respective type within a VNF descriptor, but may not be globally unique.
   Identifier:
     type: string
     format: uuid
@@ -986,13 +997,13 @@ definitions:
        * `INSTANTIATED`: The NS instance is instantiated.
     example: NOT_INSTANTIATED
     enum:
-    - NOT_INSTANTIATED
-    - INSTANTIATED
+      - NOT_INSTANTIATED
+      - INSTANTIATED
   InstantiateNsRequest:
     type: object
     required:
-    - nsFlavourId
-    - nsInstantiationLevelId
+      - nsFlavourId
+      - nsInstantiationLevelId
     properties:
       nsFlavourId:
         type: string
@@ -1004,21 +1015,21 @@ definitions:
   NsLcmOpOcc:
     type: object
     required:
-    - id
-    - lcmOperationType
-    - nsInstanceId
-    - operationState
-    - startTime
-    - stateEnteredTime
+      - id
+      - lcmOperationType
+      - nsInstanceId
+      - operationState
+      - startTime
+      - stateEnteredTime
     properties:
       id:
         description: |
           Identifier of this NS lifecycle operation occurrence.
         allOf:
-        - $ref: '#/definitions/Identifier'
+          - $ref: '#/definitions/Identifier'
       operationState:
         allOf:
-        - $ref: '#/definitions/NsLcmOperationStateType'
+          - $ref: '#/definitions/NsLcmOperationStateType'
       stateEnteredTime:
         type: string
         format: date-time
@@ -1028,10 +1039,10 @@ definitions:
         description: |
           Identifier of the NS instance to which the operation applies.
         allOf:
-        - $ref: '#/definitions/Identifier'
+          - $ref: '#/definitions/Identifier'
       lcmOperationType:
         allOf:
-        - $ref: '#/definitions/NsLcmOpType'
+          - $ref: '#/definitions/NsLcmOpType'
       startTime:
         type: string
         format: date-time
@@ -1049,9 +1060,9 @@ definitions:
       COMPLETED | The LCM operation has been completed successfully.
       FAILED | The LCM operation has failed and it cannot be retried or rolled back, as it is determined that such action won't succeed.
     enum:
-    - PROCESSING
-    - COMPLETED
-    - FAILED
+      - PROCESSING
+      - COMPLETED
+      - FAILED
   NsLcmOpType:
     type: string
     description: |
@@ -1062,9 +1073,9 @@ definitions:
       SCALE | Represents the "Scale NS" LCM operation.
       TERMINATE | Represents the "Terminate NS" LCM operation.
     enum:
-    - INSTANTIATE
-    - SCALE
-    - TERMINATE
+      - INSTANTIATE
+      - SCALE
+      - TERMINATE
   ErrorResponse:
     type: object
     properties:
@@ -1095,13 +1106,13 @@ definitions:
   NSInstanceSubscription:
     type: object
     required:
-    - callbackUri
-    - id
+      - callbackUri
+      - id
     properties:
       id:
         description: An identifier with the intention of being globally unique.
         allOf:
-        - $ref: '#/definitions/Identifier'
+          - $ref: '#/definitions/Identifier'
       filter:
         $ref: '#/definitions/NSInstanceSubscription_filter'
       callbackUri:
@@ -1141,8 +1152,8 @@ definitions:
   body:
     type: object
     required:
-    - nsInstanceId
-    - subscriptionId
+      - nsInstanceId
+      - subscriptionId
     properties:
       notificationType:
         type: string
@@ -1162,8 +1173,8 @@ definitions:
   body_1:
     type: object
     required:
-    - nsInstanceId
-    - subscriptionId
+      - nsInstanceId
+      - subscriptionId
     properties:
       notificationType:
         type: string
@@ -1233,12 +1244,12 @@ definitions:
     title: ScaleType
     example: SCALE_NS
     enum:
-    - SCALE_NS
-    - SCALE_VNF
+      - SCALE_NS
+      - SCALE_VNF
   VnfInstance_instantiatedVnfInfo:
     type: object
     required:
-    - vnfState
+      - vnfState
     properties:
       vnfState:
         $ref: '#/definitions/VnfOperationalStateType'
@@ -1254,15 +1265,15 @@ definitions:
   IpOverEthernetAddressInfo_ipAddresses:
     type: object
     required:
-    - type
+      - type
     properties:
       type:
         type: string
         description: |
           The type of the IP addresses. Permitted values: IPV4, IPV6.
         enum:
-        - IPV4
-        - IPV6
+          - IPV4
+          - IPV6
       addresses:
         type: array
         description: |
