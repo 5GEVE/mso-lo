@@ -2,7 +2,7 @@
 swagger: "2.0"
 info:
   description: 5G-EVE Adaptation Layer API spec.
-  version: "3.3"
+  version: "3.5"
   title: 5G-EVE Adaptation Layer API
   contact: {}
 host: example.com
@@ -272,6 +272,12 @@ paths:
         description: Identifier of a Nfvo
         required: true
         type: string
+      - in: body
+        name: body
+        description: Scale NS request body
+        required: false
+        schema:
+          $ref: '#/definitions/NfvoNsInstantiateRequest'
       responses:
         "202":
           description: |
@@ -833,6 +839,7 @@ definitions:
     - nsdId
     properties:
       id:
+        type: object
         description: Identifier of the NS instance.
         allOf:
         - $ref: '#/definitions/Identifier'
@@ -863,11 +870,13 @@ definitions:
     - vnfdId
     properties:
       id:
+        type: object
         description: |
           Identifier of the VNF instance.
         allOf:
         - $ref: '#/definitions/Identifier'
       vnfdId:
+        type: object
         description: |
           Identifier of the VNFD on which the VNF instance is based.
         allOf:
@@ -877,6 +886,7 @@ definitions:
         description: |
           Name to identify the VNF Product. The value is copied from the VNFD.
       vimId:
+        type: object
         description: |
           Identifier of a VIM that manages resources for the VNF instance.
         allOf:
@@ -896,20 +906,28 @@ definitions:
     type: string
     description: |
       The state of the VNF instance.
+    example: STARTED
     enum:
     - STARTED
     - STOPPED
-    example: STARTED
   VnfExtCpInfo:
     type: object
     required:
+    - cpdId
     - id
     properties:
       id:
+        type: object
         description: |
           Identifier of the external CP instance and the related information instance.
         allOf:
         - $ref: '#/definitions/IdentifierInVnf'
+      cpdId:
+        type: object
+        description: |
+          Identifier of the external CPD, VnfExtCpd, in the VNFD.
+        allOf:
+        - $ref: '#/definitions/IdentifierInVnfd'
       cpProtocolInfo:
         type: array
         description: |
@@ -932,6 +950,7 @@ definitions:
         enum:
         - IP_OVER_ETHERNET
       ipOverEthernet:
+        type: object
         description: |
           IP addresses over Ethernet to assign to the CP or SAP instance. Shall be present if layerProtocol is equal to " IP_OVER_ETHERNET", and shall be absent otherwise.
         allOf:
@@ -945,6 +964,7 @@ definitions:
     - macAddress
     properties:
       macAddress:
+        type: object
         description: |
           Assigned MAC address.
         allOf:
@@ -972,6 +992,11 @@ definitions:
     format: uuid
     description: |
       An identifier that is unique for the respective type within a VNF instance, but may not be globally unique.
+  IdentifierInVnfd:
+    type: string
+    format: uuid
+    description: |
+      An identifier that is unique for the respective type within a VNF descriptor, but may not be globally unique.
   Identifier:
     type: string
     format: uuid
@@ -1012,11 +1037,13 @@ definitions:
     - stateEnteredTime
     properties:
       id:
+        type: object
         description: |
           Identifier of this NS lifecycle operation occurrence.
         allOf:
         - $ref: '#/definitions/Identifier'
       operationState:
+        type: object
         allOf:
         - $ref: '#/definitions/NsLcmOperationStateType'
       stateEnteredTime:
@@ -1025,11 +1052,13 @@ definitions:
         description: |
           Date-time when the current state has been entered.
       nsInstanceId:
+        type: object
         description: |
           Identifier of the NS instance to which the operation applies.
         allOf:
         - $ref: '#/definitions/Identifier'
       lcmOperationType:
+        type: object
         allOf:
         - $ref: '#/definitions/NsLcmOpType'
       startTime:
@@ -1099,6 +1128,7 @@ definitions:
     - id
     properties:
       id:
+        type: object
         description: An identifier with the intention of being globally unique.
         allOf:
         - $ref: '#/definitions/Identifier'
@@ -1207,6 +1237,12 @@ definitions:
       nsDescription:
         type: string
     title: NfvoNsInstancesRequest
+  NfvoNsInstantiateRequest:
+    type: object
+    properties:
+      additionalParamsForNs:
+        type: object
+        properties: {}
   NfvoNsInstancesScaleRequest:
     type: object
     properties:
