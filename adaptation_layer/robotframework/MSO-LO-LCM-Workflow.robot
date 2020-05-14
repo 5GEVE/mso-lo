@@ -84,6 +84,17 @@ GET NS LCM OP Occurrence Instantiate COMPLETED
     ...   GET Individual NS LCM OP Occurrence
     ...   AND   Check resource operationState is    COMPLETED
 
+GET NS LCM OP Occurrences
+    [Tags]    instantiate-terminate-workflow
+    [Documentation]    Test ID: mso-lo-test-3.5
+    ...    Test title: GET LCM OP Occurrences
+    ...    Test objective: The objective is to test the workflow for retrive NS LCM OP Occurrences
+    ...    Pre-conditions: none
+    ...    Post-Conditions: status code 200
+    GET NS LCM OP Occurrences
+    Check HTTP Response Status Code Is    200
+    Check HTTP Response Body Json Schema Is  ${ns_lcm_op_occ_list_schema}
+
 POST NS Instance Terminate
     [Tags]    instantiate-terminate-workflow
     [Documentation]    Test ID: mso-lo-test-3.
@@ -151,15 +162,3 @@ GET Information about an inexistent individual NS Instance
     ...    Post-Conditions: Status code 404
     GET IndividualNSInstance inexistent
     Check HTTP Response Status Code Is    404
-
-GET NS LCM OP Occurrences
-    [Tags]    standalone
-    [Documentation]    Test ID: mso-lo-test-3.5
-    ...    Test title: GET LCM OP Occurrences
-    ...    Test objective: The objective is to test the workflow for retrive NS LCM OP Occurrences
-    ...    Pre-conditions: none
-    ...    Post-Conditions: status code 200
-    GET NS LCM OP Occurrences
-    Check HTTP Response Status Code Is    200
-    Check HTTP Response Body Json Schema Is  ${ns_lcm_op_occ_list_schema}
-
