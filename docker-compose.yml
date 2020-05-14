@@ -16,6 +16,8 @@ services:
       context: .
       target: prod
     container_name: mso-lo
+    environment:
+      PRODUCTION: "${PRODUCTION}"
     networks:
       mso-lo-net:
         aliases:

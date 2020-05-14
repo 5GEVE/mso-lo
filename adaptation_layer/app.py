@@ -23,18 +23,18 @@ from error_handler import NfvoNotFound, NsNotFound, NsdNotFound, \
 from error_handler import Unauthorized, BadRequest, ServerError, NsOpNotFound
 import data.sqlite as sqlite
 
-TESTING = os.environ.get("TESTING", False)
+PRODUCTION = os.getenv('PRODUCTION', 'false').lower()
 
 app = Flask(__name__)
 app.config.from_object(config.Config)
 init_errorhandler(app)
-if TESTING:
+if PRODUCTION == 'true':
+    # use site-inventory
+    pass
+else:
     sqlite.db.init_app(app)
     migrate = Migrate(app, sqlite.db)
     database = sqlite
-else:
-    pass
-    # use site-inventory
 
 
 @app.route('/nfvo', methods=['GET'])
