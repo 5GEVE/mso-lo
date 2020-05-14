@@ -12,12 +12,3 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-import os
-
-
-class Config(object):
-    basedir = os.path.abspath(os.path.dirname(__file__))
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-                              'sqlite:///' + os.path.join(basedir,
-                                                          'data/mso-lo.db')
-    SQLALCHEMY_TRACK_MODIFICATIONS = False

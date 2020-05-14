@@ -13,8 +13,13 @@
 #  limitations under the License.
 
 import datetime
+from typing import List, Dict
 
-from config import db
+from flask_sqlalchemy import SQLAlchemy
+
+from error_handler import NfvoNotFound
+
+db = SQLAlchemy()
 
 
 class NFVO(db.Model):
@@ -66,3 +71,21 @@ class NFVO_CREDENTIALS(db.Model):
             'user': self.user,
             'password': self.password
         }
+
+
+def get_nfvo_by_id(nfvo_id) -> Dict:
+    nfvo = NFVO.query.filter_by(id=nfvo_id).first()
+    if nfvo is None:
+        raise NfvoNotFound(nfvo_id=nfvo_id)
+    return nfvo.serialize
+
+
+def get_nfvo_list() -> List[Dict]:
+    return [nfvo.serialize for nfvo in NFVO.query.all()]
+
+
+def get_nfvo_cred(nfvo_id) -> Dict:
+    nfvo_cred = NFVO_CREDENTIALS.query.filter_by(nfvo_id=nfvo_id).first()
+    if nfvo_cred is None:
+        raise NfvoNotFound(nfvo_id=nfvo_id)
+    return nfvo_cred.serialize
