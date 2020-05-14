@@ -28,9 +28,9 @@ TESTING = os.environ.get("TESTING", False)
 app = Flask(__name__)
 app.config.from_object(config.Config)
 init_errorhandler(app)
-migrate = Migrate(app, sqlite.db)
 if TESTING:
     sqlite.db.init_app(app)
+    migrate = Migrate(app, sqlite.db)
     database = sqlite
 else:
     pass
