@@ -21,6 +21,21 @@ Software is distributed under [Apache License, Version 2.0](http://www.apache.or
 
 ## Install guide
 
+### Environment with site-inventory (production)
+
+If [site-inventory](https://github.com/5GEVE/site-inventory) is available in your environment, deploy with
+
+*TODO*: add configuration for site inventory (host, port, ...)
+
+```
+docker pull python:3.6
+docker-compose build
+PRODUCTION="true" docker-compose up
+```
+
+### Environment with local database
+
+If site-inventory is not available, the app can use a local sqlite database.
 Before deploying, database must be populated with NFVO data.
 Copy the mock files:
 
@@ -31,15 +46,15 @@ cp nfvo_credentials_mock.json nfvo_credentials.json
 ```
 
 Edit the files by inserting your NFVOs information.
-
-We use Docker Compose for deployment (it will also take care of database initialization).
-From the repository main directory, run:
+Deploy with:
 
 ```
 docker pull python:3.6
 docker-compose build
 docker-compose up
 ```
+
+### Simple test
 
 You can test the app with:
 
