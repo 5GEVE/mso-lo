@@ -88,7 +88,7 @@ class OSM(Driver):
                 return resp.json(), resp.headers
             elif 'application/yaml' in resp.headers['content-type']:
                 return YAML.load(resp.text, Loader=YAML.SafeLoader), \
-                       resp.headers
+                    resp.headers
             else:
                 return resp.text, resp.headers
         elif resp.status_code == 204:
@@ -119,7 +119,7 @@ class OSM(Driver):
                 return resp.json(), resp.headers
             elif 'application/yaml' in resp.headers['content-type']:
                 return YAML.load(resp.text, Loader=YAML.SafeLoader), \
-                       resp.headers
+                    resp.headers
             else:
                 return resp.text, resp.headers
         elif resp.status_code == 204:
@@ -150,7 +150,7 @@ class OSM(Driver):
                 return resp.json(), resp.headers
             elif 'application/yaml' in resp.headers['content-type']:
                 return YAML.load(resp.text, Loader=YAML.SafeLoader), \
-                       resp.headers
+                    resp.headers
             else:
                 return resp.text, resp.headers
         elif resp.status_code == 204:
@@ -277,11 +277,23 @@ class OSM(Driver):
         _url = "{0}/nslcm/v1/ns_instances/{1}/instantiate".format(
             self._base_path, nsId)
         _url = self._build_url_query(_url, args)
+        instantiate_payload = {}
         ns_res, ns_head = self.get_ns(nsId, skip_sol=True)
-        args['payload'] = ns_res['instantiate_params']
+        instantiate_payload.update(ns_res['instantiate_params'])
+        args_payload = args['payload']
+        if('additionalParamsForNs' in args_payload):
+            print('additionalParamsForNs')
+            if ('vnf' in args_payload['additionalParamsForNs']):
+                additional_params = args_payload['additionalParamsForNs']
+                for vnf in additional_params['vnf']:
+                    if vnf.get("vnfInstanceId"):
+                        vnf["member-vnf-index"] = self._get_member_vnf_index(
+                            vnf.pop("vnfInstanceId"))
+                    print(vnf)
+
         try:
             empty_body, osm_headers = self._exec_post(
-                _url, json=args['payload'], headers=self._headers)
+                _url, json=instantiate_payload, headers=self._headers)
         except ResourceNotFound:
             raise NsNotFound(ns_id=nsId)
         headers = self._build_headers(osm_headers)
@@ -425,6 +437,11 @@ class OSM(Driver):
                 }
             sol_ns["vnfInstance"].append(vnf_instance)
         return sol_ns
+
+    @staticmethod
+    def _get_member_vnf_index(vnfInstanceId):
+
+        return '1'
 
     @staticmethod
     def _op_im_converter(osm_op):

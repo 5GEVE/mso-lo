@@ -115,6 +115,7 @@ Check HTTP Response Header Contains
 Check HTTP Response Body Json Schema Is
     [Arguments]    ${input_schema}
     validate    instance=${response[0]['body']}    schema=${input_schema}
+    Log    ${response[0]['body']}
     Log    Json Schema Validation OK
 
 Check HTTP Response Header ContentType is
