@@ -274,7 +274,7 @@ paths:
         type: string
       - in: body
         name: body
-        description: Scale NS request body
+        description: Instantiate NS request body
         required: false
         schema:
           $ref: '#/definitions/NfvoNsInstantiateRequest'
@@ -1241,8 +1241,7 @@ definitions:
     type: object
     properties:
       additionalParamsForNs:
-        type: object
-        properties: {}
+        $ref: '#/definitions/NfvoNsInstantiateRequest_additionalParamsForNs'
   NfvoNsInstancesScaleRequest:
     type: object
     properties:
@@ -1305,3 +1304,17 @@ definitions:
           Fixed addresses assigned (from the subnet defined by "subnetId" if provided).
         items:
           $ref: '#/definitions/IpAddress'
+  NfvoNsInstantiateRequest_additionalParamsForNs_vnf:
+    type: object
+    properties:
+      vnfInstanceId:
+        type: string
+      vimAccountId:
+        type: string
+  NfvoNsInstantiateRequest_additionalParamsForNs:
+    type: object
+    properties:
+      vnf:
+        type: array
+        items:
+          $ref: '#/definitions/NfvoNsInstantiateRequest_additionalParamsForNs_vnf'
