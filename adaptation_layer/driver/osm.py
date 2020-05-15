@@ -31,14 +31,14 @@ from error_handler import ResourceNotFound, NsNotFound, VnfNotFound, \
 from .interface import Driver, Headers, BodyList, Body
 
 urllib3.disable_warnings(InsecureRequestWarning)
-TESTING = os.environ.get("TESTING", False)
-PRISM_ALIAS = os.environ.get("PRISM_ALIAS", "prism-osm")
+TESTING = os.getenv('TESTING', 'false').lower()
+PRISM_ALIAS = os.getenv("PRISM_ALIAS", "prism-osm")
 
 
 def _authenticate(func):
     @wraps(func)
     def wrapper(self, *args, **kwargs):
-        if TESTING:
+        if TESTING == 'true':
             pass
         elif not self._token or datetime.utcfromtimestamp(
                 self._token["expires"]) < datetime.utcnow():
@@ -70,12 +70,12 @@ class OSM(Driver):
         self._headers = {"Content-Type": "application/json",
                          "Accept": "application/json"}
         self._token = None
-        if not TESTING:
-            self._base_path = 'https://{0}:{1}/osm'.format(self._host,
-                                                           self._so_port)
-        else:
+        if TESTING == 'true':
             self._base_path = 'http://{0}:{1}/osm'.format(PRISM_ALIAS,
                                                           self._so_port)
+        else:
+            self._base_path = 'https://{0}:{1}/osm'.format(self._host,
+                                                           self._so_port)
 
     def _exec_get(self, url=None, params=None, headers=None):
         try:
