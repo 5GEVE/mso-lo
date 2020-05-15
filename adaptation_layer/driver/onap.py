@@ -197,7 +197,7 @@ class ONAP(Driver):
         return op_list, headers
 
     def get_op(self, nsLcmOpId, args: Dict = None) -> Tuple[Body, Headers]:
-        _url = '{0}/ns_lcm_op_occs/lcm_id/{1}'.format(self._base_path, nsLcmOpId)
+        _url = '{0}/ns_lcm_op_occs/{1}'.format(self._base_path, nsLcmOpId)
         _url = self._build_url_query(_url, args)
         try:
             lcm_op, resp_headers = self._exec_get(_url, headers=self._headers)
@@ -217,9 +217,9 @@ class ONAP(Driver):
         headers = {}
         if 'location' in resp_headers:
             re_res = re.findall(
-                r"/(ns_db_id|ns_lcm_op_occs)/([A-Za-z0-9\-]+)", resp_headers['location'])
+                r"/(instances|ns_lcm_op_occs)/([A-Za-z0-9\-]+)", resp_headers['location'])
             if len(re_res):
-                if re_res[0][0] == 'ns_db_id':
+                if re_res[0][0] == 'instances':
                     headers['location'] = '/nfvo/{0}/ns_instances/{1}'.format(
                         self._nfvoId, re_res[0][1])
                 elif re_res[0][0] == 'ns_lcm_op_occs':

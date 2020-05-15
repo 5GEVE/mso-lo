@@ -17,12 +17,16 @@ services:
     build:
       context: .
       target: test
+      args:
+        DB_SEED_NFVO: seed/nfvo_mock.json
+        DB_SEED_NFVO_CRED: seed/nfvo_credentials_mock.json
     container_name: test-onap
     depends_on:
       - prism-onap
     environment:
       TESTING: "True"
       PRISM_ALIAS: prism-onap
+      OPENAPI_PATH: ./openapi/MSO-LO-swagger-resolved.yaml
     command: ["./tests/wait-for-it.sh", "prism-onap:9999", "--", "pipenv", "run", "pytest", "-v", "tests/test_onap.py"]
     networks:
       mso-lo-net:

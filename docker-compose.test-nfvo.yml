@@ -4,8 +4,12 @@ services:
     build:
       context: .
       target: test
+      args:
+        DB_SEED_NFVO: seed/nfvo_mock.json
+        DB_SEED_NFVO_CRED: seed/nfvo_credentials_mock.json
     container_name: test-nfvo
     environment:
       TESTING: "True"
+      OPENAPI_PATH: ./openapi/MSO-LO-swagger-resolved.yaml
     command: ["pipenv", "run", "pytest", "-v", "tests/test_nfvo.py"]
 

@@ -18,6 +18,8 @@ from .interface import Driver
 from .onap import ONAP
 from .osm import OSM
 
+_drivers = {}
+
 
 def get_driver(nfvo_id) -> Driver:
     nfvo = NFVO.query.filter_by(id=nfvo_id).first()
@@ -26,20 +28,24 @@ def get_driver(nfvo_id) -> Driver:
         raise NfvoNotFound(nfvo_id=nfvo_id)
     nfvo = nfvo.serialize
     nfvo_cred = nfvo_cred.serialize
-    type = nfvo['type'].casefold()
-    if type == 'osm':
-        return OSM(nfvo_cred)
-    elif type == 'onap':
-        return ONAP(nfvo_cred)
+    nfvo_type = nfvo['type'].casefold()
+
+    global _drivers
+    if nfvo_id in _drivers:
+        pass
+    elif nfvo_type == 'osm':
+        _drivers[nfvo_id] = OSM(nfvo_cred)
+    elif nfvo_type == 'onap':
+        _drivers[nfvo_id] = ONAP(nfvo_cred)
     else:
         raise NotImplementedError(
-            'Driver type: {} is not implemented'.format(type))
+            'Driver type: {} is not implemented'.format(nfvo_type))
+    return _drivers[nfvo_id]
 
 
 def get_nfvo_list(args=None) -> list:
     results = NFVO.query.all()
     nfvo_list = [result.serialize for result in results]
-
     return nfvo_list
 
 

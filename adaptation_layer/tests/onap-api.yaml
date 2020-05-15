@@ -8,10 +8,10 @@ servers:
 
 info:
   description:
-    ONAP's ns-server API
-    version with Celery and rabbitMQ
-  version: "1.4"
-  title: ONAP's NS-server API
+    ONAP ns-server API
+    version with Celery and rabbitMQ with vnf info #and exCpInfo
+  version: "2.0"
+  title: ONAP NS-server API
   contact:
     email: michal.grzesik@orange.com
   license:
@@ -23,13 +23,24 @@ tags:
     description: Management operations of NS instances
   - name: 'NS lcm'
     description: NS LCM Operations
-  # - name: 'Dev API'
-  #   description: Dev API
+  - name: 'IWL Catalogue API'
+    description: API to retrieve the list of service specification and .csar archives
 
 # paths onap nbi & ns-server
 paths:
 # get all ns instances info
   '/instances':
+    parameters:
+    - in: query
+      name: offset
+      schema:
+        type: integer
+      description: The number of items to skip before starting to collect the result set
+    - in: query
+      name: limit
+      schema:
+        type: integer
+      description: The numbers of items to return
     get:
       tags:
         - 'NS instances'
@@ -109,7 +120,7 @@ paths:
               schema:
                 type: string
                 format: uri
-                example: /ns_db_id/4e462039-e57b-44e4-8431-bc586f31b4cb
+                example: /instances/4e462039-e57b-44e4-8431-bc586f31b4cb
           content:
             application/json:
               schema:
@@ -268,6 +279,40 @@ paths:
         #   $ref: '#/components/responses/UnexpectedError'
         # default:
         #   $ref: '#/components/responses/UnexpectedError'
+#  get a info lcm op occs with given ID
+  '/ns_lcm_op_occs/{lcm_id}':
+    parameters:
+      - name: lcm_id
+        in: path
+        required: true
+        description: lcm ID
+        schema:
+          type : string
+    get:
+      tags:
+        - 'NS lcm'
+      summary: retrieve a lcm info with given ID
+      description: retrieve a lcm info with given ID
+      operationId: lcmNS
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ID_lcm_op_occs'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        # '5XX':
+        #   $ref: '#/components/responses/UnexpectedError'
+        # default:
+        #   $ref: '#/components/responses/UnexpectedError'
 #  get a info lcm op occs for given ns_Id
   '/ns_lcm_op_occs/ns_id/{ns_db_id}':
     parameters:
@@ -302,28 +347,55 @@ paths:
         #   $ref: '#/components/responses/UnexpectedError'
         # default:
         #   $ref: '#/components/responses/UnexpectedError'
-#  get a info lcm op occs with given ID
-  '/ns_lcm_op_occs/lcm_id/{lcm_id}':
-    parameters:
-      - name: lcm_id
-        in: path
-        required: true
-        description: lcm ID
-        schema:
-          type : string
+#  get a list of service specifications
+  '/service_specification':
     get:
       tags:
-        - 'NS lcm'
-      summary: retrieve a lcm info with given ID
-      description: retrieve a lcm info with given ID
-      operationId: lcmNS
+        - 'IWL Catalogue API'
+      summary: retrieve a list of all onboarded ns
+      description: retrieve a list of all onboarded ns
+      operationId: serviceList
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ID_lcm_op_occs'
+                $ref: '#/components/schemas/ListServiceSpec'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        # '5XX':
+        #   $ref: '#/components/responses/UnexpectedError'
+        # default:
+        #   $ref: '#/components/responses/UnexpectedError'
+#  get a list of service specifications
+  '/service_specification/{service_uuid}':
+    parameters:
+      - name: service_uuid
+        in: path
+        required: true
+        description: service specification UUID / nsdId
+        schema:
+          type : string
+    get:
+      tags:
+        - 'IWL Catalogue API'
+      summary: retrieve a service specification .csar archive
+      description: retrieve a service specification .csar archive
+      operationId: serviceSpecArchive
+      responses:
+        '200':
+          description: .csar archive
+          # content:
+          #   application/pdf:
+              # schema:
+              #   $ref: '#/components/schemas/ListServiceSpec'
         '400':
           $ref: '#/components/responses/BadRequest'
         '404':
@@ -407,12 +479,18 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ID_lcm_op_occs'
-    OnapServiceSpecification:
-      description: Onap Service Specification
+    # OnapServiceSpecification:
+    #   description: Onap Service Specification
+    #   content:
+    #     application/json:
+    #       schema:
+    #         $ref: '#/components/schemas/OnapServiceSpecification'
+    ListServiceSpec:
+      description: Onap Service Specification list
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/OnapServiceSpecification'
+            $ref: '#/components/schemas/ListServiceSpec'
 # end of schemas in responses
 # END RESPONSES
   schemas:
@@ -476,8 +554,8 @@ components:
         nsState:
           type: string
           enum:
-            - NOT_INSTANTIATED
             - INSTANTIATED
+            - NOT_INSTANTIATED
         vnfInstance:
           type: array
           items:
@@ -510,8 +588,8 @@ components:
         instantiationState:
           type: string
           enum:
-            - NOT_INSTANTIATED
             - INSTANTIATED
+            - NOT_INSTANTIATED
         instantiatedVnfInfo:
           type: object
           properties:
@@ -523,64 +601,94 @@ components:
               items:
                 $ref: '#/components/schemas/VnfExtCpInfo'
 #
+    vnfInstanceCreated:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              example: null #3fa85f64-5717-4562-b3fc-2c963f66afa6
+            vnfdId:
+              type: string
+              format: uuid
+              example: 8a585f64-5717-4562-b3fc-2c963f66afa6
+            vnfProductName:
+              type: string
+            vimId:
+              type: string
+              format: uuid
+              example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+            instantiationState:
+              type: string
+              enum:
+                #- INSTANTIATED
+                - NOT_INSTANTIATED
+            instantiatedVnfInfo:
+              type: object
+#
     VnfExtCpInfo:
+#      nullable: true
       type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-        cpProtocolInfo:
-          type: array
-          items:
-            $ref: '#/components/schemas/CpProtocolInfo'
+    #   properties:
+    #     id:
+    #       type: string
+    #       format: uuid
+    #       example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+    #     cpdId:
+    #       type: string
+    #       format: uuid
+    #       example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+    #     cpProtocolInfo:
+    #       type: array
+    #       items:
+    #         $ref: '#/components/schemas/CpProtocolInfo'
 #
-    CpProtocolInfo:
-      type: object
-      required:
-      - ipOverEthernet
-      - layerProtocol
-      properties:
-        layerProtocol:
-          type: string
-          enum:
-            - IP_OVER_ETHERNET
-        ipOverEthernet:
-          allOf:
-          - $ref: '#/components/schemas/IpOverEthernetAddressInfo'
+#     CpProtocolInfo:
+#       type: object
+#       required:
+#       - ipOverEthernet
+#       - layerProtocol
+#       properties:
+#         layerProtocol:
+#           type: string
+#           enum:
+#             - IP_OVER_ETHERNET
+#         ipOverEthernet:
+#           allOf:
+#           - $ref: '#/components/schemas/IpOverEthernetAddressInfo'
+# # #
+#     IpOverEthernetAddressInfo:
+#       type: object
+#       required:
+#       - ipAddresses
+#       - macAddress
+#       properties:
+#         macAddress:
+#           type: string
+#           format: MAC
+#         ipAddresses:
+#           type: array
+#           items:
+#               $ref: '#/components/schemas/IpOverEthernetAddressInfo_ipAddresses'
 #
-    IpOverEthernetAddressInfo:
-      type: object
-      required:
-      - ipAddresses
-      - macAddress
-      properties:
-        macAddress:
-          type: string
-          format: MAC
-        ipAddresses:
-           type: array
-           items:
-              $ref: '#/components/schemas/IpOverEthernetAddressInfo_ipAddresses'
+    # IpOverEthernetAddressInfo_ipAddresses:
+    #   type: object
+    #   required:
+    #   - type
+    #   properties:
+    #     type:
+    #       type: string
+    #       enum:
+    #       - IPV4
+    #       - IPV6
+    #     addresses:
+    #       type: array
+    #       items:
+    #         $ref: '#/components/schemas/IpAddress'
 #
-    IpOverEthernetAddressInfo_ipAddresses:
-      type: object
-      required:
-      - type
-      properties:
-        type:
-          type: string
-          enum:
-          - IPV4
-          - IPV6
-        addresses:
-          type: array
-          items:
-            $ref: '#/components/schemas/IpAddress'
-#
-    IpAddress:
-      type: string
-      format: IP
+    # IpAddress:
+    #   type: string
+    #   format: IP
 #
     NsInstanceIdCreated:
       type: object
@@ -604,7 +712,7 @@ components:
         vnfInstance:
           type: array
           items:
-            $ref: '#/components/schemas/vnfInstance'
+            $ref: '#/components/schemas/vnfInstanceCreated'
       required:
         - id
         - nsInstanceName
@@ -646,9 +754,18 @@ components:
           type: string
           format: date-time
 #
-    OnapServiceSpecification:
+    ListServiceSpec:
+      type: array
+      items:
+        $ref: '#/components/schemas/serviceSpec'
+#
+    serviceSpec:
       type: object
       properties:
+        id:
+          type: string
+          format: uuid
+          example: 1de0e9c3-b238-44da-b01b-b249a7784b03
         name:
           type: string
   # END SCHEMAS
