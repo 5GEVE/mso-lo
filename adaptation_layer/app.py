@@ -18,6 +18,7 @@ from flask_migrate import Migrate
 
 import config
 import driver.manager as manager
+from data import siteinventory
 from error_handler import NfvoNotFound, NsNotFound, NsdNotFound, \
     init_errorhandler
 from error_handler import Unauthorized, BadRequest, ServerError, NsOpNotFound
@@ -29,8 +30,7 @@ app = Flask(__name__)
 app.config.from_object(config.Config)
 init_errorhandler(app)
 if PRODUCTION == 'true':
-    # use site-inventory
-    pass
+    database = siteinventory
 else:
     sqlite.db.init_app(app)
     migrate = Migrate(app, sqlite.db)
