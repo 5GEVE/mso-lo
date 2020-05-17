@@ -22,6 +22,7 @@ POST NS Instance Creation
     Check HTTP Response Header Contains    Location
     Check HTTP Response Body Json Schema Is   ${ns_schema}
     Check NS Id
+    Check VNF Ids
     Check resource not_instantiated
 
 GET NS Instance List

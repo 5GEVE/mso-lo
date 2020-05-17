@@ -1,10 +1,6 @@
 {
+
   "additionalParamsForNs": {
-    "vnf": [
-      {
-        "vnfInstanceId": "xxx-xxxx-xx-xxx",
-        "vimAccountId": "xxxx-xxxx-xx-xx"
-      }
-    ]
+    "vnf": []
   }
 }

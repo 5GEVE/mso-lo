@@ -281,21 +281,27 @@ class OSM(Driver):
         ns_res, ns_head = self.get_ns(nsId, skip_sol=True)
         instantiate_payload.update(ns_res['instantiate_params'])
         args_payload = args['payload']
+
         if('additionalParamsForNs' in args_payload):
-            print('additionalParamsForNs')
             if ('vnf' in args_payload['additionalParamsForNs']):
                 additional_params = args_payload['additionalParamsForNs']
+                mapping = {v: str(i+1) for i,
+                           v in enumerate(ns_res['constituent-vnfr-ref'])}
+
                 for vnf in additional_params['vnf']:
-                    if vnf.get("vnfInstanceId"):
-                        vnf["member-vnf-index"] = self._get_member_vnf_index(
-                            vnf.pop("vnfInstanceId"))
-                    print(vnf)
+                    if vnf.get('vnfInstanceId'):
+                        vnf['member-vnf-index'] = mapping[vnf.pop(
+                            'vnfInstanceId')]
+                if(len(additional_params['vnf']) > 0):
+                    instantiate_payload['vnf'] = additional_params['vnf']
 
         try:
             empty_body, osm_headers = self._exec_post(
                 _url, json=instantiate_payload, headers=self._headers)
-        except ResourceNotFound:
+        except ResourceNotFound as e:
+            print(e)
             raise NsNotFound(ns_id=nsId)
+
         headers = self._build_headers(osm_headers)
         return None, headers
 
@@ -437,11 +443,6 @@ class OSM(Driver):
                 }
             sol_ns["vnfInstance"].append(vnf_instance)
         return sol_ns
-
-    @staticmethod
-    def _get_member_vnf_index(vnfInstanceId):
-
-        return '1'
 
     @staticmethod
     def _op_im_converter(osm_op):

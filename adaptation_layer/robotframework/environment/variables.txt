@@ -23,7 +23,8 @@ ${nsInstanceIdinexistent}       6fc3539c-e602-4afa-8e13-962fb5a7d81xxxxxxx
 ${ConflictNsInstanceId}    007c111c-e602-4afa-8e13-962fb5a7d81d
 ${nsInstanceName}    Test-nsInstance
 ${nsInstanceDescription}    description ns
-${vnfInstanceId}       xxxxxxxxx-e602-4afa-8e13-962fb5a7d81f
+${vnfInstanceIds}    []
+${vimAccountId}    0a56cc00-b3b4-4a88-a5b5-a1ba62730d5f
 ${SINGLE_FILE_VNFD}    1    # If VNFD is PLAIN TEXT
 ${ACCEPT_PLAIN}    text/plain
 ${ACCEPT_ZIP}     application/zip
