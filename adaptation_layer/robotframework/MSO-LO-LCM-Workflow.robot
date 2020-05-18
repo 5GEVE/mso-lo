@@ -56,7 +56,7 @@ POST NS Instance Instantiate
     ...    Post-Conditions: status code 202
     Check resource existence
     Check resource not_instantiated
-    POST Instantiate nsInstance
+    POST Instantiate nsInstance with vnf in additionalParamsForNs
     Check HTTP Response Status Code Is    202
     Check HTTP Response Header Contains    Location
     Check Operation Occurrence Id
