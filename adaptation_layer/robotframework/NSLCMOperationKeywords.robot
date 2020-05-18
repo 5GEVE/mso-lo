@@ -12,6 +12,13 @@ Check NS Id
     Set Global Variable    ${nsInstanceId}    ${response[0]['body']['id']}
     Should Not Be Empty    ${nsInstanceId}
 
+Check VNF Ids
+    ${vnfInstances}=    set variable    ${response[0]['body']['vnfInstance']}
+    ${vnfInstances}=    evaluate   [v['id'] for v in ${vnfInstances}]
+    Set Global Variable    ${vnfInstanceIds}    ${vnfInstances}
+    Log    ${vnfInstances}
+    Should Not Be Empty    ${vnfInstanceIds}
+
 Check Operation Occurrence Id
     ${nsLcmOpOcc}=    set variable    ${response[0]['headers']['Location']}
     # using a basic regex, it can be improved
@@ -115,6 +122,7 @@ Check HTTP Response Header Contains
 Check HTTP Response Body Json Schema Is
     [Arguments]    ${input_schema}
     validate    instance=${response[0]['body']}    schema=${input_schema}
+    Log    ${response[0]['body']}
     Log    Json Schema Validation OK
 
 Check HTTP Response Header ContentType is
@@ -174,6 +182,21 @@ DELETE IndividualNSInstance
     log    Trying to delete an individual NS instance
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
     Delete    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}
+    ${outputResponse}=    Output    response
+	Set Global Variable    @{response}    ${outputResponse}
+
+POST Instantiate nsInstance with vnf in additionalParamsForNs
+    Log    Trying to Instantiate a ns Instance
+    Set Headers  {"Accept":"${ACCEPT}"}
+    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
+    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
+    ${body}=    Load JSON From File    jsons/InstantiateNsRequest.json
+    ${vnf}=    set variable    []
+    ${vnf}=    evaluate    [{"vnfInstanceId": vnfId,"vimAccountId": random.choice(${vimAccountIds})} for vnfId in ${vnfInstanceIds}]    random
+    Log    ${vnf}
+    ${body}=    Update Value To Json    ${body}    $.additionalParamsForNs.vnf    ${vnf}
+    Log    ${body}
+    Post    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/instantiate    ${body}
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
