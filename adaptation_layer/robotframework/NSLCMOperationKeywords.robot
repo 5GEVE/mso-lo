@@ -192,7 +192,7 @@ POST Instantiate nsInstance with vnf in additionalParamsForNs
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
     ${body}=    Load JSON From File    jsons/InstantiateNsRequest.json
     ${vnf}=    set variable    []
-    ${vnf}=    evaluate    [{"vnfInstanceId": vnfId,"vimAccountId": '''${vimAccountId}'''} for vnfId in ${vnfInstanceIds}]
+    ${vnf}=    evaluate    [{"vnfInstanceId": vnfId,"vimAccountId": random.choice(${vimAccountIds})} for vnfId in ${vnfInstanceIds}]    random
     Log    ${vnf}
     ${body}=    Update Value To Json    ${body}    $.additionalParamsForNs.vnf    ${vnf}
     Log    ${body}
