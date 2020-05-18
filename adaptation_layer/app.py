@@ -30,7 +30,7 @@ app = Flask(__name__)
 app.config.from_object(config.Config)
 init_errorhandler(app)
 if PRODUCTION == 'true':
-    database = siteinventory
+    database = siteinventory.SiteInventory()
 else:
     sqlite.db.init_app(app)
     migrate = Migrate(app, sqlite.db)
