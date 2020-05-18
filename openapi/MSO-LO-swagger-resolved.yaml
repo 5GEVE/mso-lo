@@ -1,8 +1,8 @@
 ---
-swagger: "2.0"
+swagger: '2.0'
 info:
   description: 5G-EVE Adaptation Layer API spec.
-  version: "3.4"
+  version: '3.5'
   title: 5G-EVE Adaptation Layer API
   contact: {}
 host: example.com
@@ -153,7 +153,7 @@ paths:
         "201":
           description: |
             201 Created
-            A NS Instance identifier has been created successfully. The response body shall contain a representation of the created NS instance, as defined in clause 6.5.2.8. The HTTP response shall include a "Location" HTTP header that contains the resource URI of the created NS instance.
+            A NS Instance identifier has been created successfully. The response body shall contain a representation of the created NS instance, as defined in clause 6.5.2.8. The HTTP response shall include a 'Location' HTTP header that contains the resource URI of the created NS instance.
           headers:
             Location:
               type: string
@@ -255,8 +255,8 @@ paths:
       description: |
         Instantiate a NS. The precondition is that the NS instance must have
         been created and must be in NOT_INSTANTIATED state. As a result of the
-        success of this operation, the NFVO creates a "NS Lifecycle Operation
-        Occurrence" resource for the request, and the NS instance state becomes
+        success of this operation, the NFVO creates a 'NS Lifecycle Operation
+        Occurrence' resource for the request, and the NS instance state becomes
         INSTANTIATED.
       operationId: Nfvo.NS.instantiate
       produces:
@@ -272,6 +272,12 @@ paths:
           description: Identifier of a Nfvo
           required: true
           type: string
+        - in: body
+          name: body
+          description: Instantiate NS request body
+          required: false
+          schema:
+            $ref: '#/definitions/NfvoNsInstantiateRequest'
       responses:
         "202":
           description: |
@@ -301,8 +307,8 @@ paths:
       description: |
         Scale a NS instance. The precondition is that the NS instance must have
         been created and must be in INSTANTIATED state. As a result of the
-        success of this operation, the NFVO creates a "NS Lifecycle Operation
-        Occurrence" resource for the request, and the NS instance state remains
+        success of this operation, the NFVO creates a 'NS Lifecycle Operation
+        Occurrence' resource for the request, and the NS instance state remains
         INSTANTIATED.
       operationId: Nfvo.NS.scale
       produces:
@@ -421,7 +427,7 @@ paths:
           description: |
             200 OK
             Status information for zero or more NS lifecycle management operation  occurrences has been queried successfully. The response body shall contain in an array the representations of zero or more NS instances, as defined in clause 6.5.2.3.
-            If the "filter" URI parameter or one of the "all_fields", "fields", "exclude_fields" or "exclude_default" URI parameters was supplied in the request and is supported, the data in the response body shall have been transformed according to the rules specified in clauses 5.2.2 and 5.3.2 of ETSI GS NFV SOL 013, respectively.
+            If the 'filter' URI parameter or one of the 'all_fields', 'fields', 'exclude_fields' or 'exclude_default' URI parameters was supplied in the request and is supported, the data in the response body shall have been transformed according to the rules specified in clauses 5.2.2 and 5.3.2 of ETSI GS NFV SOL 013, respectively.
             If the NFVO supports alternative 2 (paging) according to  clause 5.4.2.1 of ETSI GS NFV SOL 013 for this resource, inclusion of the Link HTTP header in this response shall follow the provisions in clause 5.4.2.3 of ETSI GS NFV SOL 013.
           headers:
             Content-Type:
@@ -446,7 +452,7 @@ paths:
         - NS LCM Operations
       summary: Read an individual NS LCM operation occurrence resource.
       description: |
-        The client can use this method to retrieve status information about a NS lifecycle management operation occurrence by reading an individual "NS LCM operation occurrence" resource. This method shall follow the provisions specified in the Tables 6.4.10.3.2-1 and 6.4.10.3.2-2 for URI query parameters, request and response data structures, and response codes.
+        The client can use this method to retrieve status information about a NS lifecycle management operation occurrence by reading an individual 'NS LCM operation occurrence' resource. This method shall follow the provisions specified in the Tables 6.4.10.3.2-1 and 6.4.10.3.2-2 for URI query parameters, request and response data structures, and response codes.
       operationId: Nfvo.NS_LCM_OP.fetch
       produces:
         - application/json
@@ -547,7 +553,7 @@ paths:
         - NS Subscriptions
       summary: Subscribe to NS lifecycle change notifications.
       description: |
-        The POST method creates a new subscription. If subscription already exists, it returns a "303 See Other" response code referencing the existing subscription resource.
+        The POST method creates a new subscription. If subscription already exists, it returns a '303 See Other' response code referencing the existing subscription resource.
       operationId: NfvoSubscriptionsByNfvoIdPost
       produces:
         - application/json
@@ -896,15 +902,15 @@ definitions:
     type: string
     description: |
       The state of the VNF instance.
+    example: STARTED
     enum:
       - STARTED
       - STOPPED
-    example: STARTED
   VnfExtCpInfo:
     type: object
     required:
-      - id
       - cpdId
+      - id
     properties:
       id:
         description: |
@@ -939,7 +945,7 @@ definitions:
           - IP_OVER_ETHERNET
       ipOverEthernet:
         description: |
-          IP addresses over Ethernet to assign to the CP or SAP instance. Shall be present if layerProtocol is equal to " IP_OVER_ETHERNET", and shall be absent otherwise.
+          IP addresses over Ethernet to assign to the CP or SAP instance. Shall be present if layerProtocol is equal to ' IP_OVER_ETHERNET', and shall be absent otherwise.
         allOf:
           - $ref: '#/definitions/IpOverEthernetAddressInfo'
     description: |
@@ -1069,9 +1075,9 @@ definitions:
       The enumeration NsLcmOpType represents those lifecycle operations that trigger a NS lifecycle management operation occurrence notification.
       Value | Description
       ------|------------
-      INSTANTIATE | Represents the "Instantiate NS" LCM operation.
-      SCALE | Represents the "Scale NS" LCM operation.
-      TERMINATE | Represents the "Terminate NS" LCM operation.
+      INSTANTIATE | Represents the 'Instantiate NS' LCM operation.
+      SCALE | Represents the 'Scale NS' LCM operation.
+      TERMINATE | Represents the 'Terminate NS' LCM operation.
     enum:
       - INSTANTIATE
       - SCALE
@@ -1100,7 +1106,7 @@ definitions:
         format: date-time
         description: |-
           Timestamp indicating the end time of the NS, i.e. the NS will be terminated
-          automatically at this timestamp. Cardinality "0" indicates the NS termination
+          automatically at this timestamp. Cardinality '0' indicates the NS termination
           takes place immediately.
     title: TerminateNsRequest
   NSInstanceSubscription:
@@ -1158,7 +1164,7 @@ definitions:
       notificationType:
         type: string
         example: NsIdentifierCreationNotification
-        description: Discriminator for the different notification types. Shall be set to "NsIdentifierCreationNotification" for this notification type.
+        description: Discriminator for the different notification types. Shall be set to 'NsIdentifierCreationNotification' for this notification type.
       subscriptionId:
         type: string
         description: An identifier with the intention of being globally unique.
@@ -1179,7 +1185,7 @@ definitions:
       notificationType:
         type: string
         example: NsIdentifierDeletionNotification
-        description: Discriminator for the different notification types. Shall be set to "NsIdentifierDeletionNotification" for this notification type.
+        description: Discriminator for the different notification types. Shall be set to 'NsIdentifierDeletionNotification' for this notification type.
       subscriptionId:
         type: string
         description: An identifier with the intention of being globally unique.
@@ -1218,6 +1224,11 @@ definitions:
       nsDescription:
         type: string
     title: NfvoNsInstancesRequest
+  NfvoNsInstantiateRequest:
+    type: object
+    properties:
+      additionalParamsForNs:
+        $ref: '#/definitions/NfvoNsInstantiateRequest_additionalParamsForNs'
   NfvoNsInstancesScaleRequest:
     type: object
     properties:
@@ -1277,6 +1288,20 @@ definitions:
       addresses:
         type: array
         description: |
-          Fixed addresses assigned (from the subnet defined by "subnetId" if provided).
+          Fixed addresses assigned (from the subnet defined by 'subnetId' if provided).
         items:
           $ref: '#/definitions/IpAddress'
+  NfvoNsInstantiateRequest_additionalParamsForNs_vnf:
+    type: object
+    properties:
+      vnfInstanceId:
+        type: string
+      vimAccountId:
+        type: string
+  NfvoNsInstantiateRequest_additionalParamsForNs:
+    type: object
+    properties:
+      vnf:
+        type: array
+        items:
+          $ref: '#/definitions/NfvoNsInstantiateRequest_additionalParamsForNs_vnf'

@@ -88,7 +88,7 @@ class OSM(Driver):
                 return resp.json(), resp.headers
             elif 'application/yaml' in resp.headers['content-type']:
                 return YAML.load(resp.text, Loader=YAML.SafeLoader), \
-                       resp.headers
+                    resp.headers
             else:
                 return resp.text, resp.headers
         elif resp.status_code == 204:
@@ -119,7 +119,7 @@ class OSM(Driver):
                 return resp.json(), resp.headers
             elif 'application/yaml' in resp.headers['content-type']:
                 return YAML.load(resp.text, Loader=YAML.SafeLoader), \
-                       resp.headers
+                    resp.headers
             else:
                 return resp.text, resp.headers
         elif resp.status_code == 204:
@@ -150,7 +150,7 @@ class OSM(Driver):
                 return resp.json(), resp.headers
             elif 'application/yaml' in resp.headers['content-type']:
                 return YAML.load(resp.text, Loader=YAML.SafeLoader), \
-                       resp.headers
+                    resp.headers
             else:
                 return resp.text, resp.headers
         elif resp.status_code == 204:
@@ -277,13 +277,35 @@ class OSM(Driver):
         _url = "{0}/nslcm/v1/ns_instances/{1}/instantiate".format(
             self._base_path, nsId)
         _url = self._build_url_query(_url, args)
+        instantiate_payload = {}
         ns_res, ns_head = self.get_ns(nsId, skip_sol=True)
-        args['payload'] = ns_res['instantiate_params']
+        instantiate_payload.update(ns_res['instantiate_params'])
+        args_payload = args['payload']
+
+        if 'additionalParamsForNs' in args_payload:
+            additional_params = args_payload['additionalParamsForNs']
+            if 'vnf' in additional_params:
+                mapping = {v: str(i+1) for i,
+                           v in enumerate(ns_res['constituent-vnfr-ref'])}
+
+                for vnf in additional_params['vnf']:
+                    if vnf.get('vnfInstanceId'):
+                        vnf['member-vnf-index'] = mapping[vnf.pop(
+                            'vnfInstanceId')]
+                if len(additional_params['vnf']) > 0:
+                    instantiate_payload['vnf'] = additional_params['vnf']
+            if 'wim_account' in additional_params:
+                instantiate_payload['wimAccountId'] = additional_params['wim_account']
+            else:
+                instantiate_payload['wimAccountId'] = False
+
         try:
             empty_body, osm_headers = self._exec_post(
-                _url, json=args['payload'], headers=self._headers)
-        except ResourceNotFound:
+                _url, json=instantiate_payload, headers=self._headers)
+        except ResourceNotFound as e:
+            print(e)
             raise NsNotFound(ns_id=nsId)
+
         headers = self._build_headers(osm_headers)
         return None, headers
 
