@@ -17,7 +17,7 @@ from requests import Response, get, ConnectionError, Timeout, \
     TooManyRedirects, URLRequired, HTTPError
 
 # TODO configuration for site inventory?? where to put it?
-from error_handler import ServerError, NfvoCredentialsNotFound, NfvoNotFound
+from error_handler import ServerError, NfvoNotFound, NfvoCredentialsNotFound
 
 host = "http://localhost:8087"
 
@@ -32,7 +32,7 @@ def _exec_get(url=None, params=None, headers=None) -> Response:
     return resp
 
 
-def get_nfvo_by_id(nfvo_id) -> Dict:
+def _get_nfvo(nfvo_id) -> Dict:
     try:
         json = _exec_get(host + "/nfvOrchestrators/" + nfvo_id).json()
     except HTTPError as e:
@@ -40,11 +40,24 @@ def get_nfvo_by_id(nfvo_id) -> Dict:
             raise NfvoNotFound(nfvo_id)
         else:
             raise ServerError()
+    return json
+
+
+def get_nfvo_by_id(nfvo_id) -> Dict:
+    json = _get_nfvo(nfvo_id)
     return {
         'id': json['id'],
         'name': json['name'],
         'type': json['type'],
     }
+
+
+def get_nfvo_cred(nfvo_id) -> Dict:
+    json = _get_nfvo(nfvo_id)
+    if json['credentials'] is None:
+        raise NfvoCredentialsNotFound(nfvo_id)
+    else:
+        return json['credentials']
 
 
 def get_nfvo_list() -> List[Dict]:
@@ -57,7 +70,3 @@ def get_nfvo_list() -> List[Dict]:
             'type': nfvo['type'],
         })
     return nfvo_list
-
-
-def get_nfvo_cred(nfvo_id) -> Dict:
-    pass

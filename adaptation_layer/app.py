@@ -17,12 +17,12 @@ from flask import jsonify, abort, request, make_response, Flask
 from flask_migrate import Migrate
 
 import config
+import data.sqlite as sqlite
 import driver.manager as manager
 from data import siteinventory
 from error_handler import NfvoNotFound, NsNotFound, NsdNotFound, \
-    init_errorhandler
+    init_errorhandler, NfvoCredentialsNotFound
 from error_handler import Unauthorized, BadRequest, ServerError, NsOpNotFound
-import data.sqlite as sqlite
 
 PRODUCTION = os.getenv('PRODUCTION', 'false').lower()
 
@@ -74,7 +74,7 @@ def create_ns(nfvo_id):
         abort(400, description=e.description)
     except Unauthorized as e:
         abort(401, description=e.description)
-    except NfvoNotFound as e:
+    except (NfvoNotFound, NfvoCredentialsNotFound) as e:
         abort(404, description=e.description)
     except NsdNotFound as e:
         abort(404, description=e.description)
@@ -97,7 +97,7 @@ def get_ns_list(nfvo_id):
         abort(400, description=e.description)
     except Unauthorized as e:
         abort(401, description=e.description)
-    except NfvoNotFound as e:
+    except (NfvoNotFound, NfvoCredentialsNotFound) as e:
         abort(404, description=e.description)
     except ServerError as e:
         abort(500, description=e.description)
@@ -118,7 +118,7 @@ def get_ns(nfvo_id, ns_id):
         abort(400, description=e.description)
     except Unauthorized as e:
         abort(401, description=e.description)
-    except NfvoNotFound as e:
+    except (NfvoNotFound, NfvoCredentialsNotFound) as e:
         abort(404, description=e.description)
     except NsNotFound as e:
         abort(404, description=e.description)
@@ -141,7 +141,7 @@ def delete_ns(nfvo_id, ns_id):
         abort(400, description=e.description)
     except Unauthorized as e:
         abort(401, description=e.description)
-    except NfvoNotFound as e:
+    except (NfvoNotFound, NfvoCredentialsNotFound) as e:
         abort(404, description=e.description)
     except NsNotFound as e:
         abort(404, description=e.description)
@@ -158,13 +158,14 @@ def instantiate_ns(nfvo_id, ns_id):
             database.get_nfvo_cred(nfvo_id)
         )
         empty_body, headers = driver.instantiate_ns(
-            ns_id, args={'payload': request.json, 'args': request.args.to_dict()})
+            ns_id,
+            args={'payload': request.json, 'args': request.args.to_dict()})
         return make_response('', 202, headers)
     except BadRequest as e:
         abort(400, description=e.description)
     except Unauthorized as e:
         abort(401, description=e.description)
-    except NfvoNotFound as e:
+    except (NfvoNotFound, NfvoCredentialsNotFound) as e:
         abort(404, description=e.description)
     except NsNotFound as e:
         abort(404, description=e.description)
@@ -181,13 +182,14 @@ def terminate_ns(nfvo_id, ns_id):
             database.get_nfvo_cred(nfvo_id)
         )
         empty_body, headers = driver.terminate_ns(
-            ns_id, args={'payload': request.json, 'args': request.args.to_dict()})
+            ns_id,
+            args={'payload': request.json, 'args': request.args.to_dict()})
         return make_response('', 202, headers)
     except BadRequest as e:
         abort(400, description=e.description)
     except Unauthorized as e:
         abort(401, description=e.description)
-    except NfvoNotFound as e:
+    except (NfvoNotFound, NfvoCredentialsNotFound) as e:
         abort(404, description=e.description)
     except NsNotFound as e:
         abort(404, description=e.description)
@@ -204,13 +206,14 @@ def scale_ns(nfvo_id, ns_id):
             database.get_nfvo_cred(nfvo_id)
         )
         empty_body, headers = driver.scale_ns(
-            ns_id, args={'payload': request.json, 'args': request.args.to_dict()})
+            ns_id,
+            args={'payload': request.json, 'args': request.args.to_dict()})
         return make_response('', 202, headers)
     except BadRequest as e:
         abort(400, description=e.description)
     except Unauthorized as e:
         abort(401, description=e.description)
-    except NfvoNotFound as e:
+    except (NfvoNotFound, NfvoCredentialsNotFound) as e:
         abort(404, description=e.description)
     except NsNotFound as e:
         abort(404, description=e.description)
@@ -235,7 +238,7 @@ def get_op_list(nfvo_id):
         abort(401, description=e.description)
     except NsNotFound as e:
         abort(404, description=e.description)
-    except NfvoNotFound as e:
+    except (NfvoNotFound, NfvoCredentialsNotFound) as e:
         abort(404, description=e.description)
     except ServerError as e:
         abort(500, description=e.description)
@@ -256,7 +259,7 @@ def get_op(nfvo_id, nsLcmOpId):
         abort(400, description=e.description)
     except Unauthorized as e:
         abort(401, description=e.description)
-    except NfvoNotFound as e:
+    except (NfvoNotFound, NfvoCredentialsNotFound) as e:
         abort(404, description=e.description)
     except NsOpNotFound as e:
         abort(404, description=e.description)
