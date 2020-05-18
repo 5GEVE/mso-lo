@@ -13,25 +13,33 @@
 #  limitations under the License.
 from typing import List, Dict
 
-import requests
+from requests import Response, get, ConnectionError, Timeout, \
+    TooManyRedirects, URLRequired, HTTPError
 
 # TODO configuration for site inventory?? where to put it?
-from error_handler import ServerError
+from error_handler import ServerError, NfvoCredentialsNotFound, NfvoNotFound
 
 host = "http://localhost:8087"
 
 
-def _exec_get(url=None, params=None, headers=None):
+def _exec_get(url=None, params=None, headers=None) -> Response:
     try:
-        resp = requests.get(url, params=params,
-                            verify=False, stream=True, headers=headers)
-    except Exception as e:
-        raise ServerError("Problem contacting site-inventory: " + str(e))
+        resp = get(url, params=params, headers=headers,
+                   verify=False, stream=True)
+        resp.raise_for_status()
+    except (ConnectionError, Timeout, TooManyRedirects, URLRequired) as e:
+        raise ServerError("Problem contacting site inventory: " + str(e))
     return resp
 
 
 def get_nfvo_by_id(nfvo_id) -> Dict:
-    json = _exec_get(host + "/nfvOrchestrators/" + nfvo_id).json()
+    try:
+        json = _exec_get(host + "/nfvOrchestrators/" + nfvo_id).json()
+    except HTTPError as e:
+        if e.response.status_code == 404:
+            raise NfvoNotFound(nfvo_id)
+        else:
+            raise ServerError()
     return {
         'id': json['id'],
         'name': json['name'],
