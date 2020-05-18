@@ -60,11 +60,14 @@ class SiteInventory:
         }
 
     def get_nfvo_cred(self, nfvo_id) -> Dict:
-        json = self._get_nfvo(nfvo_id)
-        if json['credentials'] is None:
+        nfvo = self._get_nfvo(nfvo_id)
+        if nfvo['credentials'] is None:
             raise NfvoCredentialsNotFound(nfvo_id)
         else:
-            return json['credentials']
+            del nfvo['credentials']['id']
+            nfvo['credentials']['nfvo_id'] = nfvo['id']
+            nfvo['credentials']['user'] = nfvo['credentials'].pop('username')
+            return nfvo['credentials']
 
     def get_nfvo_list(self) -> List[Dict]:
         json = self._exec_get(self.url + "/nfvOrchestrators").json()
