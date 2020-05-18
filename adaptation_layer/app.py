@@ -17,9 +17,8 @@ from flask import jsonify, abort, request, make_response, Flask
 from flask_migrate import Migrate
 
 import config
-import data.sqlite as sqlite
 import driver.manager as manager
-from data import siteinventory
+from data import siteinventory, sqlite
 from error_handler import NfvoNotFound, NsNotFound, NsdNotFound, \
     init_errorhandler, NfvoCredentialsNotFound
 from error_handler import Unauthorized, BadRequest, ServerError, NsOpNotFound
