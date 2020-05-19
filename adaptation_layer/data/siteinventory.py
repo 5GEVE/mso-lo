@@ -91,7 +91,13 @@ class SiteInventory:
 
     @_server_error
     def get_nfvo_list(self) -> List[Dict]:
-        resp = get(self.url + 'nfvOrchestrators')
-        resp.raise_for_status()
+        try:
+            resp = get(self.url + 'nfvOrchestrators')
+            resp.raise_for_status()
+        except HTTPError as e:
+            if e.response.status_code == 401:
+                raise Unauthorized()
+            else:
+                raise
         return [self._convert_nfvo(nfvo) for nfvo in
                 resp.json()['_embedded']['nfvOrchestrators']]
