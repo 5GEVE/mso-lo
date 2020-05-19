@@ -15,8 +15,9 @@ from functools import wraps
 from typing import List, Dict
 
 from requests import get, ConnectionError, Timeout, \
-    TooManyRedirects, URLRequired, HTTPError
+    TooManyRedirects, URLRequired, HTTPError, post, put
 
+from driver.osm import OSM
 from error_handler import ServerError, NfvoNotFound, NfvoCredentialsNotFound, \
     Unauthorized
 
@@ -37,11 +38,41 @@ class SiteInventory:
         # TODO configuration for site inventory?? where to put it?
         self.host = host
         self.port = port
-        # TODO post vim accounts for OSM driver
+        self._post_osm_vims()
 
     @property
     def url(self):
         return 'http://{0}:{1}/'.format(self.host, self.port)
+
+    @_server_error
+    def _post_osm_vims(self):
+        # TODO handle HTTPErrors
+        osm_list = get(
+            self.url + 'nfvOrchestrators/search/findByTypeIgnoreCase',
+            params={'type': 'osm'})
+        osm_list.raise_for_status()
+        for osm in osm_list.json()['_embedded']['nfvOrchestrators']:
+            if osm['credentials'] is not None:
+                driver = OSM(self._convert_cred(osm))
+                # TODO rename method in driver
+                osm_vims, headers = driver._get_vim_list()
+                for osmv in osm_vims:
+                    payload = {
+                        'vimAccountNfvoId': osmv['_id'],
+                        'name': osmv['name'],
+                        'type': osmv['vim_type'],
+                        'uri': osmv['vim_url'],
+                        'tenant': osmv['vim_tenant_name'],
+                    }
+                    # TODO check if VIM already exist
+                    new_vim = post(self.url + 'vimAccounts',
+                                json=payload)
+                    new_vim.raise_for_status()
+                    put(new_vim.json()['_links']['nfvOrchestrators']['href'],
+                        data=osm['_links']['self']['href'],
+                        headers={
+                            'Content-Type': 'text/uri-list'
+                        }).raise_for_status()
 
     @_server_error
     def _get_nfvo(self, nfvo_id) -> Dict:
@@ -75,6 +106,13 @@ class SiteInventory:
             conv['updatedAt'] = nfvo['updatedAt']
         return conv
 
+    @staticmethod
+    def _convert_cred(nfvo):
+        del nfvo['credentials']['id']
+        nfvo['credentials']['nfvo_id'] = nfvo['id']
+        nfvo['credentials']['user'] = nfvo['credentials'].pop('username')
+        return nfvo['credentials']
+
     def get_nfvo_by_id(self, nfvo_id) -> Dict:
         nfvo = self._get_nfvo(nfvo_id)
         return self._convert_nfvo(nfvo)
@@ -84,10 +122,7 @@ class SiteInventory:
         if nfvo['credentials'] is None:
             raise NfvoCredentialsNotFound(nfvo_id)
         else:
-            del nfvo['credentials']['id']
-            nfvo['credentials']['nfvo_id'] = nfvo['id']
-            nfvo['credentials']['user'] = nfvo['credentials'].pop('username')
-            return nfvo['credentials']
+            return self._convert_cred(nfvo)
 
     @_server_error
     def get_nfvo_list(self) -> List[Dict]:
