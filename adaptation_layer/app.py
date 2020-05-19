@@ -32,7 +32,7 @@ app.config.from_object(config.Config)
 init_errorhandler(app)
 if PRODUCTION == 'true':
     app.logger.info('Using site-inventory')
-    database = siteinventory.SiteInventory(app.logger)
+    database = siteinventory.SiteInventory()
 else:
     app.logger.info('Using sqlite')
     sqlite.db.init_app(app)
