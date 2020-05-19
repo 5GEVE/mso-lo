@@ -58,8 +58,7 @@ class SiteInventory:
         for osm in osm_list.json()['_embedded']['nfvOrchestrators']:
             if osm['credentials'] is not None:
                 driver = OSM(self._convert_cred(osm))
-                # TODO rename method in driver
-                osm_vims, headers = driver._get_vim_list()
+                osm_vims, headers = driver.get_vim_list()
                 for osmv in osm_vims:
                     payload = {
                         'vimAccountNfvoId': osmv['_id'],
