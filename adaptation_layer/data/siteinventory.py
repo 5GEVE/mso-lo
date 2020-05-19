@@ -12,6 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 from functools import wraps
+from logging import Logger
 from typing import List, Dict
 
 from requests import get, ConnectionError, Timeout, \
@@ -34,7 +35,10 @@ def _server_error(func):
 
 
 class SiteInventory:
-    def __init__(self, host: str = 'localhost', port: int = 8087):
+    def __init__(self, logger: Logger,
+                 host: str = 'localhost',
+                 port: int = 8087):
+        self.logger = logger
         # TODO configuration for site inventory?? where to put it?
         self.host = host
         self.port = port
@@ -66,8 +70,11 @@ class SiteInventory:
                     }
                     # TODO check if VIM already exist
                     new_vim = post(self.url + 'vimAccounts',
-                                json=payload)
+                                   json=payload)
                     new_vim.raise_for_status()
+                    self.logger.info('created new vimAccount: {0} {1}'.format(
+                        new_vim.status_code, new_vim.json()
+                    ))
                     put(new_vim.json()['_links']['nfvOrchestrators']['href'],
                         data=osm['_links']['self']['href'],
                         headers={
