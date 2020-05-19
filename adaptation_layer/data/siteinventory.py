@@ -11,13 +11,25 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+from functools import wraps
 from typing import List, Dict
 
-from requests import Response, get, ConnectionError, Timeout, \
+from requests import get, ConnectionError, Timeout, \
     TooManyRedirects, URLRequired, HTTPError
 
 from error_handler import ServerError, NfvoNotFound, NfvoCredentialsNotFound, \
     Unauthorized
+
+
+def _server_error(func):
+    @wraps(func)
+    def wrapper(self, *args, **kwargs):
+        try:
+            return func(self, *args, **kwargs)
+        except (ConnectionError, Timeout, TooManyRedirects, URLRequired) as e:
+            raise ServerError('Problem contacting site inventory: ' + str(e))
+
+    return wrapper
 
 
 class SiteInventory:
@@ -31,20 +43,12 @@ class SiteInventory:
     def url(self):
         return 'http://{0}:{1}/'.format(self.host, self.port)
 
-    @staticmethod
-    def _exec_get(url=None, params=None, headers=None) -> Response:
-        try:
-            resp = get(url, params=params, headers=headers,
-                       verify=False, stream=True)
-            resp.raise_for_status()
-        except (ConnectionError, Timeout, TooManyRedirects, URLRequired) as e:
-            raise ServerError('Problem contacting site inventory: ' + str(e))
-        return resp
-
+    @_server_error
     def _get_nfvo(self, nfvo_id) -> Dict:
         try:
-            nfvo = self._exec_get(
-                self.url + 'nfvOrchestrators/' + nfvo_id).json()
+            resp = get(self.url + 'nfvOrchestrators/' + nfvo_id)
+            resp.raise_for_status()
+            nfvo = resp.json()
         except HTTPError as e:
             if e.response.status_code == 404:
                 raise NfvoNotFound(nfvo_id)
@@ -54,8 +58,9 @@ class SiteInventory:
                 raise
         return nfvo
 
+    @_server_error
     def _convert_nfvo(self, nfvo: Dict) -> Dict:
-        site = self._exec_get(nfvo['_links']['site']['href']).json()['name']
+        site = get(nfvo['_links']['site']['href']).json()['name']
         conv = {
             'id': nfvo['id'],
             'name': nfvo['name'],
@@ -84,7 +89,9 @@ class SiteInventory:
             nfvo['credentials']['user'] = nfvo['credentials'].pop('username')
             return nfvo['credentials']
 
+    @_server_error
     def get_nfvo_list(self) -> List[Dict]:
-        json = self._exec_get(self.url + 'nfvOrchestrators').json()
+        resp = get(self.url + 'nfvOrchestrators')
+        resp.raise_for_status()
         return [self._convert_nfvo(nfvo) for nfvo in
-                json['_embedded']['nfvOrchestrators']]
+                resp.json()['_embedded']['nfvOrchestrators']]
