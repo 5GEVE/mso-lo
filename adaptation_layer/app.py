@@ -11,6 +11,7 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+import logging
 import os
 
 from flask import jsonify, abort, request, make_response, Flask
@@ -25,12 +26,15 @@ from error_handler import Unauthorized, BadRequest, ServerError, NsOpNotFound
 
 PRODUCTION = os.getenv('PRODUCTION', 'false').lower()
 
+logging.basicConfig(level=logging.INFO)
 app = Flask(__name__)
 app.config.from_object(config.Config)
 init_errorhandler(app)
 if PRODUCTION == 'true':
-    database = siteinventory.SiteInventory()
+    app.logger.info('Using site-inventory')
+    database = siteinventory.SiteInventory(app.logger)
 else:
+    app.logger.info('Using sqlite')
     sqlite.db.init_app(app)
     migrate = Migrate(app, sqlite.db)
     database = sqlite
