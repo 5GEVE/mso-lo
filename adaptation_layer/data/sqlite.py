@@ -42,8 +42,8 @@ class NFVO(db.Model):
             'type': self.type,
             'site': self.site,
             'uri': self.uri,
-            'created_at': self.created_at,
-            'updated_at': self.updated_at
+            'createdAt': self.created_at,
+            'updatedAt': self.updated_at
         }
 
     def __init__(self, **kwargs):
