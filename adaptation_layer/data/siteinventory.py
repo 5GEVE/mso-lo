@@ -20,7 +20,7 @@ from requests import get, ConnectionError, Timeout, \
 
 from driver.osm import OSM
 from error_handler import ServerError, NfvoNotFound, NfvoCredentialsNotFound, \
-    Unauthorized
+    Unauthorized, Error
 
 logger = logging.getLogger('app.siteinventory')
 
@@ -82,10 +82,20 @@ class SiteInventory:
         osm_list.raise_for_status()
         for osm in osm_list.json()['_embedded']['nfvOrchestrators']:
             if osm['credentials'] is not None:
-                driver = OSM(self._convert_cred(osm))
-                osm_vims, headers = driver.get_vim_list()
+                try:
+                    driver = OSM(self._convert_cred(osm))
+                    osm_vims, headers = driver.get_vim_list()
+                except Error as e:
+                    logger.warning(
+                        'error contacting osm {0}:{1}'.format(
+                            osm['credentials']['host'],
+                            osm['credentials']['port'],
+                        ))
+                    logger.warning(e)
+                    continue
                 for osm_vim in osm_vims:
-                    self._post_vim_safe(osm_vim, osm['_links']['self']['href'])
+                    self._post_vim_safe(osm_vim,
+                                        osm['_links']['self']['href'])
 
     @_server_error
     def _get_nfvo(self, nfvo_id) -> Dict:
