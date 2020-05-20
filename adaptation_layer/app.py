@@ -38,7 +38,7 @@ else:
     app.logger.info('using sqlite')
     sqlite.db.init_app(app)
     migrate = Migrate(app, sqlite.db)
-    database = sqlite
+    database = sqlite.SQLite()
 
 
 @app.route('/nfvo', methods=['GET'])
@@ -66,11 +66,7 @@ def get_nfvo(nfvo_id):
 @app.route('/nfvo/<nfvo_id>/ns_instances', methods=['POST'])
 def create_ns(nfvo_id):
     try:
-        driver = manager.get_driver(
-            nfvo_id,
-            database.get_nfvo_by_id(nfvo_id)['type'],
-            database.get_nfvo_cred(nfvo_id)
-        )
+        driver = manager.get_driver(nfvo_id, database)
         ns, headers = driver.create_ns(
             args={'payload': request.json, 'args': request.args.to_dict()})
         return make_response(jsonify(ns), 201, headers)
@@ -89,11 +85,7 @@ def create_ns(nfvo_id):
 @app.route('/nfvo/<nfvo_id>/ns_instances', methods=['GET'])
 def get_ns_list(nfvo_id):
     try:
-        driver = manager.get_driver(
-            nfvo_id,
-            database.get_nfvo_by_id(nfvo_id)['type'],
-            database.get_nfvo_cred(nfvo_id)
-        )
+        driver = manager.get_driver(nfvo_id, database)
         ns_list, headers = driver.get_ns_list(
             args={'args': request.args.to_dict()})
         return make_response(jsonify(ns_list), 200, headers)
@@ -110,11 +102,7 @@ def get_ns_list(nfvo_id):
 @app.route('/nfvo/<nfvo_id>/ns_instances/<ns_id>', methods=['GET'])
 def get_ns(nfvo_id, ns_id):
     try:
-        driver = manager.get_driver(
-            nfvo_id,
-            database.get_nfvo_by_id(nfvo_id)['type'],
-            database.get_nfvo_cred(nfvo_id)
-        )
+        driver = manager.get_driver(nfvo_id, database)
         ns, headers = driver.get_ns(
             ns_id, args={'args': request.args.to_dict()})
         return make_response(jsonify(ns), 200, headers)
@@ -133,11 +121,7 @@ def get_ns(nfvo_id, ns_id):
 @app.route('/nfvo/<nfvo_id>/ns_instances/<ns_id>', methods=['DELETE'])
 def delete_ns(nfvo_id, ns_id):
     try:
-        driver = manager.get_driver(
-            nfvo_id,
-            database.get_nfvo_by_id(nfvo_id)['type'],
-            database.get_nfvo_cred(nfvo_id)
-        )
+        driver = manager.get_driver(nfvo_id, database)
         empty_body, headers = driver.delete_ns(
             ns_id, args={'args': request.args.to_dict()})
         return make_response('', 204, headers)
@@ -156,11 +140,7 @@ def delete_ns(nfvo_id, ns_id):
 @app.route('/nfvo/<nfvo_id>/ns_instances/<ns_id>/instantiate', methods=['POST'])
 def instantiate_ns(nfvo_id, ns_id):
     try:
-        driver = manager.get_driver(
-            nfvo_id,
-            database.get_nfvo_by_id(nfvo_id)['type'],
-            database.get_nfvo_cred(nfvo_id)
-        )
+        driver = manager.get_driver(nfvo_id, database)
         empty_body, headers = driver.instantiate_ns(
             ns_id,
             args={'payload': request.json, 'args': request.args.to_dict()})
@@ -180,11 +160,7 @@ def instantiate_ns(nfvo_id, ns_id):
 @app.route('/nfvo/<nfvo_id>/ns_instances/<ns_id>/terminate', methods=['POST'])
 def terminate_ns(nfvo_id, ns_id):
     try:
-        driver = manager.get_driver(
-            nfvo_id,
-            database.get_nfvo_by_id(nfvo_id)['type'],
-            database.get_nfvo_cred(nfvo_id)
-        )
+        driver = manager.get_driver(nfvo_id, database)
         empty_body, headers = driver.terminate_ns(
             ns_id,
             args={'payload': request.json, 'args': request.args.to_dict()})
@@ -204,11 +180,7 @@ def terminate_ns(nfvo_id, ns_id):
 @app.route('/nfvo/<nfvo_id>/ns_instances/<ns_id>/scale', methods=['POST'])
 def scale_ns(nfvo_id, ns_id):
     try:
-        driver = manager.get_driver(
-            nfvo_id,
-            database.get_nfvo_by_id(nfvo_id)['type'],
-            database.get_nfvo_cred(nfvo_id)
-        )
+        driver = manager.get_driver(nfvo_id, database)
         empty_body, headers = driver.scale_ns(
             ns_id,
             args={'payload': request.json, 'args': request.args.to_dict()})
@@ -228,11 +200,7 @@ def scale_ns(nfvo_id, ns_id):
 @app.route('/nfvo/<nfvo_id>/ns_lcm_op_occs', methods=['GET'])
 def get_op_list(nfvo_id):
     try:
-        driver = manager.get_driver(
-            nfvo_id,
-            database.get_nfvo_by_id(nfvo_id)['type'],
-            database.get_nfvo_cred(nfvo_id)
-        )
+        driver = manager.get_driver(nfvo_id, database)
         op_list, headers = driver.get_op_list(
             args={'args': request.args.to_dict()})
         return make_response(jsonify(op_list), 200, headers)
@@ -251,11 +219,7 @@ def get_op_list(nfvo_id):
 @app.route('/nfvo/<nfvo_id>/ns_lcm_op_occs/<nsLcmOpId>', methods=['GET'])
 def get_op(nfvo_id, nsLcmOpId):
     try:
-        driver = manager.get_driver(
-            nfvo_id,
-            database.get_nfvo_by_id(nfvo_id)['type'],
-            database.get_nfvo_cred(nfvo_id)
-        )
+        driver = manager.get_driver(nfvo_id, database)
         ns_op, headers = driver.get_op(
             nsLcmOpId, args={'args': request.args.to_dict()})
         return make_response(jsonify(ns_op), 200, headers)

@@ -20,6 +20,7 @@ import time
 from requests import get, ConnectionError, Timeout, \
     TooManyRedirects, URLRequired, HTTPError, post, put
 
+from database import Database
 from driver.osm import OSM
 from error_handler import ServerError, NfvoNotFound, NfvoCredentialsNotFound, \
     Unauthorized, Error
@@ -38,7 +39,7 @@ def _server_error(func):
     return wrapper
 
 
-class SiteInventory:
+class SiteInventory(Database):
     def __init__(self, host: str = 'localhost', port: int = 8087,
                  post_vims_interval: int = 300):
         # TODO configuration for site inventory?? where to put it?
@@ -154,11 +155,11 @@ class SiteInventory:
         nfvo['credentials']['user'] = nfvo['credentials'].pop('username')
         return nfvo['credentials']
 
-    def get_nfvo_by_id(self, nfvo_id) -> Dict:
+    def get_nfvo_by_id(self, nfvo_id: int) -> Dict:
         nfvo = self._get_nfvo(nfvo_id)
         return self._convert_nfvo(nfvo)
 
-    def get_nfvo_cred(self, nfvo_id) -> Dict:
+    def get_nfvo_cred(self, nfvo_id: int) -> Dict:
         nfvo = self._get_nfvo(nfvo_id)
         if nfvo['credentials'] is None:
             raise NfvoCredentialsNotFound(nfvo_id)

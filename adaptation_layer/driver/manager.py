@@ -11,8 +11,8 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-from typing import Dict
 
+from database import Database
 from .interface import Driver
 from .onap import ONAP
 from .osm import OSM
@@ -20,17 +20,17 @@ from .osm import OSM
 _drivers = {}
 
 
-def get_driver(nfvo_id: int, nfvo_type: str, nfvo_cred: Dict) -> Driver:
-    nfvo_type = nfvo_type.casefold()
-
+def get_driver(nfvo_id: int, db: Database) -> Driver:
     global _drivers
-    if nfvo_id in _drivers:
-        pass
-    elif nfvo_type == 'osm':
-        _drivers[nfvo_id] = OSM(nfvo_cred)
-    elif nfvo_type == 'onap':
-        _drivers[nfvo_id] = ONAP(nfvo_cred)
-    else:
-        raise NotImplementedError(
-            'Driver type: {} is not implemented'.format(nfvo_type))
+    if nfvo_id not in _drivers:
+        nfvo = db.get_nfvo_by_id(nfvo_id)
+        nfvo_type = nfvo['type'].casefold()
+        nfvo_cred = db.get_nfvo_cred(nfvo_id)
+        if nfvo_type == 'osm':
+            _drivers[nfvo_id] = OSM(nfvo_cred)
+        elif nfvo_type == 'onap':
+            _drivers[nfvo_id] = ONAP(nfvo_cred)
+        else:
+            raise NotImplementedError(
+                'Driver type: {} is not implemented'.format(nfvo_type))
     return _drivers[nfvo_id]

@@ -17,6 +17,7 @@ from typing import List, Dict
 
 from flask_sqlalchemy import SQLAlchemy
 
+from database import Database
 from error_handler import NfvoNotFound
 
 db = SQLAlchemy()
@@ -73,19 +74,19 @@ class NFVO_CREDENTIALS(db.Model):
         }
 
 
-def get_nfvo_by_id(nfvo_id) -> Dict:
-    nfvo = NFVO.query.filter_by(id=nfvo_id).first()
-    if nfvo is None:
-        raise NfvoNotFound(nfvo_id=nfvo_id)
-    return nfvo.serialize
+class SQLite(Database):
 
+    def get_nfvo_by_id(self, nfvo_id: int) -> Dict:
+        nfvo = NFVO.query.filter_by(id=nfvo_id).first()
+        if nfvo is None:
+            raise NfvoNotFound(nfvo_id=nfvo_id)
+        return nfvo.serialize
 
-def get_nfvo_list() -> List[Dict]:
-    return [nfvo.serialize for nfvo in NFVO.query.all()]
+    def get_nfvo_list(self) -> List[Dict]:
+        return [nfvo.serialize for nfvo in NFVO.query.all()]
 
-
-def get_nfvo_cred(nfvo_id) -> Dict:
-    nfvo_cred = NFVO_CREDENTIALS.query.filter_by(nfvo_id=nfvo_id).first()
-    if nfvo_cred is None:
-        raise NfvoNotFound(nfvo_id=nfvo_id)
-    return nfvo_cred.serialize
+    def get_nfvo_cred(self, nfvo_id: int) -> Dict:
+        nfvo_cred = NFVO_CREDENTIALS.query.filter_by(nfvo_id=nfvo_id).first()
+        if nfvo_cred is None:
+            raise NfvoNotFound(nfvo_id=nfvo_id)
+        return nfvo_cred.serialize
