@@ -57,6 +57,7 @@ class SiteInventory:
     def _post_osm_vims_thread(self):
         while True:
             try:
+                logger.info('run periodic post_osm_vims')
                 self._post_osm_vims()
             except (ServerError, HTTPError)as e:
                 logger.warning('error with siteinventory. skip post_osm_vims')
@@ -69,7 +70,11 @@ class SiteInventory:
             self.url + 'vimAccounts/search/findByVimAccountNfvoId',
             params={'uuid': osm_vim['_id']})
         vim_found.raise_for_status()
-        if not vim_found.json()['_embedded']['vimAccounts']:
+        if vim_found.json()['_embedded']['vimAccounts']:
+            logger.info('vim {} found in site-inventory, skip'.format(
+                osm_vim['_id']
+            ))
+        else:
             payload = {
                 'vimAccountNfvoId': osm_vim['_id'],
                 'name': osm_vim['name'],
