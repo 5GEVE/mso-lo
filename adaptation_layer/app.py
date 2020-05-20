@@ -32,7 +32,7 @@ app = Flask(__name__)
 app.config.from_object(config.Config)
 init_errorhandler(app)
 if PRODUCTION == 'true':
-    app.logger.info('using site-inventory')
+    app.logger.info('using siteinventory')
     database = siteinventory.SiteInventory()
 else:
     app.logger.info('using sqlite')

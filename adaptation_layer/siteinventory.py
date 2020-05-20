@@ -12,8 +12,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 import logging
-import threading
 from functools import wraps
+from threading import Thread
 from typing import List, Dict
 
 import time
@@ -45,10 +45,11 @@ class SiteInventory:
         self.host = host
         self.port = port
         self.post_vims_interval = post_vims_interval
-        thread = threading.Thread(name='post_osm_vims',
-                                  target=self._post_osm_vims_thread())
+        thread = Thread(name='post_osm_vims',
+                        target=self._post_osm_vims_thread)
         thread.setDaemon(True)
         thread.start()
+        logger.info('siteinventory initialized')
 
     @property
     def url(self):
