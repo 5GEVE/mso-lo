@@ -12,9 +12,11 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 import logging
+import threading
 from functools import wraps
 from typing import List, Dict
 
+import time
 from requests import get, ConnectionError, Timeout, \
     TooManyRedirects, URLRequired, HTTPError, post, put
 
@@ -31,25 +33,35 @@ def _server_error(func):
         try:
             return func(self, *args, **kwargs)
         except (ConnectionError, Timeout, TooManyRedirects, URLRequired) as e:
-            raise ServerError('Problem contacting site inventory: ' + str(e))
+            raise ServerError('problem contacting site inventory: ' + str(e))
 
     return wrapper
 
 
 class SiteInventory:
-    def __init__(self, host: str = 'localhost', port: int = 8087):
+    def __init__(self, host: str = 'localhost', port: int = 8087,
+                 post_vims_interval: int = 300):
         # TODO configuration for site inventory?? where to put it?
         self.host = host
         self.port = port
-        try:
-            self._post_osm_vims()
-        except HTTPError as e:
-            logger.warning('Cannot add OSM vimAccounts to site inventory')
-            logger.warning(e.args[0])
+        self.post_vims_interval = post_vims_interval
+        thread = threading.Thread(name='post_osm_vims',
+                                  target=self._post_osm_vims_thread())
+        thread.setDaemon(True)
+        thread.start()
 
     @property
     def url(self):
         return 'http://{0}:{1}/'.format(self.host, self.port)
+
+    def _post_osm_vims_thread(self):
+        while True:
+            try:
+                self._post_osm_vims()
+            except (ServerError, HTTPError)as e:
+                logger.warning('error with siteinventory. skip post_osm_vims')
+                logger.warning(e)
+            time.sleep(self.post_vims_interval)
 
     @_server_error
     def _post_vim_safe(self, osm_vim: Dict, nfvo_self: str):
