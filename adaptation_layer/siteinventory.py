@@ -12,6 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 import logging
+import os
 from functools import wraps
 from threading import Thread
 from typing import List, Dict
@@ -26,6 +27,9 @@ from error_handler import ServerError, NfvoNotFound, NfvoCredentialsNotFound, \
     Unauthorized, Error
 
 logger = logging.getLogger('app.siteinventory')
+SITEINV_HOST = os.getenv('SITEINV_HOST')
+SITEINV_PORT = os.getenv('SITEINV_PORT')
+SITEINV_INTERVAL = os.getenv('SITEINV_INTERVAL')
 
 
 def _server_error(func):
@@ -40,12 +44,10 @@ def _server_error(func):
 
 
 class SiteInventory(Database):
-    def __init__(self, host: str = 'localhost', port: int = 8087,
-                 post_vims_interval: int = 300):
-        # TODO configuration for site inventory?? where to put it?
-        self.host = host
-        self.port = port
-        self.post_vims_interval = post_vims_interval
+    def __init__(self):
+        self.host = SITEINV_HOST if SITEINV_HOST else 'localhost'
+        self.port = int(SITEINV_PORT) if SITEINV_PORT else 8087
+        self.interval = int(SITEINV_INTERVAL) if SITEINV_INTERVAL else 300
         thread = Thread(name='post_osm_vims',
                         target=self._post_osm_vims_thread)
         thread.setDaemon(True)
@@ -64,7 +66,7 @@ class SiteInventory(Database):
             except (ServerError, HTTPError)as e:
                 logger.warning('error with siteinventory. skip post_osm_vims')
                 logger.warning(e)
-            time.sleep(self.post_vims_interval)
+            time.sleep(self.interval)
 
     @_server_error
     def _post_vim_safe(self, osm_vim: Dict, nfvo_self: str):
