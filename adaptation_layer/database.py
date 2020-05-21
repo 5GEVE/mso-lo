@@ -11,4 +11,20 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+from abc import ABC, abstractmethod
+from typing import Dict, List
 
+
+class Database(ABC):
+
+    @abstractmethod
+    def get_nfvo_by_id(self, nfvo_id: int) -> Dict:
+        raise NotImplementedError("The method is not implemented")
+
+    @abstractmethod
+    def get_nfvo_cred(self, nfvo_id: int) -> Dict:
+        raise NotImplementedError("The method is not implemented")
+
+    @abstractmethod
+    def get_nfvo_list(self) -> List[Dict]:
+        raise NotImplementedError("The method is not implemented")

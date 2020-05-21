@@ -186,7 +186,7 @@ class OSM(Driver):
             raise VnfNotFound(vnf_id=vnfId)
 
     @_authenticate
-    def _get_vim_list(self):
+    def get_vim_list(self):
         _url = "{0}/admin/v1/vims".format(self._base_path)
         _url = self._build_url_query(_url, None)
         return self._exec_get(_url, headers=self._headers)
@@ -405,7 +405,7 @@ class OSM(Driver):
         return cp_info
 
     def _select_vim(self):
-        osm_vims, osm_vim_h = self._get_vim_list()
+        osm_vims, osm_vim_h = self.get_vim_list()
         if osm_vims and len(osm_vims) > 0:
             return osm_vims[0]['_id']
         else:
