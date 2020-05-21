@@ -20,7 +20,7 @@ services:
       SITEINV: 'true'
       SITEINV_HOST: '192.168.17.20'
       SITEINV_PORT: '8087'
-      SITEINV_INTERVAL: '3'
+      SITEINV_INTERVAL: '300'
     networks:
       mso-lo-net:
         aliases:
