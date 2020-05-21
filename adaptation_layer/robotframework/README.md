@@ -19,12 +19,12 @@ to your setup. The important variables to change are:
 
 Example of execution:
 
-```shell
+```shell script
 $ cd {project-dir}/adaptation_layer
-# activates the virtual env
+# activate the virtual env
 $ pipenv shell
 $ cd ./robotframework
-# export mso-lo openapi file path
+# export mso-lo openapi file path relative to this directory
 $ export OPENAPI_PATH=../../openapi/MSO-LO-swagger-resolved.yaml
 $ robot --outputdir output MSO-LO-LCM-Workflow.robot MSO-LO-NFVO-Workflow.robot
 ```
