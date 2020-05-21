@@ -32,13 +32,13 @@ app = Flask(__name__)
 app.config.from_object(config.Config)
 init_errorhandler(app)
 
-sqlite.db.init_app(app)
-migrate = Migrate(app, sqlite.db)
 if SITEINV == 'true':
     app.logger.info('using siteinventory')
     database = siteinventory.SiteInventory()
 else:
     app.logger.info('using sqlite')
+    sqlite.db.init_app(app)
+    migrate = Migrate(app, sqlite.db)
     database = sqlite.SQLite()
 
 
