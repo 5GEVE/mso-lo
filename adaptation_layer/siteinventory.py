@@ -14,10 +14,10 @@
 import logging
 import os
 from functools import wraps
-from threading import Thread
 from typing import List, Dict
 
 import time
+from apscheduler.schedulers.background import BackgroundScheduler
 from requests import get, ConnectionError, Timeout, \
     TooManyRedirects, URLRequired, HTTPError, post, put
 
@@ -48,10 +48,10 @@ class SiteInventory(Database):
         self.host = SITEINV_HOST if SITEINV_HOST else 'localhost'
         self.port = int(SITEINV_PORT) if SITEINV_PORT else 8087
         self.interval = int(SITEINV_INTERVAL) if SITEINV_INTERVAL else 300
-        thread = Thread(name='post_osm_vims',
-                        target=self._post_osm_vims_thread)
-        thread.setDaemon(True)
-        thread.start()
+        scheduler = BackgroundScheduler()
+        scheduler.add_job(self._post_osm_vims_thread, 'interval',
+                          seconds=self.interval)
+        scheduler.start()
         logger.info('siteinventory initialized')
 
     @property
