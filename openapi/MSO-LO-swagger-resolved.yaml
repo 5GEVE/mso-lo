@@ -513,17 +513,12 @@ paths:
         The GET method queries the list of active subscriptions of the functional block that invokes the method. It can be used e.g. for resynchronization after error situations.
       operationId: NfvoSubscriptionsByNfvoIdGet
       produces:
-        - application/json
+        - application/hal+json
       parameters:
         - name: nfvoId
           in: path
           description: Identifier of a Nfvo
           required: true
-          type: string
-        - name: filter
-          in: query
-          description: Attribute-based filtering expression according to clause 5.2 of ETSI GS NFV SOL 013. The NFVO shall support receiving this parameter as part of the URI query string. The OSS/BSS may supply this parameter. All attribute names that appear in the LccnSubscription and in data types  referenced from it shall be supported by the NFVO in the filter expression.
-          required: false
           type: string
       responses:
         "200":
@@ -534,17 +529,9 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/NSInstanceSubscription'
+              $ref: '#/definitions/CollectionModel«LccnSubscription»'
         "400":
           description: The request is malformed
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        "401":
-          description: Unauthorized, Invalid credentials (client or user)
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        "404":
-          description: The specified resource was not found
           schema:
             $ref: '#/definitions/ErrorResponse'
       deprecated: false
@@ -556,7 +543,7 @@ paths:
         The POST method creates a new subscription. If subscription already exists, it returns a '303 See Other' response code referencing the existing subscription resource.
       operationId: NfvoSubscriptionsByNfvoIdPost
       produces:
-        - application/json
+        - application/hal+json
       parameters:
         - name: nfvoId
           in: path
@@ -568,23 +555,19 @@ paths:
           description: ""
           required: false
           schema:
-            $ref: '#/definitions/NfvoSubscriptionsRequest'
+            $ref: '#/definitions/LccnSubscription'
       responses:
         "201":
           description: 201 Created. The subscription has been created successfully.
           headers: {}
           schema:
-            $ref: '#/definitions/NSInstanceSubscription'
+            $ref: '#/definitions/LccnSubscription'
         "400":
           description: The request is malformed
           schema:
             $ref: '#/definitions/ErrorResponse'
         "401":
           description: Unauthorized, Invalid credentials (client or user)
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        "404":
-          description: The specified resource was not found
           schema:
             $ref: '#/definitions/ErrorResponse'
       deprecated: false
@@ -597,7 +580,7 @@ paths:
         The GET method retrieves information about a subscription by reading an individual subscription resource. This method shall support the URI query parameters, request and response data structures, and response codes, as specified in the Tables 6.4.17.3.2-1 and 6.4.17.3.2-2
       operationId: NfvoSubscriptionsByNfvoIdAndSubscriptionIdGet
       produces:
-        - application/json
+        - application/hal+json
       parameters:
         - name: nfvoId
           in: path
@@ -615,7 +598,7 @@ paths:
             200 OK. The operation has completed successfully. The response body shall contain a representation of the subscription resource.
           headers: {}
           schema:
-            $ref: '#/definitions/NSInstanceSubscription'
+            $ref: '#/definitions/LccnSubscription'
         "400":
           description: The request is malformed
           schema:
@@ -637,7 +620,7 @@ paths:
         The DELETE method terminates an individual subscription. This method shall support the URI query parameters, request and response data structures, and response codes, as specified in the Tables 6.4.17.3.5-1 and 6.4.17.3.5-2.
       operationId: NfvoSubscriptionsByNfvoIdAndSubscriptionIdDelete
       produces:
-        - application/json
+        - application/hal+json
       parameters:
         - name: nfvoId
           in: path
@@ -1109,22 +1092,6 @@ definitions:
           automatically at this timestamp. Cardinality '0' indicates the NS termination
           takes place immediately.
     title: TerminateNsRequest
-  NSInstanceSubscription:
-    type: object
-    required:
-      - callbackUri
-      - id
-    properties:
-      id:
-        description: An identifier with the intention of being globally unique.
-        allOf:
-          - $ref: '#/definitions/Identifier'
-      filter:
-        $ref: '#/definitions/NSInstanceSubscription_filter'
-      callbackUri:
-        type: string
-        description: String formatted according to IETF RFC 3986.
-    title: NSInstanceSubscription
   nsInstanceSubscriptionFilter1:
     type: object
     properties:
@@ -1241,15 +1208,62 @@ definitions:
         type: object
         properties: {}
     title: NfvoNsInstancesScaleRequest
-  NfvoSubscriptionsRequest:
+  LccnSubscription:
     type: object
+    required:
+      - callbackUri
+      - nsInstanceId
     properties:
-      filter:
-        $ref: '#/definitions/NSInstanceSubscription_filter'
       callbackUri:
         type: string
-        description: String formatted according to IETF RFC 3986.
-    title: NfvoSubscriptionsRequest
+      id:
+        type: integer
+        format: int64
+      notificationTypes:
+        type: array
+        items:
+          type: string
+          enum:
+            - NsLcmOperationOccurenceNotification
+            - NsIdentifierCreationNotification
+            - NsIdentifierDeletionNotification
+      nsInstanceId:
+        type: string
+        format: uuid
+    title: LccnSubscription
+  CollectionModel«LccnSubscription»:
+    type: object
+    required:
+      - _embedded
+      - _links
+    properties:
+      _embedded:
+        $ref: '#/definitions/EmbeddedCollection«LccnSubscription»'
+      _links:
+        type: object
+        description: Link collection
+        additionalProperties: false
+    title: CollectionModel«LccnSubscription»
+    xml:
+      name: entities
+      attribute: false
+      wrapped: false
+    description: Resources of LccnSubscription
+  EmbeddedCollection«LccnSubscription»:
+    type: object
+    required:
+      - subscriptions
+    properties:
+      subscriptions:
+        type: array
+        description: Resource collection
+        items:
+          $ref: '#/definitions/LccnSubscription'
+    title: EmbeddedCollection«LccnSubscription»
+    xml:
+      name: content
+      wrapped: true
+    description: Embedded collection of LccnSubscription
   ScaleType:
     type: string
     title: ScaleType
