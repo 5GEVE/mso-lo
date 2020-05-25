@@ -1,7 +1,6 @@
 *** Settings ***
 Resource    environment/variables.txt
 Variables   ${SCHEMAS_PATH}
-Resource    SubsOperationKeywords.robot
 Resource   NSLCMOperationKeywords.robot
 Library    REST    ${MSO-LO_BASE_API}
 Library    OperatingSystem
