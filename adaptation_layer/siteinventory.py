@@ -48,7 +48,7 @@ class SiteInventory(Database):
         self.host = SITEINV_HOST if SITEINV_HOST else 'localhost'
         self.port = int(SITEINV_PORT) if SITEINV_PORT else 8087
         self.interval = int(SITEINV_INTERVAL) if SITEINV_INTERVAL else 300
-        scheduler = BackgroundScheduler()
+        scheduler = BackgroundScheduler({'apscheduler.timezone': 'UTC'})
         scheduler.add_job(self._post_osm_vims_thread,
                           'interval', seconds=self.interval,
                           next_run_time=datetime.utcnow())
@@ -61,7 +61,6 @@ class SiteInventory(Database):
 
     def _post_osm_vims_thread(self):
         try:
-            logger.info('run periodic post_osm_vims')
             self._post_osm_vims()
         except (ServerError, HTTPError)as e:
             logger.warning('error with siteinventory. skip post_osm_vims')
