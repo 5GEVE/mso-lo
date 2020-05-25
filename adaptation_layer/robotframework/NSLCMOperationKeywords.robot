@@ -27,13 +27,6 @@ Check Operation Occurrence Id
     Should Not Be Empty    ${nsLcmOpOccId}
     Log    ${nsLcmOpOccId}
 
-Check subscription existence
-    Set Headers    {"Accept":"${ACCEPT}"}
-    Set Headers    {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Get    ${apiRoot}/${nfvoId}/subscriptions/${subscriptionId}
-    Integer    response status    200
-
 Check resource FAILED_TEMP
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
     Get    ${apiRoot}/${nfvoId}/ns_lcm_op_occs/${nsLcmOpOccId}
@@ -308,38 +301,6 @@ POST Cancel operation task
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
-POST subscriptions
-    Log    Create subscription instance by POST to ${apiRoot}/${nfvoId}/subscriptions
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    ${body}=    Get File    jsons/LccnSubscriptionRequest.json
-    Post    ${apiRoot}/${nfvoId}/subscriptions    ${body}
-	${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-POST subscriptions DUPLICATION
-    Log    Trying to create a subscription with an already created content
-    Pass Execution If    ${NFVO_DUPLICATION} == 0    NFVO is not permitting duplication. Skipping the test
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    ${body}=    Get File    jsons/LccnSubscriptionRequest.json
-    Post    ${apiRoot}/${nfvoId}/subscriptions    ${body}
-	${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-POST subscriptions NO DUPLICATION
-    Log    Trying to create a subscription with an already created content
-    Pass Execution If    ${NFVO_DUPLICATION} == 1    NFVO is permitting duplication.
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    ${body}=    Get File    jsons/LccnSubscriptionRequest.json
-    Post    ${apiRoot}/${nfvoId}/subscriptions    ${body}
-	${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
 GET Subscriptions
     Log    Get the list of active subscriptions
     Set Headers  {"Accept":"${ACCEPT}"}
@@ -350,55 +311,27 @@ GET Subscriptions
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
-Get subscriptions with all_fields attribute selector
-    Log    Get the list of active subscriptions, using fields
-    Set Headers    {"Accept": "${ACCEPT_JSON}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization": "${AUTHORIZATION}"}
-    GET    ${apiRoot}/${nfvoId}/subscriptions?all_fields
-    ${output}=    Output    response
-    Set Suite Variable    ${response}    ${output}
-
-Get subscriptions with exclude_default attribute selector
-    Log    Get the list of active subscriptions, using fields
-    Set Headers    {"Accept": "${ACCEPT_JSON}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization": "${AUTHORIZATION}"}
-    GET    ${apiRoot}/${nfvoId}/subscriptions?exclude_default
-    ${output}=    Output    response
-    Set Suite Variable    ${response}    ${output}
-
-Get subscriptions with fields attribute selector
-    Log    Get the list of active subscriptions, using fields
-    Set Headers    {"Accept": "${ACCEPT_JSON}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization": "${AUTHORIZATION}"}
-    GET    ${apiRoot}/${nfvoId}/subscriptions?fields=${fields}
-    ${output}=    Output    response
-    Set Suite Variable    ${response}    ${output}
-
-Get subscriptions with exclude_fields attribute selector
-    Log    Get the list of active subscriptions, using fields
-    Set Headers    {"Accept": "${ACCEPT_JSON}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization": "${AUTHORIZATION}"}
-    GET    ${apiRoot}/${nfvoId}/subscriptions?exclude_fields=${fields}
-    ${output}=    Output    response
-    Set Suite Variable    ${response}    ${output}
-
-GET subscriptions with filter
-    Log    Get the list of active subscriptions using a filter
-    Set Headers    {"Accept": "${ACCEPT}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization": "${AUTHORIZATION}"}
-    GET    ${apiRoot}/${nfvoId}/subscriptions?${sub_filter}
-    ${outputResponse}=    Output    response
+POST New Subscription Good
+    Log    Create subscription instance by POST to ${apiRoot}/${nfvoId}/subscriptions
+    Set Headers  {"Accept":"${ACCEPT}"}
+    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
+    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
+    ${body}=    Get File    jsons/LccnSubscriptionRequest.json
+    Post    ${apiRoot}/${nfvoId}/subscriptions    ${body}
+	${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
-Get subscriptions - invalid filter
-    Log    Get the list of active subscriptions using an invalid filter
-    Set Headers    {"Accept": "${ACCEPT}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization": "${AUTHORIZATION}"}
-    GET    ${apiRoot}/${nfvoId}/subscriptions?${sub_filter_invalid}
-    ${outputResponse}=    Output    response
+POST New Subscription Bad
+    Log    Create subscription instance by POST to ${apiRoot}/${nfvoId}/subscriptions
+    Set Headers  {"Accept":"${ACCEPT}"}
+    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
+    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
+    ${body}=    {"bad": "request"}
+    Post    ${apiRoot}/${nfvoId}/subscriptions    ${body}
+	${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
-GET Individual subscription
+GET Individual Subscription Good
     log    Trying to get information about an individual subscription
     Set Headers    {"Accept":"${ACCEPT}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
@@ -406,7 +339,23 @@ GET Individual subscription
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
-DELETE Individual subscription
+GET Individual Subscription Not Found
+    log    Trying to get information about an individual subscription
+    Set Headers    {"Accept":"${ACCEPT}"}
+    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
+    Get    ${apiRoot}/${nfvoId}/subscriptions/-1
+    ${outputResponse}=    Output    response
+	Set Global Variable    @{response}    ${outputResponse}
+
+DELETE Individual Subscription Good
+    log    Try to delete an individual subscription
+    Set Headers  {"Accept":"${ACCEPT}"}
+    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
+    Delete    ${apiRoot}/${nfvoId}/subscriptions/${subscriptionId}
+    ${outputResponse}=    Output    response
+	Set Global Variable    @{response}    ${outputResponse}
+
+DELETE Individual Subscription Not Found
     log    Try to delete an individual subscription
     Set Headers  {"Accept":"${ACCEPT}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
