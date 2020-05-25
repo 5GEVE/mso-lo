@@ -238,7 +238,13 @@ def get_op(nfvo_id, nsLcmOpId):
 
 @app.route('/nfvo/<nfvo_id>/subscriptions', methods=['GET'])
 def get_subscription_list(nfvo_id):
-    pass
+    try:
+        return make_response(jsonify(database.get_subscription_list(nfvo_id)),
+                             200)
+    except Unauthorized as e:
+        abort(401, description=e.description)
+    except ServerError as e:
+        abort(500, description=e.description)
 
 
 @app.route('/nfvo/<nfvo_id>/subscriptions', methods=['POST'])

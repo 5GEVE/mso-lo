@@ -180,3 +180,16 @@ class SiteInventory(Database):
                 raise
         return [self._convert_nfvo(nfvo) for nfvo in
                 resp.json()['_embedded']['nfvOrchestrators']]
+
+    @_server_error
+    def get_subscription_list(self, nfvo_id: int) -> Dict:
+        try:
+            resp = get('{0}nfvOrchestrators/{1}/subscriptions'.format(self.url,
+                                                                      nfvo_id))
+            resp.raise_for_status()
+        except HTTPError as e:
+            if e.response.status_code == 401:
+                raise Unauthorized()
+            else:
+                raise
+        return resp.json()
