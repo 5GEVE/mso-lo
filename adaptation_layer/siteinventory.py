@@ -13,10 +13,10 @@
 #  limitations under the License.
 import logging
 import os
+from datetime import datetime
 from functools import wraps
 from typing import List, Dict
 
-import time
 from apscheduler.schedulers.background import BackgroundScheduler
 from requests import get, ConnectionError, Timeout, \
     TooManyRedirects, URLRequired, HTTPError, post, put
@@ -49,8 +49,9 @@ class SiteInventory(Database):
         self.port = int(SITEINV_PORT) if SITEINV_PORT else 8087
         self.interval = int(SITEINV_INTERVAL) if SITEINV_INTERVAL else 300
         scheduler = BackgroundScheduler()
-        scheduler.add_job(self._post_osm_vims_thread, 'interval',
-                          seconds=self.interval)
+        scheduler.add_job(self._post_osm_vims_thread,
+                          'interval', seconds=self.interval,
+                          next_run_time=datetime.utcnow())
         scheduler.start()
         logger.info('siteinventory initialized')
 
@@ -59,14 +60,12 @@ class SiteInventory(Database):
         return 'http://{0}:{1}/'.format(self.host, self.port)
 
     def _post_osm_vims_thread(self):
-        while True:
-            try:
-                logger.info('run periodic post_osm_vims')
-                self._post_osm_vims()
-            except (ServerError, HTTPError)as e:
-                logger.warning('error with siteinventory. skip post_osm_vims')
-                logger.warning(e)
-            time.sleep(self.interval)
+        try:
+            logger.info('run periodic post_osm_vims')
+            self._post_osm_vims()
+        except (ServerError, HTTPError)as e:
+            logger.warning('error with siteinventory. skip post_osm_vims')
+            logger.warning(e)
 
     @_server_error
     def _post_vim_safe(self, osm_vim: Dict, nfvo_self: str):
