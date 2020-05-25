@@ -236,5 +236,25 @@ def get_op(nfvo_id, nsLcmOpId):
         abort(500, description=e.description)
 
 
+@app.route('/nfvo/<nfvo_id>/subscriptions', methods=['GET'])
+def get_subscription_list(nfvo_id):
+    pass
+
+
+@app.route('/nfvo/<nfvo_id>/subscriptions', methods=['POST'])
+def create_subscription(nfvo_id):
+    pass
+
+
+@app.route('/nfvo/<nfvo_id>/subscriptions/{subscriptionId}', methods=['GET'])
+def get_subscription(nfvo_id, subscriptionId):
+    pass
+
+
+@app.route('/nfvo/<nfvo_id>/subscriptions/{subscriptionId}', methods=['DELETE'])
+def delete_subscription(nfvo_id, subscriptionId):
+    pass
+
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
