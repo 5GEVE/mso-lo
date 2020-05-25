@@ -1218,7 +1218,7 @@ definitions:
       _links:
         type: object
         description: Link collection
-        additionalProperties: false
+        additionalProperties: true
     title: CollectionModel«LccnSubscription»
     xml:
       name: entities
