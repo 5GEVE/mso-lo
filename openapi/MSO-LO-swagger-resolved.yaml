@@ -530,10 +530,6 @@ paths:
             type: array
             items:
               $ref: '#/definitions/CollectionModel«LccnSubscription»'
-        "400":
-          description: The request is malformed
-          schema:
-            $ref: '#/definitions/ErrorResponse'
       deprecated: false
     post:
       tags:
@@ -566,10 +562,6 @@ paths:
           description: The request is malformed
           schema:
             $ref: '#/definitions/ErrorResponse'
-        "401":
-          description: Unauthorized, Invalid credentials (client or user)
-          schema:
-            $ref: '#/definitions/ErrorResponse'
       deprecated: false
   /nfvo/{nfvoId}/subscriptions/{subscriptionId}:
     get:
@@ -599,14 +591,6 @@ paths:
           headers: {}
           schema:
             $ref: '#/definitions/LccnSubscription'
-        "400":
-          description: The request is malformed
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        "401":
-          description: Unauthorized, Invalid credentials (client or user)
-          schema:
-            $ref: '#/definitions/ErrorResponse'
         "404":
           description: The specified resource was not found
           schema:
@@ -637,14 +621,6 @@ paths:
           description: |
             204 NO CONTENT. The subscription resource has been deleted successfully. The response body shall be empty.
           headers: {}
-        "400":
-          description: The request is malformed
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        "401":
-          description: Unauthorized, Invalid credentials (client or user)
-          schema:
-            $ref: '#/definitions/ErrorResponse'
         "404":
           description: The specified resource was not found
           schema:
