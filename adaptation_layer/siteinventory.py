@@ -59,7 +59,7 @@ class SiteInventory(Database):
 
     @property
     def url(self):
-        return '{0}://{1}:{2}/'.format(self.prot, self.host, self.port)
+        return '{0}://{1}:{2}'.format(self.prot, self.host, self.port)
 
     def _post_osm_vims_thread(self):
         try:
@@ -71,7 +71,7 @@ class SiteInventory(Database):
     @_server_error
     def _post_vim_safe(self, osm_vim: Dict, nfvo_self: str):
         vim_found = get(
-            self.url + 'vimAccounts/search/findByVimAccountNfvoId',
+            self.url + '/vimAccounts/search/findByVimAccountNfvoId',
             params={'uuid': osm_vim['_id']})
         vim_found.raise_for_status()
         if vim_found.json()['_embedded']['vimAccounts']:
@@ -86,7 +86,7 @@ class SiteInventory(Database):
                 'uri': osm_vim['vim_url'],
                 'tenant': osm_vim['vim_tenant_name'],
             }
-            new_vim = post(self.url + 'vimAccounts', json=payload)
+            new_vim = post(self.url + '/vimAccounts', json=payload)
             new_vim.raise_for_status()
             logger.info('created new vimAccount with id {0}'.format(
                 new_vim.json()['vimAccountNfvoId']))
@@ -98,7 +98,7 @@ class SiteInventory(Database):
     @_server_error
     def _post_osm_vims(self):
         osm_list = get(
-            self.url + 'nfvOrchestrators/search/findByTypeIgnoreCase',
+            self.url + '/nfvOrchestrators/search/findByTypeIgnoreCase',
             params={'type': 'osm'})
         osm_list.raise_for_status()
         for osm in osm_list.json()['_embedded']['nfvOrchestrators']:
@@ -121,7 +121,7 @@ class SiteInventory(Database):
     @_server_error
     def _get_nfvo(self, nfvo_id) -> Dict:
         try:
-            resp = get(self.url + 'nfvOrchestrators/' + nfvo_id)
+            resp = get(self.url + '/nfvOrchestrators/' + nfvo_id)
             resp.raise_for_status()
             nfvo = resp.json()
         except HTTPError as e:
@@ -171,7 +171,7 @@ class SiteInventory(Database):
     @_server_error
     def get_nfvo_list(self) -> List[Dict]:
         try:
-            resp = get(self.url + 'nfvOrchestrators')
+            resp = get(self.url + '/nfvOrchestrators')
             resp.raise_for_status()
         except HTTPError as e:
             if e.response.status_code == 401:
@@ -184,8 +184,8 @@ class SiteInventory(Database):
     @_server_error
     def get_subscription_list(self, nfvo_id: int) -> Dict:
         try:
-            resp = get('{0}nfvOrchestrators/{1}/subscriptions'.format(self.url,
-                                                                      nfvo_id))
+            resp = get('{0}/nfvOrchestrators/{1}/subscriptions'.format(self.url,
+                                                                       nfvo_id))
             resp.raise_for_status()
         except HTTPError as e:
             if e.response.status_code == 401:
@@ -197,11 +197,11 @@ class SiteInventory(Database):
     @_server_error
     def create_subscription(self, nfvo_id: int, body: Dict):
         try:
-            create = post('{0}subscriptions'.format(self.url), json=body)
+            create = post('{0}/subscriptions'.format(self.url), json=body)
             create.raise_for_status()
             associate = put(create.json()['_links']['nfvOrchestrators']['href'],
-                            data='{0}nfvOrchestrators/{1}'.format(self.url,
-                                                                  nfvo_id),
+                            data='{0}/nfvOrchestrators/{1}'.format(self.url,
+                                                                   nfvo_id),
                             headers={'Content-Type': 'text/uri-list'})
             associate.raise_for_status()
         except HTTPError as e:
@@ -214,9 +214,9 @@ class SiteInventory(Database):
     def get_subscription(self, nfvo_id: int, subscriptionId: int) -> Dict:
         try:
             resp = get(
-                '{0}nfvOrchestrators/{1}/subscriptions/{2}'.format(self.url,
-                                                                   nfvo_id,
-                                                                   subscriptionId))
+                '{0}/nfvOrchestrators/{1}/subscriptions/{2}'.format(self.url,
+                                                                    nfvo_id,
+                                                                    subscriptionId))
             resp.raise_for_status()
         except HTTPError as e:
             if e.response.status_code == 404:
@@ -228,7 +228,7 @@ class SiteInventory(Database):
     def delete_subscription(self, subscriptionId: int) -> None:
         try:
             resp = delete(
-                '{0}subscriptions/{1}'.format(self.url, subscriptionId))
+                '{0}/subscriptions/{1}'.format(self.url, subscriptionId))
             resp.raise_for_status()
         except HTTPError as e:
             if e.response.status_code == 404:
