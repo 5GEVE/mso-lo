@@ -1,10 +1,9 @@
 {
-  "filter": {
-    "nsInstanceSubscriptionFilter": {
-      "nsdIds": [
-        "6fc3539c-e602-4afa-8e13-962fb5a7d81f"
-      ]
-    }
-  },
-  "callbackUri": "http://127.0.0.1/subscribe"
+  "callbackUri": "http://localhost:9097/",
+  "nsInstanceId": "45f95003-4dd1-4e20-87cf-4373c9f4e946",
+  "notificationTypes": [
+    "NsLcmOperationOccurenceNotification",
+    "NsIdentifierDeletionNotification",
+    "NsIdentifierCreationNotification"
+  ]
 }
