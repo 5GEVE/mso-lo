@@ -326,8 +326,7 @@ POST New Subscription Bad
     Set Headers  {"Accept":"${ACCEPT}"}
     Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    ${body}=    {"bad": "request"}
-    Post    ${apiRoot}/${nfvoId}/subscriptions    ${body}
+    Post    ${apiRoot}/${nfvoId}/subscriptions    {"bad": "request"}
 	${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 

@@ -24,7 +24,7 @@ from requests import get, ConnectionError, Timeout, \
 from database import Database
 from driver.osm import OSM
 from error_handler import ServerError, NfvoNotFound, NfvoCredentialsNotFound, \
-    Unauthorized, Error
+    Unauthorized, Error, BadRequest
 
 logger = logging.getLogger('app.siteinventory')
 SITEINV_HOST = os.getenv('SITEINV_HOST')
@@ -191,3 +191,20 @@ class SiteInventory(Database):
             else:
                 raise
         return resp.json()
+
+    @_server_error
+    def create_subscription(self, nfvo_id: int, body: Dict):
+        try:
+            create = post('{0}subscriptions'.format(self.url), json=body)
+            create.raise_for_status()
+            associate = put(create.json()['_links']['nfvOrchestrators']['href'],
+                            data='{0}nfvOrchestrators/{1}'.format(self.url,
+                                                                  nfvo_id),
+                            headers={'Content-Type': 'text/uri-list'})
+            associate.raise_for_status()
+        except HTTPError as e:
+            if e.response.status_code == 400:
+                raise BadRequest()
+            else:
+                raise
+        return create.json()

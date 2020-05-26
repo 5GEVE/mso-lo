@@ -249,7 +249,13 @@ def get_subscription_list(nfvo_id):
 
 @app.route('/nfvo/<nfvo_id>/subscriptions', methods=['POST'])
 def create_subscription(nfvo_id):
-    pass
+    try:
+        return make_response(
+            jsonify(database.create_subscription(nfvo_id, request.json)), 201)
+    except BadRequest as e:
+        abort(400, description=e.description)
+    except ServerError as e:
+        abort(500, description=e.description)
 
 
 @app.route('/nfvo/<nfvo_id>/subscriptions/{subscriptionId}', methods=['GET'])
