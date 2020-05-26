@@ -23,6 +23,7 @@ POST Subscription Creation 201
     POST New Subscription Good
     Check HTTP Response Status Code Is    201
     Check HTTP Response Body Json Schema Is    ${subscription_schema}
+    Check Sub Id
 
 POST Subscription Creation 400
     [Documentation]    Test ID: mso-lo-test-
@@ -43,14 +44,14 @@ GET Individual Subscription information 404
     GET Individual Subscription Not Found
     Check HTTP Response Status Code Is    404
 
-DELETE Individual Subscription information 204
-    [Documentation]    Test ID: mso-lo-test-
-    ...    Test title: DELETE Individual Subscription information 200
-    DELETE Individual Subscription Good
-    Check HTTP Response Status Code Is    204
-
-DELETE Individual Subscription information 404
-    [Documentation]    Test ID: mso-lo-test-
-    ...    Test title: DELETE Individual Subscription information 404
-    DELETE Individual Subscription Not Found
-    Check HTTP Response Status Code Is    404
+#DELETE Individual Subscription information 204
+#    [Documentation]    Test ID: mso-lo-test-
+#    ...    Test title: DELETE Individual Subscription information 200
+#    DELETE Individual Subscription Good
+#    Check HTTP Response Status Code Is    204
+#
+#DELETE Individual Subscription information 404
+#    [Documentation]    Test ID: mso-lo-test-
+#    ...    Test title: DELETE Individual Subscription information 404
+#    DELETE Individual Subscription Not Found
+#    Check HTTP Response Status Code Is    404

@@ -36,3 +36,7 @@ class Database(ABC):
     @abstractmethod
     def create_subscription(self, nfvo_id: int, body: Dict) -> Dict:
         raise NotImplementedError("The method is not implemented")
+
+    @abstractmethod
+    def get_subscription(self, nfvo_id: int, subscriptionId: int) -> Dict:
+        raise NotImplementedError("The method is not implemented")

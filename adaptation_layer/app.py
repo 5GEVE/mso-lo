@@ -22,7 +22,7 @@ import driver.manager as manager
 import siteinventory
 import sqlite
 from error_handler import NfvoNotFound, NsNotFound, NsdNotFound, \
-    init_errorhandler, NfvoCredentialsNotFound
+    init_errorhandler, NfvoCredentialsNotFound, SubscriptionNotFound
 from error_handler import Unauthorized, BadRequest, ServerError, NsOpNotFound
 
 SITEINV = os.getenv('SITEINV', 'false').lower()
@@ -258,9 +258,15 @@ def create_subscription(nfvo_id):
         abort(500, description=e.description)
 
 
-@app.route('/nfvo/<nfvo_id>/subscriptions/{subscriptionId}', methods=['GET'])
+@app.route('/nfvo/<nfvo_id>/subscriptions/<subscriptionId>', methods=['GET'])
 def get_subscription(nfvo_id, subscriptionId):
-    pass
+    try:
+        return make_response(
+            jsonify(database.get_subscription(nfvo_id, subscriptionId)), 200)
+    except SubscriptionNotFound as e:
+        abort(404, description=e.description)
+    except ServerError as e:
+        abort(500, description=e.description)
 
 
 @app.route('/nfvo/<nfvo_id>/subscriptions/{subscriptionId}', methods=['DELETE'])

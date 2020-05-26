@@ -24,7 +24,7 @@ from requests import get, ConnectionError, Timeout, \
 from database import Database
 from driver.osm import OSM
 from error_handler import ServerError, NfvoNotFound, NfvoCredentialsNotFound, \
-    Unauthorized, Error, BadRequest
+    Unauthorized, Error, BadRequest, SubscriptionNotFound
 
 logger = logging.getLogger('app.siteinventory')
 SITEINV_HOST = os.getenv('SITEINV_HOST')
@@ -208,3 +208,17 @@ class SiteInventory(Database):
             else:
                 raise
         return create.json()
+
+    def get_subscription(self, nfvo_id: int, subscriptionId: int) -> Dict:
+        try:
+            resp = get(
+                '{0}nfvOrchestrators/{1}/subscriptions/{2}'.format(self.url,
+                                                                   nfvo_id,
+                                                                   subscriptionId))
+            resp.raise_for_status()
+        except HTTPError as e:
+            if e.response.status_code == 404:
+                raise SubscriptionNotFound(sub_id=subscriptionId)
+            else:
+                raise
+        return resp.json()

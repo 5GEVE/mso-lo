@@ -301,6 +301,9 @@ POST Cancel operation task
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
+Check Sub Id
+    Set Global Variable    ${subscriptionId}    ${response[0]['body']['id']}
+
 GET Subscriptions
     Log    Get the list of active subscriptions
     Set Headers  {"Accept":"${ACCEPT}"}
