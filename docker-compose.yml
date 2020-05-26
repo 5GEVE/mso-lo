@@ -18,6 +18,7 @@ services:
     container_name: mso-lo
     environment:
       SITEINV: 'true'
+      SITEINV_HTTPS: 'false'
       SITEINV_HOST: '192.168.17.20'
       SITEINV_PORT: '8087'
       SITEINV_INTERVAL: '300'

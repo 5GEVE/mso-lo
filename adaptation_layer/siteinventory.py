@@ -27,6 +27,7 @@ from error_handler import ServerError, NfvoNotFound, NfvoCredentialsNotFound, \
     Unauthorized, Error, BadRequest, SubscriptionNotFound
 
 logger = logging.getLogger('app.siteinventory')
+SITEINV_HTTPS = os.getenv('SITEINV_HTTPS', 'false').lower()
 SITEINV_HOST = os.getenv('SITEINV_HOST')
 SITEINV_PORT = os.getenv('SITEINV_PORT')
 SITEINV_INTERVAL = os.getenv('SITEINV_INTERVAL')
@@ -45,6 +46,7 @@ def _server_error(func):
 
 class SiteInventory(Database):
     def __init__(self):
+        self.prot = 'https' if SITEINV_HTTPS == 'true' else 'http'
         self.host = SITEINV_HOST if SITEINV_HOST else 'localhost'
         self.port = int(SITEINV_PORT) if SITEINV_PORT else 8087
         self.interval = int(SITEINV_INTERVAL) if SITEINV_INTERVAL else 300
@@ -57,7 +59,7 @@ class SiteInventory(Database):
 
     @property
     def url(self):
-        return 'http://{0}:{1}/'.format(self.host, self.port)
+        return '{0}://{1}:{2}/'.format(self.prot, self.host, self.port)
 
     def _post_osm_vims_thread(self):
         try:
