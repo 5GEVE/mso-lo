@@ -40,3 +40,7 @@ class Database(ABC):
     @abstractmethod
     def get_subscription(self, nfvo_id: int, subscriptionId: int) -> Dict:
         raise NotImplementedError("The method is not implemented")
+
+    @abstractmethod
+    def delete_subscription(self, subscriptionId: int) -> None:
+        raise NotImplementedError("The method is not implemented")

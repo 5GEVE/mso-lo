@@ -19,7 +19,7 @@ from typing import List, Dict
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from requests import get, ConnectionError, Timeout, \
-    TooManyRedirects, URLRequired, HTTPError, post, put
+    TooManyRedirects, URLRequired, HTTPError, post, put, delete
 
 from database import Database
 from driver.osm import OSM
@@ -222,3 +222,14 @@ class SiteInventory(Database):
             else:
                 raise
         return resp.json()
+
+    def delete_subscription(self, subscriptionId: int) -> None:
+        try:
+            resp = delete(
+                '{0}subscriptions/{1}'.format(self.url, subscriptionId))
+            resp.raise_for_status()
+        except HTTPError as e:
+            if e.response.status_code == 404:
+                raise SubscriptionNotFound(sub_id=subscriptionId)
+            else:
+                raise

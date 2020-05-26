@@ -269,9 +269,15 @@ def get_subscription(nfvo_id, subscriptionId):
         abort(500, description=e.description)
 
 
-@app.route('/nfvo/<nfvo_id>/subscriptions/{subscriptionId}', methods=['DELETE'])
+@app.route('/nfvo/<nfvo_id>/subscriptions/<subscriptionId>', methods=['DELETE'])
 def delete_subscription(nfvo_id, subscriptionId):
-    pass
+    try:
+        database.delete_subscription(subscriptionId)
+        return make_response('', 204)
+    except SubscriptionNotFound as e:
+        abort(404, description=e.description)
+    except ServerError as e:
+        abort(500, description=e.description)
 
 
 if __name__ == '__main__':

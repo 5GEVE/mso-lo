@@ -361,7 +361,7 @@ DELETE Individual Subscription Not Found
     log    Try to delete an individual subscription
     Set Headers  {"Accept":"${ACCEPT}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Delete    ${apiRoot}/${nfvoId}/subscriptions/${subscriptionId}
+    Delete    ${apiRoot}/${nfvoId}/subscriptions/-1
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
