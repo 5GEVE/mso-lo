@@ -365,3 +365,21 @@ DELETE Individual Subscription Not Found
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
+POST New Notification Good
+    Log    Create notification instance by POST to ${apiRoot}/${nfvoId}/notifications
+    Set Headers  {"Accept":"${ACCEPT}"}
+    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
+    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
+    ${body}=    Get File    jsons/Notification.json
+    Post    ${apiRoot}/${nfvoId}/notifications    ${body}
+	${outputResponse}=    Output    response
+	Set Global Variable    @{response}    ${outputResponse}
+
+POST New Notification Bad
+    Log    Create subscription instance by POST to ${apiRoot}/${nfvoId}/notifications
+    Set Headers  {"Accept":"${ACCEPT}"}
+    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
+    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
+    Post    ${apiRoot}/${nfvoId}/notifications    {"bad": "request"}
+	${outputResponse}=    Output    response
+	Set Global Variable    @{response}    ${outputResponse}

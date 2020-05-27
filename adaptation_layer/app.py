@@ -13,9 +13,13 @@
 #  limitations under the License.
 import logging
 import os
+from datetime import datetime
+from typing import Dict
 
+from apscheduler.schedulers.background import BackgroundScheduler
 from flask import jsonify, abort, request, make_response, Flask
 from flask_migrate import Migrate
+from requests import HTTPError, post, RequestException
 
 import config
 import driver.manager as manager
@@ -31,6 +35,8 @@ logging.basicConfig(level=logging.INFO)
 app = Flask(__name__)
 app.config.from_object(config.Config)
 init_errorhandler(app)
+notif_sched = BackgroundScheduler({'apscheduler.timezone': 'UTC'})
+notif_sched.start()
 
 if SITEINV == 'true':
     app.logger.info('using siteinventory')
@@ -278,6 +284,36 @@ def delete_subscription(nfvo_id, subscriptionId):
         abort(404, description=e.description)
     except ServerError as e:
         abort(500, description=e.description)
+
+
+@app.route('/nfvo/<nfvo_id>/notifications', methods=['POST'])
+def post_notification(nfvo_id):
+    required = ('nsInstanceId', 'operation', 'operationState')
+    if not all(k in request.json for k in required):
+        abort(400, 'One of {0} is missing'.format(str(required)))
+    notif_sched.add_job(forward_notification,
+                        'date', run_date=datetime.utcnow(),
+                        args=[request.json])
+    return make_response('', 204)
+
+
+def forward_notification(notification: Dict):
+    subs = []
+    try:
+        subs = database.search_subs_by_ns_instance(notification['nsInstanceId'])
+    except (ServerError, HTTPError) as e:
+        abort(500, description=e.description)
+    for s in subs:
+        try:
+            if notification['notificationType'] in s['notificationTypes']:
+                resp = post(s['callbackUri'], json=notification)
+                resp.raise_for_status()
+                app.logger.info(
+                    'Notification sent to {0}'.format(s['callbackUri']))
+        except RequestException as e:
+            app.logger.warning(
+                'Cannot send notification to {0}. Error: {1}'.format(
+                    s['callbackUri'], str(e)))
 
 
 if __name__ == '__main__':
