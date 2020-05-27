@@ -30,6 +30,7 @@ from error_handler import ResourceNotFound, NsNotFound, VnfNotFound, \
     Unauthorized, BadRequest, ServerError, NsOpNotFound, VnfPkgNotFound, \
     VimNotFound, NsdNotFound
 from .interface import Driver, Headers, BodyList, Body
+from notifications import forward_notification
 
 logger = logging.getLogger('osm-driver')
 urllib3.disable_warnings(InsecureRequestWarning)
@@ -61,7 +62,7 @@ def _authenticate(func):
 
 class OSM(Driver):
 
-    def __init__(self, nfvo_cred):
+    def __init__(self, nfvo_cred, database=None):
         self._nfvoId = nfvo_cred["nfvo_id"]
         self._token_endpoint = 'admin/v1/tokens'
         self._user_endpoint = 'admin/v1/users'
@@ -80,6 +81,7 @@ class OSM(Driver):
             self._base_path = 'https://{0}:{1}/osm'.format(self._host,
                                                            self._so_port)
 
+        self.database = database
         self.last_op_status = {}
         scheduler = BackgroundScheduler()
         scheduler.add_job(self._check_subscriptions, 'interval',
@@ -103,7 +105,9 @@ class OSM(Driver):
                         "operationState": op['operationState']
                     }
                     logger.info(notify_payload)
-                    ## NOTIFY HERE
+                    subs = self.database.search_subs_by_ns_instance(
+                        op['nsInstanceId'])
+                    forward_notification(notify_payload, subs)
                     self.last_op_status[key] = op['operationState']
         except Exception as e:
             logger.exception(e)

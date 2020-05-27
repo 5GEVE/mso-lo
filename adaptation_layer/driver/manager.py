@@ -27,7 +27,7 @@ def get_driver(nfvo_id: int, db: Database) -> Driver:
         nfvo_type = nfvo['type'].casefold()
         nfvo_cred = db.get_nfvo_cred(nfvo_id)
         if nfvo_type == 'osm':
-            _drivers[nfvo_id] = OSM(nfvo_cred)
+            _drivers[nfvo_id] = OSM(nfvo_cred, db)
         elif nfvo_type == 'onap':
             _drivers[nfvo_id] = ONAP(nfvo_cred)
         else:
