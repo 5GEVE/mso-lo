@@ -4,6 +4,5 @@
   "operation": "INSTANTIATE",
   "notificationType": "NsLcmOperationOccurrenceNotification",
   "timestamp": "2020-05-27T08:57:01+0000",
-  "notificationStatus": "START",
   "operationState": "PROCESSING"
 }

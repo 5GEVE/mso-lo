@@ -1220,9 +1220,6 @@ definitions:
       timestamp:
         type: string
         example: string
-      notificationStatus:
-        type: string
-        example: START
       operationState:
         type: string
         example: PROCESSING
