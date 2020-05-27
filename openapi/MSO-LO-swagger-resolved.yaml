@@ -529,7 +529,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/CollectionModel«LccnSubscription»'
+              $ref: '#/definitions/CollectionModelLccnSubscription'
       deprecated: false
     post:
       tags:
@@ -1110,14 +1110,14 @@ definitions:
         type: string
         format: uuid
     title: LccnSubscription
-  CollectionModel«LccnSubscription»:
+  CollectionModelLccnSubscription:
     type: object
     required:
       - _embedded
       - _links
     properties:
       _embedded:
-        $ref: '#/definitions/EmbeddedCollection«LccnSubscription»'
+        $ref: '#/definitions/EmbeddedCollectionLccnSubscription'
       _links:
         type: object
         description: Link collection
@@ -1128,7 +1128,7 @@ definitions:
       attribute: false
       wrapped: false
     description: Resources of LccnSubscription
-  EmbeddedCollection«LccnSubscription»:
+  EmbeddedCollectionLccnSubscription:
     type: object
     required:
       - subscriptions
