@@ -626,53 +626,29 @@ paths:
           schema:
             $ref: '#/definitions/ErrorResponse'
       deprecated: false
-  /URI_is_provided_by_the_client_when_creating_the_subscription-NsIdentifierCreationNotification:
-    get:
-      tags:
-        - Notification send
-      summary: Test the notification endpoint.
-      description: |
-        Query NS Instances.
-        The GET method queries information about multiple NS instances. This method shall support the URI query parameters, request and response data structures, and response codes, as specified in the Tables 6.4.2.3.2-1 and 6.4.2.3.2-2.
-      operationId: URIIsProvidedByTheClientWhenCreatingTheSubscriptionNsIdentifierCreationNotificationGet
-      produces:
-        - application/json
-      parameters: []
-      responses:
-        "204":
-          description: |
-            204 No Content
-            Shall be returned when the notification endpoint has been tested successfully. The response body shall be empty.
-          headers: {}
-        "400":
-          description: The request is malformed
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        "401":
-          description: Unauthorized, Invalid credentials (client or user)
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        "404":
-          description: The specified resource was not found
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-      deprecated: false
+  /nfvo/{nfvoId}/notifications:
     post:
       tags:
         - Notification send
-      summary: Notify about NS creation
+      summary: Create new notification about a NS instance hosted at nfvoId
       description: |
+        The POST method creates a new notification. If a subscription for the NS instance exists, forward the notification to the subscriber.
         The POST method delivers a notification from the server to the client. This method shall support the URI query parameters, request and response data structures, and response codes, as specified in the Tables 6.4.18.3.1-1 and 6.4.18.3.1-2.
-      operationId: URIIsProvidedByTheClientWhenCreatingTheSubscriptionNsIdentifierCreationNotificationPost
+      operationId: NfvoNotificationPost
       produces:
         - application/json
       parameters:
+        - name: nfvoId
+          in: path
+          description: Identifier of a Nfvo
+          required: true
+          type: string
         - in: body
           name: body
-          description: A notification about the creation of a NS identifier and the related NS instance resource.
-          required: true
+          description: ""
+          required: false
           schema:
-            $ref: '#/definitions/body'
+            $ref: '#/definitions/Notification'
       responses:
         "204":
           description: |
@@ -681,79 +657,6 @@ paths:
           headers: {}
         "400":
           description: The request is malformed
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        "401":
-          description: Unauthorized, Invalid credentials (client or user)
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        "404":
-          description: The specified resource was not found
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-      deprecated: false
-  /URI_is_provided_by_the_client_when_creating_the_subscription-NsIdentifierDeletionNotification:
-    get:
-      tags:
-        - Notification send
-      summary: Test the notification endpoint.1
-      description: |
-        Query NS Instances.
-        The GET method queries information about multiple NS instances. This method shall support the URI query parameters, request and response data structures, and response codes, as specified in the Tables 6.4.2.3.2-1 and 6.4.2.3.2-2.
-      operationId: URIIsProvidedByTheClientWhenCreatingTheSubscriptionNsIdentifierDeletionNotificationGet
-      produces:
-        - application/json
-      parameters: []
-      responses:
-        "204":
-          description: |
-            204 No Content
-            Shall be returned when the notification endpoint has been tested successfully. The response body shall be empty.
-          headers: {}
-        "400":
-          description: The request is malformed
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        "401":
-          description: Unauthorized, Invalid credentials (client or user)
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        "404":
-          description: The specified resource was not found
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-      deprecated: false
-    post:
-      tags:
-        - Notification send
-      summary: Notify about NS lifecycle change
-      description: |
-        The POST method delivers a notification from the server to the client. This method shall support the URI query parameters, request and response data structures, and response codes, as specified in the Tables 6.4.18.3.1-1 and 6.4.18.3.1-2.
-      operationId: URIIsProvidedByTheClientWhenCreatingTheSubscriptionNsIdentifierDeletionNotificationPost
-      produces:
-        - application/json
-      parameters:
-        - in: body
-          name: body
-          description: A notification about the deletion of a NS identifier and the related NS instance resource.
-          required: true
-          schema:
-            $ref: '#/definitions/body_1'
-      responses:
-        "204":
-          description: |
-            204 No Content Shall be returned when the notification has been delivered successfully.
-          headers: {}
-        "400":
-          description: The request is malformed
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        "401":
-          description: Unauthorized, Invalid credentials (client or user)
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        "404":
-          description: The specified resource was not found
           schema:
             $ref: '#/definitions/ErrorResponse'
       deprecated: false
@@ -1295,3 +1198,27 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/NfvoNsInstantiateRequest_additionalParamsForNs_vnf'
+  Notification:
+    type: object
+    properties:
+      nsInstanceId:
+        type: string
+        example: string
+      nsLcmOpOccId:
+        type: string
+        example: string
+      operation:
+        type: string
+        example: INSTANTIATE
+      notificationType:
+        type: string
+        example: NsLcmOperationOccurrenceNotification
+      timestamp:
+        type: string
+        example: string
+      notificationStatus:
+        type: string
+        example: START
+      operationState:
+        type: string
+        example: PROCESSING
