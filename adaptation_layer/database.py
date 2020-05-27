@@ -44,3 +44,7 @@ class Database(ABC):
     @abstractmethod
     def delete_subscription(self, subscriptionId: int) -> None:
         raise NotImplementedError("The method is not implemented")
+
+    @abstractmethod
+    def search_subs_by_ns_instance(self, ns_instance_id: str) -> List[Dict]:
+        raise NotImplementedError("The method is not implemented")

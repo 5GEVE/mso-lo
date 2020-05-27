@@ -2,7 +2,7 @@
   "callbackUri": "http://localhost:9097/",
   "nsInstanceId": "45f95003-4dd1-4e20-87cf-4373c9f4e946",
   "notificationTypes": [
-    "NsLcmOperationOccurenceNotification",
+    "NsLcmOperationOccurrenceNotification",
     "NsIdentifierDeletionNotification",
     "NsIdentifierCreationNotification"
   ]
