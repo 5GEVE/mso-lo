@@ -1,0 +1,20 @@
+name: Unit Tests
+
+on:
+  push:
+    branches: [ master, development ]
+  pull_request:
+    branches: [ master, development ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build Docker compose test OSM
+      run: docker-compose --file docker-compose.test-osm.yml --project-name test-osm build
+    - name: Run the test for OSM
+      run: docker-compose --file docker-compose.test-osm.yml --project-name test-osm up
