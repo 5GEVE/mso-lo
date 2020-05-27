@@ -93,7 +93,6 @@ class OSM(Driver):
                 key = (op['nsInstanceId'], op['lcmOperationType'])
                 if key not in self.last_op_status or \
                         self.last_op_status[key] != op['operationState']:
-                    self.last_op_status[key] = op['operationState']
                     logger.info('notify')
                     notify_payload = {
                         "nsInstanceId": op['nsInstanceId'],
@@ -104,6 +103,8 @@ class OSM(Driver):
                         "operationState": op['operationState']
                     }
                     logger.info(notify_payload)
+                    ## NOTIFY HERE
+                    self.last_op_status[key] = op['operationState']
         except Exception as e:
             logger.exception(e)
 
