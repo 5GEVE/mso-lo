@@ -90,3 +90,20 @@ class SQLite(Database):
         if nfvo_cred is None:
             raise NfvoNotFound(nfvo_id=nfvo_id)
         return nfvo_cred.serialize
+
+    def get_subscription_list(self, nfvo_id: int) -> Dict:
+        raise NotImplementedError("The method is not implemented")
+
+    def create_subscription(self, nfvo_id: int, body: Dict) -> Dict:
+        raise NotImplementedError("The method is not implemented")
+
+    def get_subscription(self, nfvo_id: int, subscriptionId: int) -> Dict:
+        raise NotImplementedError("The method is not implemented")
+
+    def delete_subscription(self, subscriptionId: int) -> None:
+        raise NotImplementedError("The method is not implemented")
+
+    def search_subs_by_ns_instance(self, ns_instance_id: str) -> List[Dict]:
+        raise NotImplementedError("The method is not implemented")
+
+
