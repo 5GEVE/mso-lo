@@ -22,8 +22,8 @@ openapi = ResolvingParser(OPENAPI_PATH).specification
 
 nfvo_schema = openapi["definitions"]["NFVO"]
 nfvo_list_schema = {
-  "type": "array",
-  "items": nfvo_schema
+    "type": "array",
+    "items": nfvo_schema
 }
 
 id_schema = openapi["definitions"]["Identifier"]
@@ -31,13 +31,17 @@ id_schema = openapi["definitions"]["Identifier"]
 ns_schema = openapi["definitions"]["NsInstance"]
 
 ns_list_schema = {
-  "type": "array",
-  "items": ns_schema
+    "type": "array",
+    "items": ns_schema
 }
 
 ns_lcm_op_occ_schema = openapi["definitions"]["NsLcmOpOcc"]
 
 ns_lcm_op_occ_list_schema = {
-  "type": "array",
-  "items": ns_lcm_op_occ_schema
+    "type": "array",
+    "items": ns_lcm_op_occ_schema
 }
+
+subscription_schema = openapi["definitions"]["LccnSubscription"]
+subscription_list_schema = openapi["definitions"][
+    "CollectionModel«LccnSubscription»"]

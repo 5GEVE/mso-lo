@@ -22,7 +22,7 @@ import driver.manager as manager
 import siteinventory
 import sqlite
 from error_handler import NfvoNotFound, NsNotFound, NsdNotFound, \
-    init_errorhandler, NfvoCredentialsNotFound
+    init_errorhandler, NfvoCredentialsNotFound, SubscriptionNotFound
 from error_handler import Unauthorized, BadRequest, ServerError, NsOpNotFound
 
 SITEINV = os.getenv('SITEINV', 'false').lower()
@@ -231,6 +231,50 @@ def get_op(nfvo_id, nsLcmOpId):
     except (NfvoNotFound, NfvoCredentialsNotFound) as e:
         abort(404, description=e.description)
     except NsOpNotFound as e:
+        abort(404, description=e.description)
+    except ServerError as e:
+        abort(500, description=e.description)
+
+
+@app.route('/nfvo/<nfvo_id>/subscriptions', methods=['GET'])
+def get_subscription_list(nfvo_id):
+    try:
+        return make_response(jsonify(database.get_subscription_list(nfvo_id)),
+                             200)
+    except Unauthorized as e:
+        abort(401, description=e.description)
+    except ServerError as e:
+        abort(500, description=e.description)
+
+
+@app.route('/nfvo/<nfvo_id>/subscriptions', methods=['POST'])
+def create_subscription(nfvo_id):
+    try:
+        return make_response(
+            jsonify(database.create_subscription(nfvo_id, request.json)), 201)
+    except BadRequest as e:
+        abort(400, description=e.description)
+    except ServerError as e:
+        abort(500, description=e.description)
+
+
+@app.route('/nfvo/<nfvo_id>/subscriptions/<subscriptionId>', methods=['GET'])
+def get_subscription(nfvo_id, subscriptionId):
+    try:
+        return make_response(
+            jsonify(database.get_subscription(nfvo_id, subscriptionId)), 200)
+    except SubscriptionNotFound as e:
+        abort(404, description=e.description)
+    except ServerError as e:
+        abort(500, description=e.description)
+
+
+@app.route('/nfvo/<nfvo_id>/subscriptions/<subscriptionId>', methods=['DELETE'])
+def delete_subscription(nfvo_id, subscriptionId):
+    try:
+        database.delete_subscription(subscriptionId)
+        return make_response('', 204)
+    except SubscriptionNotFound as e:
         abort(404, description=e.description)
     except ServerError as e:
         abort(500, description=e.description)

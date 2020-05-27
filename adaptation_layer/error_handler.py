@@ -84,6 +84,11 @@ class VnfPkgNotFound(Error):
         self.description = 'VNF package {0} not found.'.format(vnfpkg_id)
 
 
+class SubscriptionNotFound(Error):
+    def __init__(self, sub_id=None):
+        self.description = 'Subscription {0} not found.'.format(sub_id)
+
+
 class Unauthorized(Error):
     def __init__(self):
         self.description = 'Unauthorized'
