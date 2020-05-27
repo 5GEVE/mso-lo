@@ -1103,7 +1103,7 @@ definitions:
         items:
           type: string
           enum:
-            - NsLcmOperationOccurenceNotification
+            - NsLcmOperationOccurrenceNotification
             - NsIdentifierCreationNotification
             - NsIdentifierDeletionNotification
       nsInstanceId:
