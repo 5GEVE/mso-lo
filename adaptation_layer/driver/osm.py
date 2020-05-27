@@ -35,7 +35,7 @@ logger = logging.getLogger('osm-driver')
 urllib3.disable_warnings(InsecureRequestWarning)
 TESTING = os.getenv('TESTING', 'false').lower()
 PRISM_ALIAS = os.getenv("PRISM_ALIAS", "prism-osm")
-CHECK_INTERVAL = os.getenv('CHECK_INTERVAL')
+CHECK_INTERVAL = os.getenv('CHECK_INTERVAL', 5)
 
 
 def _authenticate(func):
@@ -79,17 +79,33 @@ class OSM(Driver):
         else:
             self._base_path = 'https://{0}:{1}/osm'.format(self._host,
                                                            self._so_port)
-        # int(CHECK_INTERVAL) if CHECK_INTERVAL else 300
-        self.check_interval = 5
+
+        self.last_op_status = {}
         scheduler = BackgroundScheduler()
         scheduler.add_job(self._check_subscriptions, 'interval',
-                          seconds=self.check_interval)
+                          seconds=CHECK_INTERVAL)
         scheduler.start()
 
     def _check_subscriptions(self):
-        logger.info('check subscriptions')
-        ops = self.get_op_list({'args': {}})
-        print(ops)
+        try:
+            ops, ops_headers = self.get_op_list({'args': {}})
+            for op in ops:
+                key = (op['nsInstanceId'], op['lcmOperationType'])
+                if key not in self.last_op_status or \
+                        self.last_op_status[key] != op['operationState']:
+                    self.last_op_status[key] = op['operationState']
+                    logger.info('notify')
+                    notify_payload = {
+                        "nsInstanceId": op['nsInstanceId'],
+                        "nsLcmOpOccId": op['id'],
+                        "operation": op['lcmOperationType'],
+                        "notificationType": "NsLcmOperationOccurrenceNotification",
+                        "timestamp": op['startTime'],
+                        "operationState": op['operationState']
+                    }
+                    logger.info(notify_payload)
+        except Exception as e:
+            logger.exception(e)
 
     def _exec_get(self, url=None, params=None, headers=None):
         try:
