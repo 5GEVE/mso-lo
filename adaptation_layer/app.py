@@ -283,6 +283,9 @@ def delete_subscription(nfvo_id, subscriptionId):
 
 @app.route('/nfvo/<nfvo_id>/notifications', methods=['POST'])
 def post_notification(nfvo_id):
+    required = ('nsInstanceId', 'operation', 'operationState')
+    if not all(k in request.json for k in required):
+        abort(400, 'One of {0} is missing'.format(str(required)))
     subs = []
     try:
         subs = database.search_subs_by_ns_instance(request.json['nsInstanceId'])

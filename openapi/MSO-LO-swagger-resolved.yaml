@@ -1200,6 +1200,10 @@ definitions:
           $ref: '#/definitions/NfvoNsInstantiateRequest_additionalParamsForNs_vnf'
   Notification:
     type: object
+    required:
+      - nsInstanceId
+      - operation
+      - operationState
     properties:
       nsInstanceId:
         type: string
