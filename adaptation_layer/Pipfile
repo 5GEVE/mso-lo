@@ -27,6 +27,7 @@ jsonschema = "*"
 prance = "*"
 openapi-spec-validator = "*"
 apscheduler = "==3.6.3"
+redis = "==3.5.2"
 
 [requires]
 python_version = "3.6"
