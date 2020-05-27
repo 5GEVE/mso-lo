@@ -211,6 +211,7 @@ class SiteInventory(Database):
                 raise
         return create.json()
 
+    @_server_error
     def get_subscription(self, nfvo_id: int, subscriptionId: int) -> Dict:
         try:
             resp = get(
@@ -225,6 +226,7 @@ class SiteInventory(Database):
                 raise
         return resp.json()
 
+    @_server_error
     def delete_subscription(self, subscriptionId: int) -> None:
         try:
             resp = delete(
