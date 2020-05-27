@@ -16,6 +16,7 @@ import os
 
 from flask import jsonify, abort, request, make_response, Flask
 from flask_migrate import Migrate
+from requests import HTTPError, post, RequestException
 
 import config
 import driver.manager as manager
@@ -278,6 +279,24 @@ def delete_subscription(nfvo_id, subscriptionId):
         abort(404, description=e.description)
     except ServerError as e:
         abort(500, description=e.description)
+
+
+@app.route('/nfvo/<nfvo_id>/notifications', methods=['POST'])
+def post_notification(nfvo_id):
+    subs = []
+    try:
+        subs = database.search_subs_by_ns_instance(request.json['nsInstanceId'])
+    except (ServerError, HTTPError) as e:
+        abort(500, description=e.description)
+    for s in subs:
+        try:
+            resp = post(s['callbackUri'], json=request.json)
+            resp.raise_for_status()
+        except RequestException as e:
+            app.logger.warning(
+                'Cannot send notification to {0}. Error: {1}'.format(
+                    s['callbackUri'], str(e)))
+    return make_response('', 204)
 
 
 if __name__ == '__main__':

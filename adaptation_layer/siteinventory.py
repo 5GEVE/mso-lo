@@ -237,3 +237,13 @@ class SiteInventory(Database):
                 raise SubscriptionNotFound(sub_id=subscriptionId)
             else:
                 raise
+
+    @_server_error
+    def search_subs_by_ns_instance(self, ns_instance_id: str) -> List[Dict]:
+        try:
+            subs = get(self.url + '/subscriptions/search/findByNsInstanceId',
+                       params={'nsInstanceId': ns_instance_id})
+            subs.raise_for_status()
+        except HTTPError:
+            raise
+        return subs.json()['_embedded']['subscriptions'] if subs else []
