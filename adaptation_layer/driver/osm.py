@@ -19,20 +19,23 @@ from datetime import datetime
 from functools import wraps
 from typing import Dict, Tuple, List
 from urllib.parse import urlencode
-
+import logging
 import requests
 import urllib3
 import yaml as YAML
 from urllib3.exceptions import InsecureRequestWarning
+from apscheduler.schedulers.background import BackgroundScheduler
 
 from error_handler import ResourceNotFound, NsNotFound, VnfNotFound, \
     Unauthorized, BadRequest, ServerError, NsOpNotFound, VnfPkgNotFound, \
     VimNotFound, NsdNotFound
 from .interface import Driver, Headers, BodyList, Body
 
+logger = logging.getLogger('osm-driver')
 urllib3.disable_warnings(InsecureRequestWarning)
 TESTING = os.getenv('TESTING', 'false').lower()
 PRISM_ALIAS = os.getenv("PRISM_ALIAS", "prism-osm")
+CHECK_INTERVAL = os.getenv('CHECK_INTERVAL')
 
 
 def _authenticate(func):
@@ -76,6 +79,17 @@ class OSM(Driver):
         else:
             self._base_path = 'https://{0}:{1}/osm'.format(self._host,
                                                            self._so_port)
+        # int(CHECK_INTERVAL) if CHECK_INTERVAL else 300
+        self.check_interval = 5
+        scheduler = BackgroundScheduler()
+        scheduler.add_job(self._check_subscriptions, 'interval',
+                          seconds=self.check_interval)
+        scheduler.start()
+
+    def _check_subscriptions(self):
+        logger.info('check subscriptions')
+        ops = self.get_op_list({'args': {}})
+        print(ops)
 
     def _exec_get(self, url=None, params=None, headers=None):
         try:
@@ -338,7 +352,7 @@ class OSM(Driver):
     @_authenticate
     def get_op_list(self, args: Dict = None) -> Tuple[BodyList, Headers]:
         nsId = args['args']['nsInstanceId'] \
-            if args['args'] and 'nsInstanceId' in args['args'] else None
+            if 'args' in args and args['args'] and 'nsInstanceId' in args['args'] else None
         _url = "{0}/nslcm/v1/ns_lcm_op_occs".format(self._base_path)
         _url = self._build_url_query(_url, args)
         try:
