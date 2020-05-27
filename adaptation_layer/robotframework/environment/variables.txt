@@ -38,7 +38,6 @@ ${NFVO_DUPLICATION}    0
 ${sub_filter}    filter
 ${sub_filter_invalid}    filter_invalid
 ${fields}         criteria,objectInstanceIds
-${subscriptionId}    6fc3539c-e602-4afa-8e13-962fb5a7d81f
 
 ${response}    {}
 

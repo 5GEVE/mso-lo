@@ -14,12 +14,11 @@
 import logging
 import os
 from datetime import datetime
-from typing import Dict
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import jsonify, abort, request, make_response, Flask
 from flask_migrate import Migrate
-from requests import HTTPError, post, RequestException
+from requests import HTTPError
 
 import config
 import driver.manager as manager
@@ -28,6 +27,7 @@ import sqlite
 from error_handler import NfvoNotFound, NsNotFound, NsdNotFound, \
     init_errorhandler, NfvoCredentialsNotFound, SubscriptionNotFound
 from error_handler import Unauthorized, BadRequest, ServerError, NsOpNotFound
+from notifications import forward_notification
 
 SITEINV = os.getenv('SITEINV', 'false').lower()
 
@@ -291,29 +291,14 @@ def post_notification(nfvo_id):
     required = ('nsInstanceId', 'operation', 'operationState')
     if not all(k in request.json for k in required):
         abort(400, 'One of {0} is missing'.format(str(required)))
-    notif_sched.add_job(forward_notification,
-                        'date', run_date=datetime.utcnow(),
-                        args=[request.json])
-    return make_response('', 204)
-
-
-def forward_notification(notification: Dict):
-    subs = []
     try:
-        subs = database.search_subs_by_ns_instance(notification['nsInstanceId'])
+        subs = database.search_subs_by_ns_instance(request.json['nsInstanceId'])
+        notif_sched.add_job(forward_notification,
+                            'date', run_date=datetime.utcnow(),
+                            args=[request.json, subs])
     except (ServerError, HTTPError) as e:
         abort(500, description=e.description)
-    for s in subs:
-        try:
-            if notification['notificationType'] in s['notificationTypes']:
-                resp = post(s['callbackUri'], json=notification)
-                resp.raise_for_status()
-                app.logger.info(
-                    'Notification sent to {0}'.format(s['callbackUri']))
-        except RequestException as e:
-            app.logger.warning(
-                'Cannot send notification to {0}. Error: {1}'.format(
-                    s['callbackUri'], str(e)))
+    return make_response('', 204)
 
 
 if __name__ == '__main__':

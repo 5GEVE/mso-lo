@@ -44,4 +44,4 @@ ns_lcm_op_occ_list_schema = {
 
 subscription_schema = openapi["definitions"]["LccnSubscription"]
 subscription_list_schema = openapi["definitions"][
-    "CollectionModel«LccnSubscription»"]
+    "CollectionModelLccnSubscription"]
