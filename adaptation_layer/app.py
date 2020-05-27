@@ -305,9 +305,11 @@ def forward_notification(notification: Dict):
         abort(500, description=e.description)
     for s in subs:
         try:
-            resp = post(s['callbackUri'], json=notification)
-            resp.raise_for_status()
-            app.logger.info('Notification sent to {0}'.format(s['callbackUri']))
+            if notification['notificationType'] in s['notificationTypes']:
+                resp = post(s['callbackUri'], json=notification)
+                resp.raise_for_status()
+                app.logger.info(
+                    'Notification sent to {0}'.format(s['callbackUri']))
         except RequestException as e:
             app.logger.warning(
                 'Cannot send notification to {0}. Error: {1}'.format(
