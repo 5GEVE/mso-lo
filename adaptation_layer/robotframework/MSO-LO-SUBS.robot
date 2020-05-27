@@ -55,3 +55,15 @@ DELETE Individual Subscription information 404
     ...    Test title: DELETE Individual Subscription information 404
     DELETE Individual Subscription Not Found
     Check HTTP Response Status Code Is    404
+
+POST Notification Creation 204
+    [Documentation]    Test ID: mso-lo-test-
+    ...    Test title: POST Notification Creation 204
+    POST New Notification Good
+    Check HTTP Response Status Code Is    204
+
+POST Notification Creation 400
+    [Documentation]    Test ID: mso-lo-test-
+    ...    Test title: POST Subscription Creation 400
+    POST New Notification Bad
+    Check HTTP Response Status Code Is    400
