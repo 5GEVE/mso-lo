@@ -13,7 +13,6 @@
 #  limitations under the License.
 import logging
 import os
-from datetime import datetime
 
 from flask import jsonify, abort, request, make_response, Flask
 from flask_migrate import Migrate
@@ -26,7 +25,7 @@ import sqlite
 from error_handler import NfvoNotFound, NsNotFound, NsdNotFound, \
     init_errorhandler, NfvoCredentialsNotFound, SubscriptionNotFound
 from error_handler import Unauthorized, BadRequest, ServerError, NsOpNotFound
-from notifications import forward_notification
+import tasks
 
 SITEINV = os.getenv('SITEINV', 'false').lower()
 
@@ -37,7 +36,7 @@ init_errorhandler(app)
 
 if SITEINV == 'true':
     app.logger.info('using siteinventory')
-    database = siteinventory.SiteInventory()
+    database = siteinventory
 else:
     app.logger.info('using sqlite')
     sqlite.db.init_app(app)
@@ -290,7 +289,7 @@ def post_notification(nfvo_id):
         abort(400, 'One of {0} is missing'.format(str(required)))
     try:
         subs = database.search_subs_by_ns_instance(request.json['nsInstanceId'])
-        # TODO run forward notification
+        tasks.forward_notification.delay(request.json, subs)
     except (ServerError, HTTPError) as e:
         abort(500, description=e.description)
     return make_response('', 204)
