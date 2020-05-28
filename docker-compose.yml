@@ -1,5 +1,12 @@
 version: '3.7'
 services:
+  redis:
+    image: redis:latest
+    container_name: redis
+    networks:
+      mso-lo-net:
+        aliases:
+          - redis
   nginx:
     image: nginx:latest
     container_name: nginx
@@ -24,6 +31,8 @@ services:
       SITEINV_HOST: '192.168.17.20'
       SITEINV_PORT: '8087'
       SITEINV_INTERVAL: '300'
+      REDIS_HOST: 'redis'
+      REDIS_PORT: '6379'
     networks:
       mso-lo-net:
         aliases:
