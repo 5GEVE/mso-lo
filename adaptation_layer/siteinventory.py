@@ -19,9 +19,8 @@ from typing import List, Dict
 from requests import get, ConnectionError, Timeout, \
     TooManyRedirects, URLRequired, HTTPError, post, put, delete
 
-from driver.osm import OSM
 from error_handler import ServerError, NfvoNotFound, NfvoCredentialsNotFound, \
-    Unauthorized, Error, BadRequest, SubscriptionNotFound
+    Unauthorized, BadRequest, SubscriptionNotFound
 
 logger = logging.getLogger('app.siteinventory')
 SITEINV_HTTPS = os.getenv('SITEINV_HTTPS', 'false').lower()
@@ -48,7 +47,7 @@ def _server_error(func):
 
 
 @_server_error
-def _post_vim_safe(osm_vim: Dict, nfvo_self: str):
+def post_vim_safe(osm_vim: Dict, nfvo_self: str):
     vim_found = get(
         url + '/vimAccounts/search/findByVimAccountNfvoId',
         params={'uuid': osm_vim['_id']})
@@ -76,26 +75,12 @@ def _post_vim_safe(osm_vim: Dict, nfvo_self: str):
 
 
 @_server_error
-def post_osm_vims():
-    osm_list = get(
+def find_nfvos_by_type(nfvo_type: str):
+    response = get(
         url + '/nfvOrchestrators/search/findByTypeIgnoreCase',
-        params={'type': 'osm'})
-    osm_list.raise_for_status()
-    for osm in osm_list.json()['_embedded']['nfvOrchestrators']:
-        if osm['credentials'] is not None:
-            try:
-                driver = OSM(_convert_cred(osm))
-                osm_vims, headers = driver.get_vim_list()
-            except Error as e:
-                logger.warning(
-                    'error contacting osm {0}:{1}'.format(
-                        osm['credentials']['host'],
-                        osm['credentials']['port'],
-                    ))
-                logger.warning(e)
-                continue
-            for osm_vim in osm_vims:
-                _post_vim_safe(osm_vim, osm['_links']['self']['href'])
+        params={'type': nfvo_type})
+    response.raise_for_status()
+    return response.json()['_embedded']['nfvOrchestrators']
 
 
 @_server_error
@@ -132,7 +117,7 @@ def _convert_nfvo(nfvo: Dict) -> Dict:
     return conv
 
 
-def _convert_cred(nfvo):
+def convert_cred(nfvo):
     del nfvo['credentials']['id']
     nfvo['credentials']['nfvo_id'] = nfvo['id']
     nfvo['credentials']['user'] = nfvo['credentials'].pop('username')
@@ -149,7 +134,7 @@ def get_nfvo_cred(nfvo_id: int) -> Dict:
     if nfvo['credentials'] is None:
         raise NfvoCredentialsNotFound(nfvo_id)
     else:
-        return _convert_cred(nfvo)
+        return convert_cred(nfvo)
 
 
 @_server_error

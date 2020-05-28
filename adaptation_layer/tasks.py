@@ -20,7 +20,8 @@ from celery.utils.log import get_task_logger
 from requests import post, RequestException
 
 import siteinventory
-from error_handler import ServerError
+from driver.osm import OSM
+from error_handler import ServerError, Error
 
 redis_host = os.getenv('REDIS_HOST') if os.getenv('REDIS_HOST') else 'redis'
 redis_port = int(os.getenv('REDIS_PORT')) if os.getenv('REDIS_PORT') else 6379
@@ -30,7 +31,7 @@ celery = Celery('tasks',
 
 celery.conf.beat_schedule = {
     'add_post_osm_vims_periodic': {
-        'task': 'tasks.post_osm_vims_thread',
+        'task': 'tasks.post_osm_vims',
         'schedule': siteinventory.interval
     },
 }
@@ -39,9 +40,25 @@ logger = get_task_logger(__name__)
 
 
 @celery.task
-def post_osm_vims_thread():
+def post_osm_vims():
     try:
-        siteinventory.post_osm_vims()
+        osm_list = siteinventory.find_nfvos_by_type('osm')
+        for osm in osm_list:
+            if osm['credentials']:
+                try:
+                    driver = OSM(siteinventory.convert_cred(osm))
+                    osm_vims, headers = driver.get_vim_list()
+                except Error as e:
+                    logger.warning(
+                        'error contacting osm {0}:{1}'.format(
+                            osm['credentials']['host'],
+                            osm['credentials']['port'],
+                        ))
+                    logger.warning(e)
+                    continue
+                for v in osm_vims:
+                    siteinventory.post_vim_safe(v,
+                                                osm['_links']['self']['href'])
     except (ServerError, HTTPError)as e:
         logger.warning('error with siteinventory. skip post_osm_vims')
         logger.warning(e)
