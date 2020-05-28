@@ -12,6 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 import logging
+import os
 from typing import Dict, List
 from urllib.error import HTTPError
 
@@ -20,9 +21,11 @@ from requests import post, RequestException
 
 from error_handler import ServerError
 
-# TODO config
-celery = Celery('tasks', broker='redis://localhost:6379',
-                backend='redis://localhost:6379')
+redis_host = os.getenv('REDIS_HOST') if os.getenv('REDIS_HOST') else 'redis'
+redis_port = int(os.getenv('REDIS_PORT')) if os.getenv('REDIS_PORT') else 6379
+celery = Celery('tasks',
+                broker='redis://{0}:{1}'.format(redis_host, redis_port),
+                backend='redis://{0}:{1}'.format(redis_host, redis_port))
 
 # Run worker with: celery -A tasks worker --loglevel=info -B
 celery.conf.beat_schedule = {
