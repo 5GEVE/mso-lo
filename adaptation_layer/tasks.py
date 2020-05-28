@@ -11,14 +11,15 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-import logging
 import os
 from typing import Dict, List
 from urllib.error import HTTPError
 
 from celery import Celery
+from celery.utils.log import get_task_logger
 from requests import post, RequestException
 
+import siteinventory
 from error_handler import ServerError
 
 redis_host = os.getenv('REDIS_HOST') if os.getenv('REDIS_HOST') else 'redis'
@@ -27,31 +28,27 @@ celery = Celery('tasks',
                 broker='redis://{0}:{1}'.format(redis_host, redis_port),
                 backend='redis://{0}:{1}'.format(redis_host, redis_port))
 
-# Run worker with: celery -A tasks worker --loglevel=info -B
 celery.conf.beat_schedule = {
-    'add-every-30-seconds': {
+    'add_post_osm_vims_periodic': {
         'task': 'tasks.post_osm_vims_thread',
-        'schedule': 2.0
+        'schedule': siteinventory.interval
     },
 }
 celery.conf.timezone = 'UTC'
+logger = get_task_logger(__name__)
 
 
 @celery.task
 def post_osm_vims_thread():
     try:
-        # post_osm_vims()
-        print('aaaaaaaa')
-        return 'vaffa'
+        siteinventory.post_osm_vims()
     except (ServerError, HTTPError)as e:
-        pass
-        # logger.warning('error with siteinventory. skip post_osm_vims')
-        # logger.warning(e)
+        logger.warning('error with siteinventory. skip post_osm_vims')
+        logger.warning(e)
 
 
 @celery.task
 def forward_notification(notification: Dict, subs: List[Dict]):
-    logger = logging.getLogger('tasks.notifications')
     for s in subs:
         try:
             if notification['notificationType'] in s['notificationTypes']:
