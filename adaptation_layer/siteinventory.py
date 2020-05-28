@@ -13,11 +13,9 @@
 #  limitations under the License.
 import logging
 import os
-from datetime import datetime
 from functools import wraps
 from typing import List, Dict
 
-from apscheduler.schedulers.background import BackgroundScheduler
 from requests import get, ConnectionError, Timeout, \
     TooManyRedirects, URLRequired, HTTPError, post, put, delete
 
@@ -50,11 +48,7 @@ class SiteInventory(Database):
         self.host = SITEINV_HOST if SITEINV_HOST else 'localhost'
         self.port = int(SITEINV_PORT) if SITEINV_PORT else 8087
         self.interval = int(SITEINV_INTERVAL) if SITEINV_INTERVAL else 300
-        scheduler = BackgroundScheduler({'apscheduler.timezone': 'UTC'})
-        scheduler.add_job(self._post_osm_vims_thread,
-                          'interval', seconds=self.interval,
-                          next_run_time=datetime.utcnow())
-        scheduler.start()
+        # TODO run post vims thread
         logger.info('siteinventory initialized')
 
     @property

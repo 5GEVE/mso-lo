@@ -15,7 +15,6 @@ import logging
 import os
 from datetime import datetime
 
-from apscheduler.schedulers.background import BackgroundScheduler
 from flask import jsonify, abort, request, make_response, Flask
 from flask_migrate import Migrate
 from requests import HTTPError
@@ -35,8 +34,6 @@ logging.basicConfig(level=logging.INFO)
 app = Flask(__name__)
 app.config.from_object(config.Config)
 init_errorhandler(app)
-notif_sched = BackgroundScheduler({'apscheduler.timezone': 'UTC'})
-notif_sched.start()
 
 if SITEINV == 'true':
     app.logger.info('using siteinventory')
@@ -293,9 +290,7 @@ def post_notification(nfvo_id):
         abort(400, 'One of {0} is missing'.format(str(required)))
     try:
         subs = database.search_subs_by_ns_instance(request.json['nsInstanceId'])
-        notif_sched.add_job(forward_notification,
-                            'date', run_date=datetime.utcnow(),
-                            args=[request.json, subs])
+        # TODO run forward notification
     except (ServerError, HTTPError) as e:
         abort(500, description=e.description)
     return make_response('', 204)
