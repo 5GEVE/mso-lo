@@ -11,9 +11,12 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+import logging
+from typing import Dict, List
 from urllib.error import HTTPError
 
 from celery import Celery
+from requests import post, RequestException
 
 from error_handler import ServerError
 
@@ -41,3 +44,18 @@ def post_osm_vims_thread():
         pass
         # logger.warning('error with siteinventory. skip post_osm_vims')
         # logger.warning(e)
+
+
+@celery.task
+def forward_notification(notification: Dict, subs: List[Dict]):
+    logger = logging.getLogger('tasks.notifications')
+    for s in subs:
+        try:
+            if notification['notificationType'] in s['notificationTypes']:
+                resp = post(s['callbackUri'], json=notification)
+                resp.raise_for_status()
+                logger.info(
+                    'Notification sent to {0}'.format(s['callbackUri']))
+        except RequestException as e:
+            logger.warning('Cannot send notification to {0}. Error: {1}'.format(
+                s['callbackUri'], str(e)))
