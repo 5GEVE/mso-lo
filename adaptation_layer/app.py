@@ -42,7 +42,7 @@ else:
     app.logger.info('using sqlite')
     sqlite.db.init_app(app)
     migrate = Migrate(app, sqlite.db)
-    database = sqlite.SQLite()
+    database = sqlite
 
 
 @app.route('/nfvo', methods=['GET'])

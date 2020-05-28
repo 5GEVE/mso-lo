@@ -12,13 +12,12 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from database import Database
 from .interface import Driver
 from .onap import ONAP
 from .osm import OSM
 
 
-def get_driver(nfvo_id: int, db: Database) -> Driver:
+def get_driver(nfvo_id: int, db) -> Driver:
     nfvo = db.get_nfvo_by_id(nfvo_id)
     nfvo_type = nfvo['type'].casefold()
     nfvo_cred = db.get_nfvo_cred(nfvo_id)
