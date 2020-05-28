@@ -37,6 +37,7 @@ init_errorhandler(app)
 if SITEINV == 'true':
     app.logger.info('using siteinventory')
     database = siteinventory
+    tasks.post_osm_vims.delay()
 else:
     app.logger.info('using sqlite')
     sqlite.db.init_app(app)
