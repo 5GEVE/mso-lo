@@ -66,13 +66,16 @@ def post_osm_vims():
 
 @celery.task
 def forward_notification(notification: Dict, subs: List[Dict]):
+    if not subs:
+        logger.warning(
+            'no subscriptions for nsInstanceId {0}'.format(
+                notification['nsInstanceId']))
     for s in subs:
         try:
             if notification['notificationType'] in s['notificationTypes']:
                 resp = post(s['callbackUri'], json=notification)
                 resp.raise_for_status()
-                logger.info(
-                    'Notification sent to {0}'.format(s['callbackUri']))
+                logger.info('Notification sent to {0}'.format(s['callbackUri']))
         except RequestException as e:
             logger.warning('Cannot send notification to {0}. Error: {1}'.format(
                 s['callbackUri'], str(e)))
