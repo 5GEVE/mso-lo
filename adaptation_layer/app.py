@@ -16,16 +16,15 @@ import os
 
 from flask import jsonify, abort, request, make_response, Flask
 from flask_migrate import Migrate
-from requests import HTTPError
 
 import config
 import driver.manager as manager
 import siteinventory
 import sqlite
+import tasks
 from error_handler import NfvoNotFound, NsNotFound, NsdNotFound, \
     init_errorhandler, NfvoCredentialsNotFound, SubscriptionNotFound
 from error_handler import Unauthorized, BadRequest, ServerError, NsOpNotFound
-import tasks
 
 SITEINV = os.getenv('SITEINV', 'false').lower()
 
@@ -288,11 +287,7 @@ def post_notification(nfvo_id):
     required = ('nsInstanceId', 'operation', 'operationState')
     if not all(k in request.json for k in required):
         abort(400, 'One of {0} is missing'.format(str(required)))
-    try:
-        subs = database.search_subs_by_ns_instance(request.json['nsInstanceId'])
-        tasks.forward_notification.delay(request.json, subs)
-    except (ServerError, HTTPError) as e:
-        abort(500, description=e.description)
+    tasks.forward_notification.delay(request.json)
     return make_response('', 204)
 
 
