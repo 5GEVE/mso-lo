@@ -63,14 +63,14 @@ def post_osm_vims():
                             osm['credentials']['host'],
                             osm['credentials']['port'],
                         ))
-                    logger.warning(e)
+                    logger.debug(str(e))
                     continue
                 for v in osm_vims:
                     siteinventory.post_vim_safe(v,
                                                 osm['_links']['self']['href'])
     except (ServerError, HTTPError)as e:
         logger.warning('error with siteinventory. skip post_osm_vims')
-        logger.warning(e)
+        logger.debug(str(e))
 
 
 @celery.task
@@ -79,8 +79,8 @@ def osm_notifications():
     try:
         osm_list = siteinventory.find_nfvos_by_type('osm')
     except (ServerError, HTTPError)as e:
-        logger.warning('error with siteinventory. skip post_osm_vims')
-        logger.warning(e)
+        logger.warning('error with siteinventory, skip post_osm_vims')
+        logger.debug(str(e))
     for osm in osm_list:
         ops = []
         if osm['credentials']:
@@ -93,7 +93,7 @@ def osm_notifications():
                         osm['credentials']['host'],
                         osm['credentials']['port'],
                     ))
-                logger.warning(e)
+                logger.debug(str(e))
                 continue
         for op in ops:
             last_s = last_op_status.get(op['id'])
@@ -122,7 +122,7 @@ def forward_notification(notification: Dict):
             notification['nsInstanceId'])
     except (ServerError, HTTPError)as e:
         logger.warning('error with siteinventory. skip post_osm_vims')
-        logger.warning(e)
+        logger.debug(str(e))
     if not subs:
         logger.warning('no subscriptions for nsInstanceId {0}'.format(
             notification['nsInstanceId']))
@@ -133,5 +133,6 @@ def forward_notification(notification: Dict):
                 resp.raise_for_status()
                 logger.info('Notification sent to {0}'.format(s['callbackUri']))
         except RequestException as e:
-            logger.warning('Cannot send notification to {0}. Error: {1}'.format(
-                s['callbackUri'], str(e)))
+            logger.warning(
+                'Cannot send notification to {}'.format(s['callbackUri']))
+            logger.debug(str(e))
