@@ -1,6 +1,6 @@
-FROM python:3.6 as base
+FROM python:3.6-slim as base
 EXPOSE 5000
-RUN apt-get update && apt-get install -y python3-dev
+RUN apt-get update && apt-get install -y build-essential
 RUN ["pip3", "install", "pipenv"]
 ENV PIPENV_VENV_IN_PROJECT 1
 WORKDIR /usr/src/app

@@ -43,7 +43,7 @@ and insert your NFVO data.
 Deploy with:
 
 ```shell script
-docker pull python:3.6
+docker pull python:3.6-slim
 docker-compose build
 docker-compose up
 ```
@@ -63,7 +63,7 @@ SITEINV_INTERVAL: '300'
 Then, deploy with:
 
 ```shell script
-docker pull python:3.6
+docker pull python:3.6-slim
 docker-compose build
 docker-compose up
 ```
