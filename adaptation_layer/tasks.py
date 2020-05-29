@@ -50,27 +50,28 @@ last_op_status = redis.Redis(host=redis_host, port=redis_port, db=1,
 
 @celery.task
 def post_osm_vims():
+    osm_list = []
     try:
         osm_list = siteinventory.find_nfvos_by_type('osm')
-        for osm in osm_list:
-            if osm['credentials']:
-                try:
-                    driver = OSM(siteinventory.convert_cred(osm))
-                    osm_vims, headers = driver.get_vim_list()
-                except Error as e:
-                    logger.warning(
-                        'error contacting osm {0}:{1}'.format(
-                            osm['credentials']['host'],
-                            osm['credentials']['port'],
-                        ))
-                    logger.debug(str(e))
-                    continue
-                for v in osm_vims:
-                    siteinventory.post_vim_safe(v,
-                                                osm['_links']['self']['href'])
     except (ServerError, HTTPError)as e:
         logger.warning('error with siteinventory. skip post_osm_vims')
         logger.debug(str(e))
+    for osm in osm_list:
+        osm_vims = []
+        if osm['credentials']:
+            try:
+                driver = OSM(siteinventory.convert_cred(osm))
+                osm_vims, headers = driver.get_vim_list()
+            except Error as e:
+                logger.warning(
+                    'error contacting osm {0}:{1}'.format(
+                        osm['credentials']['host'],
+                        osm['credentials']['port'],
+                    ))
+                logger.debug(str(e))
+                continue
+        for v in osm_vims:
+            siteinventory.post_vim_safe(v, osm['_links']['self']['href'])
 
 
 @celery.task
@@ -79,7 +80,7 @@ def osm_notifications():
     try:
         osm_list = siteinventory.find_nfvos_by_type('osm')
     except (ServerError, HTTPError)as e:
-        logger.warning('error with siteinventory, skip post_osm_vims')
+        logger.warning('error with siteinventory, skip osm_notifications')
         logger.debug(str(e))
     for osm in osm_list:
         ops = []
