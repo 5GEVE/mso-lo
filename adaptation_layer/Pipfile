@@ -15,7 +15,6 @@ robotframework-mockserver = "*"
 
 [packages]
 flask = "==1.0.2"
-pycurl = "*"
 requests = "*"
 pyaml = "*"
 uwsgi = "*"
