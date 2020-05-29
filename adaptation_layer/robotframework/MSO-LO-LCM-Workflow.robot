@@ -24,6 +24,8 @@ POST NS Instance Creation
     Check NS Id
     Check VNF Ids
     Check resource not_instantiated
+    POST New Subscription Good
+    Check Sub Id
 
 GET NS Instance List
     [Tags]    instantiate-terminate-workflow
@@ -140,9 +142,11 @@ POST NS Instance Delete
     ...    Test objective: The objective is to test the workflow for Deleting a NS instance
     ...    Pre-conditions: the resource is in NOT_INSTANTIATED state
     ...    Post-Conditions: status code 204
+    Sleep  5s
     Check resource not_instantiated
     DELETE IndividualNSInstance
     Check HTTP Response Status Code Is    204
+    DELETE Individual Subscription Good
 
 POST NS Instance Creation Bad Request
     [Tags]    standalone
