@@ -337,15 +337,9 @@ class OSM(Driver):
 
     @_authenticate
     def get_op_list(self, args: Dict = None) -> Tuple[BodyList, Headers]:
-        nsId = args['args']['nsInstanceId'] \
-            if args['args'] and 'nsInstanceId' in args['args'] else None
         _url = "{0}/nslcm/v1/ns_lcm_op_occs".format(self._base_path)
         _url = self._build_url_query(_url, args)
-        try:
-            osm_op_list, osm_headers = self._exec_get(
-                _url, headers=self._headers)
-        except ResourceNotFound:
-            raise NsNotFound(ns_id=nsId)
+        osm_op_list, osm_headers = self._exec_get(_url, headers=self._headers)
         sol_op_list = []
         for op in osm_op_list:
             sol_op_list.append(self._op_im_converter(op))
