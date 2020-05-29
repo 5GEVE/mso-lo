@@ -128,6 +128,18 @@ pipenv run python manage.py seed
 FLASK_ENV=development flask run
 ```
 
+Some features like notifications need [celery](https://docs.celeryproject.org/en/stable/index.html) and
+[redis](https://redislabs.com/).
+Simply setup a docker container with redis and run a celery worker.
+
+```shell script
+docker run -p 6379:6379 --name some-redis -d redis
+export REDIS_HOST=localhost
+celery -A tasks worker -B --loglevel=info
+```
+
+---
+
 Please, always use `pipenv` to add dependencies:
 
 ```shell script
