@@ -14,12 +14,13 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-import json
 import unittest
+
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError, SchemaError
-from .response_schemas import nfvo_schema, nfvo_list_schema
+
 from app import app
+from .response_schemas import nfvo_schema, nfvo_list_schema
 
 
 class NFVOTestCase(unittest.TestCase):
@@ -35,7 +36,7 @@ class NFVOTestCase(unittest.TestCase):
     # Check status codes 200, 401, headers and payload for get_nfvo_list()
     def test_get_nfvo_list_200(self):
         res = self.client().get('/nfvo')
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(200, res.status_code)
         try:
             validate(res.json, nfvo_list_schema)
         except (ValidationError, SchemaError) as e:
@@ -44,12 +45,12 @@ class NFVOTestCase(unittest.TestCase):
     @unittest.skip('skip 401 test as we do not have authorization yet')
     def test_get_nfvo_list_401(self):
         res = self.client().get('/nfvo?__code=401')
-        self.assertEqual(res.status_code, 401)
+        self.assertEqual(401, res.status_code)
 
     # Check status codes 200, 401, 404, headers and payload for get_nfvo(nfvoId)
     def test_get_nfvo_200(self):
         res = self.client().get('/nfvo/1')
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(200, res.status_code)
         try:
             validate(res.json, nfvo_schema)
         except (ValidationError, SchemaError) as e:
@@ -57,9 +58,9 @@ class NFVOTestCase(unittest.TestCase):
 
     def test_get_nfvo_404(self):
         res = self.client().get('/nfvo/-1')
-        self.assertEqual(res.status_code, 404)
+        self.assertEqual(404, res.status_code)
 
     @unittest.skip('skip 401 test as we do not have authorization yet')
     def test_get_nfvo_401(self):
         res = self.client().get('/nfvo/nfvo_osm1?__code=401')
-        self.assertEqual(res.status_code, 401)
+        self.assertEqual(401, res.status_code)
