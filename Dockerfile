@@ -17,10 +17,10 @@ RUN ["rm", "-f", "data/mso-lo.db"]
 RUN ["flask", "db", "upgrade"]
 RUN ["python", "manage.py", "seed"]
 
-FROM base as test
-COPY ./openapi ./openapi
-
 FROM base as prod
 COPY ./uWSGI/app.ini .
 CMD ["uwsgi", "--ini", "app.ini"]
+
+FROM base as test
+COPY ./openapi ./openapi
 
