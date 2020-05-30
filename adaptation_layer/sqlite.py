@@ -73,39 +73,39 @@ class NFVO_CREDENTIALS(db.Model):
         }
 
 
-def get_nfvo_by_id(self, nfvo_id: int) -> Dict:
+def get_nfvo_by_id(nfvo_id: int) -> Dict:
     nfvo = NFVO.query.filter_by(id=nfvo_id).first()
     if nfvo is None:
         raise NfvoNotFound(nfvo_id=nfvo_id)
     return nfvo.serialize
 
 
-def get_nfvo_list(self) -> List[Dict]:
+def get_nfvo_list() -> List[Dict]:
     return [nfvo.serialize for nfvo in NFVO.query.all()]
 
 
-def get_nfvo_cred(self, nfvo_id: int) -> Dict:
+def get_nfvo_cred(nfvo_id: int) -> Dict:
     nfvo_cred = NFVO_CREDENTIALS.query.filter_by(nfvo_id=nfvo_id).first()
     if nfvo_cred is None:
         raise NfvoNotFound(nfvo_id=nfvo_id)
     return nfvo_cred.serialize
 
 
-def get_subscription_list(self, nfvo_id: int) -> Dict:
+def get_subscription_list(nfvo_id: int) -> Dict:
     raise NotImplementedError("The method is not implemented")
 
 
-def create_subscription(self, nfvo_id: int, body: Dict) -> Dict:
+def create_subscription(nfvo_id: int, body: Dict) -> Dict:
     raise NotImplementedError("The method is not implemented")
 
 
-def get_subscription(self, nfvo_id: int, subscriptionId: int) -> Dict:
+def get_subscription(nfvo_id: int, subscriptionId: int) -> Dict:
     raise NotImplementedError("The method is not implemented")
 
 
-def delete_subscription(self, subscriptionId: int) -> None:
+def delete_subscription(subscriptionId: int) -> None:
     raise NotImplementedError("The method is not implemented")
 
 
-def search_subs_by_ns_instance(self, ns_instance_id: str) -> List[Dict]:
+def search_subs_by_ns_instance(ns_instance_id: str) -> List[Dict]:
     raise NotImplementedError("The method is not implemented")
