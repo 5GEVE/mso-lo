@@ -56,7 +56,7 @@ edit [docker-compose.yaml](docker-compose.yml) and change the environment variab
 ```yaml
 SITEINV: 'true'
 SITEINV_HOST: '192.168.17.20'
-SITEINV_PORT: '8087' 
+SITEINV_PORT: '8087'
 SITEINV_INTERVAL: '300'
 ```
 
@@ -140,13 +140,16 @@ celery -A tasks worker -B --loglevel=info
 
 ---
 
-Please, always use `pipenv` to add dependencies:
+Please, always use `pipenv` to add/remove dependencies:
 
 ```shell script
 pipenv install <package-name>
+
+pipenv uninstall <package-name>
 ```
 
-After that, please commit `Pipfile` and `Pipfile.lock`.
+If everything works with the new dependencies, run `pipenv lock` and commit
+both `Pipfile` and `Pipfile.lock`.
 
 ### Add a new NFVO driver
 
