@@ -283,20 +283,15 @@ class OSM(Driver):
         args_payload = args['payload']
 
         if args_payload and 'additionalParamsForNs' in args_payload:
-            additional_params = args_payload['additionalParamsForNs']
-            if 'vnf' in additional_params:
+            instantiate_payload.update(args_payload['additionalParamsForNs'])
+            if 'vnf' in instantiate_payload:
                 mapping = {v: str(i+1) for i,
                            v in enumerate(ns_res['constituent-vnfr-ref'])}
-
-                for vnf in additional_params['vnf']:
+                for vnf in instantiate_payload['vnf']:
                     if vnf.get('vnfInstanceId'):
                         vnf['member-vnf-index'] = mapping[vnf.pop(
                             'vnfInstanceId')]
-                if len(additional_params['vnf']) > 0:
-                    instantiate_payload['vnf'] = additional_params['vnf']
-            if 'wim_account' in additional_params:
-                instantiate_payload['wimAccountId'] = additional_params['wim_account']
-            else:
+            if 'wim_account' not in instantiate_payload:
                 instantiate_payload['wimAccountId'] = False
 
         try:
