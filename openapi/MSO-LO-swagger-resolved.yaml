@@ -1186,21 +1186,22 @@ definitions:
           $ref: '#/definitions/IpAddress'
   NfvoNsInstantiateRequest_additionalParamsForNs_vnf:
     type: object
+    description: OSM only
     properties:
       vnfInstanceId:
         type: string
       vimAccountId:
         type: string
   NfvoNsInstantiateRequest_additionalParamsForNs_vld:
-    items:
-      type: object
-      properties:
-        name:
-          type: string
-          example: vldnet
-        vim-network-name:
-          type: string
-          example: netVIM1
+    type: object
+    description: OSM only
+    properties:
+      name:
+        type: string
+        example: vldnet
+      vim-network-name:
+        type: string
+        example: netVIM1
   NfvoNsInstantiateRequest_additionalParamsForNs:
     type: object
     properties:
