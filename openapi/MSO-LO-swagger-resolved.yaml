@@ -1213,6 +1213,9 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/NfvoNsInstantiateRequest_additionalParamsForNs_vnf'
+      wim_account:
+        type: string
+        example: WimAccount1
   Notification:
     type: object
     required:
