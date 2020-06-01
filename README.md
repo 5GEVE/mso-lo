@@ -201,7 +201,7 @@ The following unit tests are currently available:
 Example:
 ```shell script
 docker-compose --file docker-compose.test-osm.yml --project-name test-osm build
-docker-compose --file docker-compose.test-osm.yml --project-name test-osm up
+docker-compose --file docker-compose.test-osm.yml --project-name test-osm up --abort-on-container-exit --exit-code-from test-osm
 ```
 
 *Note*: the `--project-name` parameter is necessary to distinguish test executions.

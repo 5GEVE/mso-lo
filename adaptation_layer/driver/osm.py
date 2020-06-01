@@ -282,7 +282,7 @@ class OSM(Driver):
         instantiate_payload.update(ns_res['instantiate_params'])
         args_payload = args['payload']
 
-        if 'additionalParamsForNs' in args_payload:
+        if args_payload and 'additionalParamsForNs' in args_payload:
             additional_params = args_payload['additionalParamsForNs']
             if 'vnf' in additional_params:
                 mapping = {v: str(i+1) for i,

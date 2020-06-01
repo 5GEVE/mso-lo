@@ -2,7 +2,6 @@ FROM python:3.6-slim as base
 EXPOSE 5000
 RUN apt-get update && apt-get install -y build-essential
 RUN ["pip3", "install", "pipenv==2018.11.26"]
-ENV PIPENV_VENV_IN_PROJECT 1
 WORKDIR /usr/src/app
 # copy only pipfiles to install dependencies
 COPY ./adaptation_layer/Pipfile* ./
@@ -22,5 +21,6 @@ COPY ./uWSGI/app.ini .
 CMD ["uwsgi", "--ini", "app.ini"]
 
 FROM base as test
+RUN ["pipenv", "install", "--system", "--ignore-pipfile", "--deploy", "--dev"]
 COPY ./openapi ./openapi
 
