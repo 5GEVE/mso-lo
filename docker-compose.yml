@@ -16,14 +16,29 @@ services:
       context: .
       target: prod
     container_name: mso-lo
+    depends_on:
+      - redis
+    environment:
+      SITEINV: 'true'
+      SITEINV_HTTPS: 'false'
+      SITEINV_HOST: '192.168.17.20'
+      SITEINV_PORT: '8087'
+      SITEINV_INTERVAL: '300'
+      REDIS_HOST: 'redis'
+      REDIS_PORT: '6379'
     networks:
       mso-lo-net:
         aliases:
           - flask-app
-    ports:
-      - 5000:5000
     volumes:
       - mso-lo-data:/usr/src/app/data
+  redis:
+    image: redis:latest
+    container_name: redis
+    networks:
+      mso-lo-net:
+        aliases:
+          - redis
 networks:
   mso-lo-net:
 volumes:

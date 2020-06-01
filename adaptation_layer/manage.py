@@ -17,8 +17,8 @@ import os
 
 from flask_script import Manager
 
-from config import app, db
-from models import NFVO, NFVO_CREDENTIALS
+from app import app
+from sqlite import db, NFVO, NFVO_CREDENTIALS
 
 manager = Manager(app)
 basedir = os.path.abspath(os.path.dirname(__file__))

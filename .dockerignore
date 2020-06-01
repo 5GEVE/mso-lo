@@ -1,2 +1,6 @@
 ./adaptation_layer/.venv
+./adaptation_layer/.idea
+./adaptation_layer/**/.pytest_cache
+./adaptation_layer/**/pytestdebug.log
+./adaptation_layer/robotframework
 

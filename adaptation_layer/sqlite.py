@@ -13,8 +13,13 @@
 #  limitations under the License.
 
 import datetime
+from typing import List, Dict
 
-from config import db
+from flask_sqlalchemy import SQLAlchemy
+
+from error_handler import NfvoNotFound
+
+db = SQLAlchemy()
 
 
 class NFVO(db.Model):
@@ -37,8 +42,8 @@ class NFVO(db.Model):
             'type': self.type,
             'site': self.site,
             'uri': self.uri,
-            'created_at': self.created_at,
-            'updated_at': self.updated_at
+            'createdAt': self.created_at,
+            'updatedAt': self.updated_at
         }
 
     def __init__(self, **kwargs):
@@ -66,3 +71,41 @@ class NFVO_CREDENTIALS(db.Model):
             'user': self.user,
             'password': self.password
         }
+
+
+def get_nfvo_by_id(nfvo_id: int) -> Dict:
+    nfvo = NFVO.query.filter_by(id=nfvo_id).first()
+    if nfvo is None:
+        raise NfvoNotFound(nfvo_id=nfvo_id)
+    return nfvo.serialize
+
+
+def get_nfvo_list() -> List[Dict]:
+    return [nfvo.serialize for nfvo in NFVO.query.all()]
+
+
+def get_nfvo_cred(nfvo_id: int) -> Dict:
+    nfvo_cred = NFVO_CREDENTIALS.query.filter_by(nfvo_id=nfvo_id).first()
+    if nfvo_cred is None:
+        raise NfvoNotFound(nfvo_id=nfvo_id)
+    return nfvo_cred.serialize
+
+
+def get_subscription_list(nfvo_id: int) -> Dict:
+    raise NotImplementedError("The method is not implemented")
+
+
+def create_subscription(nfvo_id: int, body: Dict) -> Dict:
+    raise NotImplementedError("The method is not implemented")
+
+
+def get_subscription(nfvo_id: int, subscriptionId: int) -> Dict:
+    raise NotImplementedError("The method is not implemented")
+
+
+def delete_subscription(subscriptionId: int) -> None:
+    raise NotImplementedError("The method is not implemented")
+
+
+def search_subs_by_ns_instance(ns_instance_id: str) -> List[Dict]:
+    raise NotImplementedError("The method is not implemented")

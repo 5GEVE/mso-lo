@@ -11,30 +11,14 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-import fnmatch
 import os
 
 from prance import ResolvingParser
 
+OPENAPI_PATH = os.environ.get("OPENAPI_PATH",
+                              '../../openapi/MSO-LO-swagger-resolved.yaml')
 
-def _get_file_path(directory: str) -> str:
-    try:
-        for file in os.listdir(directory):
-            if fnmatch.fnmatch(file, 'MSO-LO-?.?-swagger-resolved.yaml'):
-                return os.path.join(directory, file)
-    except FileNotFoundError:
-        pass
-
-
-# Test in container
-file_path = _get_file_path('./openapi/')
-if file_path is None:
-    # Test in dev environment
-    file_path = _get_file_path('../../openapi/')
-if file_path is None:
-    raise FileNotFoundError("Openapi directory not found.")
-
-openapi = ResolvingParser(file_path).specification
+openapi = ResolvingParser(OPENAPI_PATH).specification
 
 nfvo_schema = openapi["definitions"]["NFVO"]
 nfvo_list_schema = {
@@ -57,3 +41,7 @@ ns_lcm_op_occ_list_schema = {
     "type": "array",
     "items": ns_lcm_op_occ_schema
 }
+
+subscription_schema = openapi["definitions"]["LccnSubscription"]
+subscription_list_schema = openapi["definitions"][
+    "CollectionModelLccnSubscription"]

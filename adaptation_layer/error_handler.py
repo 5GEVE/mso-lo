@@ -43,6 +43,12 @@ class NfvoNotFound(Error):
         self.description = 'NFVO {0} not found.'.format(nfvo_id)
 
 
+class NfvoCredentialsNotFound(Error):
+    def __init__(self, nfvo_id):
+        self.description = 'NFVO credentials not found for NFVO id {0}.' \
+            .format(nfvo_id)
+
+
 class ResourceNotFound(Error):
     def __init__(self):
         self.description = 'Resource not found.'
@@ -76,6 +82,11 @@ class VnfNotFound(Error):
 class VnfPkgNotFound(Error):
     def __init__(self, vnfpkg_id=None):
         self.description = 'VNF package {0} not found.'.format(vnfpkg_id)
+
+
+class SubscriptionNotFound(Error):
+    def __init__(self, sub_id=None):
+        self.description = 'Subscription {0} not found.'.format(sub_id)
 
 
 class Unauthorized(Error):

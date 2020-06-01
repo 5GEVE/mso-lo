@@ -21,35 +21,65 @@ Software is distributed under [Apache License, Version 2.0](http://www.apache.or
 
 ## Install guide
 
-Before deploying, database must be populated with NFVO data.
-Copy the mock files:
+Copy the mock files (needed for a correct build):
 
-```
+```shell script
 cd adaptation-layer/seed
 cp nfvo_mock.json nfvo.json
 cp nfvo_credentials_mock.json nfvo_credentials.json
 ```
 
-Edit the files by inserting your NFVOs information.
+### Environment with local database
 
-We use Docker Compose for deployment (it will also take care of database initialization).
-From the repository main directory, run:
+Edit [docker-compose.yaml](docker-compose.yml) and disable site-inventory support.
 
+```yaml
+SITEINV: 'false'
 ```
+
+Edit `adaptation-layer/seed/nfvo.json` and `adaptation-layer/seed/nfvo_credentials.json` (copied before)
+and insert your NFVO data.
+
+Deploy with:
+
+```shell script
+docker pull python:3.6-slim
 docker-compose build
 docker-compose up
 ```
 
+### Environment with site-inventory (production)
+
+If [site-inventory](https://github.com/5GEVE/site-inventory) is available in your environment,
+edit [docker-compose.yaml](docker-compose.yml) and change the environment variables for the `flask` service:
+
+```yaml
+SITEINV: 'true'
+SITEINV_HOST: '192.168.17.20'
+SITEINV_PORT: '8087'
+SITEINV_INTERVAL: '300'
+```
+
+Then, deploy with:
+
+```shell script
+docker pull python:3.6-slim
+docker-compose build
+docker-compose up
+```
+
+### Simple test
+
 You can test the app with:
 
-```
+```shell script
 curl --request GET --url http://127.0.0.1:80/nfvo
 ```
 ### Uninstall
 
 To remove the containers and volumes, use:
 
-```
+```shell script
 docker-compose down --remove-orphans --volumes
 ```
 
@@ -76,7 +106,7 @@ and record the existence of the feature branch.
 To add it to your git configuration so it is used by default (locally for this
 repo), use:
 
-```
+```shell script
 git config --add merge.ff false
 ```
 
@@ -85,24 +115,41 @@ git config --add merge.ff false
 For dependencies we use [Pipenv](https://pipenv.readthedocs.io/en/latest/).
 To setup the environment use:
 
-```
+**Remember to copy and edit the mock files as said in the [install guide](#install-guide)**
+
+```shell script
 git checkout development
-cd adaptation_layer/adaptation_layer
+cd adaptation_layer
 pipenv install --dev
 # Create database with mock data
 pipenv run flask db upgrade
 pipenv run python manage.py seed
 # Run the flask app
-pipenv run python app.py
+FLASK_ENV=development flask run
 ```
 
-Please, always use `pipenv` to add dependencies:
+Some features like notifications need [celery](https://docs.celeryproject.org/en/stable/index.html) and
+[redis](https://redislabs.com/).
+Simply setup a docker container with redis and run a celery worker.
 
+```shell script
+docker run -p 6379:6379 --name some-redis -d redis
+export REDIS_HOST=localhost
+celery -A tasks worker -B --loglevel=info
 ```
+
+---
+
+Please, always use `pipenv` to add/remove dependencies:
+
+```shell script
 pipenv install <package-name>
+
+pipenv uninstall <package-name>
 ```
 
-After that, please commit `Pipfile` and `Pipfile.lock`.
+If everything works with the new dependencies, run `pipenv lock` and commit
+both `Pipfile` and `Pipfile.lock`.
 
 ### Add a new NFVO driver
 
@@ -114,24 +161,17 @@ For example, let's create `adaptation_layer/driver/onap.py`:
 from .interface import Driver
 
 class ONAP(Driver):
+    pass
 ```
 
 Now you can start implementing the methods contained in the Driver interface.
 Your IDE should suggest you to create stubs for methods to be overriden.
 
-### Error handling
-
-When throwing exceptions, please use the ones defined in [error_handler.py](adaptation_layer/error_handler.py).
-This allows the application to correctly create the corresponding response and
-status code.
-
-### Update the driver manager
-
 To enable a newly created driver, edit [manager.py](adaptation_layer/driver/manager.py).
 The `get_driver()` method is simply a switch that returns an instance of the
 proper driver.
 
-### Tests
+### Add unit tests for a NFVO driver
 
 In order to test our software against an NFVO NBI, we need to mock it.
 For this purpose, we use [Prism](https://stoplight.io/open-source/prism/).
@@ -141,22 +181,40 @@ Example: `/nfvo/nfvo_osm1/ns?__code=200`
 To add unit tests for a driver, create a new python file in `adaptation_layer/tests`.
 Please refer to [test_osm.py](/adaptation_layer/tests/test_osm.py) for examples.
 
+### Error handling
+
+When throwing exceptions, please use the ones defined in [error_handler.py](adaptation_layer/error_handler.py).
+This allows the application to correctly create the corresponding response and
+status code.
+
+## Tests
+
+### Unit Tests
+
 Unit tests can be executed by using Docker Compose files.
-*Note*: the `--build-arg` parameters are used to initialize the database with mock data.
+The following unit tests are currently available:
+
+- [docker-compose.test-nfvo.yml](docker-compose.test-nfvo.yml) Test NFVO information retrieve
+- [docker-compose.test-osm.yml](docker-compose.test-osm.yml) Test interactions with a mocked OSM
+- [docker-compose.test-onap.yml](docker-compose.test-onap.yml) Test interactions with a mocked ONAP
 
 Example:
+```shell script
+docker-compose --file docker-compose.test-osm.yml --project-name test-osm build
+docker-compose --file docker-compose.test-osm.yml --project-name test-osm up --abort-on-container-exit --exit-code-from test-osm
+```
 
-```
-docker-compose -f docker-compose.test-osm.yml -p test-osm build \
-    --build-arg DB_SEED_NFVO="seed/nfvo_mock.json" \
-    --build-arg DB_SEED_NFVO_CRED="seed/nfvo_credentials_mock.json"
-docker-compose -f docker-compose.test-osm.yml -p test-osm up
-```
+*Note*: the `--project-name` parameter is necessary to distinguish test executions.
 
 The file will run two containers:
 
 1. A Prism server mocking the OSM NBI
 2. A python container to execute unit tests
 
-Unit tests execution for a new driver can be added by copying and modifyng [docker-compose.test-osm.yml](docker-compose.test-osm.yml).
+Unit tests execution for a new driver can be added by copying and modifying
+[docker-compose.test-osm.yml](docker-compose.test-osm.yml).
 
+### Integration tests
+
+Integration tests are run with [Robot Framework](https://robotframework.org/).
+Please refer to the specific [README](./adaptation_layer/robotframework/README.md).
