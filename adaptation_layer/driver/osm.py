@@ -13,6 +13,7 @@
 #  limitations under the License.
 
 import copy
+import logging
 import os
 import re
 from datetime import datetime
@@ -34,6 +35,7 @@ urllib3.disable_warnings(InsecureRequestWarning)
 TESTING = os.getenv('TESTING', 'false').lower()
 PRISM_ALIAS = os.getenv("PRISM_ALIAS", "prism-osm")
 
+logger = logging.getLogger('app.driver.osm')
 
 def _authenticate(func):
     @wraps(func)
@@ -280,18 +282,29 @@ class OSM(Driver):
         instantiate_payload = {}
         ns_res, ns_head = self.get_ns(nsId, skip_sol=True)
         instantiate_payload.update(ns_res['instantiate_params'])
-        args_payload = args['payload']
 
-        if args_payload and 'additionalParamsForNs' in args_payload:
-            instantiate_payload.update(args_payload['additionalParamsForNs'])
-            if 'vnf' in instantiate_payload:
-                mapping = {v: str(i+1) for i,
-                           v in enumerate(ns_res['constituent-vnfr-ref'])}
-                for vnf in instantiate_payload['vnf']:
-                    if vnf.get('vnfInstanceId'):
-                        vnf['member-vnf-index'] = mapping[vnf.pop(
-                            'vnfInstanceId')]
-            if 'wim_account' not in instantiate_payload:
+        additional_params = None
+        try:
+            additional_params = args['payload']['additionalParamsForNs']
+        except (TypeError, KeyError):
+            logger.info('no additionalParamsForNs')
+        if additional_params:
+            if 'vld' in additional_params:
+                instantiate_payload['vld'] = additional_params['vld']
+            if 'vnf' in additional_params:
+                mapping = {v: str(i + 1) for i, v in
+                           enumerate(ns_res['constituent-vnfr-ref'])}
+                try:
+                    for vnf in additional_params['vnf']:
+                        vnf['member-vnf-index'] = mapping[
+                            vnf.pop('vnfInstanceId')]
+                    instantiate_payload['vnf'] = additional_params['vnf']
+                except KeyError:
+                    logger.warning('cannot map vnf {}'.format(vnf))
+            if 'wim_account' in additional_params:
+                instantiate_payload['wimAccountId'] = additional_params[
+                    'wimAccountId']
+            else:
                 instantiate_payload['wimAccountId'] = False
 
         try:
