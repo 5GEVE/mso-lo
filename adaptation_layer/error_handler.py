@@ -18,18 +18,22 @@ from flask import make_response, jsonify
 def init_errorhandler(app):
     @app.errorhandler(400)
     def bad_request(error):
+        app.logger.error('error: {}'.format(error.description))
         return make_response(jsonify({'error': error.description}), 400)
 
     @app.errorhandler(401)
     def unauthorized(error):
+        app.logger.error('error: {}'.format(error.description))
         return make_response(jsonify({'error': error.description}), 401)
 
     @app.errorhandler(404)
     def not_found(error):
+        app.logger.error('error: {}'.format(error.description))
         return make_response(jsonify({'error': error.description}), 404)
 
     @app.errorhandler(500)
     def server_error(error):
+        app.logger.error('error: {}'.format(error.description))
         return make_response(jsonify({'error': error.description}), 500)
 
 
