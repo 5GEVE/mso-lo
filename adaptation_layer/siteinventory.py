@@ -177,7 +177,7 @@ def create_subscription(nfvo_id: int, body: Dict):
         associate.raise_for_status()
     except HTTPError as e:
         if e.response.status_code == 400:
-            raise BadRequest()
+            raise BadRequest(description=e.response.text)
         else:
             raise
     return create.json()
