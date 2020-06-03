@@ -1,0 +1,37 @@
+version: '3.4'
+services:
+  prism-ever:
+    image: stoplight/prism:3.1.1
+    container_name: prism-ever
+    command: mock --host 0.0.0.0 --port 9999 /etc/ever-openapi.yaml
+    volumes:
+      - ./adaptation_layer/tests/ever-openapi.yaml:/etc/ever-openapi.yaml
+    networks:
+      mso-lo-net:
+        aliases:
+          - prism-ever
+    # export prism port for debugging
+    ports:
+      - 9999:9999
+  test-ever:
+    build:
+      context: .
+      target: test
+      args:
+        DB_SEED_NFVO: seed/nfvo_mock.json
+        DB_SEED_NFVO_CRED: seed/nfvo_credentials_mock.json
+    container_name: test-ever
+    depends_on:
+      - prism-ever
+    environment:
+      TESTING: "True"
+      PRISM_ALIAS: prism-ever
+      OPENAPI_PATH: ./openapi/MSO-LO-swagger-resolved.yaml
+    command: ["./tests/wait-for-it.sh", "prism-onap:9999", "--", "pipenv", "run", "pytest", "-v", "tests/test_ever.py"]
+    networks:
+      mso-lo-net:
+        aliases:
+          - test-ever
+networks:
+    mso-lo-net:
+

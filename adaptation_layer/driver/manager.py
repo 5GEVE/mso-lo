@@ -16,6 +16,7 @@ from typing import Dict
 from .interface import Driver
 from .onap import ONAP
 from .osm import OSM
+from .ever import EVER
 
 _drivers = {}
 
@@ -30,6 +31,8 @@ def get_driver(nfvo_id: int, nfvo_type: str, nfvo_cred: Dict) -> Driver:
         _drivers[nfvo_id] = OSM(nfvo_cred)
     elif nfvo_type == 'onap':
         _drivers[nfvo_id] = ONAP(nfvo_cred)
+    elif nfvo_type == 'cloudify':
+        _drivers[nfvo_id] = EVER(nfvo_cred)
     else:
         raise NotImplementedError(
             'Driver type: {} is not implemented'.format(nfvo_type))
