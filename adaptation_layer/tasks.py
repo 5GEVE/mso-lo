@@ -24,6 +24,7 @@ import siteinventory
 from driver.osm import OSM
 from error_handler import ServerError, Error
 
+SITEINV = os.getenv('SITEINV', 'false').lower()
 redis_host = os.getenv('REDIS_HOST') if os.getenv('REDIS_HOST') else 'redis'
 redis_port = int(os.getenv('REDIS_PORT')) if os.getenv('REDIS_PORT') else 6379
 
@@ -31,16 +32,17 @@ celery = Celery('tasks',
                 broker='redis://{0}:{1}/0'.format(redis_host, redis_port),
                 backend='redis://{0}:{1}/0'.format(redis_host, redis_port))
 
-celery.conf.beat_schedule = {
-    'add_post_osm_vims_periodic': {
-        'task': 'tasks.post_osm_vims',
-        'schedule': siteinventory.interval
-    },
-    'add_osm_notifications': {
-        'task': 'tasks.osm_notifications',
-        'schedule': 5.0
+if SITEINV == 'true':
+    celery.conf.beat_schedule = {
+        'add_post_osm_vims_periodic': {
+            'task': 'tasks.post_osm_vims',
+            'schedule': siteinventory.interval
+        },
+        'add_osm_notifications': {
+            'task': 'tasks.osm_notifications',
+            'schedule': 5.0
+        }
     }
-}
 celery.conf.timezone = 'UTC'
 logger = get_task_logger(__name__)
 
@@ -117,6 +119,9 @@ def osm_notifications():
 
 @celery.task
 def forward_notification(notification: Dict):
+    if SITEINV == 'false':
+        logger.warning('site inventory disabled, ignore notification')
+        return None
     subs = []
     try:
         subs = siteinventory.search_subs_by_ns_instance(
