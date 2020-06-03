@@ -10,13 +10,6 @@ Library    JSONSchemaLibrary    schemas/
 
 *** Test Cases ***
 
-GET Subscription List 200
-    [Documentation]    Test ID: mso-lo-test-
-    ...    Test title: GET Subscription List
-    GET Subscriptions
-    Check HTTP Response Status Code Is    200
-    Check HTTP Response Body Json Schema Is    ${subscription_list_schema}
-
 POST Subscription Creation 201
     [Documentation]    Test ID: mso-lo-test-
     ...    Test title: POST Subscription Creation 201
@@ -30,6 +23,13 @@ POST Subscription Creation 400
     ...    Test title: POST Subscription Creation 400
     POST New Subscription Bad
     Check HTTP Response Status Code Is    400
+
+GET Subscription List 200
+    [Documentation]    Test ID: mso-lo-test-
+    ...    Test title: GET Subscription List
+    GET Subscriptions
+    Check HTTP Response Status Code Is    200
+    Check HTTP Response Body Json Schema Is    ${subscription_list_schema}
 
 GET Individual Subscription information 200
     [Documentation]    Test ID: mso-lo-test-
