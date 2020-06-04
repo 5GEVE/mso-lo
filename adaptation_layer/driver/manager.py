@@ -31,7 +31,7 @@ def get_driver(nfvo_id: int, nfvo_type: str, nfvo_cred: Dict) -> Driver:
         _drivers[nfvo_id] = OSM(nfvo_cred)
     elif nfvo_type == 'onap':
         _drivers[nfvo_id] = ONAP(nfvo_cred)
-    elif nfvo_type == 'cloudify':
+    elif nfvo_type == 'ever':
         _drivers[nfvo_id] = EVER(nfvo_cred)
     else:
         raise NotImplementedError(
