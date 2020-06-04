@@ -22,7 +22,10 @@ POST NS Instance Creation
     Check HTTP Response Header Contains    Location
     Check HTTP Response Body Json Schema Is   ${ns_schema}
     Check NS Id
+    Check VNF Ids
     Check resource not_instantiated
+    POST New Subscription Good
+    Check Sub Id
 
 GET NS Instance List
     [Tags]    instantiate-terminate-workflow
@@ -55,7 +58,7 @@ POST NS Instance Instantiate
     ...    Post-Conditions: status code 202
     Check resource existence
     Check resource not_instantiated
-    POST Instantiate nsInstance
+    POST Instantiate nsInstance with vnf in additionalParamsForNs
     Check HTTP Response Status Code Is    202
     Check HTTP Response Header Contains    Location
     Check Operation Occurrence Id
@@ -139,9 +142,11 @@ POST NS Instance Delete
     ...    Test objective: The objective is to test the workflow for Deleting a NS instance
     ...    Pre-conditions: the resource is in NOT_INSTANTIATED state
     ...    Post-Conditions: status code 204
+    Sleep  5s
     Check resource not_instantiated
     DELETE IndividualNSInstance
     Check HTTP Response Status Code Is    204
+    DELETE Individual Subscription Good
 
 POST NS Instance Creation Bad Request
     [Tags]    standalone

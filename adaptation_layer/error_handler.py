@@ -18,18 +18,22 @@ from flask import make_response, jsonify
 def init_errorhandler(app):
     @app.errorhandler(400)
     def bad_request(error):
+        app.logger.error('error: {}'.format(error.description))
         return make_response(jsonify({'error': error.description}), 400)
 
     @app.errorhandler(401)
     def unauthorized(error):
+        app.logger.error('error: {}'.format(error.description))
         return make_response(jsonify({'error': error.description}), 401)
 
     @app.errorhandler(404)
     def not_found(error):
+        app.logger.error('error: {}'.format(error.description))
         return make_response(jsonify({'error': error.description}), 404)
 
     @app.errorhandler(500)
     def server_error(error):
+        app.logger.error('error: {}'.format(error.description))
         return make_response(jsonify({'error': error.description}), 500)
 
 
@@ -41,6 +45,12 @@ class Error(Exception):
 class NfvoNotFound(Error):
     def __init__(self, nfvo_id):
         self.description = 'NFVO {0} not found.'.format(nfvo_id)
+
+
+class NfvoCredentialsNotFound(Error):
+    def __init__(self, nfvo_id):
+        self.description = 'NFVO credentials not found for NFVO id {0}.' \
+            .format(nfvo_id)
 
 
 class ResourceNotFound(Error):
@@ -76,6 +86,11 @@ class VnfNotFound(Error):
 class VnfPkgNotFound(Error):
     def __init__(self, vnfpkg_id=None):
         self.description = 'VNF package {0} not found.'.format(vnfpkg_id)
+
+
+class SubscriptionNotFound(Error):
+    def __init__(self, sub_id=None):
+        self.description = 'Subscription {0} not found.'.format(sub_id)
 
 
 class Unauthorized(Error):

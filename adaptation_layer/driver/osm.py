@@ -88,7 +88,7 @@ class OSM(Driver):
                 return resp.json(), resp.headers
             elif 'application/yaml' in resp.headers['content-type']:
                 return YAML.load(resp.text, Loader=YAML.SafeLoader), \
-                       resp.headers
+                    resp.headers
             else:
                 return resp.text, resp.headers
         elif resp.status_code == 204:
@@ -119,7 +119,7 @@ class OSM(Driver):
                 return resp.json(), resp.headers
             elif 'application/yaml' in resp.headers['content-type']:
                 return YAML.load(resp.text, Loader=YAML.SafeLoader), \
-                       resp.headers
+                    resp.headers
             else:
                 return resp.text, resp.headers
         elif resp.status_code == 204:
@@ -150,7 +150,7 @@ class OSM(Driver):
                 return resp.json(), resp.headers
             elif 'application/yaml' in resp.headers['content-type']:
                 return YAML.load(resp.text, Loader=YAML.SafeLoader), \
-                       resp.headers
+                    resp.headers
             else:
                 return resp.text, resp.headers
         elif resp.status_code == 204:
@@ -186,7 +186,7 @@ class OSM(Driver):
             raise VnfNotFound(vnf_id=vnfId)
 
     @_authenticate
-    def _get_vim_list(self):
+    def get_vim_list(self):
         _url = "{0}/admin/v1/vims".format(self._base_path)
         _url = self._build_url_query(_url, None)
         return self._exec_get(_url, headers=self._headers)
@@ -277,13 +277,30 @@ class OSM(Driver):
         _url = "{0}/nslcm/v1/ns_instances/{1}/instantiate".format(
             self._base_path, nsId)
         _url = self._build_url_query(_url, args)
+        instantiate_payload = {}
         ns_res, ns_head = self.get_ns(nsId, skip_sol=True)
-        args['payload'] = ns_res['instantiate_params']
+        instantiate_payload.update(ns_res['instantiate_params'])
+        args_payload = args['payload']
+
+        if args_payload and 'additionalParamsForNs' in args_payload:
+            instantiate_payload.update(args_payload['additionalParamsForNs'])
+            if 'vnf' in instantiate_payload:
+                mapping = {v: str(i+1) for i,
+                           v in enumerate(ns_res['constituent-vnfr-ref'])}
+                for vnf in instantiate_payload['vnf']:
+                    if vnf.get('vnfInstanceId'):
+                        vnf['member-vnf-index'] = mapping[vnf.pop(
+                            'vnfInstanceId')]
+            if 'wim_account' not in instantiate_payload:
+                instantiate_payload['wimAccountId'] = False
+
         try:
             empty_body, osm_headers = self._exec_post(
-                _url, json=args['payload'], headers=self._headers)
-        except ResourceNotFound:
+                _url, json=instantiate_payload, headers=self._headers)
+        except ResourceNotFound as e:
+            print(e)
             raise NsNotFound(ns_id=nsId)
+
         headers = self._build_headers(osm_headers)
         return None, headers
 
@@ -315,15 +332,9 @@ class OSM(Driver):
 
     @_authenticate
     def get_op_list(self, args: Dict = None) -> Tuple[BodyList, Headers]:
-        nsId = args['args']['nsInstanceId'] \
-            if args['args'] and 'nsInstanceId' in args['args'] else None
         _url = "{0}/nslcm/v1/ns_lcm_op_occs".format(self._base_path)
         _url = self._build_url_query(_url, args)
-        try:
-            osm_op_list, osm_headers = self._exec_get(
-                _url, headers=self._headers)
-        except ResourceNotFound:
-            raise NsNotFound(ns_id=nsId)
+        osm_op_list, osm_headers = self._exec_get(_url, headers=self._headers)
         sol_op_list = []
         for op in osm_op_list:
             sol_op_list.append(self._op_im_converter(op))
@@ -383,7 +394,7 @@ class OSM(Driver):
         return cp_info
 
     def _select_vim(self):
-        osm_vims, osm_vim_h = self._get_vim_list()
+        osm_vims, osm_vim_h = self.get_vim_list()
         if osm_vims and len(osm_vims) > 0:
             return osm_vims[0]['_id']
         else:

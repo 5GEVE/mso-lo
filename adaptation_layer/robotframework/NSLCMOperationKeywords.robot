@@ -12,6 +12,13 @@ Check NS Id
     Set Global Variable    ${nsInstanceId}    ${response[0]['body']['id']}
     Should Not Be Empty    ${nsInstanceId}
 
+Check VNF Ids
+    ${vnfInstances}=    set variable    ${response[0]['body']['vnfInstance']}
+    ${vnfInstances}=    evaluate   [v['id'] for v in ${vnfInstances}]
+    Set Global Variable    ${vnfInstanceIds}    ${vnfInstances}
+    Log    ${vnfInstances}
+    Should Not Be Empty    ${vnfInstanceIds}
+
 Check Operation Occurrence Id
     ${nsLcmOpOcc}=    set variable    ${response[0]['headers']['Location']}
     # using a basic regex, it can be improved
@@ -19,13 +26,6 @@ Check Operation Occurrence Id
     Set Global Variable    ${nsLcmOpOccId}    ${nsLcmOpOcc}
     Should Not Be Empty    ${nsLcmOpOccId}
     Log    ${nsLcmOpOccId}
-
-Check subscription existence
-    Set Headers    {"Accept":"${ACCEPT}"}
-    Set Headers    {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    Get    ${apiRoot}/${nfvoId}/subscriptions/${subscriptionId}
-    Integer    response status    200
 
 Check resource FAILED_TEMP
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
@@ -90,7 +90,7 @@ Launch another LCM operation
     Set Headers  {"Accept":"${ACCEPT}"}
     Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    ${body}=    Get File    jsons/scaleNsToLevelRequest.json
+    ${body}=    Load JSON From File    jsons/scaleNsToLevelRequest.json
     Post    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/scale_to_level    ${body}
     Integer    response status    202
 
@@ -115,6 +115,7 @@ Check HTTP Response Header Contains
 Check HTTP Response Body Json Schema Is
     [Arguments]    ${input_schema}
     validate    instance=${response[0]['body']}    schema=${input_schema}
+    Log    ${response[0]['body']}
     Log    Json Schema Validation OK
 
 Check HTTP Response Header ContentType is
@@ -177,12 +178,27 @@ DELETE IndividualNSInstance
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
+POST Instantiate nsInstance with vnf in additionalParamsForNs
+    Log    Trying to Instantiate a ns Instance
+    Set Headers  {"Accept":"${ACCEPT}"}
+    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
+    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
+    ${body}=    Load JSON From File    jsons/InstantiateNsRequest.json
+    ${vnf}=    set variable    []
+    ${vnf}=    evaluate    [{"vnfInstanceId": vnfId,"vimAccountId": random.choice(${vimAccountIds})} for vnfId in ${vnfInstanceIds}]    random
+    Log    ${vnf}
+    ${body}=    Update Value To Json    ${body}    $.additionalParamsForNs.vnf    ${vnf}
+    Log    ${body}
+    Post    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/instantiate    ${body}
+    ${outputResponse}=    Output    response
+	Set Global Variable    @{response}    ${outputResponse}
+
 POST Instantiate nsInstance
     Log    Trying to Instantiate a ns Instance
     Set Headers  {"Accept":"${ACCEPT}"}
     Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    ${body}=    Get File    jsons/InstantiateNsRequest.json
+    ${body}=    Load JSON From File    jsons/InstantiateNsRequest.json
     Post    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/instantiate    ${body}
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
@@ -192,7 +208,7 @@ POST scale nsInstance
     Set Headers  {"Accept":"${ACCEPT}"}
     Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    ${body}=    Get File    jsons/ScaleNsRequest.json
+    ${body}=    Load JSON From File    jsons/ScaleNsRequest.json
 	Post    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/scale    ${body}
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
@@ -202,7 +218,7 @@ POST Update NSInstance
     Set Headers  {"Accept":"${ACCEPT}"}
     Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    ${body}=    Get File    jsons/UpdateNsRequest.json
+    ${body}=    Load JSON From File    jsons/UpdateNsRequest.json
 	Post    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/update    ${body}
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
@@ -212,7 +228,7 @@ POST Heal NSInstance
     Set Headers  {"Accept":"${ACCEPT}"}
     Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    ${body}=    Get File    jsons/HealNsRequest.json
+    ${body}=    Load JSON From File    jsons/HealNsRequest.json
 	Post    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/heal    ${body}
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
@@ -222,7 +238,7 @@ POST Terminate NSInstance
     Set Headers  {"Accept":"${ACCEPT}"}
     Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    ${body}=    Get File    jsons/TerminateNsRequest.json
+    ${body}=    Load JSON From File    jsons/TerminateNsRequest.json
 	Post    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/terminate    ${body}
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
@@ -285,37 +301,8 @@ POST Cancel operation task
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
-POST subscriptions
-    Log    Create subscription instance by POST to ${apiRoot}/${nfvoId}/subscriptions
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    ${body}=    Get File    jsons/LccnSubscriptionRequest.json
-    Post    ${apiRoot}/${nfvoId}/subscriptions    ${body}
-	${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-POST subscriptions DUPLICATION
-    Log    Trying to create a subscription with an already created content
-    Pass Execution If    ${NFVO_DUPLICATION} == 0    NFVO is not permitting duplication. Skipping the test
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    ${body}=    Get File    jsons/LccnSubscriptionRequest.json
-    Post    ${apiRoot}/${nfvoId}/subscriptions    ${body}
-	${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
-
-POST subscriptions NO DUPLICATION
-    Log    Trying to create a subscription with an already created content
-    Pass Execution If    ${NFVO_DUPLICATION} == 1    NFVO is permitting duplication.
-    Set Headers  {"Accept":"${ACCEPT}"}
-    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    ${body}=    Get File    jsons/LccnSubscriptionRequest.json
-    Post    ${apiRoot}/${nfvoId}/subscriptions    ${body}
-	${outputResponse}=    Output    response
-	Set Global Variable    @{response}    ${outputResponse}
+Check Sub Id
+    Set Global Variable    ${subscriptionId}    ${response[0]['body']['id']}
 
 GET Subscriptions
     Log    Get the list of active subscriptions
@@ -327,55 +314,28 @@ GET Subscriptions
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
-Get subscriptions with all_fields attribute selector
-    Log    Get the list of active subscriptions, using fields
-    Set Headers    {"Accept": "${ACCEPT_JSON}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization": "${AUTHORIZATION}"}
-    GET    ${apiRoot}/${nfvoId}/subscriptions?all_fields
-    ${output}=    Output    response
-    Set Suite Variable    ${response}    ${output}
-
-Get subscriptions with exclude_default attribute selector
-    Log    Get the list of active subscriptions, using fields
-    Set Headers    {"Accept": "${ACCEPT_JSON}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization": "${AUTHORIZATION}"}
-    GET    ${apiRoot}/${nfvoId}/subscriptions?exclude_default
-    ${output}=    Output    response
-    Set Suite Variable    ${response}    ${output}
-
-Get subscriptions with fields attribute selector
-    Log    Get the list of active subscriptions, using fields
-    Set Headers    {"Accept": "${ACCEPT_JSON}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization": "${AUTHORIZATION}"}
-    GET    ${apiRoot}/${nfvoId}/subscriptions?fields=${fields}
-    ${output}=    Output    response
-    Set Suite Variable    ${response}    ${output}
-
-Get subscriptions with exclude_fields attribute selector
-    Log    Get the list of active subscriptions, using fields
-    Set Headers    {"Accept": "${ACCEPT_JSON}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization": "${AUTHORIZATION}"}
-    GET    ${apiRoot}/${nfvoId}/subscriptions?exclude_fields=${fields}
-    ${output}=    Output    response
-    Set Suite Variable    ${response}    ${output}
-
-GET subscriptions with filter
-    Log    Get the list of active subscriptions using a filter
-    Set Headers    {"Accept": "${ACCEPT}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization": "${AUTHORIZATION}"}
-    GET    ${apiRoot}/${nfvoId}/subscriptions?${sub_filter}
-    ${outputResponse}=    Output    response
+POST New Subscription Good
+    Log    Create subscription instance by POST to ${apiRoot}/${nfvoId}/subscriptions
+    Set Headers  {"Accept":"${ACCEPT}"}
+    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
+    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
+    ${body}=    Load JSON From File    jsons/LccnSubscriptionRequest.json
+    ${body}=    Update Value To Json    ${body}    $.nsInstanceId    ${nsInstanceId}
+    ${body}=    Update Value To Json    ${body}    $.callbackUri    ${notificationUri}
+    Post    ${apiRoot}/${nfvoId}/subscriptions    ${body}
+	${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
-Get subscriptions - invalid filter
-    Log    Get the list of active subscriptions using an invalid filter
-    Set Headers    {"Accept": "${ACCEPT}"}
-    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization": "${AUTHORIZATION}"}
-    GET    ${apiRoot}/${nfvoId}/subscriptions?${sub_filter_invalid}
-    ${outputResponse}=    Output    response
+POST New Subscription Bad
+    Log    Create subscription instance by POST to ${apiRoot}/${nfvoId}/subscriptions
+    Set Headers  {"Accept":"${ACCEPT}"}
+    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
+    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
+    Post    ${apiRoot}/${nfvoId}/subscriptions    {"bad": "request"}
+	${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
-GET Individual subscription
+GET Individual Subscription Good
     log    Trying to get information about an individual subscription
     Set Headers    {"Accept":"${ACCEPT}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
@@ -383,7 +343,15 @@ GET Individual subscription
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
-DELETE Individual subscription
+GET Individual Subscription Not Found
+    log    Trying to get information about an individual subscription
+    Set Headers    {"Accept":"${ACCEPT}"}
+    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
+    Get    ${apiRoot}/${nfvoId}/subscriptions/-1
+    ${outputResponse}=    Output    response
+	Set Global Variable    @{response}    ${outputResponse}
+
+DELETE Individual Subscription Good
     log    Try to delete an individual subscription
     Set Headers  {"Accept":"${ACCEPT}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
@@ -391,3 +359,29 @@ DELETE Individual subscription
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
+DELETE Individual Subscription Not Found
+    log    Try to delete an individual subscription
+    Set Headers  {"Accept":"${ACCEPT}"}
+    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
+    Delete    ${apiRoot}/${nfvoId}/subscriptions/-1
+    ${outputResponse}=    Output    response
+	Set Global Variable    @{response}    ${outputResponse}
+
+POST New Notification Good
+    Log    Create notification instance by POST to ${apiRoot}/${nfvoId}/notifications
+    Set Headers  {"Accept":"${ACCEPT}"}
+    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
+    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
+    ${body}=    Load JSON From File    jsons/Notification.json
+    Post    ${apiRoot}/${nfvoId}/notifications    ${body}
+	${outputResponse}=    Output    response
+	Set Global Variable    @{response}    ${outputResponse}
+
+POST New Notification Bad
+    Log    Create subscription instance by POST to ${apiRoot}/${nfvoId}/notifications
+    Set Headers  {"Accept":"${ACCEPT}"}
+    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
+    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
+    Post    ${apiRoot}/${nfvoId}/notifications    {"bad": "request"}
+	${outputResponse}=    Output    response
+	Set Global Variable    @{response}    ${outputResponse}

@@ -623,8 +623,8 @@ components:
               enum:
                 #- INSTANTIATED
                 - NOT_INSTANTIATED
-            instantiatedVnfInfo:
-              type: object
+#            instantiatedVnfInfo:
+#              type: object
 #
     VnfExtCpInfo:
 #      nullable: true

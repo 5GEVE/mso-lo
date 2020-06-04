@@ -1,0 +1,8 @@
+{
+  "nsInstanceId": "45f95003-4dd1-4e20-87cf-4373c9f4e946",
+  "nsLcmOpOccId": "45f95003-4dd1-4e20-87cf-4373c9f4e948",
+  "operation": "INSTANTIATE",
+  "notificationType": "NsLcmOperationOccurrenceNotification",
+  "timestamp": "2020-05-27T08:57:01+0000",
+  "operationState": "PROCESSING"
+}
