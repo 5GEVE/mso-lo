@@ -1,4 +1,4 @@
-#  Copyright 2019 Orange, Grzesik Michal, Panek Grzegorz, Chabiera Michal
+#  Copyright 2020 Ericsson TEI, Fabio Ubaldi
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
