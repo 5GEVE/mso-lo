@@ -18,13 +18,14 @@ ${WRONG_AUTHORIZATION}    Bearer    XXXXXWRONGXXXXX
 ${MAX_WAIT}   2 min
 ${INTERVAL_WAIT}    2 s
 ${nsdId}    pingpong
-${nsInstanceId}       xxxxxxxxx-e602-4afa-8e13-962fb5a7d81f
+${nsInstanceId}       cc256072-2001-434c-8be9-0bd8609cef9f
 ${nsInstanceIdinexistent}       6fc3539c-e602-4afa-8e13-962fb5a7d81xxxxxxx
 ${ConflictNsInstanceId}    007c111c-e602-4afa-8e13-962fb5a7d81d
 ${nsInstanceName}    Test-nsInstance
 ${nsInstanceDescription}    description ns
 ${vnfInstanceIds}    []
 ${vimAccountIds}    ['e59a8dfd-dd21-42cc-98f7-a68c83cfbdbd', '77c531ef-ff08-42a3-aeb9-3b8eae19a32f']
+${notificationUri}   http://192.168.17.20:8083/
 ${SINGLE_FILE_VNFD}    1    # If VNFD is PLAIN TEXT
 ${ACCEPT_PLAIN}    text/plain
 ${ACCEPT_ZIP}     application/zip

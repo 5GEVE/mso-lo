@@ -90,7 +90,7 @@ Launch another LCM operation
     Set Headers  {"Accept":"${ACCEPT}"}
     Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    ${body}=    Get File    jsons/scaleNsToLevelRequest.json
+    ${body}=    Load JSON From File    jsons/scaleNsToLevelRequest.json
     Post    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/scale_to_level    ${body}
     Integer    response status    202
 
@@ -198,7 +198,7 @@ POST Instantiate nsInstance
     Set Headers  {"Accept":"${ACCEPT}"}
     Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    ${body}=    Get File    jsons/InstantiateNsRequest.json
+    ${body}=    Load JSON From File    jsons/InstantiateNsRequest.json
     Post    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/instantiate    ${body}
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
@@ -208,7 +208,7 @@ POST scale nsInstance
     Set Headers  {"Accept":"${ACCEPT}"}
     Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    ${body}=    Get File    jsons/ScaleNsRequest.json
+    ${body}=    Load JSON From File    jsons/ScaleNsRequest.json
 	Post    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/scale    ${body}
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
@@ -218,7 +218,7 @@ POST Update NSInstance
     Set Headers  {"Accept":"${ACCEPT}"}
     Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    ${body}=    Get File    jsons/UpdateNsRequest.json
+    ${body}=    Load JSON From File    jsons/UpdateNsRequest.json
 	Post    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/update    ${body}
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
@@ -228,7 +228,7 @@ POST Heal NSInstance
     Set Headers  {"Accept":"${ACCEPT}"}
     Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    ${body}=    Get File    jsons/HealNsRequest.json
+    ${body}=    Load JSON From File    jsons/HealNsRequest.json
 	Post    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/heal    ${body}
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
@@ -238,7 +238,7 @@ POST Terminate NSInstance
     Set Headers  {"Accept":"${ACCEPT}"}
     Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    ${body}=    Get File    jsons/TerminateNsRequest.json
+    ${body}=    Load JSON From File    jsons/TerminateNsRequest.json
 	Post    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/terminate    ${body}
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
@@ -319,7 +319,9 @@ POST New Subscription Good
     Set Headers  {"Accept":"${ACCEPT}"}
     Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    ${body}=    Get File    jsons/LccnSubscriptionRequest.json
+    ${body}=    Load JSON From File    jsons/LccnSubscriptionRequest.json
+    ${body}=    Update Value To Json    ${body}    $.nsInstanceId    ${nsInstanceId}
+    ${body}=    Update Value To Json    ${body}    $.callbackUri    ${notificationUri}
     Post    ${apiRoot}/${nfvoId}/subscriptions    ${body}
 	${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
@@ -370,7 +372,7 @@ POST New Notification Good
     Set Headers  {"Accept":"${ACCEPT}"}
     Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
-    ${body}=    Get File    jsons/Notification.json
+    ${body}=    Load JSON From File    jsons/Notification.json
     Post    ${apiRoot}/${nfvoId}/notifications    ${body}
 	${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}

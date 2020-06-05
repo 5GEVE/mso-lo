@@ -43,7 +43,7 @@ and insert your NFVO data.
 Deploy with:
 
 ```shell script
-docker pull python:3.6
+docker pull python:3.6-slim
 docker-compose build
 docker-compose up
 ```
@@ -56,14 +56,14 @@ edit [docker-compose.yaml](docker-compose.yml) and change the environment variab
 ```yaml
 SITEINV: 'true'
 SITEINV_HOST: '192.168.17.20'
-SITEINV_PORT: '8087' 
+SITEINV_PORT: '8087'
 SITEINV_INTERVAL: '300'
 ```
 
 Then, deploy with:
 
 ```shell script
-docker pull python:3.6
+docker pull python:3.6-slim
 docker-compose build
 docker-compose up
 ```
@@ -128,13 +128,28 @@ pipenv run python manage.py seed
 FLASK_ENV=development flask run
 ```
 
-Please, always use `pipenv` to add dependencies:
+Some features like notifications need [celery](https://docs.celeryproject.org/en/stable/index.html) and
+[redis](https://redislabs.com/).
+Simply setup a docker container with redis and run a celery worker.
+
+```shell script
+docker run -p 6379:6379 --name some-redis -d redis
+export REDIS_HOST=localhost
+celery -A tasks worker -B --loglevel=info
+```
+
+---
+
+Please, always use `pipenv` to add/remove dependencies:
 
 ```shell script
 pipenv install <package-name>
+
+pipenv uninstall <package-name>
 ```
 
-After that, please commit `Pipfile` and `Pipfile.lock`.
+If everything works with the new dependencies, run `pipenv lock` and commit
+both `Pipfile` and `Pipfile.lock`.
 
 ### Add a new NFVO driver
 
@@ -186,7 +201,7 @@ The following unit tests are currently available:
 Example:
 ```shell script
 docker-compose --file docker-compose.test-osm.yml --project-name test-osm build
-docker-compose --file docker-compose.test-osm.yml --project-name test-osm up
+docker-compose --file docker-compose.test-osm.yml --project-name test-osm up --abort-on-container-exit --exit-code-from test-osm
 ```
 
 *Note*: the `--project-name` parameter is necessary to distinguish test executions.

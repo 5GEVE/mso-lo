@@ -13,21 +13,18 @@
 #  limitations under the License.
 import logging
 import os
-from datetime import datetime
 
-from apscheduler.schedulers.background import BackgroundScheduler
 from flask import jsonify, abort, request, make_response, Flask
 from flask_migrate import Migrate
-from requests import HTTPError
 
 import config
 import driver.manager as manager
 import siteinventory
 import sqlite
+import tasks
 from error_handler import NfvoNotFound, NsNotFound, NsdNotFound, \
     init_errorhandler, NfvoCredentialsNotFound, SubscriptionNotFound
 from error_handler import Unauthorized, BadRequest, ServerError, NsOpNotFound
-from notifications import forward_notification
 
 SITEINV = os.getenv('SITEINV', 'false').lower()
 
@@ -35,17 +32,16 @@ logging.basicConfig(level=logging.INFO)
 app = Flask(__name__)
 app.config.from_object(config.Config)
 init_errorhandler(app)
-notif_sched = BackgroundScheduler({'apscheduler.timezone': 'UTC'})
-notif_sched.start()
 
 if SITEINV == 'true':
     app.logger.info('using siteinventory')
-    database = siteinventory.SiteInventory()
+    database = siteinventory
+    tasks.post_osm_vims.delay()
 else:
     app.logger.info('using sqlite')
     sqlite.db.init_app(app)
     migrate = Migrate(app, sqlite.db)
-    database = sqlite.SQLite()
+    database = sqlite
 
 
 @app.route('/nfvo', methods=['GET'])
@@ -291,13 +287,7 @@ def post_notification(nfvo_id):
     required = ('nsInstanceId', 'operation', 'operationState')
     if not all(k in request.json for k in required):
         abort(400, 'One of {0} is missing'.format(str(required)))
-    try:
-        subs = database.search_subs_by_ns_instance(request.json['nsInstanceId'])
-        notif_sched.add_job(forward_notification,
-                            'date', run_date=datetime.utcnow(),
-                            args=[request.json, subs])
-    except (ServerError, HTTPError) as e:
-        abort(500, description=e.description)
+    tasks.forward_notification.delay(request.json)
     return make_response('', 204)
 
 

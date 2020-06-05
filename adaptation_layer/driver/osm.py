@@ -282,21 +282,16 @@ class OSM(Driver):
         instantiate_payload.update(ns_res['instantiate_params'])
         args_payload = args['payload']
 
-        if 'additionalParamsForNs' in args_payload:
-            additional_params = args_payload['additionalParamsForNs']
-            if 'vnf' in additional_params:
+        if args_payload and 'additionalParamsForNs' in args_payload:
+            instantiate_payload.update(args_payload['additionalParamsForNs'])
+            if 'vnf' in instantiate_payload:
                 mapping = {v: str(i+1) for i,
                            v in enumerate(ns_res['constituent-vnfr-ref'])}
-
-                for vnf in additional_params['vnf']:
+                for vnf in instantiate_payload['vnf']:
                     if vnf.get('vnfInstanceId'):
                         vnf['member-vnf-index'] = mapping[vnf.pop(
                             'vnfInstanceId')]
-                if len(additional_params['vnf']) > 0:
-                    instantiate_payload['vnf'] = additional_params['vnf']
-            if 'wim_account' in additional_params:
-                instantiate_payload['wimAccountId'] = additional_params['wim_account']
-            else:
+            if 'wim_account' not in instantiate_payload:
                 instantiate_payload['wimAccountId'] = False
 
         try:
@@ -337,15 +332,9 @@ class OSM(Driver):
 
     @_authenticate
     def get_op_list(self, args: Dict = None) -> Tuple[BodyList, Headers]:
-        nsId = args['args']['nsInstanceId'] \
-            if args['args'] and 'nsInstanceId' in args['args'] else None
         _url = "{0}/nslcm/v1/ns_lcm_op_occs".format(self._base_path)
         _url = self._build_url_query(_url, args)
-        try:
-            osm_op_list, osm_headers = self._exec_get(
-                _url, headers=self._headers)
-        except ResourceNotFound:
-            raise NsNotFound(ns_id=nsId)
+        osm_op_list, osm_headers = self._exec_get(_url, headers=self._headers)
         sol_op_list = []
         for op in osm_op_list:
             sol_op_list.append(self._op_im_converter(op))
