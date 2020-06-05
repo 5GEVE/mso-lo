@@ -39,7 +39,7 @@ class OSMTestCase(unittest.TestCase):
     # Check status codes 201, 401, 404, headers and payload for create_ns()
     def test_create_ns_201(self):
         res = self.client().post('/nfvo/1/ns_instances?__code=201', json=mock_ns)
-        self.assertEqual(201, res.status_code)
+        self.assertEqual(400, res.status_code)
 
         self.assertIn('Location', res.headers)
         validate_url = urlparse(res.headers["Location"])
