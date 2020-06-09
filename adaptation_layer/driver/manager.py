@@ -15,7 +15,6 @@
 from .interface import Driver
 from .onap import ONAP
 from .osm import OSM
-from .ever import EVER
 
 
 def get_driver(nfvo_id: int, db) -> Driver:
@@ -23,11 +22,9 @@ def get_driver(nfvo_id: int, db) -> Driver:
     nfvo_type = nfvo['type'].casefold()
     nfvo_cred = db.get_nfvo_cred(nfvo_id)
     if nfvo_type == 'osm':
-      return OSM(nfvo_cred)
+        return OSM(nfvo_cred)
     elif nfvo_type == 'onap':
-      return ONAP(nfvo_cred)
-    elif nfvo_type == 'ever':
-      retrun EVER(nfvo_cred)
+        return ONAP(nfvo_cred)
     else:
         raise NotImplementedError(
             'Driver type: {} is not implemented'.format(nfvo_type))

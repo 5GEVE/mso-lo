@@ -11,11 +11,11 @@ ${CONTENT_TYPE_PATCH}    application/merge-patch+json
 ${ACCEPT_JSON}         application/json
 ${ACCEPT}         application/json
 ${apiRoot}        nfvo
-${nfvoId}         3
+${nfvoId}         1
 ${nfvoIdinexistent}         80
 ${AUTH_USAGE}     1
 ${WRONG_AUTHORIZATION}    Bearer    XXXXXWRONGXXXXX
-${MAX_WAIT}   10 min
+${MAX_WAIT}   2 min
 ${INTERVAL_WAIT}    2 s
 ${nsdId}    pingpong
 ${nsInstanceId}       cc256072-2001-434c-8be9-0bd8609cef9f
