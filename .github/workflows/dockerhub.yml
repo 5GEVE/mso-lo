@@ -12,9 +12,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Copy the mock files
-        run: cp adaptation-layer/seed/nfvo_mock.json  adaptation-layer/seed/nfvo.json
+        run: cp adaptation_layer/seed/nfvo_mock.json  adaptation_layer/seed/nfvo.json
       - name: Copy the mock files
-        run: cp adaptation-layer/seed/nfvo_credentials_mock.json  adaptation-layer/seed/nfvo_credentials.json
+        run: cp adaptation_layer/seed/nfvo_credentials_mock.json  adaptation_layer/seed/nfvo_credentials.json
       - name: Build and push on the Docker Hub
         uses: docker/build-push-action@v1
         with:
