@@ -1,4 +1,4 @@
-version: '3.4'
+version: '3.7'
 services:
   prism-ever:
     image: stoplight/prism:3.1.1
