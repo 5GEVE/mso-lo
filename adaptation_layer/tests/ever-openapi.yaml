@@ -1,0 +1,647 @@
+openapi: 3.0.0
+
+
+info:
+  description:
+    EVER NBI API
+  version: "1.0"
+  title: EVER NorthBound API
+  contact:
+    email: fabio.ubaldi@ericsson.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+
+tags:
+  - name: 'NS instances'
+    description: Management operations of NS instances
+  - name: 'NS lcm'
+    description: NS LCM Operations
+
+# paths onap nbi & ns-server
+paths:
+# get all ns instances info
+  '/instances':
+    parameters:
+    - in: query
+      name: offset
+      schema:
+        type: integer
+      description: The number of items to skip before starting to collect the result set
+    - in: query
+      name: limit
+      schema:
+        type: integer
+      description: The numbers of items to return
+    get:
+      tags:
+        - 'NS instances'
+      summary: retrieve list of NS instances
+      description: list of NS instances
+      operationId: getNSlist
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NsInstanceList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+# get ns instnce info
+  '/instances/{ns_db_id}':
+    parameters:
+      - name: ns_db_id
+        in: path
+        required: true
+        description: NS insctance Id
+        schema:
+          type : string
+    get:
+      tags:
+        - 'NS instances'
+      summary: retrieve informations about ns instance
+      description: info about ns instance
+      operationId: getNSinfo
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NsInstanceInfo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+# create a ns instance ID
+  '/create':
+    post:
+      tags:
+        - 'NS instances'
+      summary: create na NS Instance ID
+      description: create a NS Instance ID
+      operationId: createNS
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createNsId'
+      responses:
+        '201':
+          description: Created
+          headers:
+            Location:
+              description: link with nsInstanceId of the instantiated NS
+              schema:
+                type: string
+                format: uri
+                example: /instances/4e462039-e57b-44e4-8431-bc586f31b4cb
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NsInstanceIdCreated'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+# instantiate NS with given NsId
+  '/instantiate/{ns_db_id}':
+    parameters:
+      - name: ns_db_id
+        in: path
+        required: true
+        description: NS Instance ID
+        schema:
+          type : string
+    post:
+      tags:
+        - 'NS instances'
+      summary: Instantiate NS with given NS ID
+      description: Instantiate NS with given NS ID
+      operationId: instantiateNS
+      responses:
+        '202':
+          description: Accepted
+          headers:
+            Location:
+              description: link with nsLcmOpOccId of the instantiated NS
+              schema:
+                type: string
+                format: uri
+                example: /ns_lcm_op_occs/4e462039-e57b-44e4-8431-bc586f31b4cb
+            Content-Type:
+              schema:
+                type: string
+                example: text/html
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+# terminate NS
+  '/terminate/{ns_db_id}':
+    parameters:
+      - name: ns_db_id
+        in: path
+        required: true
+        description: NS Instance Id - from db
+        schema:
+          type : string
+    post:
+      tags:
+        - 'NS instances'
+      summary: terminate a NS Instance with given Id
+      description: terminate NS Instance
+      operationId: terminateNS
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TerminationTime'
+      responses:
+        '202':
+          description: Accepted
+          headers:
+            Location:
+              description: link with nsLcmOpOccId of the instantiated NS
+              schema:
+                type: string
+                format: uri
+                example: /ns_lcm_op_occs/4e462039-e57b-44e4-8431-bc586f31b4cb
+            Content-Type:
+              schema:
+                type: string
+                example: text/html
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+# delete NS Instance
+  '/delete/{ns_db_id}':
+    parameters:
+      - name: ns_db_id
+        in: path
+        required: true
+        description: delete NS Instance
+        schema:
+          type : string
+    delete:
+      tags:
+        - 'NS instances'
+      summary: delete NS Instance with given ID
+      description: delete NS instance with given ID
+      operationId: deleteNS
+      responses:
+        '204':
+          description: No Content
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        # '5XX':
+        #   $ref: '#/components/responses/UnexpectedError'
+        # default:
+        #   $ref: '#/components/responses/UnexpectedError'
+# get list of oll ns_lcm_op_occs
+  '/ns_lcm_op_occs':
+    get:
+      tags:
+        - 'NS lcm'
+      summary: retrive a list of all ns lcm oppp occs
+      description: retrive a list of all ns lcm op occs
+      operationId: lcmNSlist
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/List_lcm_op_occs'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+#  get a info lcm op occs with given ID
+  '/ns_lcm_op_occs/{lcm_id}':
+    parameters:
+      - name: lcm_id
+        in: path
+        required: true
+        description: lcm ID
+        schema:
+          type : string
+    get:
+      tags:
+        - 'NS lcm'
+      summary: retrieve a lcm info with given ID
+      description: retrieve a lcm info with given ID
+      operationId: lcmNS
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ID_lcm_op_occs'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+# components responses
+components:
+  responses:
+    BadRequest:
+      description: Bad request. The server cannot process the request due to a client error.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+    NotFound:
+      description: The specified resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+    MethodNotAllowed:
+      description: This method is not supported for the requested resource.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+    InternalServerError:
+      description: Internal server error.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+    UnexpectedError:
+      description: Unexpected error.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+# end component responses
+#  components schemas
+    NsInstanceList:
+      description: list of NS Instances
+      content:
+        text/plain:
+          schema:
+            $ref: '#/components/schemas/NsInstanceList'
+    NsInstanceInfo:
+      description: NS Instance Info
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NsInstanceInfo'
+    NsInstanceIdCreated:
+      description: NS Instance ID response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NsInstanceIdCreated'
+    List_lcm_op_occs:
+      description: list of lcm infos
+      content:
+        text/plain:
+          schema:
+            $ref: '#/components/schemas/List_lcm_op_occs'
+    List_ns_lcm_op_occs:
+      description: list of lcm infos
+      content:
+        text/plain:
+          schema:
+            $ref: '#/components/schemas/List_ns_lcm_op_occs'
+    ID_lcm_op_occs:
+      description: lcm id info
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ID_lcm_op_occs'
+    # OnapServiceSpecification:
+    #   description: Onap Service Specification
+    #   content:
+    #     application/json:
+    #       schema:
+    #         $ref: '#/components/schemas/OnapServiceSpecification'
+# end of schemas in responses
+# END RESPONSES
+  schemas:
+    createNsId:
+      # description:
+      type: object
+      properties:
+        nsdId:
+          type: string
+          format: uuid
+        nsName:
+          # description:
+          type: string
+        nsDescription:
+          # description:
+          type: string
+      required:
+        - nsdId
+        - nsName
+        - nsDescription
+#
+    ProblemDetails:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+#
+    TerminationTime:
+      type: object
+      properties:
+        terminationTime:
+          type: string
+          format: date-time
+      required:
+        - terminationTime
+#
+    NsInstanceList:
+      # description: list of ns instances
+      type: array
+      items:
+        $ref: '#/components/schemas/NsInstanceInfo'
+#
+    NsInstanceInfo:
+      # description: info about single NS instance
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 1de0e9c3-b238-44da-b01b-b249a7784b03
+        nsInstanceName:
+          type: string
+        nsInstanceDescription:
+          type: string
+        nsdId:
+          type: string
+          format: uuid
+          example: c418cc62-f3b4-43c6-b684-d38bfbd2d7f6
+        nsState:
+          type: string
+          enum:
+            - INSTANTIATED
+            - NOT_INSTANTIATED
+        vnfInstance:
+          type: array
+          items:
+            $ref: '#/components/schemas/vnfInstance'
+      required:
+        - id
+        - nsInstanceName
+        - nsInstanceDescription
+        - nsdId
+        - nsState
+        - vnfInstance
+#
+    vnfInstance:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        vnfdId:
+          type: string
+          format: uuid
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        vnfProductName:
+          type: string
+        vimId:
+          type: string
+          format: uuid
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        instantiationState:
+          type: string
+          enum:
+            - INSTANTIATED
+            - NOT_INSTANTIATED
+        instantiatedVnfInfo:
+          type: object
+          properties:
+            vnfState:
+               type: string
+               example: STARTED
+            extCpInfo:
+              type: array
+              items:
+                $ref: '#/components/schemas/VnfExtCpInfo'
+#
+    vnfInstanceCreated:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              example: null #3fa85f64-5717-4562-b3fc-2c963f66afa6
+            vnfdId:
+              type: string
+              format: uuid
+              example: 8a585f64-5717-4562-b3fc-2c963f66afa6
+            vnfProductName:
+              type: string
+            vimId:
+              type: string
+              format: uuid
+              example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+            instantiationState:
+              type: string
+              enum:
+                #- INSTANTIATED
+                - NOT_INSTANTIATED
+            instantiatedVnfInfo:
+              type: object
+              properties:
+                vnfState:
+                  type: string
+                  example: STARTED
+                extCpInfo:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/VnfExtCpInfo'
+#
+    VnfExtCpInfo:
+#      nullable: true
+      type: object
+      properties:
+       id:
+         type: string
+         format: uuid
+         example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+       cpdId:
+         type: string
+         format: uuid
+         example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+       cpProtocolInfo:
+         type: array
+         items:
+           $ref: '#/components/schemas/CpProtocolInfo'
+
+    CpProtocolInfo:
+      type: object
+      required:
+       - ipOverEthernet
+       - layerProtocol
+      properties:
+       layerProtocol:
+         type: string
+         enum:
+           - IP_OVER_ETHERNET
+       ipOverEthernet:
+         allOf:
+         - $ref: '#/components/schemas/IpOverEthernetAddressInfo'
+ #
+    IpOverEthernetAddressInfo:
+      type: object
+      required:
+      - ipAddresses
+      - macAddress
+      properties:
+        macAddress:
+          type: string
+          format: MAC
+        ipAddresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/IpOverEthernetAddressInfo_ipAddresses'
+#
+    IpOverEthernetAddressInfo_ipAddresses:
+      type: object
+      required:
+      - type
+      properties:
+        type:
+          type: string
+          enum:
+          - IPV4
+          - IPV6
+        addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/IpAddress'
+#
+    IpAddress:
+      type: string
+      format: IP
+#
+    NsInstanceIdCreated:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 1de0e9c3-b238-44da-b01b-b249a7784b03
+        nsInstanceName:
+          type: string
+        nsInstanceDescription:
+          type: string
+        nsdId:
+          type: string
+          format: uuid
+          example: c418cc62-f3b4-43c6-b684-d38bfbd2d7f6
+        nsState:
+          type: string
+          enum:
+            - NOT_INSTANTIATED
+        vnfInstance:
+          type: array
+          items:
+            $ref: '#/components/schemas/vnfInstanceCreated'
+      required:
+        - id
+        - nsInstanceName
+        - nsInstanceDescription
+        - nsdId
+        - nsState
+        - vnfInstance
+#
+    List_lcm_op_occs:
+      type: array
+      items:
+        $ref: '#/components/schemas/ID_lcm_op_occs'
+#
+    List_ns_lcm_op_occs:
+      type: array
+      items:
+        $ref: '#/components/schemas/ID_lcm_op_occs'
+#
+    ID_lcm_op_occs:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 1de0e9c3-b238-44da-b01b-b249a7784b03
+        operationState:
+          type: string
+          example: PROCESSING
+        stateEnteredTime:
+          type: string
+        nsInstanceId:
+          type: string
+          format: uuid
+          example: c418cc62-f3b4-43c6-b684-d38bfbd2d7f6
+        lcmOperationType:
+          type: string
+          example: INSTANTIATE
+        startTime:
+          type: string
+          format: date-time
+  # END SCHEMAS
+  # start request bodies
+  requestBodies:
+    createNsId:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/createNsId'
+    TerminationTime:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TerminationTime'
+  # END SCHEMAS
+
+#
+# # commented
+#   securitySchemes:
+#     bearerAuth:
+#       type: http
+#       scheme: bearer
