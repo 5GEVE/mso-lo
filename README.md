@@ -1,3 +1,5 @@
+![Unit Tests](https://github.com/5GEVE/mso-lo/workflows/Unit%20Tests/badge.svg)
+
 # 5G EVE - MSO-LO interface
 
 MSO-LO is a REST API application to provide an
