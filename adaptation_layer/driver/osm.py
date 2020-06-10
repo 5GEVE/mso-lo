@@ -24,11 +24,13 @@ from urllib.parse import urlencode
 import requests
 import urllib3
 import yaml as YAML
+from requests import ConnectionError, Timeout, TooManyRedirects, URLRequired, \
+    HTTPError, api
 from urllib3.exceptions import InsecureRequestWarning
 
 from error_handler import ResourceNotFound, NsNotFound, VnfNotFound, \
-    Unauthorized, BadRequest, ServerError, NsOpNotFound, VnfPkgNotFound, \
-    VimNotFound, NsdNotFound
+    Unauthorized, ServerError, NsOpNotFound, VnfPkgNotFound, \
+    VimNotFound, NsdNotFound, Conflict, BadRequest
 from .interface import Driver, Headers, BodyList, Body
 
 urllib3.disable_warnings(InsecureRequestWarning)
@@ -36,6 +38,7 @@ TESTING = os.getenv('TESTING', 'false').lower()
 PRISM_ALIAS = os.getenv("PRISM_ALIAS", "prism-osm")
 
 logger = logging.getLogger('app.driver.osm')
+
 
 def _authenticate(func):
     @wraps(func)
@@ -78,6 +81,40 @@ class OSM(Driver):
         else:
             self._base_path = 'https://{0}:{1}/osm'.format(self._host,
                                                            self._so_port)
+
+    @staticmethod
+    def _exec_request(req: api.request, url, params=None, headers=None):
+        try:
+            resp = req(url, params=params, headers=headers,
+                       verify=False, stream=True)
+        except (ConnectionError, Timeout, TooManyRedirects, URLRequired) as e:
+            raise ServerError('OSM connection error: ' + str(e))
+        resp.raise_for_status()
+        # except HTTPError as e:
+        #     if e.response.status_code == 400:
+        #         raise BadRequest(e.response.text)
+        #     elif e.response.status_code == 401:
+        #         raise Unauthorized(e.response.text)
+        #     elif e.response.status_code == 403:
+        #         raise Unauthorized(e.response.text)
+        #     elif e.response.status_code == 404:
+        #         raise ResourceNotFound(e.response.text)
+        #     elif e.response.status_code == 405:
+        #         raise ResourceNotFound(e.response.text)
+        #     elif e.response.status_code == 409:
+        #         raise ResourceNotFound(e.response.text)
+        #     elif e.response.status_code == 409:
+        #         raise Conflict(e.response.text)
+        #     elif e.response.status_code == 422:
+        #         pass
+        # 200, 201, 202
+        if 'application/json' in resp.headers['content-type']:
+            return resp.json(), resp.headers
+        elif 'application/yaml' in resp.headers['content-type']:
+            return YAML.load(resp.text, Loader=YAML.SafeLoader), resp.headers
+        else:
+            return resp.text, resp.headers
+        # 204?
 
     def _exec_get(self, url=None, params=None, headers=None):
         try:
