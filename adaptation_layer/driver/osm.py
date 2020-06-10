@@ -25,12 +25,12 @@ import requests
 import urllib3
 import yaml as YAML
 from requests import ConnectionError, Timeout, TooManyRedirects, URLRequired, \
-    HTTPError, api
+    api
 from urllib3.exceptions import InsecureRequestWarning
 
 from error_handler import ResourceNotFound, NsNotFound, VnfNotFound, \
     Unauthorized, ServerError, NsOpNotFound, VnfPkgNotFound, \
-    VimNotFound, NsdNotFound, Conflict, BadRequest
+    VimNotFound, NsdNotFound, BadRequest
 from .interface import Driver, Headers, BodyList, Body
 
 urllib3.disable_warnings(InsecureRequestWarning)
