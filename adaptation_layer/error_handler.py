@@ -37,6 +37,9 @@ def init_errorhandler(app):
         # pass through HTTP errors
         if isinstance(e, HTTPException):
             return e
+        e.code = 500
+        e.name = 'unknown exception'
+        e.description = '{}: {}'.format(type(e).__name__, str(e))
         return log_and_send(e)
 
 
