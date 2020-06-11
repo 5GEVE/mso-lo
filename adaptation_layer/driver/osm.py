@@ -108,45 +108,17 @@ class OSM(Driver):
                 raise Unprocessable(description=e.response.text)
             else:
                 raise ServerError(description=e.response.text)
-        # 200, 201, 202
-        if 'application/json' in resp.headers['content-type']:
+        try:
+            ctype = resp.headers['content-type']
+        except KeyError:
+            # success but no content
+            return None, resp.headers
+        if 'application/json' in ctype:
             return resp.json(), resp.headers
-        elif 'application/yaml' in resp.headers['content-type']:
+        elif 'application/yaml' in ctype:
             return YAML.load(resp.text, Loader=YAML.SafeLoader), resp.headers
         else:
             return resp.text, resp.headers
-        # TODO 204?
-
-    def _exec_delete(self, url=None, params=None, headers=None):
-        try:
-            resp = delete(
-                url, params=params, verify=False, headers=headers)
-        except Exception as e:
-            raise ServerError(str(e))
-        if resp.status_code in (200, 201, 202):
-            if 'application/json' in resp.headers['content-type']:
-                return resp.json(), resp.headers
-            elif 'application/yaml' in resp.headers['content-type']:
-                return YAML.load(resp.text, Loader=YAML.SafeLoader), \
-                    resp.headers
-            else:
-                return resp.text, resp.headers
-        elif resp.status_code == 204:
-            return None, resp.headers
-        elif resp.status_code == 400:
-            raise BadRequest()
-        elif resp.status_code == 401:
-            raise Unauthorized()
-        elif resp.status_code == 404:
-            raise ResourceNotFound()
-        else:
-            if 'application/json' in resp.headers['content-type']:
-                error = resp.json()
-            elif 'application/yaml' in resp.headers['content-type']:
-                error = YAML.load(resp.text, Loader=YAML.SafeLoader)
-            else:
-                error = resp.text
-            raise ServerError(error)
 
     @_authenticate
     def _get_vnf_list(self, args=None):
@@ -245,8 +217,8 @@ class OSM(Driver):
         del req_headers["Content-Type"]
         del req_headers["Accept"]
         try:
-            empty_body, osm_headers = self._exec_delete(
-                _url, params=None, headers=req_headers)
+            empty_body, osm_headers = self._request(
+                delete, _url, params=None, headers=req_headers)
         except ResourceNotFound:
             raise NsNotFound(ns_id=nsId)
         headers = self._build_headers(osm_headers)
