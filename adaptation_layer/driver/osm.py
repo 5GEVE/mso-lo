@@ -115,7 +115,7 @@ class OSM(Driver):
             return YAML.load(resp.text, Loader=YAML.SafeLoader), resp.headers
         else:
             return resp.text, resp.headers
-        # 204?
+        # TODO 204?
 
     def _exec_get(self, url=None, params=None, headers=None):
         try:
