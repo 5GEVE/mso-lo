@@ -21,11 +21,10 @@ from functools import wraps
 from typing import Dict, Tuple, List
 from urllib.parse import urlencode
 
-import requests
 import urllib3
 import yaml as YAML
 from requests import ConnectionError, Timeout, TooManyRedirects, URLRequired, \
-    api
+    api, HTTPError, get, post, delete
 from urllib3.exceptions import InsecureRequestWarning
 
 from error_handler import ResourceNotFound, NsNotFound, VnfNotFound, \
@@ -89,24 +88,26 @@ class OSM(Driver):
                        verify=False, stream=True)
         except (ConnectionError, Timeout, TooManyRedirects, URLRequired) as e:
             raise ServerError('OSM connection error: ' + str(e))
-        resp.raise_for_status()
-        # except HTTPError as e:
-        #     if e.response.status_code == 400:
-        #         raise BadRequest(e.response.text)
-        #     elif e.response.status_code == 401:
-        #         raise Unauthorized(e.response.text)
-        #     elif e.response.status_code == 403:
-        #         raise Unauthorized(e.response.text)
-        #     elif e.response.status_code == 404:
-        #         raise ResourceNotFound(e.response.text)
-        #     elif e.response.status_code == 405:
-        #         raise ResourceNotFound(e.response.text)
-        #     elif e.response.status_code == 409:
-        #         raise ResourceNotFound(e.response.text)
-        #     elif e.response.status_code == 409:
-        #         raise Conflict(e.response.text)
-        #     elif e.response.status_code == 422:
-        #         pass
+        try:
+            resp.raise_for_status()
+        except HTTPError as e:
+            if e.response.status_code == 400:
+                raise BadRequest(e.response.text)
+            elif e.response.status_code == 401:
+                raise Unauthorized(e.response.text)
+            elif e.response.status_code == 403:
+                raise Unauthorized(e.response.text)
+            elif e.response.status_code == 404:
+                raise ResourceNotFound(e.response.text)
+            elif e.response.status_code == 405:
+                raise ResourceNotFound(e.response.text)
+            elif e.response.status_code == 409:
+                raise ResourceNotFound(e.response.text)
+            elif e.response.status_code == 409:
+                pass
+                # raise Conflict(e.response.text)
+            elif e.response.status_code == 422:
+                pass
         # 200, 201, 202
         if 'application/json' in resp.headers['content-type']:
             return resp.json(), resp.headers
@@ -118,7 +119,7 @@ class OSM(Driver):
 
     def _exec_get(self, url=None, params=None, headers=None):
         try:
-            resp = requests.get(url, params=params,
+            resp = get(url, params=params,
                                 verify=False, stream=True, headers=headers)
         except Exception as e:
             raise ServerError(str(e))
@@ -149,7 +150,7 @@ class OSM(Driver):
 
     def _exec_post(self, url=None, data=None, json=None, headers=None):
         try:
-            resp = requests.post(url, data=data, json=json,
+            resp = post(url, data=data, json=json,
                                  verify=False, headers=headers)
         except Exception as e:
             raise ServerError(str(e))
@@ -180,7 +181,7 @@ class OSM(Driver):
 
     def _exec_delete(self, url=None, params=None, headers=None):
         try:
-            resp = requests.delete(
+            resp = delete(
                 url, params=params, verify=False, headers=headers)
         except Exception as e:
             raise ServerError(str(e))
