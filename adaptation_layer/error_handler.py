@@ -39,93 +39,92 @@ def init_errorhandler(app):
 
 class Error(Exception):
     """Base class for exceptions in this module."""
-    pass
+
+    def __init__(self, description='Generic Error'):
+        self.description = description
 
 
 class NfvoNotFound(Error):
     def __init__(self, nfvo_id):
-        self.description = 'NFVO {0} not found.'.format(nfvo_id)
+        super().__init__(description='NFVO {0} not found.'.format(nfvo_id))
 
 
 class NfvoCredentialsNotFound(Error):
     def __init__(self, nfvo_id):
-        self.description = 'NFVO credentials not found for NFVO id {0}.' \
-            .format(nfvo_id)
+        super().__init__(
+            description='Credentials not found for NFVO {0}.'.format(nfvo_id))
 
 
 class VimNotFound(Error):
     def __init__(self):
-        self.description = 'Resource not found.'
+        super().__init__(description='Vim not found.')
 
 
 class NsOpNotFound(Error):
     def __init__(self, ns_op_id=None):
-        self.description = 'NS LCM operatione {0} not found.'.format(ns_op_id)
+        super().__init__('NS LCM operation {0} not found.'.format(ns_op_id))
 
 
 class NsNotFound(Error):
     def __init__(self, ns_id=None):
-        self.description = 'NS instance {0} not found.'.format(ns_id)
+        super().__init__('NS instance {0} not found.'.format(ns_id))
 
 
 class NsdNotFound(Error):
     def __init__(self, nsd_id=None):
-        self.description = 'NS descriptor {0} not found.'.format(nsd_id)
+        super().__init__('NS descriptor {0} not found.'.format(nsd_id))
 
 
 class VnfNotFound(Error):
     def __init__(self, vnf_id=None):
-        self.description = 'VNF instance {0} not found.'.format(vnf_id)
+        super().__init__('VNF instance {0} not found.'.format(vnf_id))
 
 
 class VnfPkgNotFound(Error):
     def __init__(self, vnfpkg_id=None):
-        self.description = 'VNF package {0} not found.'.format(vnfpkg_id)
+        super().__init__('VNF package {0} not found.'.format(vnfpkg_id))
 
 
 class SubscriptionNotFound(Error):
     def __init__(self, sub_id=None):
-        self.description = 'Subscription {0} not found.'.format(sub_id)
+        super().__init__('Subscription {0} not found.'.format(sub_id))
 
 
 class BadRequest(Error):
     def __init__(self, description='Bad request'):
-        self.description = description
+        super().__init__(description=description)
 
 
 class Unauthorized(Error):
     def __init__(self, description='Unauthorized'):
-        self.description = description
+        super().__init__(description=description)
 
 
 class Forbidden(Error):
     def __init__(self, description='Forbidden'):
-        self.description = description
+        super().__init__(description=description)
 
 
 class ResourceNotFound(Error):
     def __init__(self, description='Resource not found.'):
-        self.description = description
+        super().__init__(description=description)
 
 
 class MethodNotAllowed(Error):
     def __init__(self, description='Method Not Allowed'):
-        self.description = description
+        super().__init__(description=description)
 
 
 class Conflict(Error):
     def __init__(self, description='Conflict'):
-        self.description = description
+        super().__init__(description=description)
 
 
 class Unprocessable(Error):
     def __init__(self, description='Unprocessable Entity'):
-        self.description = description
+        super().__init__(description=description)
 
 
 class ServerError(Error):
     def __init__(self, description=None):
-        if description is not None:
-            self.description = description
-        else:
-            self.description = 'Server Error'
+        super().__init__(description=description)
