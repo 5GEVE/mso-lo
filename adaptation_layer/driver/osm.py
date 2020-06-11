@@ -138,7 +138,7 @@ class OSM(Driver):
     @_authenticate
     def get_vim_list(self):
         _url = "{0}/admin/v1/vims".format(self._base_path)
-        _url = self._build_url_query(_url, None)
+        _url = self._build_url_query(_url)
         return self._request(get, _url, headers=self._headers)
 
     @_authenticate
@@ -417,7 +417,7 @@ class OSM(Driver):
         return sol_op
 
     @staticmethod
-    def _build_url_query(base, args):
+    def _build_url_query(base, args=None):
         if args and args['args']:
             url_query = urlencode(args['args'])
             return "{0}?{1}".format(base, url_query)
