@@ -46,6 +46,9 @@ class Error(Exception):
     def __init__(self, description='Generic Error'):
         self.description = description
 
+    def __str__(self):
+        return str(self.description)
+
 
 class NfvoNotFound(Error):
     def __init__(self, nfvo_id):
@@ -129,5 +132,5 @@ class Unprocessable(Error):
 
 
 class ServerError(Error):
-    def __init__(self, description=None):
+    def __init__(self, description='Server error'):
         super().__init__(description=description)
