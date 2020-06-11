@@ -52,8 +52,8 @@ def _authenticate(func):
                             'project_id': self._project}
             token_url = "{0}/{1}".format(self._base_path,
                                          self._token_endpoint)
-            self._token, headers = self._exec_post(token_url,
-                                                   json=auth_payload)
+            self._token, headers = OSM._request(
+                post, token_url, json=auth_payload)
             self._headers["Authorization"] = 'Bearer {}'.format(
                 self._token['id'])
         return func(self, *args, **kwargs)
