@@ -13,28 +13,31 @@
 #  limitations under the License.
 
 from flask import make_response, jsonify
+from werkzeug.exceptions import HTTPException
 
 
 def init_errorhandler(app):
-    @app.errorhandler(400)
-    def bad_request(error):
-        app.logger.error('error: {}'.format(error.description))
-        return make_response(jsonify({'error': error.description}), 400)
+    def log_and_send(e):
+        data = {
+            "code": e.code,
+            "name": e.name,
+            "description": e.description,
+        }
+        app.logger.error('error: {}'.format(data))
+        return make_response(jsonify(data), data['code'])
 
-    @app.errorhandler(401)
-    def unauthorized(error):
-        app.logger.error('error: {}'.format(error.description))
-        return make_response(jsonify({'error': error.description}), 401)
+    # all 4xx and 500
+    @app.errorhandler(HTTPException)
+    def http_exception(e):
+        return log_and_send(e)
 
-    @app.errorhandler(404)
-    def not_found(error):
-        app.logger.error('error: {}'.format(error.description))
-        return make_response(jsonify({'error': error.description}), 404)
-
-    @app.errorhandler(500)
-    def server_error(error):
-        app.logger.error('error: {}'.format(error.description))
-        return make_response(jsonify({'error': error.description}), 500)
+    # all other unexpected exceptions
+    @app.errorhandler(Exception)
+    def any_exception(e):
+        # pass through HTTP errors
+        if isinstance(e, HTTPException):
+            return e
+        return log_and_send(e)
 
 
 class Error(Exception):
