@@ -107,8 +107,7 @@ class OSM(Driver):
             elif e.response.status_code == 422:
                 raise Unprocessable(description=e.response.text)
             else:
-                # TODO raise generic error if 4xx code unknown
-                raise
+                raise ServerError(description=e.response.text)
         # 200, 201, 202
         if 'application/json' in resp.headers['content-type']:
             return resp.json(), resp.headers
