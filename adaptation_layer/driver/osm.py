@@ -249,8 +249,8 @@ class OSM(Driver):
                         vnf['member-vnf-index'] = mapping[
                             vnf.pop('vnfInstanceId')]
                     instantiate_payload['vnf'] = additional_params['vnf']
-                except KeyError:
-                    logger.warning('cannot map vnf {}'.format(vnf))
+                except KeyError as e:
+                    logger.warning('cannot map vnf. KeyError on {}'.format(e))
             if 'wim_account' in additional_params:
                 instantiate_payload['wimAccountId'] = additional_params[
                     'wimAccountId']
