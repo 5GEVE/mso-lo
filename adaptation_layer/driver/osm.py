@@ -29,7 +29,8 @@ from urllib3.exceptions import InsecureRequestWarning
 
 from error_handler import ResourceNotFound, NsNotFound, VnfNotFound, \
     Unauthorized, ServerError, NsOpNotFound, VnfPkgNotFound, \
-    VimNotFound, NsdNotFound, BadRequest
+    VimNotFound, NsdNotFound, BadRequest, Forbidden, MethodNotAllowed, \
+    Unprocessable
 from .interface import Driver, Headers, BodyList, Body
 
 urllib3.disable_warnings(InsecureRequestWarning)
@@ -92,22 +93,22 @@ class OSM(Driver):
             resp.raise_for_status()
         except HTTPError as e:
             if e.response.status_code == 400:
-                raise BadRequest(e.response.text)
+                raise BadRequest(description=e.response.text)
             elif e.response.status_code == 401:
-                raise Unauthorized(e.response.text)
+                raise Unauthorized(description=e.response.text)
             elif e.response.status_code == 403:
-                raise Unauthorized(e.response.text)
+                raise Forbidden(description=e.response.text)
             elif e.response.status_code == 404:
-                raise ResourceNotFound(e.response.text)
+                raise ResourceNotFound(description=e.response.text)
             elif e.response.status_code == 405:
-                raise ResourceNotFound(e.response.text)
+                raise MethodNotAllowed(description=e.response.text)
             elif e.response.status_code == 409:
-                raise ResourceNotFound(e.response.text)
-            elif e.response.status_code == 409:
-                pass
-                # raise Conflict(e.response.text)
+                raise ResourceNotFound(description=e.response.text)
             elif e.response.status_code == 422:
-                pass
+                raise Unprocessable(description=e.response.text)
+            else:
+                # TODO raise generic error if 4xx code unknown
+                raise
         # 200, 201, 202
         if 'application/json' in resp.headers['content-type']:
             return resp.json(), resp.headers

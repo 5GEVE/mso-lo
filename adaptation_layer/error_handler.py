@@ -53,11 +53,6 @@ class NfvoCredentialsNotFound(Error):
             .format(nfvo_id)
 
 
-class ResourceNotFound(Error):
-    def __init__(self):
-        self.description = 'Resource not found.'
-
-
 class VimNotFound(Error):
     def __init__(self):
         self.description = 'Resource not found.'
@@ -93,17 +88,39 @@ class SubscriptionNotFound(Error):
         self.description = 'Subscription {0} not found.'.format(sub_id)
 
 
-class Unauthorized(Error):
-    def __init__(self):
-        self.description = 'Unauthorized'
-
-
 class BadRequest(Error):
-    def __init__(self, description=None):
-        if description is not None:
-            self.description = description
-        else:
-            self.description = 'Malformed request'
+    def __init__(self, description='Bad request'):
+        self.description = description
+
+
+class Unauthorized(Error):
+    def __init__(self, description='Unauthorized'):
+        self.description = description
+
+
+class Forbidden(Error):
+    def __init__(self, description='Forbidden'):
+        self.description = description
+
+
+class ResourceNotFound(Error):
+    def __init__(self, description='Resource not found.'):
+        self.description = description
+
+
+class MethodNotAllowed(Error):
+    def __init__(self, description='Method Not Allowed'):
+        self.description = description
+
+
+class Conflict(Error):
+    def __init__(self, description='Conflict'):
+        self.description = description
+
+
+class Unprocessable(Error):
+    def __init__(self, description='Unprocessable Entity'):
+        self.description = description
 
 
 class ServerError(Error):
