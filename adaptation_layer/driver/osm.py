@@ -83,7 +83,7 @@ class OSM(Driver):
                                                            self._so_port)
 
     @staticmethod
-    def _exec_request(req: api.request, url, params=None, headers=None):
+    def _request(req: api.request, url, params=None, headers=None):
         try:
             resp = req(url, params=params, headers=headers,
                        verify=False, stream=True)
@@ -116,37 +116,6 @@ class OSM(Driver):
         else:
             return resp.text, resp.headers
         # TODO 204?
-
-    def _exec_get(self, url=None, params=None, headers=None):
-        try:
-            resp = get(url, params=params,
-                                verify=False, stream=True, headers=headers)
-        except Exception as e:
-            raise ServerError(str(e))
-        if resp.status_code in (200, 201, 202):
-            if 'application/json' in resp.headers['content-type']:
-                return resp.json(), resp.headers
-            elif 'application/yaml' in resp.headers['content-type']:
-                return YAML.load(resp.text, Loader=YAML.SafeLoader), \
-                    resp.headers
-            else:
-                return resp.text, resp.headers
-        elif resp.status_code == 204:
-            return None, resp.headers
-        elif resp.status_code == 400:
-            raise BadRequest()
-        elif resp.status_code == 401:
-            raise Unauthorized()
-        elif resp.status_code == 404:
-            raise ResourceNotFound()
-        else:
-            if 'application/json' in resp.headers['content-type']:
-                error = resp.json()
-            elif 'application/yaml' in resp.headers['content-type']:
-                error = YAML.load(resp.text, Loader=YAML.SafeLoader)
-            else:
-                error = resp.text
-            raise ServerError(error)
 
     def _exec_post(self, url=None, data=None, json=None, headers=None):
         try:
@@ -214,14 +183,14 @@ class OSM(Driver):
     def _get_vnf_list(self, args=None):
         _url = "{0}/nslcm/v1/vnf_instances".format(self._base_path)
         _url = self._build_url_query(_url, args)
-        return self._exec_get(_url, headers=self._headers)
+        return self._request(get, _url, headers=self._headers)
 
     @_authenticate
     def _get_vnf(self, vnfId: str, args=None):
         _url = "{0}/nslcm/v1/vnf_instances/{1}".format(self._base_path, vnfId)
         _url = self._build_url_query(_url, args)
         try:
-            return self._exec_get(_url, headers=self._headers)
+            return self._request(get, _url, headers=self._headers)
         except ResourceNotFound:
             raise VnfNotFound(vnf_id=vnfId)
 
@@ -229,7 +198,7 @@ class OSM(Driver):
     def get_vim_list(self):
         _url = "{0}/admin/v1/vims".format(self._base_path)
         _url = self._build_url_query(_url, None)
-        return self._exec_get(_url, headers=self._headers)
+        return self._request(get, _url, headers=self._headers)
 
     @_authenticate
     def _get_vnfpkg(self, vnfPkgId, args=None):
@@ -237,7 +206,7 @@ class OSM(Driver):
             self._base_path, vnfPkgId)
         _url = self._build_url_query(_url, args)
         try:
-            return self._exec_get(_url, headers=self._headers)
+            return self._request(get, _url, headers=self._headers)
         except ResourceNotFound:
             raise VnfPkgNotFound(vnfpkg_id=vnfPkgId)
 
@@ -245,7 +214,7 @@ class OSM(Driver):
     def _get_nsdpkg(self, args=None):
         _url = "{0}/nsd/v1/ns_descriptors".format(self._base_path)
         _url = self._build_url_query(_url, args)
-        nsdpkg_list, headers = self._exec_get(_url, headers=self._headers)
+        nsdpkg_list, headers = self._request(get, _url, headers=self._headers)
         if not nsdpkg_list:
             raise NsdNotFound(nsd_id=args["args"]["id"])
         elif len(nsdpkg_list) > 1:
@@ -258,7 +227,8 @@ class OSM(Driver):
     def get_ns_list(self, args=None) -> Tuple[BodyList, Headers]:
         _url = "{0}/nslcm/v1/ns_instances".format(self._base_path)
         _url = self._build_url_query(_url, args)
-        osm_ns_list, osm_headers = self._exec_get(_url, headers=self._headers)
+        osm_ns_list, osm_headers = self._request(get, _url,
+                                                 headers=self._headers)
         sol_ns_list = []
         for osm_ns in osm_ns_list:
             sol_ns_list.append(self._ns_im_converter(osm_ns))
@@ -288,7 +258,8 @@ class OSM(Driver):
         _url = "{0}/nslcm/v1/ns_instances/{1}".format(self._base_path, nsId)
         _url = self._build_url_query(_url, args)
         try:
-            osm_ns, osm_headers = self._exec_get(_url, headers=self._headers)
+            osm_ns, osm_headers = self._request(get, _url,
+                                                headers=self._headers)
         except ResourceNotFound:
             raise NsNotFound(ns_id=nsId)
         headers = self._build_headers(osm_headers)
@@ -385,7 +356,8 @@ class OSM(Driver):
     def get_op_list(self, args: Dict = None) -> Tuple[BodyList, Headers]:
         _url = "{0}/nslcm/v1/ns_lcm_op_occs".format(self._base_path)
         _url = self._build_url_query(_url, args)
-        osm_op_list, osm_headers = self._exec_get(_url, headers=self._headers)
+        osm_op_list, osm_headers = self._request(get, _url,
+                                                 headers=self._headers)
         sol_op_list = []
         for op in osm_op_list:
             sol_op_list.append(self._op_im_converter(op))
@@ -398,7 +370,8 @@ class OSM(Driver):
             self._base_path, nsLcmOpId)
         _url = self._build_url_query(_url, args)
         try:
-            osm_op, osm_headers = self._exec_get(_url, headers=self._headers)
+            osm_op, osm_headers = self._request(get, _url,
+                                                headers=self._headers)
         except ResourceNotFound:
             raise NsOpNotFound(ns_op_id=nsLcmOpId)
         sol_op = self._op_im_converter(osm_op)
