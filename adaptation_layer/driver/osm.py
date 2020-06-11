@@ -83,9 +83,9 @@ class OSM(Driver):
                                                            self._so_port)
 
     @staticmethod
-    def _request(req: api.request, url, params=None, headers=None):
+    def _request(req: api.request, url, json=None, params=None, headers=None):
         try:
-            resp = req(url, params=params, headers=headers,
+            resp = req(url, json=json, params=params, headers=headers,
                        verify=False, stream=True)
         except (ConnectionError, Timeout, TooManyRedirects, URLRequired) as e:
             raise ServerError('OSM connection error: ' + str(e))
@@ -116,37 +116,6 @@ class OSM(Driver):
         else:
             return resp.text, resp.headers
         # TODO 204?
-
-    def _exec_post(self, url=None, data=None, json=None, headers=None):
-        try:
-            resp = post(url, data=data, json=json,
-                                 verify=False, headers=headers)
-        except Exception as e:
-            raise ServerError(str(e))
-        if resp.status_code in (200, 201, 202):
-            if 'application/json' in resp.headers['content-type']:
-                return resp.json(), resp.headers
-            elif 'application/yaml' in resp.headers['content-type']:
-                return YAML.load(resp.text, Loader=YAML.SafeLoader), \
-                    resp.headers
-            else:
-                return resp.text, resp.headers
-        elif resp.status_code == 204:
-            return None, resp.headers
-        elif resp.status_code == 400:
-            raise BadRequest()
-        elif resp.status_code == 401:
-            raise Unauthorized()
-        elif resp.status_code == 404:
-            raise ResourceNotFound()
-        else:
-            if 'application/json' in resp.headers['content-type']:
-                error = resp.json()
-            elif 'application/yaml' in resp.headers['content-type']:
-                error = YAML.load(resp.text, Loader=YAML.SafeLoader)
-            else:
-                error = resp.text
-            raise ServerError(error)
 
     def _exec_delete(self, url=None, params=None, headers=None):
         try:
@@ -244,8 +213,8 @@ class OSM(Driver):
         })
         args["payload"]["nsdId"] = osm_nsdpkg["_id"]
         args['payload']['vimAccountId'] = self._select_vim()
-        osm_ns, osm_headers = self._exec_post(
-            _url, json=args['payload'], headers=self._headers)
+        osm_ns, osm_headers = self._request(
+            post, _url, json=args['payload'], headers=self._headers)
         # Get location header from OSM
         headers = self._build_headers(osm_headers)
         # Get NS info from OSM
@@ -317,8 +286,8 @@ class OSM(Driver):
                 instantiate_payload['wimAccountId'] = False
 
         try:
-            empty_body, osm_headers = self._exec_post(
-                _url, json=instantiate_payload, headers=self._headers)
+            empty_body, osm_headers = self._request(
+                post, _url, json=instantiate_payload, headers=self._headers)
         except ResourceNotFound as e:
             print(e)
             raise NsNotFound(ns_id=nsId)
@@ -332,8 +301,8 @@ class OSM(Driver):
             self._base_path, nsId)
         _url = self._build_url_query(_url, args)
         try:
-            emtpy_body, osm_headers = self._exec_post(
-                _url, json=args['payload'], headers=self._headers)
+            emtpy_body, osm_headers = self._request(
+                post, _url, json=args['payload'], headers=self._headers)
         except ResourceNotFound:
             raise NsNotFound(ns_id=nsId)
         headers = self._build_headers(osm_headers)
@@ -345,8 +314,8 @@ class OSM(Driver):
             self._base_path, nsId)
         _url = self._build_url_query(_url, args)
         try:
-            empty_body, osm_headers = self._exec_post(
-                _url, json=args['payload'], headers=self._headers)
+            empty_body, osm_headers = self._request(
+                post, _url, json=args['payload'], headers=self._headers)
         except ResourceNotFound:
             raise NsNotFound(ns_id=id)
         headers = self._build_headers(osm_headers)
