@@ -11,7 +11,7 @@ ${CONTENT_TYPE_PATCH}    application/merge-patch+json
 ${ACCEPT_JSON}         application/json
 ${ACCEPT}         application/json
 ${apiRoot}        nfvo
-${nfvoId}         3
+${nfvoId}         1
 ${nfvoIdinexistent}         80
 ${AUTH_USAGE}     1
 ${WRONG_AUTHORIZATION}    Bearer    XXXXXWRONGXXXXX
