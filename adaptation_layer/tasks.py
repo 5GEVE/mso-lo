@@ -46,7 +46,7 @@ if SITEINV == 'true':
 celery.conf.timezone = 'UTC'
 logger = get_task_logger(__name__)
 
-last_op_status = redis.Redis(host=redis_host, port=redis_port, db=1,
+redis_client = redis.Redis(host=redis_host, port=redis_port, db=1,
                              decode_responses=True)
 
 
@@ -99,12 +99,12 @@ def osm_notifications():
                 logger.debug(str(e))
                 continue
         for op in ops:
-            last_s = last_op_status.get(op['id'])
+            last_s = redis_client.get(op['id'])
             logger.debug('last_s from redis: {}'.format(last_s))
             if not last_s or last_s != op['operationState']:
                 logger.info('different op state, send notification')
                 logger.debug('{},{}'.format(last_s, op['operationState']))
-                last_op_status.set(op['id'], op['operationState'])
+                redis_client.set(op['id'], op['operationState'])
                 notify_payload = {
                     "nsInstanceId": op['nsInstanceId'],
                     "nsLcmOpOccId": op['id'],
