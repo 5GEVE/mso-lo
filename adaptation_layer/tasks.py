@@ -48,8 +48,8 @@ if SITEINV == 'true':
 celery.conf.timezone = 'UTC'
 logger = get_task_logger(__name__)
 
-redis_client = redis.Redis(host=redis_host, port=redis_port, db=1,
-                             decode_responses=True)
+redis_client = redis.Redis(
+    host=redis_host, port=redis_port, decode_responses=True)
 
 
 @celery.task
@@ -139,7 +139,8 @@ def forward_notification(notification: Dict):
             if notification['notificationType'] in s['notificationTypes']:
                 resp = post(s['callbackUri'], json=notification)
                 resp.raise_for_status()
-                logger.info('Notification sent to {0}'.format(s['callbackUri']))
+                logger.info(
+                    'Notification sent to {0}'.format(s['callbackUri']))
         except RequestException as e:
             logger.warning(
                 'Cannot send notification to {}'.format(s['callbackUri']))

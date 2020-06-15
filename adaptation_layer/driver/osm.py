@@ -16,6 +16,8 @@ import copy
 import logging
 import os
 import re
+import redis
+import json
 from datetime import datetime
 from functools import wraps
 from typing import Dict, Tuple, List
@@ -37,6 +39,13 @@ urllib3.disable_warnings(InsecureRequestWarning)
 TESTING = os.getenv('TESTING', 'false').lower()
 PRISM_ALIAS = os.getenv("PRISM_ALIAS", "prism-osm")
 
+redis_host = os.getenv('REDIS_HOST') if os.getenv('REDIS_HOST') else 'redis'
+redis_port = int(os.getenv('REDIS_PORT')) if os.getenv('REDIS_PORT') else 6379
+# TTL (seconds) for key in redis
+KEY_TTL = 3599
+redis_client = redis.Redis(
+    host=redis_host, port=redis_port, decode_responses=True)
+
 logger = logging.getLogger('app.driver.osm')
 
 
@@ -45,17 +54,27 @@ def _authenticate(func):
     def wrapper(self, *args, **kwargs):
         if TESTING == 'true':
             pass
-        elif not self._token or datetime.utcfromtimestamp(
-                self._token["expires"]) < datetime.utcnow():
-            auth_payload = {'username': self._user,
-                            'password': self._password,
-                            'project_id': self._project}
-            token_url = "{0}/{1}".format(self._base_path,
-                                         self._token_endpoint)
-            self._token, headers = OSM._request(
-                post, token_url, json=auth_payload)
+        else:
+            token_key = 'nfvo_' + str(self._nfvoId)
+            if not self._token:
+                s_token = redis_client.get(token_key)
+                if s_token:
+                    self._token = json.loads(str(s_token))
+
+            if not self._token or datetime.utcfromtimestamp(
+                    self._token["expires"]) < datetime.utcnow():
+                auth_payload = {'username': self._user,
+                                'password': self._password,
+                                'project_id': self._project}
+                token_url = "{0}/{1}".format(self._base_path,
+                                             self._token_endpoint)
+                self._token, headers = OSM._request(
+                    post, token_url, json=auth_payload)
+                t_val = json.dumps(self._token)
+                redis_client.setex(token_key, KEY_TTL, t_val)
             self._headers["Authorization"] = 'Bearer {}'.format(
                 self._token['id'])
+
         return func(self, *args, **kwargs)
 
     return wrapper
