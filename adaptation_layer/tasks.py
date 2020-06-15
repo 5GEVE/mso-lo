@@ -27,6 +27,8 @@ from error_handler import ServerError, Error
 SITEINV = os.getenv('SITEINV', 'false').lower()
 redis_host = os.getenv('REDIS_HOST') if os.getenv('REDIS_HOST') else 'redis'
 redis_port = int(os.getenv('REDIS_PORT')) if os.getenv('REDIS_PORT') else 6379
+# TTL for key in redis
+KEY_TTL = 86400
 
 celery = Celery('tasks',
                 broker='redis://{0}:{1}/0'.format(redis_host, redis_port),
@@ -104,7 +106,7 @@ def osm_notifications():
             if not last_s or last_s != op['operationState']:
                 logger.info('different op state, send notification')
                 logger.debug('{},{}'.format(last_s, op['operationState']))
-                redis_client.set(op['id'], op['operationState'])
+                redis_client.setex(op['id'], KEY_TTL, op['operationState'])
                 notify_payload = {
                     "nsInstanceId": op['nsInstanceId'],
                     "nsLcmOpOccId": op['id'],
