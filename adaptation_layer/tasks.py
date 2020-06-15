@@ -49,7 +49,7 @@ celery.conf.timezone = 'UTC'
 logger = get_task_logger(__name__)
 
 redis_client = redis.Redis(
-    host=redis_host, port=redis_port, decode_responses=True)
+    host=redis_host, port=redis_port, db=1, decode_responses=True)
 
 
 @celery.task

@@ -44,7 +44,7 @@ redis_port = int(os.getenv('REDIS_PORT')) if os.getenv('REDIS_PORT') else 6379
 # TTL (seconds) for key in redis
 KEY_TTL = 3599
 redis_client = redis.Redis(
-    host=redis_host, port=redis_port, decode_responses=True)
+    host=redis_host, port=redis_port, db=2, decode_responses=True)
 
 logger = logging.getLogger('app.driver.osm')
 
@@ -60,7 +60,6 @@ def _authenticate(func):
                 s_token = redis_client.get(token_key)
                 if s_token:
                     self._token = json.loads(str(s_token))
-
             if not self._token or datetime.utcfromtimestamp(
                     self._token["expires"]) < datetime.utcnow():
                 auth_payload = {'username': self._user,
