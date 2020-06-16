@@ -27,6 +27,8 @@ from error_handler import ServerError, Error
 SITEINV = os.getenv('SITEINV', 'false').lower()
 redis_host = os.getenv('REDIS_HOST') if os.getenv('REDIS_HOST') else 'redis'
 redis_port = int(os.getenv('REDIS_PORT')) if os.getenv('REDIS_PORT') else 6379
+# TTL for key in redis
+KEY_TTL = 86400
 
 celery = Celery('tasks',
                 broker='redis://{0}:{1}/0'.format(redis_host, redis_port),
@@ -46,8 +48,8 @@ if SITEINV == 'true':
 celery.conf.timezone = 'UTC'
 logger = get_task_logger(__name__)
 
-last_op_status = redis.Redis(host=redis_host, port=redis_port, db=1,
-                             decode_responses=True)
+redis_client = redis.Redis(
+    host=redis_host, port=redis_port, db=1, decode_responses=True)
 
 
 @celery.task
@@ -99,12 +101,12 @@ def osm_notifications():
                 logger.debug(str(e))
                 continue
         for op in ops:
-            last_s = last_op_status.get(op['id'])
+            last_s = redis_client.get(op['id'])
             logger.debug('last_s from redis: {}'.format(last_s))
             if not last_s or last_s != op['operationState']:
                 logger.info('different op state, send notification')
                 logger.debug('{},{}'.format(last_s, op['operationState']))
-                last_op_status.set(op['id'], op['operationState'])
+                redis_client.setex(op['id'], KEY_TTL, op['operationState'])
                 notify_payload = {
                     "nsInstanceId": op['nsInstanceId'],
                     "nsLcmOpOccId": op['id'],
@@ -137,7 +139,8 @@ def forward_notification(notification: Dict):
             if notification['notificationType'] in s['notificationTypes']:
                 resp = post(s['callbackUri'], json=notification)
                 resp.raise_for_status()
-                logger.info('Notification sent to {0}'.format(s['callbackUri']))
+                logger.info(
+                    'Notification sent to {0}'.format(s['callbackUri']))
         except RequestException as e:
             logger.warning(
                 'Cannot send notification to {}'.format(s['callbackUri']))
