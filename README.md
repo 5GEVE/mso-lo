@@ -70,6 +70,16 @@ docker-compose build
 docker-compose up
 ```
 
+### Redis logical database mapping
+
+In the following table we report all the Redis database indexes used in MSO-LO application and the relative purpose.
+
+| Index 	| Purpose 	|
+|-	|-	|
+| 0 	| Celery Background Task 	|
+| 1         	| NS last operationState 	|
+| 2                   	| OSM token cache 	|
+
 ### Simple test
 
 You can test the app with:
