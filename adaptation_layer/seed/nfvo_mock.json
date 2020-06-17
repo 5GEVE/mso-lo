@@ -12,5 +12,12 @@
     "site": "France",
     "type": "ONAP",
     "uri": "https://onap-paris.5g-eve.eu"
+  },
+  {
+    "id": 3,
+    "name": "italian_ever",
+    "site": "Italy",
+    "type": "EVER",
+    "uri": "http://ever_italy.5g-eve.eu"
   }
 ]
