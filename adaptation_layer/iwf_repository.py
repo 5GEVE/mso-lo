@@ -20,7 +20,7 @@ from requests import get, ConnectionError, Timeout, \
     TooManyRedirects, URLRequired, HTTPError, post, put, delete
 
 from error_handler import ServerError, NfvoNotFound, NfvoCredentialsNotFound, \
-    Unauthorized, BadRequest, SubscriptionNotFound
+    Unauthorized, BadRequest, SubscriptionNotFound, Unprocessable
 
 logger = logging.getLogger('app.iwf_repository')
 IWFREPO_HTTPS = os.getenv('IWFREPO_HTTPS', 'false').lower()
@@ -163,6 +163,8 @@ def get_subscription_list(nfvo_id: int) -> Dict:
     except HTTPError as e:
         if e.response.status_code == 401:
             raise Unauthorized()
+        if e.response.status_code == 404:
+            raise NfvoNotFound(nfvo_id)
         else:
             raise
     return resp.json()
@@ -181,6 +183,10 @@ def create_subscription(nfvo_id: int, body: Dict):
     except HTTPError as e:
         if e.response.status_code == 400:
             raise BadRequest(description=e.response.text)
+        if e.response.status_code == 404:
+            raise NfvoNotFound(nfvo_id)
+        if e.response.status_code == 422:
+            raise Unprocessable(description=e.response.text)
         else:
             raise
     return create.json()

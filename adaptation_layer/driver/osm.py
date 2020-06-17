@@ -13,16 +13,16 @@
 #  limitations under the License.
 
 import copy
+import json
 import logging
 import os
 import re
-import redis
-import json
 from datetime import datetime
 from functools import wraps
 from typing import Dict, Tuple, List
 from urllib.parse import urlencode
 
+import redis
 import urllib3
 import yaml as YAML
 from requests import ConnectionError, Timeout, TooManyRedirects, URLRequired, \
@@ -32,7 +32,7 @@ from urllib3.exceptions import InsecureRequestWarning
 from error_handler import ResourceNotFound, NsNotFound, VnfNotFound, \
     Unauthorized, ServerError, NsOpNotFound, VnfPkgNotFound, \
     VimNotFound, NsdNotFound, BadRequest, Forbidden, MethodNotAllowed, \
-    Unprocessable
+    Unprocessable, Conflict
 from .interface import Driver, Headers, BodyList, Body
 
 urllib3.disable_warnings(InsecureRequestWarning)
@@ -121,7 +121,7 @@ class OSM(Driver):
             elif e.response.status_code == 405:
                 raise MethodNotAllowed(description=e.response.text)
             elif e.response.status_code == 409:
-                raise ResourceNotFound(description=e.response.text)
+                raise Conflict(description=e.response.text)
             elif e.response.status_code == 422:
                 raise Unprocessable(description=e.response.text)
             else:
