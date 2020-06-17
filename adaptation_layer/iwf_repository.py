@@ -23,15 +23,15 @@ from error_handler import ServerError, NfvoNotFound, NfvoCredentialsNotFound, \
     Unauthorized, BadRequest, SubscriptionNotFound
 
 logger = logging.getLogger('app.iwf_repository')
-SITEINV_HTTPS = os.getenv('SITEINV_HTTPS', 'false').lower()
-SITEINV_HOST = os.getenv('SITEINV_HOST')
-SITEINV_PORT = os.getenv('SITEINV_PORT')
-SITEINV_INTERVAL = os.getenv('SITEINV_INTERVAL')
+IWFREPO_HTTPS = os.getenv('IWFREPO_HTTPS', 'false').lower()
+IWFREPO_HOST = os.getenv('IWFREPO_HOST')
+IWFREPO_PORT = os.getenv('IWFREPO_PORT')
+IWFREPO_INTERVAL = os.getenv('IWFREPO_INTERVAL')
 
-prot = 'https' if SITEINV_HTTPS == 'true' else 'http'
-host = SITEINV_HOST if SITEINV_HOST else 'localhost'
-port = int(SITEINV_PORT) if SITEINV_PORT else 8087
-interval = int(SITEINV_INTERVAL) if SITEINV_INTERVAL else 300
+prot = 'https' if IWFREPO_HTTPS == 'true' else 'http'
+host = IWFREPO_HOST if IWFREPO_HOST else 'localhost'
+port = int(IWFREPO_PORT) if IWFREPO_PORT else 8087
+interval = int(IWFREPO_INTERVAL) if IWFREPO_INTERVAL else 300
 url = '{0}://{1}:{2}'.format(prot, host, port)
 
 
@@ -41,7 +41,7 @@ def _server_error(func):
         try:
             return func(*args, **kwargs)
         except (ConnectionError, Timeout, TooManyRedirects, URLRequired) as e:
-            raise ServerError('problem contacting site inventory: ' + str(e))
+            raise ServerError('problem contacting iwf repository: ' + str(e))
 
     return wrapper
 
@@ -53,7 +53,7 @@ def post_vim_safe(osm_vim: Dict, nfvo_self: str):
         params={'uuid': osm_vim['_id']})
     vim_found.raise_for_status()
     if vim_found.json()['_embedded']['vimAccounts']:
-        logger.info('vim {} found in site-inventory, skip'.format(
+        logger.info('vim {} found in iwf repository, skip'.format(
             osm_vim['_id']
         ))
     else:

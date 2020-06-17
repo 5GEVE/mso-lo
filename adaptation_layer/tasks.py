@@ -24,7 +24,7 @@ import iwf_repository
 from driver.osm import OSM
 from error_handler import ServerError, Error
 
-SITEINV = os.getenv('SITEINV', 'false').lower()
+IWFREPO = os.getenv('IWFREPO', 'false').lower()
 redis_host = os.getenv('REDIS_HOST') if os.getenv('REDIS_HOST') else 'redis'
 redis_port = int(os.getenv('REDIS_PORT')) if os.getenv('REDIS_PORT') else 6379
 # TTL for key in redis
@@ -34,7 +34,7 @@ celery = Celery('tasks',
                 broker='redis://{0}:{1}/0'.format(redis_host, redis_port),
                 backend='redis://{0}:{1}/0'.format(redis_host, redis_port))
 
-if SITEINV == 'true':
+if IWFREPO == 'true':
     celery.conf.beat_schedule = {
         'add_post_osm_vims_periodic': {
             'task': 'tasks.post_osm_vims',
@@ -121,8 +121,8 @@ def osm_notifications():
 
 @celery.task
 def forward_notification(notification: Dict):
-    if SITEINV == 'false':
-        logger.warning('site inventory disabled, ignore notification')
+    if IWFREPO == 'false':
+        logger.warning('iwf repository disabled, ignore notification')
         return None
     subs = []
     try:
