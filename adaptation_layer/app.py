@@ -157,7 +157,7 @@ def instantiate_ns(nfvo_id, ns_id):
         abort(401, description=e.description)
     except Forbidden as e:
         abort(403, description=e.description)
-    except (NfvoNotFound, NfvoCredentialsNotFound, NsdNotFound) as e:
+    except (NfvoNotFound, NfvoCredentialsNotFound, NsNotFound) as e:
         abort(404, description=e.description)
     except Conflict as e:
         abort(409, description=e.description)
@@ -181,7 +181,7 @@ def terminate_ns(nfvo_id, ns_id):
         abort(401, description=e.description)
     except Forbidden as e:
         abort(403, description=e.description)
-    except (NfvoNotFound, NfvoCredentialsNotFound, NsdNotFound) as e:
+    except (NfvoNotFound, NfvoCredentialsNotFound, NsNotFound) as e:
         abort(404, description=e.description)
     except Conflict as e:
         abort(409, description=e.description)
@@ -205,7 +205,7 @@ def scale_ns(nfvo_id, ns_id):
         abort(401, description=e.description)
     except Forbidden as e:
         abort(403, description=e.description)
-    except (NfvoNotFound, NfvoCredentialsNotFound, NsdNotFound) as e:
+    except (NfvoNotFound, NfvoCredentialsNotFound, NsNotFound) as e:
         abort(404, description=e.description)
     except Conflict as e:
         abort(409, description=e.description)
