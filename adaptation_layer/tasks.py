@@ -75,7 +75,11 @@ def post_osm_vims():
                 logger.debug(str(e))
                 continue
         for v in osm_vims:
-            iwf_repository.post_vim_safe(v, osm['_links']['self']['href'])
+            try:
+                iwf_repository.post_vim_safe(v, osm['_links']['self']['href'])
+            except (ServerError, HTTPError)as e:
+                logger.warning('error with iwf repository. skip vim')
+                logger.debug(str(e))
 
 
 @celery.task

@@ -101,7 +101,10 @@ def _get_nfvo(nfvo_id) -> Dict:
 
 @_server_error
 def _convert_nfvo(nfvo: Dict) -> Dict:
-    site = get(nfvo['_links']['site']['href']).json()['name']
+    try:
+        site = get(nfvo['_links']['site']['href']).json()['name']
+    except HTTPError:
+        site = None
     conv = {
         'id': nfvo['id'],
         'name': nfvo['name'],
