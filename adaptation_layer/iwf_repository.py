@@ -22,7 +22,7 @@ from requests import get, ConnectionError, Timeout, \
 from error_handler import ServerError, NfvoNotFound, NfvoCredentialsNotFound, \
     Unauthorized, BadRequest, SubscriptionNotFound
 
-logger = logging.getLogger('app.siteinventory')
+logger = logging.getLogger('app.iwf_repository')
 SITEINV_HTTPS = os.getenv('SITEINV_HTTPS', 'false').lower()
 SITEINV_HOST = os.getenv('SITEINV_HOST')
 SITEINV_PORT = os.getenv('SITEINV_PORT')

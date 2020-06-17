@@ -34,7 +34,7 @@ app.config.from_object(config.Config)
 init_errorhandler(app)
 
 if SITEINV == 'true':
-    app.logger.info('using siteinventory')
+    app.logger.info('using iwf repository')
     database = iwf_repository
     tasks.post_osm_vims.delay()
 else:

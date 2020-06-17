@@ -58,7 +58,7 @@ def post_osm_vims():
     try:
         osm_list = iwf_repository.find_nfvos_by_type('osm')
     except (ServerError, HTTPError)as e:
-        logger.warning('error with siteinventory. skip post_osm_vims')
+        logger.warning('error with iwf repository. skip post_osm_vims')
         logger.debug(str(e))
     for osm in osm_list:
         osm_vims = []
@@ -84,7 +84,7 @@ def osm_notifications():
     try:
         osm_list = iwf_repository.find_nfvos_by_type('osm')
     except (ServerError, HTTPError)as e:
-        logger.warning('error with siteinventory, skip osm_notifications')
+        logger.warning('error with iwf repository, skip osm_notifications')
         logger.debug(str(e))
     for osm in osm_list:
         ops = []
@@ -129,7 +129,7 @@ def forward_notification(notification: Dict):
         subs = iwf_repository.search_subs_by_ns_instance(
             notification['nsInstanceId'])
     except (ServerError, HTTPError)as e:
-        logger.warning('error with siteinventory. skip post_osm_vims')
+        logger.warning('error with iwf repository. skip post_osm_vims')
         logger.debug(str(e))
     if not subs:
         logger.warning('no subscriptions for nsInstanceId {0}'.format(
