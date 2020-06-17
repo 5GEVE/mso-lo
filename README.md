@@ -33,10 +33,10 @@ cp nfvo_credentials_mock.json nfvo_credentials.json
 
 ### Environment with local database
 
-Edit [docker-compose.yaml](docker-compose.yml) and disable site-inventory support.
+Edit [docker-compose.yaml](docker-compose.yml) and disable iwf repository support.
 
 ```yaml
-SITEINV: 'false'
+IWFREPO: 'false'
 ```
 
 Edit `adaptation-layer/seed/nfvo.json` and `adaptation-layer/seed/nfvo_credentials.json` (copied before)
@@ -50,16 +50,16 @@ docker-compose build
 docker-compose up
 ```
 
-### Environment with site-inventory (production)
+### Environment with iwf repository
 
-If [site-inventory](https://github.com/5GEVE/site-inventory) is available in your environment,
+If [iwf-repository](https://github.com/5GEVE/iwf-repository) is available in your environment,
 edit [docker-compose.yaml](docker-compose.yml) and change the environment variables for the `flask` service:
 
 ```yaml
-SITEINV: 'true'
-SITEINV_HOST: '192.168.17.20'
-SITEINV_PORT: '8087'
-SITEINV_INTERVAL: '300'
+IWFREPO: 'true'
+IWFREPO_HOST: '192.168.17.20'
+IWFREPO_PORT: '8087'
+IWFREPO_INTERVAL: '300'
 ```
 
 Then, deploy with:

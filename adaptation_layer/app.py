@@ -19,23 +19,23 @@ from flask_migrate import Migrate
 
 import config
 import driver.manager as manager
-import siteinventory
+import iwf_repository
 import sqlite
 import tasks
 from error_handler import NfvoNotFound, NsNotFound, NsdNotFound, \
     init_errorhandler, NfvoCredentialsNotFound, SubscriptionNotFound
 from error_handler import Unauthorized, BadRequest, ServerError, NsOpNotFound
 
-SITEINV = os.getenv('SITEINV', 'false').lower()
+IWFREPO = os.getenv('IWFREPO', 'false').lower()
 
 logging.basicConfig(level=logging.INFO)
 app = Flask(__name__)
 app.config.from_object(config.Config)
 init_errorhandler(app)
 
-if SITEINV == 'true':
-    app.logger.info('using siteinventory')
-    database = siteinventory
+if IWFREPO == 'true':
+    app.logger.info('using iwf repository')
+    database = iwf_repository
     tasks.post_osm_vims.delay()
 else:
     app.logger.info('using sqlite')
