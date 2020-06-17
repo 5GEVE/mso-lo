@@ -256,7 +256,7 @@ def get_subscription_list(nfvo_id):
                              200)
     except Unauthorized as e:
         abort(401, description=e.description)
-    except (NfvoNotFound, NfvoCredentialsNotFound) as e:
+    except NfvoNotFound as e:
         abort(404, description=e.description)
     except ServerError as e:
         abort(500, description=e.description)
