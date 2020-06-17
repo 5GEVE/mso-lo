@@ -333,6 +333,7 @@ paths:
         - NS instances
       summary: Scale NS instance.
       description: |
+        WARNING: not tested
         Scale a NS instance. The precondition is that the NS instance must have
         been created and must be in INSTANTIATED state. As a result of the
         success of this operation, the NFVO creates a 'NS Lifecycle Operation
