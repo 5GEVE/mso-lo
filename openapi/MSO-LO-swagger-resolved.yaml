@@ -51,8 +51,8 @@ paths:
             type: array
             items:
               $ref: '#/definitions/NFVO'
-        "400":
-          description: The request is malformed
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
           schema:
             $ref: '#/definitions/ErrorResponse'
       deprecated: false
@@ -78,10 +78,6 @@ paths:
           headers: {}
           schema:
             $ref: '#/definitions/NFVO'
-        "400":
-          description: The request is malformed
-          schema:
-            $ref: '#/definitions/ErrorResponse'
         "401":
           description: Unauthorized, Invalid credentials (client or user)
           schema:
@@ -128,6 +124,10 @@ paths:
           description: Unauthorized, Invalid credentials (client or user)
           schema:
             $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
       deprecated: false
     post:
       tags:
@@ -166,6 +166,22 @@ paths:
             $ref: '#/definitions/ErrorResponse'
         "401":
           description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "403":
+          description: Not enough permissions to do this operation
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "409":
+          description: The operation cannot be executed currently, due to a conflict with the state of the resource.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "422":
+          description: The request was well-formed but was unable to be followed due to semantic errors.
           schema:
             $ref: '#/definitions/ErrorResponse'
       deprecated: false
@@ -242,8 +258,20 @@ paths:
           description: Unauthorized, Invalid credentials (client or user)
           schema:
             $ref: '#/definitions/ErrorResponse'
+        "403":
+          description: Not enough permissions to do this operation
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         "404":
           description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "409":
+          description: The operation cannot be executed currently, due to a conflict with the state of the resource.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "422":
+          description: The request was well-formed but was unable to be followed due to semantic errors.
           schema:
             $ref: '#/definitions/ErrorResponse'
       deprecated: false
@@ -305,6 +333,7 @@ paths:
         - NS instances
       summary: Scale NS instance.
       description: |
+        WARNING: not tested
         Scale a NS instance. The precondition is that the NS instance must have
         been created and must be in INSTANTIATED state. As a result of the
         success of this operation, the NFVO creates a 'NS Lifecycle Operation
@@ -343,8 +372,20 @@ paths:
           description: Unauthorized, Invalid credentials (client or user)
           schema:
             $ref: '#/definitions/ErrorResponse'
+        "403":
+          description: Not enough permissions to do this operation
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         "404":
           description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "409":
+          description: The operation cannot be executed currently, due to a conflict with the state of the resource.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "422":
+          description: The request was well-formed but was unable to be followed due to semantic errors.
           schema:
             $ref: '#/definitions/ErrorResponse'
       deprecated: false
@@ -388,8 +429,20 @@ paths:
           description: Unauthorized, Invalid credentials (client or user)
           schema:
             $ref: '#/definitions/ErrorResponse'
+        "403":
+          description: Not enough permissions to do this operation
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         "404":
           description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "409":
+          description: The operation cannot be executed currently, due to a conflict with the state of the resource.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "422":
+          description: The request was well-formed but was unable to be followed due to semantic errors.
           schema:
             $ref: '#/definitions/ErrorResponse'
       deprecated: false
@@ -443,6 +496,10 @@ paths:
             $ref: '#/definitions/ErrorResponse'
         "401":
           description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
           schema:
             $ref: '#/definitions/ErrorResponse'
       deprecated: false
@@ -502,6 +559,10 @@ paths:
           description: Unauthorized, Invalid credentials (client or user)
           schema:
             $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
       deprecated: false
   /nfvo/{nfvoId}/subscriptions:
     get:
@@ -530,6 +591,14 @@ paths:
             type: array
             items:
               $ref: '#/definitions/CollectionModelLccnSubscription'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
       deprecated: false
     post:
       tags:
@@ -562,6 +631,26 @@ paths:
           description: The request is malformed
           schema:
             $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "403":
+          description: Not enough permissions to do this operation
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "409":
+          description: The operation cannot be executed currently, due to a conflict with the state of the resource.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "422":
+          description: The request was well-formed but was unable to be followed due to semantic errors.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
       deprecated: false
   /nfvo/{nfvoId}/subscriptions/{subscriptionId}:
     get:
@@ -591,6 +680,10 @@ paths:
           headers: {}
           schema:
             $ref: '#/definitions/LccnSubscription'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         "404":
           description: The specified resource was not found
           schema:
@@ -621,6 +714,10 @@ paths:
           description: |
             204 NO CONTENT. The subscription resource has been deleted successfully. The response body shall be empty.
           headers: {}
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         "404":
           description: The specified resource was not found
           schema:
@@ -867,19 +964,6 @@ definitions:
     enum:
       - NOT_INSTANTIATED
       - INSTANTIATED
-  InstantiateNsRequest:
-    type: object
-    required:
-      - nsFlavourId
-      - nsInstantiationLevelId
-    properties:
-      nsFlavourId:
-        type: string
-        description: Identifier of the NS deployment flavour to be instantiated.
-      nsInstantiationLevelId:
-        type: string
-        description: af
-    title: InstantiateNsRequest
   NsLcmOpOcc:
     type: object
     required:
@@ -971,78 +1055,6 @@ definitions:
           automatically at this timestamp. Cardinality '0' indicates the NS termination
           takes place immediately.
     title: TerminateNsRequest
-  nsInstanceSubscriptionFilter1:
-    type: object
-    properties:
-      nsInstanceIds:
-        type: array
-        description: If present, match NS instances with an instance identifier listed in this attribute.
-        items:
-          type: string
-    title: nsInstanceSubscriptionFilter1
-    description: This type represents subscription filter criteria to match NS instances.
-  NFVOparameters:
-    type: object
-    properties:
-      nfvo_id:
-        type: integer
-        format: int32
-        description: nfvo identifier
-    title: NFVOparameters
-  Paginationparameters:
-    type: object
-    properties:
-      offset:
-        type: integer
-        format: int32
-        description: FROM pagination
-      limit:
-        type: integer
-        format: int32
-        description: COUNT pagination
-    title: Paginationparameters
-  body:
-    type: object
-    required:
-      - nsInstanceId
-      - subscriptionId
-    properties:
-      notificationType:
-        type: string
-        example: NsIdentifierCreationNotification
-        description: Discriminator for the different notification types. Shall be set to 'NsIdentifierCreationNotification' for this notification type.
-      subscriptionId:
-        type: string
-        description: An identifier with the intention of being globally unique.
-      timestamp:
-        type: string
-        format: date-time
-        description: 'Date-time stamp. Representation: String formatted according toas defined by the date-time production in IETF RFC 3339.'
-      nsInstanceId:
-        type: string
-        description: An identifier with the intention of being globally unique.
-    title: body
-  body_1:
-    type: object
-    required:
-      - nsInstanceId
-      - subscriptionId
-    properties:
-      notificationType:
-        type: string
-        example: NsIdentifierDeletionNotification
-        description: Discriminator for the different notification types. Shall be set to 'NsIdentifierDeletionNotification' for this notification type.
-      subscriptionId:
-        type: string
-        description: An identifier with the intention of being globally unique.
-      timestamp:
-        type: string
-        format: date-time
-        description: 'Date-time stamp. Representation: String formatted according toas defined by the date-time production in IETF RFC 3339.'
-      nsInstanceId:
-        type: string
-        description: An identifier with the intention of being globally unique.
-    title: body_1
   ErrorResponse_details:
     type: object
     properties:
@@ -1053,12 +1065,6 @@ definitions:
       message:
         type: string
     title: ErrorResponse_details
-  NSInstanceSubscription_filter:
-    type: object
-    properties:
-      nsInstanceSubscriptionFilter:
-        $ref: '#/definitions/nsInstanceSubscriptionFilter1'
-    title: NSInstanceSubscription_filter
   NfvoNsInstancesRequest:
     type: object
     properties:

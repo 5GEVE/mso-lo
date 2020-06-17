@@ -20,23 +20,25 @@ from celery import Celery
 from celery.utils.log import get_task_logger
 from requests import post, RequestException
 
-import siteinventory
+import iwf_repository
 from driver.osm import OSM
 from error_handler import ServerError, Error
 
-SITEINV = os.getenv('SITEINV', 'false').lower()
+IWFREPO = os.getenv('IWFREPO', 'false').lower()
 redis_host = os.getenv('REDIS_HOST') if os.getenv('REDIS_HOST') else 'redis'
 redis_port = int(os.getenv('REDIS_PORT')) if os.getenv('REDIS_PORT') else 6379
+# TTL for key in redis
+KEY_TTL = 86400
 
 celery = Celery('tasks',
                 broker='redis://{0}:{1}/0'.format(redis_host, redis_port),
                 backend='redis://{0}:{1}/0'.format(redis_host, redis_port))
 
-if SITEINV == 'true':
+if IWFREPO == 'true':
     celery.conf.beat_schedule = {
         'add_post_osm_vims_periodic': {
             'task': 'tasks.post_osm_vims',
-            'schedule': siteinventory.interval
+            'schedule': iwf_repository.interval
         },
         'add_osm_notifications': {
             'task': 'tasks.osm_notifications',
@@ -46,23 +48,23 @@ if SITEINV == 'true':
 celery.conf.timezone = 'UTC'
 logger = get_task_logger(__name__)
 
-last_op_status = redis.Redis(host=redis_host, port=redis_port, db=1,
-                             decode_responses=True)
+redis_client = redis.Redis(
+    host=redis_host, port=redis_port, db=1, decode_responses=True)
 
 
 @celery.task
 def post_osm_vims():
     osm_list = []
     try:
-        osm_list = siteinventory.find_nfvos_by_type('osm')
+        osm_list = iwf_repository.find_nfvos_by_type('osm')
     except (ServerError, HTTPError)as e:
-        logger.warning('error with siteinventory. skip post_osm_vims')
+        logger.warning('error with iwf repository. skip post_osm_vims')
         logger.debug(str(e))
     for osm in osm_list:
         osm_vims = []
         if osm['credentials']:
             try:
-                driver = OSM(siteinventory.convert_cred(osm))
+                driver = OSM(iwf_repository.convert_cred(osm))
                 osm_vims, headers = driver.get_vim_list()
             except Error as e:
                 logger.warning(
@@ -73,22 +75,26 @@ def post_osm_vims():
                 logger.debug(str(e))
                 continue
         for v in osm_vims:
-            siteinventory.post_vim_safe(v, osm['_links']['self']['href'])
+            try:
+                iwf_repository.post_vim_safe(v, osm['_links']['self']['href'])
+            except (ServerError, HTTPError)as e:
+                logger.warning('error with iwf repository. skip vim')
+                logger.debug(str(e))
 
 
 @celery.task
 def osm_notifications():
     osm_list = []
     try:
-        osm_list = siteinventory.find_nfvos_by_type('osm')
+        osm_list = iwf_repository.find_nfvos_by_type('osm')
     except (ServerError, HTTPError)as e:
-        logger.warning('error with siteinventory, skip osm_notifications')
+        logger.warning('error with iwf repository, skip osm_notifications')
         logger.debug(str(e))
     for osm in osm_list:
         ops = []
         if osm['credentials']:
             try:
-                driver = OSM(siteinventory.convert_cred(osm))
+                driver = OSM(iwf_repository.convert_cred(osm))
                 ops, headers = driver.get_op_list({'args': {}})
             except Error as e:
                 logger.warning(
@@ -99,12 +105,12 @@ def osm_notifications():
                 logger.debug(str(e))
                 continue
         for op in ops:
-            last_s = last_op_status.get(op['id'])
+            last_s = redis_client.get(op['id'])
             logger.debug('last_s from redis: {}'.format(last_s))
             if not last_s or last_s != op['operationState']:
                 logger.info('different op state, send notification')
                 logger.debug('{},{}'.format(last_s, op['operationState']))
-                last_op_status.set(op['id'], op['operationState'])
+                redis_client.setex(op['id'], KEY_TTL, op['operationState'])
                 notify_payload = {
                     "nsInstanceId": op['nsInstanceId'],
                     "nsLcmOpOccId": op['id'],
@@ -119,15 +125,15 @@ def osm_notifications():
 
 @celery.task
 def forward_notification(notification: Dict):
-    if SITEINV == 'false':
-        logger.warning('site inventory disabled, ignore notification')
+    if IWFREPO == 'false':
+        logger.warning('iwf repository disabled, ignore notification')
         return None
     subs = []
     try:
-        subs = siteinventory.search_subs_by_ns_instance(
+        subs = iwf_repository.search_subs_by_ns_instance(
             notification['nsInstanceId'])
     except (ServerError, HTTPError)as e:
-        logger.warning('error with siteinventory. skip post_osm_vims')
+        logger.warning('error with iwf repository. skip post_osm_vims')
         logger.debug(str(e))
     if not subs:
         logger.warning('no subscriptions for nsInstanceId {0}'.format(
@@ -137,7 +143,8 @@ def forward_notification(notification: Dict):
             if notification['notificationType'] in s['notificationTypes']:
                 resp = post(s['callbackUri'], json=notification)
                 resp.raise_for_status()
-                logger.info('Notification sent to {0}'.format(s['callbackUri']))
+                logger.info(
+                    'Notification sent to {0}'.format(s['callbackUri']))
         except RequestException as e:
             logger.warning(
                 'Cannot send notification to {}'.format(s['callbackUri']))

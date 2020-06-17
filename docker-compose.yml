@@ -19,11 +19,11 @@ services:
     depends_on:
       - redis
     environment:
-      SITEINV: 'true'
-      SITEINV_HTTPS: 'false'
-      SITEINV_HOST: '192.168.17.20'
-      SITEINV_PORT: '8087'
-      SITEINV_INTERVAL: '300'
+      IWFREPO: 'true'
+      IWFREPO_HTTPS: 'false'
+      IWFREPO_HOST: '192.168.17.20'
+      IWFREPO_PORT: '8087'
+      IWFREPO_INTERVAL: '300'
       REDIS_HOST: 'redis'
       REDIS_PORT: '6379'
     networks:
@@ -35,6 +35,9 @@ services:
   redis:
     image: redis:latest
     container_name: redis
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
     networks:
       mso-lo-net:
         aliases:
