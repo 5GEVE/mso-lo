@@ -51,8 +51,8 @@ paths:
             type: array
             items:
               $ref: '#/definitions/NFVO'
-        "400":
-          description: The request is malformed
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
           schema:
             $ref: '#/definitions/ErrorResponse'
       deprecated: false
@@ -78,10 +78,6 @@ paths:
           headers: {}
           schema:
             $ref: '#/definitions/NFVO'
-        "400":
-          description: The request is malformed
-          schema:
-            $ref: '#/definitions/ErrorResponse'
         "401":
           description: Unauthorized, Invalid credentials (client or user)
           schema:
@@ -128,6 +124,10 @@ paths:
           description: Unauthorized, Invalid credentials (client or user)
           schema:
             $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
       deprecated: false
     post:
       tags:
@@ -166,6 +166,22 @@ paths:
             $ref: '#/definitions/ErrorResponse'
         "401":
           description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "403":
+          description: Not enough permissions to do this operation
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "409":
+          description: The operation cannot be executed currently, due to a conflict with the state of the resource.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "422":
+          description: The request was well-formed but was unable to be followed due to semantic errors.
           schema:
             $ref: '#/definitions/ErrorResponse'
       deprecated: false
@@ -242,8 +258,20 @@ paths:
           description: Unauthorized, Invalid credentials (client or user)
           schema:
             $ref: '#/definitions/ErrorResponse'
+        "403":
+          description: Not enough permissions to do this operation
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         "404":
           description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "409":
+          description: The operation cannot be executed currently, due to a conflict with the state of the resource.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "422":
+          description: The request was well-formed but was unable to be followed due to semantic errors.
           schema:
             $ref: '#/definitions/ErrorResponse'
       deprecated: false
@@ -343,8 +371,20 @@ paths:
           description: Unauthorized, Invalid credentials (client or user)
           schema:
             $ref: '#/definitions/ErrorResponse'
+        "403":
+          description: Not enough permissions to do this operation
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         "404":
           description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "409":
+          description: The operation cannot be executed currently, due to a conflict with the state of the resource.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "422":
+          description: The request was well-formed but was unable to be followed due to semantic errors.
           schema:
             $ref: '#/definitions/ErrorResponse'
       deprecated: false
@@ -388,8 +428,20 @@ paths:
           description: Unauthorized, Invalid credentials (client or user)
           schema:
             $ref: '#/definitions/ErrorResponse'
+        "403":
+          description: Not enough permissions to do this operation
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         "404":
           description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "409":
+          description: The operation cannot be executed currently, due to a conflict with the state of the resource.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "422":
+          description: The request was well-formed but was unable to be followed due to semantic errors.
           schema:
             $ref: '#/definitions/ErrorResponse'
       deprecated: false
@@ -443,6 +495,10 @@ paths:
             $ref: '#/definitions/ErrorResponse'
         "401":
           description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
           schema:
             $ref: '#/definitions/ErrorResponse'
       deprecated: false
@@ -502,6 +558,10 @@ paths:
           description: Unauthorized, Invalid credentials (client or user)
           schema:
             $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
       deprecated: false
   /nfvo/{nfvoId}/subscriptions:
     get:
@@ -530,6 +590,14 @@ paths:
             type: array
             items:
               $ref: '#/definitions/CollectionModelLccnSubscription'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
       deprecated: false
     post:
       tags:
@@ -562,6 +630,26 @@ paths:
           description: The request is malformed
           schema:
             $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "403":
+          description: Not enough permissions to do this operation
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "409":
+          description: The operation cannot be executed currently, due to a conflict with the state of the resource.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "422":
+          description: The request was well-formed but was unable to be followed due to semantic errors.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
       deprecated: false
   /nfvo/{nfvoId}/subscriptions/{subscriptionId}:
     get:
@@ -591,6 +679,10 @@ paths:
           headers: {}
           schema:
             $ref: '#/definitions/LccnSubscription'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         "404":
           description: The specified resource was not found
           schema:
@@ -621,6 +713,10 @@ paths:
           description: |
             204 NO CONTENT. The subscription resource has been deleted successfully. The response body shall be empty.
           headers: {}
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         "404":
           description: The specified resource was not found
           schema:

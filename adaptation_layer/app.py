@@ -24,7 +24,8 @@ import sqlite
 import tasks
 from error_handler import NfvoNotFound, NsNotFound, NsdNotFound, \
     init_errorhandler, NfvoCredentialsNotFound, SubscriptionNotFound
-from error_handler import Unauthorized, BadRequest, ServerError, NsOpNotFound
+from error_handler import Unauthorized, BadRequest, ServerError, \
+    NsOpNotFound, Conflict, Unprocessable, Forbidden
 
 SITEINV = os.getenv('SITEINV', 'false').lower()
 
@@ -77,10 +78,14 @@ def create_ns(nfvo_id):
         abort(400, description=e.description)
     except Unauthorized as e:
         abort(401, description=e.description)
-    except (NfvoNotFound, NfvoCredentialsNotFound) as e:
+    except Forbidden as e:
+        abort(403, description=e.description)
+    except (NfvoNotFound, NfvoCredentialsNotFound, NsdNotFound) as e:
         abort(404, description=e.description)
-    except NsdNotFound as e:
-        abort(404, description=e.description)
+    except Conflict as e:
+        abort(409, description=e.description)
+    except Unprocessable as e:
+        abort(422, description=e.description)
     except ServerError as e:
         abort(500, description=e.description)
 
@@ -113,9 +118,7 @@ def get_ns(nfvo_id, ns_id):
         abort(400, description=e.description)
     except Unauthorized as e:
         abort(401, description=e.description)
-    except (NfvoNotFound, NfvoCredentialsNotFound) as e:
-        abort(404, description=e.description)
-    except NsNotFound as e:
+    except (NfvoNotFound, NfvoCredentialsNotFound, NsNotFound) as e:
         abort(404, description=e.description)
     except ServerError as e:
         abort(500, description=e.description)
@@ -132,9 +135,9 @@ def delete_ns(nfvo_id, ns_id):
         abort(400, description=e.description)
     except Unauthorized as e:
         abort(401, description=e.description)
-    except (NfvoNotFound, NfvoCredentialsNotFound) as e:
-        abort(404, description=e.description)
-    except NsNotFound as e:
+    except Forbidden as e:
+        abort(403, description=e.description)
+    except (NfvoNotFound, NfvoCredentialsNotFound, NsNotFound) as e:
         abort(404, description=e.description)
     except ServerError as e:
         abort(500, description=e.description)
@@ -152,10 +155,14 @@ def instantiate_ns(nfvo_id, ns_id):
         abort(400, description=e.description)
     except Unauthorized as e:
         abort(401, description=e.description)
-    except (NfvoNotFound, NfvoCredentialsNotFound) as e:
+    except Forbidden as e:
+        abort(403, description=e.description)
+    except (NfvoNotFound, NfvoCredentialsNotFound, NsdNotFound) as e:
         abort(404, description=e.description)
-    except NsNotFound as e:
-        abort(404, description=e.description)
+    except Conflict as e:
+        abort(409, description=e.description)
+    except Unprocessable as e:
+        abort(422, description=e.description)
     except ServerError as e:
         abort(500, description=e.description)
 
@@ -172,10 +179,14 @@ def terminate_ns(nfvo_id, ns_id):
         abort(400, description=e.description)
     except Unauthorized as e:
         abort(401, description=e.description)
-    except (NfvoNotFound, NfvoCredentialsNotFound) as e:
+    except Forbidden as e:
+        abort(403, description=e.description)
+    except (NfvoNotFound, NfvoCredentialsNotFound, NsdNotFound) as e:
         abort(404, description=e.description)
-    except NsNotFound as e:
-        abort(404, description=e.description)
+    except Conflict as e:
+        abort(409, description=e.description)
+    except Unprocessable as e:
+        abort(422, description=e.description)
     except ServerError as e:
         abort(500, description=e.description)
 
@@ -192,10 +203,14 @@ def scale_ns(nfvo_id, ns_id):
         abort(400, description=e.description)
     except Unauthorized as e:
         abort(401, description=e.description)
-    except (NfvoNotFound, NfvoCredentialsNotFound) as e:
+    except Forbidden as e:
+        abort(403, description=e.description)
+    except (NfvoNotFound, NfvoCredentialsNotFound, NsdNotFound) as e:
         abort(404, description=e.description)
-    except NsNotFound as e:
-        abort(404, description=e.description)
+    except Conflict as e:
+        abort(409, description=e.description)
+    except Unprocessable as e:
+        abort(422, description=e.description)
     except ServerError as e:
         abort(500, description=e.description)
 
@@ -211,9 +226,7 @@ def get_op_list(nfvo_id):
         abort(400, description=e.description)
     except Unauthorized as e:
         abort(401, description=e.description)
-    except NsNotFound as e:
-        abort(404, description=e.description)
-    except (NfvoNotFound, NfvoCredentialsNotFound) as e:
+    except (NfvoNotFound, NfvoCredentialsNotFound, NsNotFound) as e:
         abort(404, description=e.description)
     except ServerError as e:
         abort(500, description=e.description)
@@ -230,9 +243,7 @@ def get_op(nfvo_id, nsLcmOpId):
         abort(400, description=e.description)
     except Unauthorized as e:
         abort(401, description=e.description)
-    except (NfvoNotFound, NfvoCredentialsNotFound) as e:
-        abort(404, description=e.description)
-    except NsOpNotFound as e:
+    except (NfvoNotFound, NfvoCredentialsNotFound, NsNotFound, NsOpNotFound) as e:
         abort(404, description=e.description)
     except ServerError as e:
         abort(500, description=e.description)
@@ -245,6 +256,8 @@ def get_subscription_list(nfvo_id):
                              200)
     except Unauthorized as e:
         abort(401, description=e.description)
+    except (NfvoNotFound, NfvoCredentialsNotFound) as e:
+        abort(404, description=e.description)
     except ServerError as e:
         abort(500, description=e.description)
 
@@ -256,6 +269,16 @@ def create_subscription(nfvo_id):
             jsonify(database.create_subscription(nfvo_id, request.json)), 201)
     except BadRequest as e:
         abort(400, description=e.description)
+    except Unauthorized as e:
+        abort(401, description=e.description)
+    except Forbidden as e:
+        abort(403, description=e.description)
+    except (NfvoNotFound, NfvoCredentialsNotFound) as e:
+        abort(404, description=e.description)
+    except Conflict as e:
+        abort(409, description=e.description)
+    except Unprocessable as e:
+        abort(422, description=e.description)
     except ServerError as e:
         abort(500, description=e.description)
 
@@ -265,7 +288,9 @@ def get_subscription(nfvo_id, subscriptionId):
     try:
         return make_response(
             jsonify(database.get_subscription(nfvo_id, subscriptionId)), 200)
-    except SubscriptionNotFound as e:
+    except Unauthorized as e:
+        abort(401, description=e.description)
+    except (NfvoNotFound, NfvoCredentialsNotFound, SubscriptionNotFound) as e:
         abort(404, description=e.description)
     except ServerError as e:
         abort(500, description=e.description)
@@ -276,7 +301,9 @@ def delete_subscription(nfvo_id, subscriptionId):
     try:
         database.delete_subscription(subscriptionId)
         return make_response('', 204)
-    except SubscriptionNotFound as e:
+    except Unauthorized as e:
+        abort(401, description=e.description)
+    except (NfvoNotFound, NfvoCredentialsNotFound, SubscriptionNotFound) as e:
         abort(404, description=e.description)
     except ServerError as e:
         abort(500, description=e.description)
