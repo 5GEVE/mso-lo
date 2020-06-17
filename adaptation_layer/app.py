@@ -19,7 +19,7 @@ from flask_migrate import Migrate
 
 import config
 import driver.manager as manager
-import siteinventory
+import iwf_repository
 import sqlite
 import tasks
 from error_handler import NfvoNotFound, NsNotFound, NsdNotFound, \
@@ -35,7 +35,7 @@ init_errorhandler(app)
 
 if SITEINV == 'true':
     app.logger.info('using siteinventory')
-    database = siteinventory
+    database = iwf_repository
     tasks.post_osm_vims.delay()
 else:
     app.logger.info('using sqlite')

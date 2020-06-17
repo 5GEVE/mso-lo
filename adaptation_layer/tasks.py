@@ -20,7 +20,7 @@ from celery import Celery
 from celery.utils.log import get_task_logger
 from requests import post, RequestException
 
-import siteinventory
+import iwf_repository
 from driver.osm import OSM
 from error_handler import ServerError, Error
 
@@ -38,7 +38,7 @@ if SITEINV == 'true':
     celery.conf.beat_schedule = {
         'add_post_osm_vims_periodic': {
             'task': 'tasks.post_osm_vims',
-            'schedule': siteinventory.interval
+            'schedule': iwf_repository.interval
         },
         'add_osm_notifications': {
             'task': 'tasks.osm_notifications',
@@ -56,7 +56,7 @@ redis_client = redis.Redis(
 def post_osm_vims():
     osm_list = []
     try:
-        osm_list = siteinventory.find_nfvos_by_type('osm')
+        osm_list = iwf_repository.find_nfvos_by_type('osm')
     except (ServerError, HTTPError)as e:
         logger.warning('error with siteinventory. skip post_osm_vims')
         logger.debug(str(e))
@@ -64,7 +64,7 @@ def post_osm_vims():
         osm_vims = []
         if osm['credentials']:
             try:
-                driver = OSM(siteinventory.convert_cred(osm))
+                driver = OSM(iwf_repository.convert_cred(osm))
                 osm_vims, headers = driver.get_vim_list()
             except Error as e:
                 logger.warning(
@@ -75,14 +75,14 @@ def post_osm_vims():
                 logger.debug(str(e))
                 continue
         for v in osm_vims:
-            siteinventory.post_vim_safe(v, osm['_links']['self']['href'])
+            iwf_repository.post_vim_safe(v, osm['_links']['self']['href'])
 
 
 @celery.task
 def osm_notifications():
     osm_list = []
     try:
-        osm_list = siteinventory.find_nfvos_by_type('osm')
+        osm_list = iwf_repository.find_nfvos_by_type('osm')
     except (ServerError, HTTPError)as e:
         logger.warning('error with siteinventory, skip osm_notifications')
         logger.debug(str(e))
@@ -90,7 +90,7 @@ def osm_notifications():
         ops = []
         if osm['credentials']:
             try:
-                driver = OSM(siteinventory.convert_cred(osm))
+                driver = OSM(iwf_repository.convert_cred(osm))
                 ops, headers = driver.get_op_list({'args': {}})
             except Error as e:
                 logger.warning(
@@ -126,7 +126,7 @@ def forward_notification(notification: Dict):
         return None
     subs = []
     try:
-        subs = siteinventory.search_subs_by_ns_instance(
+        subs = iwf_repository.search_subs_by_ns_instance(
             notification['nsInstanceId'])
     except (ServerError, HTTPError)as e:
         logger.warning('error with siteinventory. skip post_osm_vims')
