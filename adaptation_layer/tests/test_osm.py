@@ -120,6 +120,10 @@ class OSMTestCase(unittest.TestCase):
         res = self.client().post('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/instantiate?__code=401')
         self.assertEqual(401, res.status_code)
 
+    def test_instantiate_ns_404(self):
+        res = self.client().post('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/instantiate?__code=404')
+        self.assertEqual(404, res.status_code)
+
     # Check status codes 202, 401, 404, headers and payload for terminate_ns()
     def test_terminate_ns_202(self):
         res = self.client().post('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/terminate?__code=202',

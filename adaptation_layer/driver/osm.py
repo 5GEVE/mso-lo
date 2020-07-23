@@ -13,6 +13,7 @@
 #  limitations under the License.
 
 import copy
+import json
 import logging
 import os
 import re
@@ -21,38 +22,58 @@ from functools import wraps
 from typing import Dict, Tuple, List
 from urllib.parse import urlencode
 
-import requests
+import redis
 import urllib3
 import yaml as YAML
+from requests import ConnectionError, Timeout, TooManyRedirects, URLRequired, \
+    api, HTTPError, get, post, delete
 from urllib3.exceptions import InsecureRequestWarning
 
 from error_handler import ResourceNotFound, NsNotFound, VnfNotFound, \
-    Unauthorized, BadRequest, ServerError, NsOpNotFound, VnfPkgNotFound, \
-    VimNotFound, NsdNotFound
+    Unauthorized, ServerError, NsOpNotFound, VnfPkgNotFound, \
+    VimNotFound, NsdNotFound, BadRequest, Forbidden, MethodNotAllowed, \
+    Unprocessable, Conflict
 from .interface import Driver, Headers, BodyList, Body
 
 urllib3.disable_warnings(InsecureRequestWarning)
 TESTING = os.getenv('TESTING', 'false').lower()
 PRISM_ALIAS = os.getenv("PRISM_ALIAS", "prism-osm")
 
+redis_host = os.getenv('REDIS_HOST') if os.getenv('REDIS_HOST') else 'redis'
+redis_port = int(os.getenv('REDIS_PORT')) if os.getenv('REDIS_PORT') else 6379
+# TTL (seconds) for key in redis
+KEY_TTL = 3599
+redis_client = redis.Redis(
+    host=redis_host, port=redis_port, db=2, decode_responses=True)
+
 logger = logging.getLogger('app.driver.osm')
+
 
 def _authenticate(func):
     @wraps(func)
     def wrapper(self, *args, **kwargs):
         if TESTING == 'true':
             pass
-        elif not self._token or datetime.utcfromtimestamp(
-                self._token["expires"]) < datetime.utcnow():
-            auth_payload = {'username': self._user,
-                            'password': self._password,
-                            'project_id': self._project}
-            token_url = "{0}/{1}".format(self._base_path,
-                                         self._token_endpoint)
-            self._token, headers = self._exec_post(token_url,
-                                                   json=auth_payload)
+        else:
+            token_key = 'nfvo_' + str(self._nfvoId)
+            if not self._token:
+                s_token = redis_client.get(token_key)
+                if s_token:
+                    self._token = json.loads(str(s_token))
+            if not self._token or datetime.utcfromtimestamp(
+                    self._token["expires"]) < datetime.utcnow():
+                auth_payload = {'username': self._user,
+                                'password': self._password,
+                                'project_id': self._project}
+                token_url = "{0}/{1}".format(self._base_path,
+                                             self._token_endpoint)
+                self._token, headers = OSM._request(
+                    post, token_url, json=auth_payload)
+                t_val = json.dumps(self._token)
+                redis_client.setex(token_key, KEY_TTL, t_val)
             self._headers["Authorization"] = 'Bearer {}'.format(
                 self._token['id'])
+
         return func(self, *args, **kwargs)
 
     return wrapper
@@ -79,119 +100,64 @@ class OSM(Driver):
             self._base_path = 'https://{0}:{1}/osm'.format(self._host,
                                                            self._so_port)
 
-    def _exec_get(self, url=None, params=None, headers=None):
+    @staticmethod
+    def _request(req: api.request, url, json=None, params=None, headers=None):
         try:
-            resp = requests.get(url, params=params,
-                                verify=False, stream=True, headers=headers)
-        except Exception as e:
-            raise ServerError(str(e))
-        if resp.status_code in (200, 201, 202):
-            if 'application/json' in resp.headers['content-type']:
-                return resp.json(), resp.headers
-            elif 'application/yaml' in resp.headers['content-type']:
-                return YAML.load(resp.text, Loader=YAML.SafeLoader), \
-                    resp.headers
-            else:
-                return resp.text, resp.headers
-        elif resp.status_code == 204:
-            return None, resp.headers
-        elif resp.status_code == 400:
-            raise BadRequest()
-        elif resp.status_code == 401:
-            raise Unauthorized()
-        elif resp.status_code == 404:
-            raise ResourceNotFound()
-        else:
-            if 'application/json' in resp.headers['content-type']:
-                error = resp.json()
-            elif 'application/yaml' in resp.headers['content-type']:
-                error = YAML.load(resp.text, Loader=YAML.SafeLoader)
-            else:
-                error = resp.text
-            raise ServerError(error)
-
-    def _exec_post(self, url=None, data=None, json=None, headers=None):
+            resp = req(url, json=json, params=params, headers=headers,
+                       verify=False, stream=True)
+        except (ConnectionError, Timeout, TooManyRedirects, URLRequired) as e:
+            raise ServerError('OSM connection error: ' + str(e))
         try:
-            resp = requests.post(url, data=data, json=json,
-                                 verify=False, headers=headers)
-        except Exception as e:
-            raise ServerError(str(e))
-        if resp.status_code in (200, 201, 202):
-            if 'application/json' in resp.headers['content-type']:
-                return resp.json(), resp.headers
-            elif 'application/yaml' in resp.headers['content-type']:
-                return YAML.load(resp.text, Loader=YAML.SafeLoader), \
-                    resp.headers
+            resp.raise_for_status()
+        except HTTPError as e:
+            if e.response.status_code == 400:
+                raise BadRequest(description=e.response.text)
+            elif e.response.status_code == 401:
+                raise Unauthorized(description=e.response.text)
+            elif e.response.status_code == 403:
+                raise Forbidden(description=e.response.text)
+            elif e.response.status_code == 404:
+                raise ResourceNotFound(description=e.response.text)
+            elif e.response.status_code == 405:
+                raise MethodNotAllowed(description=e.response.text)
+            elif e.response.status_code == 409:
+                raise Conflict(description=e.response.text)
+            elif e.response.status_code == 422:
+                raise Unprocessable(description=e.response.text)
             else:
-                return resp.text, resp.headers
-        elif resp.status_code == 204:
-            return None, resp.headers
-        elif resp.status_code == 400:
-            raise BadRequest()
-        elif resp.status_code == 401:
-            raise Unauthorized()
-        elif resp.status_code == 404:
-            raise ResourceNotFound()
-        else:
-            if 'application/json' in resp.headers['content-type']:
-                error = resp.json()
-            elif 'application/yaml' in resp.headers['content-type']:
-                error = YAML.load(resp.text, Loader=YAML.SafeLoader)
-            else:
-                error = resp.text
-            raise ServerError(error)
-
-    def _exec_delete(self, url=None, params=None, headers=None):
+                raise ServerError(description=e.response.text)
         try:
-            resp = requests.delete(
-                url, params=params, verify=False, headers=headers)
-        except Exception as e:
-            raise ServerError(str(e))
-        if resp.status_code in (200, 201, 202):
-            if 'application/json' in resp.headers['content-type']:
-                return resp.json(), resp.headers
-            elif 'application/yaml' in resp.headers['content-type']:
-                return YAML.load(resp.text, Loader=YAML.SafeLoader), \
-                    resp.headers
-            else:
-                return resp.text, resp.headers
-        elif resp.status_code == 204:
+            ctype = resp.headers['content-type']
+        except KeyError:
+            # success but no content
             return None, resp.headers
-        elif resp.status_code == 400:
-            raise BadRequest()
-        elif resp.status_code == 401:
-            raise Unauthorized()
-        elif resp.status_code == 404:
-            raise ResourceNotFound()
+        if 'application/json' in ctype:
+            return resp.json(), resp.headers
+        elif 'application/yaml' in ctype:
+            return YAML.load(resp.text, Loader=YAML.SafeLoader), resp.headers
         else:
-            if 'application/json' in resp.headers['content-type']:
-                error = resp.json()
-            elif 'application/yaml' in resp.headers['content-type']:
-                error = YAML.load(resp.text, Loader=YAML.SafeLoader)
-            else:
-                error = resp.text
-            raise ServerError(error)
+            return resp.text, resp.headers
 
     @_authenticate
     def _get_vnf_list(self, args=None):
         _url = "{0}/nslcm/v1/vnf_instances".format(self._base_path)
         _url = self._build_url_query(_url, args)
-        return self._exec_get(_url, headers=self._headers)
+        return self._request(get, _url, headers=self._headers)
 
     @_authenticate
     def _get_vnf(self, vnfId: str, args=None):
         _url = "{0}/nslcm/v1/vnf_instances/{1}".format(self._base_path, vnfId)
         _url = self._build_url_query(_url, args)
         try:
-            return self._exec_get(_url, headers=self._headers)
+            return self._request(get, _url, headers=self._headers)
         except ResourceNotFound:
             raise VnfNotFound(vnf_id=vnfId)
 
     @_authenticate
     def get_vim_list(self):
         _url = "{0}/admin/v1/vims".format(self._base_path)
-        _url = self._build_url_query(_url, None)
-        return self._exec_get(_url, headers=self._headers)
+        _url = self._build_url_query(_url)
+        return self._request(get, _url, headers=self._headers)
 
     @_authenticate
     def _get_vnfpkg(self, vnfPkgId, args=None):
@@ -199,7 +165,7 @@ class OSM(Driver):
             self._base_path, vnfPkgId)
         _url = self._build_url_query(_url, args)
         try:
-            return self._exec_get(_url, headers=self._headers)
+            return self._request(get, _url, headers=self._headers)
         except ResourceNotFound:
             raise VnfPkgNotFound(vnfpkg_id=vnfPkgId)
 
@@ -207,7 +173,7 @@ class OSM(Driver):
     def _get_nsdpkg(self, args=None):
         _url = "{0}/nsd/v1/ns_descriptors".format(self._base_path)
         _url = self._build_url_query(_url, args)
-        nsdpkg_list, headers = self._exec_get(_url, headers=self._headers)
+        nsdpkg_list, headers = self._request(get, _url, headers=self._headers)
         if not nsdpkg_list:
             raise NsdNotFound(nsd_id=args["args"]["id"])
         elif len(nsdpkg_list) > 1:
@@ -220,7 +186,8 @@ class OSM(Driver):
     def get_ns_list(self, args=None) -> Tuple[BodyList, Headers]:
         _url = "{0}/nslcm/v1/ns_instances".format(self._base_path)
         _url = self._build_url_query(_url, args)
-        osm_ns_list, osm_headers = self._exec_get(_url, headers=self._headers)
+        osm_ns_list, osm_headers = self._request(get, _url,
+                                                 headers=self._headers)
         sol_ns_list = []
         for osm_ns in osm_ns_list:
             sol_ns_list.append(self._ns_im_converter(osm_ns))
@@ -236,8 +203,8 @@ class OSM(Driver):
         })
         args["payload"]["nsdId"] = osm_nsdpkg["_id"]
         args['payload']['vimAccountId'] = self._select_vim()
-        osm_ns, osm_headers = self._exec_post(
-            _url, json=args['payload'], headers=self._headers)
+        osm_ns, osm_headers = self._request(
+            post, _url, json=args['payload'], headers=self._headers)
         # Get location header from OSM
         headers = self._build_headers(osm_headers)
         # Get NS info from OSM
@@ -250,7 +217,8 @@ class OSM(Driver):
         _url = "{0}/nslcm/v1/ns_instances/{1}".format(self._base_path, nsId)
         _url = self._build_url_query(_url, args)
         try:
-            osm_ns, osm_headers = self._exec_get(_url, headers=self._headers)
+            osm_ns, osm_headers = self._request(get, _url,
+                                                headers=self._headers)
         except ResourceNotFound:
             raise NsNotFound(ns_id=nsId)
         headers = self._build_headers(osm_headers)
@@ -267,8 +235,8 @@ class OSM(Driver):
         del req_headers["Content-Type"]
         del req_headers["Accept"]
         try:
-            empty_body, osm_headers = self._exec_delete(
-                _url, params=None, headers=req_headers)
+            empty_body, osm_headers = self._request(
+                delete, _url, params=None, headers=req_headers)
         except ResourceNotFound:
             raise NsNotFound(ns_id=nsId)
         headers = self._build_headers(osm_headers)
@@ -299,8 +267,8 @@ class OSM(Driver):
                         vnf['member-vnf-index'] = mapping[
                             vnf.pop('vnfInstanceId')]
                     instantiate_payload['vnf'] = additional_params['vnf']
-                except KeyError:
-                    logger.warning('cannot map vnf {}'.format(vnf))
+                except KeyError as e:
+                    logger.warning('cannot map vnf. KeyError on {}'.format(e))
             if 'wim_account' in additional_params:
                 instantiate_payload['wimAccountId'] = additional_params[
                     'wimAccountId']
@@ -308,8 +276,8 @@ class OSM(Driver):
                 instantiate_payload['wimAccountId'] = False
 
         try:
-            empty_body, osm_headers = self._exec_post(
-                _url, json=instantiate_payload, headers=self._headers)
+            empty_body, osm_headers = self._request(
+                post, _url, json=instantiate_payload, headers=self._headers)
         except ResourceNotFound as e:
             print(e)
             raise NsNotFound(ns_id=nsId)
@@ -323,8 +291,8 @@ class OSM(Driver):
             self._base_path, nsId)
         _url = self._build_url_query(_url, args)
         try:
-            emtpy_body, osm_headers = self._exec_post(
-                _url, json=args['payload'], headers=self._headers)
+            emtpy_body, osm_headers = self._request(
+                post, _url, json=args['payload'], headers=self._headers)
         except ResourceNotFound:
             raise NsNotFound(ns_id=nsId)
         headers = self._build_headers(osm_headers)
@@ -336,8 +304,8 @@ class OSM(Driver):
             self._base_path, nsId)
         _url = self._build_url_query(_url, args)
         try:
-            empty_body, osm_headers = self._exec_post(
-                _url, json=args['payload'], headers=self._headers)
+            empty_body, osm_headers = self._request(
+                post, _url, json=args['payload'], headers=self._headers)
         except ResourceNotFound:
             raise NsNotFound(ns_id=id)
         headers = self._build_headers(osm_headers)
@@ -347,7 +315,8 @@ class OSM(Driver):
     def get_op_list(self, args: Dict = None) -> Tuple[BodyList, Headers]:
         _url = "{0}/nslcm/v1/ns_lcm_op_occs".format(self._base_path)
         _url = self._build_url_query(_url, args)
-        osm_op_list, osm_headers = self._exec_get(_url, headers=self._headers)
+        osm_op_list, osm_headers = self._request(get, _url,
+                                                 headers=self._headers)
         sol_op_list = []
         for op in osm_op_list:
             sol_op_list.append(self._op_im_converter(op))
@@ -360,7 +329,8 @@ class OSM(Driver):
             self._base_path, nsLcmOpId)
         _url = self._build_url_query(_url, args)
         try:
-            osm_op, osm_headers = self._exec_get(_url, headers=self._headers)
+            osm_op, osm_headers = self._request(get, _url,
+                                                headers=self._headers)
         except ResourceNotFound:
             raise NsOpNotFound(ns_op_id=nsLcmOpId)
         sol_op = self._op_im_converter(osm_op)
@@ -465,7 +435,7 @@ class OSM(Driver):
         return sol_op
 
     @staticmethod
-    def _build_url_query(base, args):
+    def _build_url_query(base, args=None):
         if args and args['args']:
             url_query = urlencode(args['args'])
             return "{0}?{1}".format(base, url_query)
