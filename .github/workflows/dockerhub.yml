@@ -5,6 +5,8 @@ on:
     branches: [master, development]
   pull_request:
     branches: [master, development]
+  release:
+    types: [published]
 
 jobs:
   buildpush:
