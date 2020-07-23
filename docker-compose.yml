@@ -12,9 +12,7 @@ services:
     ports:
       - 80:80
   flask:
-    build:
-      context: .
-      target: prod
+    image: 5geve/mso-lo:latest
     container_name: mso-lo
     depends_on:
       - redis
