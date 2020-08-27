@@ -290,9 +290,11 @@ class OSM(Driver):
         _url = "{0}/nslcm/v1/ns_instances/{1}/terminate".format(
             self._base_path, nsId)
         _url = self._build_url_query(_url, args)
+        req_headers = copy.deepcopy(self._headers)
+        del req_headers["Content-Type"]
         try:
-            emtpy_body, osm_headers = self._request(
-                post, _url, json=args['payload'], headers=self._headers)
+            emtpy_body, osm_headers = self._request(post, _url,
+                                                    headers=req_headers)
         except ResourceNotFound:
             raise NsNotFound(ns_id=nsId)
         headers = self._build_headers(osm_headers)
