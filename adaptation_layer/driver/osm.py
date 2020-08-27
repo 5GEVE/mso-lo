@@ -291,8 +291,8 @@ class OSM(Driver):
             self._base_path, nsId)
         _url = self._build_url_query(_url, args)
         try:
-            emtpy_body, osm_headers = self._request(
-                post, _url, json=args['payload'], headers=self._headers)
+            emtpy_body, osm_headers = self._request(post, _url,
+                                                    headers=self._headers)
         except ResourceNotFound:
             raise NsNotFound(ns_id=nsId)
         headers = self._build_headers(osm_headers)
