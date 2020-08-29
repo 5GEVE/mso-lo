@@ -14,7 +14,6 @@ ARG DB_SEED_NFVO_CRED
 ENV DB_SEED_NFVO_CRED $DB_SEED_NFVO_CRED
 ENV FLASK_APP adaptation_layer
 RUN ["rm", "-f", "adaptation_layer/data/mso-lo.db"]
-RUN ls -la
 RUN ["flask", "db", "upgrade"]
 RUN ["flask", "seed"]
 

@@ -48,9 +48,12 @@ def create_app(test_config=None):
         os.makedirs(app.instance_path)
     except OSError:
         pass
-
+    app.url_map.strict_slashes = False
     app.cli.add_command(my_command)
+
+    # register blueprints
     app.register_blueprint(nfvo.bp)
+
 
     return app
 
