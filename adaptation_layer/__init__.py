@@ -15,21 +15,21 @@
 import logging
 import os
 from .config import Config
-from .repository import sqlite, iwf_repository
+
 # import sqlite
 # import tasks
 
 from flask import Flask, jsonify
-
-from flask_migrate import Migrate
+from .db import MsoloDB
 from .error_handler import init_errorhandler
+
+database = MsoloDB()
 
 
 def create_app(test_config=None):
 
+    # import blueprints
     from . import nfvo
-
-    IWFREPO = os.getenv('IWFREPO', 'false').lower()
 
     logging.basicConfig(level=logging.INFO)
 
@@ -37,19 +37,7 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(Config)
     init_errorhandler(app)
-
-    app.config['CORS_HEADERS'] = 'Content-Type'
-
-    if IWFREPO == 'true':
-        app.logger.info('using iwf repository')
-        database = iwf_repository
-        # tasks.post_osm_vims.delay()
-    else:
-        app.logger.info('using sqlite')
-        sqlite.db.init_app(app)
-        migrate = Migrate(app, sqlite.db)
-        database = sqlite
-
+    database.init_app(app)
     # ensure the instance folder exists
     try:
         os.makedirs(app.instance_path)

@@ -27,7 +27,7 @@ bp = Blueprint('nfvo', __name__, url_prefix='/nfvo')
 def get_nfvo_list():
     try:
         print("sioasdasd")
-        return make_response(jsonify(database.get_nfvo_list()), 200)
+        return make_response(jsonify(database.msolo_db.get_nfvo_list()), 200)
     except Unauthorized as e:
         abort(401, description=e.description)
     except ServerError as e:
