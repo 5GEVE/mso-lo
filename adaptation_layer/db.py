@@ -41,4 +41,3 @@ class MsoloDB(object):
         ctx = _app_ctx_stack.top
         if hasattr(ctx, 'msolo_db'):
             del ctx.msolo_db
-

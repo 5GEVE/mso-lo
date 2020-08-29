@@ -26,7 +26,6 @@ bp = Blueprint('nfvo', __name__, url_prefix='/nfvo')
 @bp.route('/', methods=['GET'])
 def get_nfvo_list():
     try:
-        print("sioasdasd")
         return make_response(jsonify(database.msolo_db.get_nfvo_list()), 200)
     except Unauthorized as e:
         abort(401, description=e.description)
@@ -37,7 +36,8 @@ def get_nfvo_list():
 @bp.route('/<nfvo_id>', methods=['GET'])
 def get_nfvo(nfvo_id):
     try:
-        return make_response(jsonify(database.get_nfvo_by_id(nfvo_id)), 200)
+        return make_response(
+            jsonify(database.msolo_db.get_nfvo_by_id(nfvo_id)), 200)
     except Unauthorized as e:
         abort(401, description=e.description)
     except NfvoNotFound as e:
@@ -49,7 +49,7 @@ def get_nfvo(nfvo_id):
 @bp.route('/<nfvo_id>/ns_instances', methods=['POST'])
 def create_ns(nfvo_id):
     try:
-        driver = manager.get_driver(nfvo_id, database)
+        driver = manager.get_driver(nfvo_id, database.msolo_db)
         ns, headers = driver.create_ns(
             args={'payload': request.json, 'args': request.args.to_dict()})
         return make_response(jsonify(ns), 201, headers)
@@ -72,7 +72,7 @@ def create_ns(nfvo_id):
 @bp.route('/<nfvo_id>/ns_instances', methods=['GET'])
 def get_ns_list(nfvo_id):
     try:
-        driver = manager.get_driver(nfvo_id, database)
+        driver = manager.get_driver(nfvo_id, database.msolo_db)
         ns_list, headers = driver.get_ns_list(
             args={'args': request.args.to_dict()})
         return make_response(jsonify(ns_list), 200, headers)
@@ -89,7 +89,7 @@ def get_ns_list(nfvo_id):
 @bp.route('/<nfvo_id>/ns_instances/<ns_id>', methods=['GET'])
 def get_ns(nfvo_id, ns_id):
     try:
-        driver = manager.get_driver(nfvo_id, database)
+        driver = manager.get_driver(nfvo_id, database.msolo_db)
         ns, headers = driver.get_ns(
             ns_id, args={'args': request.args.to_dict()})
         return make_response(jsonify(ns), 200, headers)
@@ -106,7 +106,7 @@ def get_ns(nfvo_id, ns_id):
 @bp.route('/<nfvo_id>/ns_instances/<ns_id>', methods=['DELETE'])
 def delete_ns(nfvo_id, ns_id):
     try:
-        driver = manager.get_driver(nfvo_id, database)
+        driver = manager.get_driver(nfvo_id, database.msolo_db)
         empty_body, headers = driver.delete_ns(
             ns_id, args={'args': request.args.to_dict()})
         return make_response('', 204, headers)
@@ -125,7 +125,7 @@ def delete_ns(nfvo_id, ns_id):
 @bp.route('/<nfvo_id>/ns_instances/<ns_id>/instantiate', methods=['POST'])
 def instantiate_ns(nfvo_id, ns_id):
     try:
-        driver = manager.get_driver(nfvo_id, database)
+        driver = manager.get_driver(nfvo_id, database.msolo_db)
         empty_body, headers = driver.instantiate_ns(
             ns_id,
             args={'payload': request.json, 'args': request.args.to_dict()})
@@ -149,7 +149,7 @@ def instantiate_ns(nfvo_id, ns_id):
 @bp.route('/<nfvo_id>/ns_instances/<ns_id>/terminate', methods=['POST'])
 def terminate_ns(nfvo_id, ns_id):
     try:
-        driver = manager.get_driver(nfvo_id, database)
+        driver = manager.get_driver(nfvo_id, database.msolo_db)
         empty_body, headers = driver.terminate_ns(
             ns_id,
             args={'payload': request.json, 'args': request.args.to_dict()})
@@ -173,7 +173,7 @@ def terminate_ns(nfvo_id, ns_id):
 @bp.route('/<nfvo_id>/ns_instances/<ns_id>/scale', methods=['POST'])
 def scale_ns(nfvo_id, ns_id):
     try:
-        driver = manager.get_driver(nfvo_id, database)
+        driver = manager.get_driver(nfvo_id, database.msolo_db)
         empty_body, headers = driver.scale_ns(
             ns_id,
             args={'payload': request.json, 'args': request.args.to_dict()})
@@ -197,7 +197,7 @@ def scale_ns(nfvo_id, ns_id):
 @bp.route('/<nfvo_id>/ns_lcm_op_occs', methods=['GET'])
 def get_op_list(nfvo_id):
     try:
-        driver = manager.get_driver(nfvo_id, database)
+        driver = manager.get_driver(nfvo_id, database.msolo_db)
         op_list, headers = driver.get_op_list(
             args={'args': request.args.to_dict()})
         return make_response(jsonify(op_list), 200, headers)
@@ -214,7 +214,7 @@ def get_op_list(nfvo_id):
 @bp.route('/<nfvo_id>/ns_lcm_op_occs/<nsLcmOpId>', methods=['GET'])
 def get_op(nfvo_id, nsLcmOpId):
     try:
-        driver = manager.get_driver(nfvo_id, database)
+        driver = manager.get_driver(nfvo_id, database.msolo_db)
         ns_op, headers = driver.get_op(
             nsLcmOpId, args={'args': request.args.to_dict()})
         return make_response(jsonify(ns_op), 200, headers)
@@ -222,7 +222,8 @@ def get_op(nfvo_id, nsLcmOpId):
         abort(400, description=e.description)
     except Unauthorized as e:
         abort(401, description=e.description)
-    except (NfvoNotFound, NfvoCredentialsNotFound, NsNotFound, NsOpNotFound) as e:
+    except (NfvoNotFound, NfvoCredentialsNotFound,
+            NsNotFound, NsOpNotFound) as e:
         abort(404, description=e.description)
     except ServerError as e:
         abort(500, description=e.description)
@@ -231,8 +232,9 @@ def get_op(nfvo_id, nsLcmOpId):
 @bp.route('/<nfvo_id>/subscriptions', methods=['GET'])
 def get_subscription_list(nfvo_id):
     try:
-        return make_response(jsonify(database.get_subscription_list(nfvo_id)),
-                             200)
+        return make_response(
+            jsonify(database.msolo_db.get_subscription_list(nfvo_id)),
+            200)
     except Unauthorized as e:
         abort(401, description=e.description)
     except NfvoNotFound as e:
@@ -245,7 +247,8 @@ def get_subscription_list(nfvo_id):
 def create_subscription(nfvo_id):
     try:
         return make_response(
-            jsonify(database.create_subscription(nfvo_id, request.json)), 201)
+            jsonify(database.msolo_db.create_subscription(nfvo_id,
+                                                          request.json)), 201)
     except BadRequest as e:
         abort(400, description=e.description)
     except Unauthorized as e:
@@ -266,7 +269,9 @@ def create_subscription(nfvo_id):
 def get_subscription(nfvo_id, subscriptionId):
     try:
         return make_response(
-            jsonify(database.get_subscription(nfvo_id, subscriptionId)), 200)
+            jsonify(database.msolo_db.get_subscription(
+                nfvo_id, subscriptionId)),
+            200)
     except Unauthorized as e:
         abort(401, description=e.description)
     except (NfvoNotFound, NfvoCredentialsNotFound, SubscriptionNotFound) as e:
@@ -278,7 +283,7 @@ def get_subscription(nfvo_id, subscriptionId):
 @bp.route('/<nfvo_id>/subscriptions/<subscriptionId>', methods=['DELETE'])
 def delete_subscription(nfvo_id, subscriptionId):
     try:
-        database.delete_subscription(subscriptionId)
+        database.msolo_db.delete_subscription(subscriptionId)
         return make_response('', 204)
     except Unauthorized as e:
         abort(401, description=e.description)
