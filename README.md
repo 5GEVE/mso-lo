@@ -135,7 +135,7 @@ cd adaptation_layer
 pipenv install --dev
 # Create database with mock data
 pipenv run flask db upgrade
-pipenv run python manage.py seed
+pipenv run flask seed
 # Run the flask app
 FLASK_ENV=development flask run
 ```
