@@ -29,8 +29,8 @@ from requests import ConnectionError, Timeout, TooManyRedirects, URLRequired, \
     api, HTTPError, get, post, delete
 from urllib3.exceptions import InsecureRequestWarning
 
-from error_handler import ResourceNotFound, NsNotFound, VnfNotFound, \
-    Unauthorized, ServerError, NsOpNotFound, VnfPkgNotFound, \
+from adaptation_layer.error_handler import ResourceNotFound, NsNotFound, \
+    VnfNotFound, Unauthorized, ServerError, NsOpNotFound, VnfPkgNotFound, \
     VimNotFound, NsdNotFound, BadRequest, Forbidden, MethodNotAllowed, \
     Unprocessable, Conflict
 from .interface import Driver, Headers, BodyList, Body

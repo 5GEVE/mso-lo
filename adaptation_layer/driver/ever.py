@@ -21,7 +21,7 @@ import requests
 import urllib3
 from urllib3.exceptions import InsecureRequestWarning
 
-from error_handler import ResourceNotFound, NsNotFound, \
+from adaptation_layer.error_handler import ResourceNotFound, NsNotFound, \
     BadRequest, ServerError, NsOpNotFound, NsdNotFound
 from .interface import Driver, Headers, BodyList, Body
 
