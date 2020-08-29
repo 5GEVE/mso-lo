@@ -34,10 +34,13 @@ class MsoloDB(object):
         else:
             self.app.logger.info('using sqlite')
             sqlite.db.init_app(self.app)
-            migrate = Migrate(self.app, sqlite.db)
+            basedir = os.path.abspath(os.path.dirname(__file__))
+            MIGRATION_DIR = os.path.join(basedir, 'migrations')
+            migrate = Migrate(self.app, sqlite.db, directory=MIGRATION_DIR)
             self.msolo_db = sqlite
 
     def teardown(self, exception):
         ctx = _app_ctx_stack.top
         if hasattr(ctx, 'msolo_db'):
             del ctx.msolo_db
+

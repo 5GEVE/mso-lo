@@ -14,8 +14,13 @@
 
 import logging
 import os
+import click
+import json
 from .config import Config
+from flask.cli import with_appcontext
+from flask import current_app
 
+from adaptation_layer.repository.sqlite import NFVO, NFVO_CREDENTIALS
 # import sqlite
 # import tasks
 
@@ -44,6 +49,33 @@ def create_app(test_config=None):
     except OSError:
         pass
 
+    app.cli.add_command(my_command)
     app.register_blueprint(nfvo.bp)
 
     return app
+
+
+@click.command('seed')
+@with_appcontext
+def my_command():
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    SEED_NFVO = os.environ.get('DB_SEED_NFVO') or \
+        os.path.join(basedir, 'seed/nfvo.json')
+    SEED_NFVO_CRED = os.environ.get('DB_SEED_NFVO_CRED') or \
+        os.path.join(basedir, 'seed/nfvo_credentials.json')
+
+    with open(SEED_NFVO, 'r') as f:
+        nfvo_dict = json.load(f)
+
+    for new_nfvo in nfvo_dict:
+        new_nfvo_model = NFVO(**new_nfvo)
+        database.msolo_db.db.session.add(new_nfvo_model)
+        database.msolo_db.db.session.commit()
+
+    with open(SEED_NFVO_CRED, 'r') as f:
+        nfvo_cred_dict = json.load(f)
+
+    for new_nfvo_cred in nfvo_cred_dict:
+        new_nfvo_cred_model = NFVO_CREDENTIALS(**new_nfvo_cred)
+        database.msolo_db.db.session.add(new_nfvo_cred_model)
+        database.msolo_db.db.session.commit()
