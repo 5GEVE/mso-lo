@@ -18,7 +18,7 @@ from flask import (
 )
 from adaptation_layer.error_handler import Unauthorized, BadRequest, \
     ServerError, ResourceNotFound, NfvoNotFound, NsNotFound, NsdNotFound, \
-    init_errorhandler, NfvoCredentialsNotFound, SubscriptionNotFound
+    NsOpNotFound, NfvoCredentialsNotFound, SubscriptionNotFound, Forbidden
 import json
 import adaptation_layer.driver.manager as manager
 from adaptation_layer import database

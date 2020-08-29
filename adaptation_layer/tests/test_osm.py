@@ -20,7 +20,7 @@ from urllib.parse import urlparse
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError, SchemaError
 
-from app import app
+from adaptation_layer import create_app
 from .request_mock import mock_ns, mock_ns_scale, mock_ns_terminate
 from .response_schemas import ns_lcm_op_occ_schema, ns_list_schema, ns_schema, \
     ns_lcm_op_occ_list_schema
@@ -30,7 +30,7 @@ class OSMTestCase(unittest.TestCase):
 
     def setUp(self):
         """Define test variables and initialize app."""
-        self.app = app
+        self.app = create_app()
         self.client = self.app.test_client
 
     def tearDown(self):
