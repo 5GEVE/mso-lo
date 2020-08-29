@@ -11,43 +11,22 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-import logging
-import os
 
-from flask import jsonify, abort, request, make_response, Flask
-from flask_migrate import Migrate
-
-import config
-import driver.manager as manager
-import iwf_repository
-import sqlite
-import tasks
-from error_handler import NfvoNotFound, NsNotFound, NsdNotFound, \
-    init_errorhandler, NfvoCredentialsNotFound, SubscriptionNotFound
-from error_handler import Unauthorized, BadRequest, ServerError, \
-    NsOpNotFound, Conflict, Unprocessable, Forbidden
-
-IWFREPO = os.getenv('IWFREPO', 'false').lower()
-
-logging.basicConfig(level=logging.INFO)
-app = Flask(__name__)
-app.config.from_object(config.Config)
-init_errorhandler(app)
-
-if IWFREPO == 'true':
-    app.logger.info('using iwf repository')
-    database = iwf_repository
-    tasks.post_osm_vims.delay()
-else:
-    app.logger.info('using sqlite')
-    sqlite.db.init_app(app)
-    migrate = Migrate(app, sqlite.db)
-    database = sqlite
+from flask import (
+    Blueprint, flash, g, redirect, request, session, url_for, jsonify,
+    abort, make_response
+)
+from adaptation_layer.error_handler import Unauthorized, BadRequest, \
+    ServerError, ResourceNotFound
+import json
+from adaptation_layer import database
+bp = Blueprint('nfvo', __name__, url_prefix='/nfvo')
 
 
-@app.route('/nfvo', methods=['GET'])
+@bp.route('/', methods=['GET'])
 def get_nfvo_list():
     try:
+        print("sioasdasd")
         return make_response(jsonify(database.get_nfvo_list()), 200)
     except Unauthorized as e:
         abort(401, description=e.description)
@@ -55,7 +34,7 @@ def get_nfvo_list():
         abort(500, description=e.description)
 
 
-@app.route('/nfvo/<nfvo_id>', methods=['GET'])
+@bp.route('/<nfvo_id>', methods=['GET'])
 def get_nfvo(nfvo_id):
     try:
         return make_response(jsonify(database.get_nfvo_by_id(nfvo_id)), 200)
@@ -67,7 +46,7 @@ def get_nfvo(nfvo_id):
         abort(500, description=e.description)
 
 
-@app.route('/nfvo/<nfvo_id>/ns_instances', methods=['POST'])
+@bp.route('/<nfvo_id>/ns_instances', methods=['POST'])
 def create_ns(nfvo_id):
     try:
         driver = manager.get_driver(nfvo_id, database)
@@ -90,7 +69,7 @@ def create_ns(nfvo_id):
         abort(500, description=e.description)
 
 
-@app.route('/nfvo/<nfvo_id>/ns_instances', methods=['GET'])
+@bp.route('/<nfvo_id>/ns_instances', methods=['GET'])
 def get_ns_list(nfvo_id):
     try:
         driver = manager.get_driver(nfvo_id, database)
@@ -107,7 +86,7 @@ def get_ns_list(nfvo_id):
         abort(500, description=e.description)
 
 
-@app.route('/nfvo/<nfvo_id>/ns_instances/<ns_id>', methods=['GET'])
+@bp.route('/<nfvo_id>/ns_instances/<ns_id>', methods=['GET'])
 def get_ns(nfvo_id, ns_id):
     try:
         driver = manager.get_driver(nfvo_id, database)
@@ -124,7 +103,7 @@ def get_ns(nfvo_id, ns_id):
         abort(500, description=e.description)
 
 
-@app.route('/nfvo/<nfvo_id>/ns_instances/<ns_id>', methods=['DELETE'])
+@bp.route('/<nfvo_id>/ns_instances/<ns_id>', methods=['DELETE'])
 def delete_ns(nfvo_id, ns_id):
     try:
         driver = manager.get_driver(nfvo_id, database)
@@ -143,7 +122,7 @@ def delete_ns(nfvo_id, ns_id):
         abort(500, description=e.description)
 
 
-@app.route('/nfvo/<nfvo_id>/ns_instances/<ns_id>/instantiate', methods=['POST'])
+@bp.route('/<nfvo_id>/ns_instances/<ns_id>/instantiate', methods=['POST'])
 def instantiate_ns(nfvo_id, ns_id):
     try:
         driver = manager.get_driver(nfvo_id, database)
@@ -167,7 +146,7 @@ def instantiate_ns(nfvo_id, ns_id):
         abort(500, description=e.description)
 
 
-@app.route('/nfvo/<nfvo_id>/ns_instances/<ns_id>/terminate', methods=['POST'])
+@bp.route('/<nfvo_id>/ns_instances/<ns_id>/terminate', methods=['POST'])
 def terminate_ns(nfvo_id, ns_id):
     try:
         driver = manager.get_driver(nfvo_id, database)
@@ -191,7 +170,7 @@ def terminate_ns(nfvo_id, ns_id):
         abort(500, description=e.description)
 
 
-@app.route('/nfvo/<nfvo_id>/ns_instances/<ns_id>/scale', methods=['POST'])
+@bp.route('/<nfvo_id>/ns_instances/<ns_id>/scale', methods=['POST'])
 def scale_ns(nfvo_id, ns_id):
     try:
         driver = manager.get_driver(nfvo_id, database)
@@ -215,7 +194,7 @@ def scale_ns(nfvo_id, ns_id):
         abort(500, description=e.description)
 
 
-@app.route('/nfvo/<nfvo_id>/ns_lcm_op_occs', methods=['GET'])
+@bp.route('/<nfvo_id>/ns_lcm_op_occs', methods=['GET'])
 def get_op_list(nfvo_id):
     try:
         driver = manager.get_driver(nfvo_id, database)
@@ -232,7 +211,7 @@ def get_op_list(nfvo_id):
         abort(500, description=e.description)
 
 
-@app.route('/nfvo/<nfvo_id>/ns_lcm_op_occs/<nsLcmOpId>', methods=['GET'])
+@bp.route('/<nfvo_id>/ns_lcm_op_occs/<nsLcmOpId>', methods=['GET'])
 def get_op(nfvo_id, nsLcmOpId):
     try:
         driver = manager.get_driver(nfvo_id, database)
@@ -249,7 +228,7 @@ def get_op(nfvo_id, nsLcmOpId):
         abort(500, description=e.description)
 
 
-@app.route('/nfvo/<nfvo_id>/subscriptions', methods=['GET'])
+@bp.route('/<nfvo_id>/subscriptions', methods=['GET'])
 def get_subscription_list(nfvo_id):
     try:
         return make_response(jsonify(database.get_subscription_list(nfvo_id)),
@@ -262,7 +241,7 @@ def get_subscription_list(nfvo_id):
         abort(500, description=e.description)
 
 
-@app.route('/nfvo/<nfvo_id>/subscriptions', methods=['POST'])
+@bp.route('/<nfvo_id>/subscriptions', methods=['POST'])
 def create_subscription(nfvo_id):
     try:
         return make_response(
@@ -283,7 +262,7 @@ def create_subscription(nfvo_id):
         abort(500, description=e.description)
 
 
-@app.route('/nfvo/<nfvo_id>/subscriptions/<subscriptionId>', methods=['GET'])
+@bp.route('/<nfvo_id>/subscriptions/<subscriptionId>', methods=['GET'])
 def get_subscription(nfvo_id, subscriptionId):
     try:
         return make_response(
@@ -296,7 +275,7 @@ def get_subscription(nfvo_id, subscriptionId):
         abort(500, description=e.description)
 
 
-@app.route('/nfvo/<nfvo_id>/subscriptions/<subscriptionId>', methods=['DELETE'])
+@bp.route('/<nfvo_id>/subscriptions/<subscriptionId>', methods=['DELETE'])
 def delete_subscription(nfvo_id, subscriptionId):
     try:
         database.delete_subscription(subscriptionId)
@@ -309,14 +288,10 @@ def delete_subscription(nfvo_id, subscriptionId):
         abort(500, description=e.description)
 
 
-@app.route('/nfvo/<nfvo_id>/notifications', methods=['POST'])
+@bp.route('/<nfvo_id>/notifications', methods=['POST'])
 def post_notification(nfvo_id):
     required = ('nsInstanceId', 'operation', 'operationState')
     if not all(k in request.json for k in required):
         abort(400, 'One of {0} is missing'.format(str(required)))
     tasks.forward_notification.delay(request.json)
     return make_response('', 204)
-
-
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)

@@ -19,7 +19,7 @@ from typing import List, Dict
 from requests import get, ConnectionError, Timeout, \
     TooManyRedirects, URLRequired, HTTPError, post, put, delete
 
-from error_handler import ServerError, NfvoNotFound, NfvoCredentialsNotFound, \
+from adaptation_layer.error_handler import ServerError, NfvoNotFound, NfvoCredentialsNotFound, \
     Unauthorized, BadRequest, SubscriptionNotFound, Unprocessable
 
 logger = logging.getLogger('app.iwf_repository')

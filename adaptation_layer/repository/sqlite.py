@@ -17,7 +17,7 @@ from typing import List, Dict
 
 from flask_sqlalchemy import SQLAlchemy
 
-from error_handler import NfvoNotFound
+from adaptation_layer.error_handler import NfvoNotFound
 
 db = SQLAlchemy()
 
