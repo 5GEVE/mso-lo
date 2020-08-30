@@ -22,7 +22,7 @@ from flask import current_app
 
 from adaptation_layer.repository.sqlite import NFVO, NFVO_CREDENTIALS
 # import sqlite
-# import tasks
+from . import tasks
 
 from flask import Flask, jsonify
 from .db import MsoloDB
@@ -43,6 +43,9 @@ def create_app(test_config=None):
     app.config.from_object(Config)
     init_errorhandler(app)
     database.init_app(app)
+    IWFREPO = os.getenv('IWFREPO', 'false').lower()
+    if IWFREPO == 'true':
+        tasks.post_osm_vims.delay()
     # ensure the instance folder exists
     try:
         os.makedirs(app.instance_path)
@@ -53,7 +56,6 @@ def create_app(test_config=None):
 
     # register blueprints
     app.register_blueprint(nfvo.bp)
-
 
     return app
 

@@ -30,7 +30,6 @@ class MsoloDB(object):
         if IWFREPO == 'true':
             self.app.logger.info('using iwf repository')
             self.msolo_db = iwf_repository
-            # tasks.post_osm_vims.delay()
         else:
             self.app.logger.info('using sqlite')
             sqlite.db.init_app(self.app)
@@ -43,4 +42,3 @@ class MsoloDB(object):
         ctx = _app_ctx_stack.top
         if hasattr(ctx, 'msolo_db'):
             del ctx.msolo_db
-

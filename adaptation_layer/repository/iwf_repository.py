@@ -19,8 +19,9 @@ from typing import List, Dict
 from requests import get, ConnectionError, Timeout, \
     TooManyRedirects, URLRequired, HTTPError, post, put, delete
 
-from adaptation_layer.error_handler import ServerError, NfvoNotFound, NfvoCredentialsNotFound, \
-    Unauthorized, BadRequest, SubscriptionNotFound, Unprocessable
+from adaptation_layer.error_handler import ServerError, NfvoNotFound, \
+    NfvoCredentialsNotFound, Unauthorized, BadRequest, \
+    SubscriptionNotFound, Unprocessable
 
 logger = logging.getLogger('app.iwf_repository')
 IWFREPO_HTTPS = os.getenv('IWFREPO_HTTPS', 'false').lower()
@@ -198,7 +199,8 @@ def get_subscription(nfvo_id: int, subscriptionId: int) -> Dict:
         resp = get(
             '{0}/nfvOrchestrators/{1}/subscriptions/{2}'.format(url,
                                                                 nfvo_id,
-                                                                subscriptionId))
+                                                                subscriptionId)
+        )
         resp.raise_for_status()
     except HTTPError as e:
         if e.response.status_code == 404:
