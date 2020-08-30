@@ -1,6 +1,7 @@
-![Unit Tests](https://github.com/5GEVE/mso-lo/workflows/Unit%20Tests/badge.svg)
 
 # 5G EVE - MSO-LO interface
+
+![Unit Tests](https://github.com/5GEVE/mso-lo/workflows/Unit%20Tests/badge.svg)
 
 MSO-LO is a REST API application to provide an
 [ETSI SOL 005 v2.6.1](https://www.etsi.org/deliver/etsi_gs/NFV-SOL/001_099/001/02.06.01_60/gs_NFV-SOL001v020601p.pdf)
@@ -13,11 +14,11 @@ The software is developed under the [5G EVE](https://www.5g-eve.eu/) project.
 
 List of authors/contributors:
 
-- Francesco Lombardo, CNIT
-- Matteo Pergolesi, CNIT
-- Grzesik Michal, Orange
-- Panek Grzegorz, Orange
-- Chabiera Michal, Orange
+-   Francesco Lombardo, CNIT
+-   Matteo Pergolesi, CNIT
+-   Grzesik Michal, Orange
+-   Panek Grzegorz, Orange
+-   Chabiera Michal, Orange
 
 Software is distributed under [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
@@ -36,7 +37,7 @@ cp nfvo_credentials_mock.json nfvo_credentials.json
 Edit [docker-compose.yaml](docker-compose.yml) and disable iwf repository support.
 
 ```yaml
-IWFREPO: 'false'
+IWFREPO: "false"
 ```
 
 Edit `adaptation-layer/seed/nfvo.json` and `adaptation-layer/seed/nfvo_credentials.json` (copied before)
@@ -56,10 +57,10 @@ If [iwf-repository](https://github.com/5GEVE/iwf-repository) is available in you
 edit [docker-compose.yaml](docker-compose.yml) and change the environment variables for the `flask` service:
 
 ```yaml
-IWFREPO: 'true'
-IWFREPO_HOST: '192.168.17.20'
-IWFREPO_PORT: '8087'
-IWFREPO_INTERVAL: '300'
+IWFREPO: "true"
+IWFREPO_HOST: "192.168.17.20"
+IWFREPO_PORT: "8087"
+IWFREPO_INTERVAL: "300"
 ```
 
 Then, deploy with:
@@ -74,11 +75,11 @@ docker-compose up
 
 In the following table we report all the Redis database indexes used in MSO-LO application and the relative purpose.
 
-| Index 	| Purpose 	|
-|-	|-	|
-| 0 	| Celery Background Task 	|
-| 1         	| NS last operationState 	|
-| 2                   	| OSM token cache 	|
+| Index | Purpose                |
+| ----- | ---------------------- |
+| 0     | Celery Background Task |
+| 1     | NS last operationState |
+| 2     | OSM token cache        |
 
 ### Simple test
 
@@ -87,6 +88,7 @@ You can test the app with:
 ```shell script
 curl --request GET --url http://127.0.0.1:80/nfvo
 ```
+
 ### Uninstall
 
 To remove the containers and volumes, use:
@@ -101,17 +103,17 @@ docker-compose down --remove-orphans --volumes
 
 There are two main branches:
 
-- `master`: used for software releases, push not allowed
-- `development`: used for daily work on code
+-   `master`: used for software releases, push not allowed
+-   `development`: used for daily work on code
 
 To add a new feature, we follow this pattern:
 
 1. Move to development branch: `git checkout development`
 2. Create a new branch named after the feature you want to add. E.g.:
-`git checkout -b onap_driver`
+   `git checkout -b onap_driver`
 3. Work freely on the branch
 4. When done, merge your branch into development:
-`git checkout development; git merge --no-ff onap_driver;`
+   `git checkout development; git merge --no-ff onap_driver;`
 
 Note: The `--no-ff` option is useful to create a commit dedicated to the merge
 and record the existence of the feature branch.
@@ -169,7 +171,7 @@ To create a new NFVO driver, it is enough to create a new python module
 extending the `Driver` interface.
 For example, let's create `adaptation_layer/driver/onap.py`:
 
-```
+``` python
 from .interface import Driver
 
 class ONAP(Driver):
@@ -206,17 +208,18 @@ status code.
 Unit tests can be executed by using Docker Compose files.
 The following unit tests are currently available:
 
-- [docker-compose.test-nfvo.yml](docker-compose.test-nfvo.yml) Test NFVO information retrieve
-- [docker-compose.test-osm.yml](docker-compose.test-osm.yml) Test interactions with a mocked OSM
-- [docker-compose.test-onap.yml](docker-compose.test-onap.yml) Test interactions with a mocked ONAP
+-   [docker-compose.test-nfvo.yml](docker-compose.test-nfvo.yml) Test NFVO information retrieve
+-   [docker-compose.test-osm.yml](docker-compose.test-osm.yml) Test interactions with a mocked OSM
+-   [docker-compose.test-onap.yml](docker-compose.test-onap.yml) Test interactions with a mocked ONAP
 
 Example:
+
 ```shell script
 docker-compose --file docker-compose.test-osm.yml --project-name test-osm build
 docker-compose --file docker-compose.test-osm.yml --project-name test-osm up --abort-on-container-exit --exit-code-from test-osm
 ```
 
-*Note*: the `--project-name` parameter is necessary to distinguish test executions.
+_Note_: the `--project-name` parameter is necessary to distinguish test executions.
 
 The file will run two containers:
 
