@@ -250,10 +250,8 @@ def get_op(orc_id, nsLcmOpId):
 
 
 @nfvo_bp.route('/<orc_id>/subscriptions', methods=['GET'])
-@rano_bp.route('/<orc_id>/subscriptions', methods=['GET'])
 def get_subscription_list(orc_id):
     try:
-        # TODO fix in db functions
         return make_response(jsonify(database.msolo_db.get_subscription_list(orc_id)), 200)
     except Unauthorized as e:
         abort(401, description=e.description)
@@ -264,12 +262,9 @@ def get_subscription_list(orc_id):
 
 
 @nfvo_bp.route('/<orc_id>/subscriptions', methods=['POST'])
-@rano_bp.route('/<orc_id>/subscriptions', methods=['POST'])
 def create_subscription(orc_id):
     try:
-        # TODO fix in db functions
-        return make_response(
-            jsonify(database.msolo_db.create_subscription(orc_id, request.json)), 201)
+        return make_response(jsonify(database.msolo_db.create_subscription(orc_id, request.json)), 201)
     except BadRequest as e:
         abort(400, description=e.description)
     except Unauthorized as e:
@@ -287,12 +282,9 @@ def create_subscription(orc_id):
 
 
 @nfvo_bp.route('/<orc_id>/subscriptions/<subscriptionId>', methods=['GET'])
-@rano_bp.route('/<orc_id>/subscriptions/<subscriptionId>', methods=['GET'])
 def get_subscription(orc_id, subscriptionId):
     try:
-        # TODO fix in db functions
-        return make_response(
-            jsonify(database.msolo_db.get_subscription(orc_id, subscriptionId)), 200)
+        return make_response(jsonify(database.msolo_db.get_subscription(orc_id, subscriptionId)), 200)
     except Unauthorized as e:
         abort(401, description=e.description)
     except (NfvoNotFound, NfvoCredentialsNotFound, SubscriptionNotFound) as e:
@@ -302,10 +294,8 @@ def get_subscription(orc_id, subscriptionId):
 
 
 @nfvo_bp.route('/<orc_id>/subscriptions/<subscriptionId>', methods=['DELETE'])
-@rano_bp.route('/<orc_id>/subscriptions/<subscriptionId>', methods=['DELETE'])
 def delete_subscription(orc_id, subscriptionId):
     try:
-        # TODO fix in db functions
         database.msolo_db.delete_subscription(subscriptionId)
         return make_response('', 204)
     except Unauthorized as e:
@@ -317,7 +307,6 @@ def delete_subscription(orc_id, subscriptionId):
 
 
 @nfvo_bp.route('/<orc_id>/notifications', methods=['POST'])
-@rano_bp.route('/<orc_id>/notifications', methods=['POST'])
 def post_notification(orc_id):
     required = ('nsInstanceId', 'operation', 'operationState')
     if not all(k in request.json for k in required):
