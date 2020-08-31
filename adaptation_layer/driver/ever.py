@@ -32,10 +32,10 @@ PRISM_ALIAS = os.environ.get("PRISM_ALIAS", "prism-ever")
 
 class EVER(Driver):
 
-    def __init__(self, nfvo_cred):
-        self._nfvoId = nfvo_cred["nfvo_id"]
-        self._host = nfvo_cred["host"]
-        self._port = nfvo_cred["port"] if "port" in nfvo_cred else 8080
+    def __init__(self, rano_cred):
+        self._ranoId = rano_cred["rano_id"]
+        self._host = rano_cred["host"]
+        self._port = rano_cred["port"] if "port" in rano_cred else 8080
         self._headers = {"Content-Type": "application/json",
                          "Accept": "application/json"}
 
@@ -210,5 +210,5 @@ class EVER(Driver):
             re_res = re.findall(
                 r"/(instances|ns_lcm_op_occs)/([A-Za-z0-9\-]+)", resp_headers['location'])
             if len(re_res):
-                headers['location'] = '/nfvo/{0}/ns_lcm_op_occs/{1}'.format(self._nfvoId, re_res[0][1])
+                headers['location'] = '/rano/{0}/ns_lcm_op_occs/{1}'.format(self._ranoId, re_res[0][1])
         return headers

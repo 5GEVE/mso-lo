@@ -39,7 +39,7 @@ class EverTestCase(unittest.TestCase):
 
     # Check status codes 200, 404, headers and payload for get_ns_list()
     def test_get_ns_list_200(self):
-        res = self.client().get('/nfvo/3/ns_instances?__code=200')
+        res = self.client().get('/rano/3/ns_instances?__code=200')
         print(res)
         #print (ns_list_schema)
         try:
@@ -51,7 +51,7 @@ class EverTestCase(unittest.TestCase):
     # Check status codes 200, 404, headers and payload for get_ns()
     def test_get_ns_200(self):
         res = self.client().get(
-            '/nfvo/3/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7?__code=200')
+            '/rano/3/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7?__code=200')
         try:
             validate(res.json, ns_schema)
         except (ValidationError, SchemaError) as e:
@@ -60,12 +60,12 @@ class EverTestCase(unittest.TestCase):
 
     def test_get_ns_404(self):
         res = self.client().get(
-            '/nfvo/3/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7?__code=404')
+            '/rano/3/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7?__code=404')
         self.assertEqual(res.status_code, 404)
 
     # Check status codes 201, 404, headers and payload for create_ns()
     def test_create_ns_201(self):
-        res = self.client().post('/nfvo/3/ns_instances?__code=201', json=mock_ns)
+        res = self.client().post('/rano/3/ns_instances?__code=201', json=mock_ns)
         self.assertEqual(res.status_code, 201)
 
         self.assertIn('Location', res.headers)
@@ -78,12 +78,12 @@ class EverTestCase(unittest.TestCase):
             self.fail(msg=e.message)
 
     def test_create_ns_400(self):
-        res = self.client().post('/nfvo/3/ns_instances?__code=400', json=mock_ns)
+        res = self.client().post('/rano/3/ns_instances?__code=400', json=mock_ns)
         self.assertEqual(res.status_code, 400)
 
     # Check status codes 202, 400, 404, headers and payload for instantiate_ns()
     def test_instantiate_ns_202(self):
-        res = self.client().post('/nfvo/3/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/instantiate?__code=202')
+        res = self.client().post('/rano/3/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/instantiate?__code=202')
         self.assertEqual(res.status_code, 202)
 
         self.assertIn('Location', res.headers)
@@ -91,16 +91,16 @@ class EverTestCase(unittest.TestCase):
         self.assertTrue(all([validate_url.scheme, validate_url.netloc, validate_url.path]))
 
     def test_instantiate_ns_400(self):
-        res = self.client().post('/nfvo/3/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/instantiate?__code=400')
+        res = self.client().post('/rano/3/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/instantiate?__code=400')
         self.assertEqual(res.status_code, 400)
 
     def test_instantiate_ns_404(self):
-        res = self.client().post('/nfvo/3/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/instantiate?__code=404')
+        res = self.client().post('/rano/3/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/instantiate?__code=404')
         self.assertEqual(res.status_code, 404)
 
     # Check status codes 202, 404, headers and payload for terminate_ns()
     def test_terminate_ns_202(self):
-        res = self.client().post('/nfvo/3/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/terminate?__code=202',
+        res = self.client().post('/rano/3/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/terminate?__code=202',
                                  json=mock_ns_terminate)
         self.assertEqual(res.status_code, 202)
 
@@ -109,24 +109,24 @@ class EverTestCase(unittest.TestCase):
         self.assertTrue(all([validate_url.scheme, validate_url.netloc, validate_url.path]))
 
     def test_terminate_ns_404(self):
-        res = self.client().post('/nfvo/3/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/terminate?__code=404',
+        res = self.client().post('/rano/3/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/terminate?__code=404',
                                  json=mock_ns_terminate)
         self.assertEqual(res.status_code, 404)
 
     # Check status codes 204, 404, headers and payload for delete_ns()
     def test_delete_ns_204(self):
         res = self.client().delete(
-            '/nfvo/3/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7?__code=204')
+            '/rano/3/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7?__code=204')
         self.assertEqual(res.status_code, 204)
 
     def test_delete_ns_404(self):
         res = self.client().delete(
-            '/nfvo/3/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7?__code=404')
+            '/rano/3/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7?__code=404')
         self.assertEqual(res.status_code, 404)
 
     # Check status codes 200, 404, headers and payload for get_ns_lcm_op_occs_()
     def test_get_ns_lcm_op_occs_200(self):
-        res = self.client().get('/nfvo/3/ns_lcm_op_occs/49ccb6a2-5bcd-4f35-a2cf-7728c54c48b7?__code=200')
+        res = self.client().get('/rano/3/ns_lcm_op_occs/49ccb6a2-5bcd-4f35-a2cf-7728c54c48b7?__code=200')
         try:
             validate(res.json, ns_lcm_op_occ_schema)
         except (ValidationError, SchemaError) as e:
@@ -134,12 +134,12 @@ class EverTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
 
     def test_get_ns_lcm_op_occs_404(self):
-        res = self.client().get('/nfvo/3/ns_lcm_op_occs/49ccb6a2-5bcd-4f35-a2cf-7728c54c48b7?__code=404')
+        res = self.client().get('/rano/3/ns_lcm_op_occs/49ccb6a2-5bcd-4f35-a2cf-7728c54c48b7?__code=404')
         self.assertEqual(res.status_code, 404)
 
     # Check status codes 200, headers and payload for get_ns_lcm_op_occs_list()
     def test_get_ns_lcm_op_occs_list_200(self):
-        res = self.client().get('/nfvo/3/ns_lcm_op_occs?__code=200')
+        res = self.client().get('/rano/3/ns_lcm_op_occs?__code=200')
         try:
             validate(res.json, ns_lcm_op_occ_list_schema)
         except (ValidationError, SchemaError) as e:
