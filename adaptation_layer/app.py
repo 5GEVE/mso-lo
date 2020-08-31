@@ -48,11 +48,9 @@ def get_orchestrator_list():
 def get_nfvo(orc_id):
     try:
         if request.blueprint == 'nfvo':
-            return make_response(
-                jsonify(database.msolo_db.get_nfvo_by_id(orc_id)), 200)
+            return make_response(jsonify(database.msolo_db.get_nfvo_by_id(orc_id)), 200)
         elif request.blueprint == 'rano':
-            return make_response(
-                jsonify(database.msolo_db.get_rano_by_id(orc_id)), 200)
+            return make_response(jsonify(database.msolo_db.get_rano_by_id(orc_id)), 200)
     except Unauthorized as e:
         abort(401, description=e.description)
     except NfvoNotFound as e:
