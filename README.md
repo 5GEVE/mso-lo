@@ -30,6 +30,8 @@ Copy the mock files (needed for a correct build):
 cd adaptation-layer/seed
 cp nfvo_mock.json nfvo.json
 cp nfvo_credentials_mock.json nfvo_credentials.json
+cp rano_mock.json rano.json
+cp rano_credentials_mock.json rano_credentials.json
 ```
 
 ### Environment with local database
@@ -40,8 +42,7 @@ Edit [docker-compose.yaml](docker-compose.yml) and disable iwf repository suppor
 IWFREPO: "false"
 ```
 
-Edit `adaptation-layer/seed/nfvo.json` and `adaptation-layer/seed/nfvo_credentials.json` (copied before)
-and insert your NFVO data.
+Edit files created in [install guide](#install-guide) and insert your NFVO and RANO data.
 
 Deploy with:
 
@@ -139,7 +140,7 @@ pipenv install --dev
 pipenv run flask db upgrade
 pipenv run flask seed
 # Run the flask app
-FLASK_ENV=development flask run
+FLASK_ENV=development FLASK_APP=. pipenv run flask run
 ```
 
 Some features like notifications need [celery](https://docs.celeryproject.org/en/stable/index.html) and
@@ -165,9 +166,9 @@ pipenv uninstall <package-name>
 If everything works with the new dependencies, run `pipenv lock` and commit
 both `Pipfile` and `Pipfile.lock`.
 
-### Add a new NFVO driver
+### Add a new NFVO/RANO driver
 
-To create a new NFVO driver, it is enough to create a new python module
+To create a new NFVO/RANO driver, it is enough to create a new python module
 extending the `Driver` interface.
 For example, let's create `adaptation_layer/driver/onap.py`:
 
@@ -185,9 +186,9 @@ To enable a newly created driver, edit [manager.py](adaptation_layer/driver/mana
 The `get_driver()` method is simply a switch that returns an instance of the
 proper driver.
 
-### Add unit tests for a NFVO driver
+### Add unit tests for a NFVO/RANO driver
 
-In order to test our software against an NFVO NBI, we need to mock it.
+In order to test our software against an NBI, we need to mock it.
 For this purpose, we use [Prism](https://stoplight.io/open-source/prism/).
 You can control the kind of HTTP response returned by Prism by modifying the request URL.
 Example: `/nfvo/nfvo_osm1/ns?__code=200`
@@ -211,6 +212,7 @@ The following unit tests are currently available:
 -   [docker-compose.test-nfvo.yml](docker-compose.test-nfvo.yml) Test NFVO information retrieve
 -   [docker-compose.test-osm.yml](docker-compose.test-osm.yml) Test interactions with a mocked OSM
 -   [docker-compose.test-onap.yml](docker-compose.test-onap.yml) Test interactions with a mocked ONAP
+-   [docker-compose.test-ever.yml](docker-compose.test-ever.yml) Test interactions with a mocked EVER
 
 Example:
 
