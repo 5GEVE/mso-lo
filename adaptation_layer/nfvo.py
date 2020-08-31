@@ -13,15 +13,18 @@
 #  limitations under the License.
 
 from flask import (
-    Blueprint, flash, g, redirect, request, session, url_for, jsonify,
+    Blueprint, request, jsonify,
     abort, make_response
 )
-from adaptation_layer.error_handler import Unauthorized, BadRequest, \
-    ServerError, ResourceNotFound, NfvoNotFound, NsNotFound, NsdNotFound, \
-    NsOpNotFound, NfvoCredentialsNotFound, SubscriptionNotFound, Forbidden
-import json
+
 import adaptation_layer.driver.manager as manager
+import tasks
 from adaptation_layer import database
+from adaptation_layer.error_handler import Unauthorized, BadRequest, \
+    ServerError, NfvoNotFound, NsNotFound, NsdNotFound, \
+    NsOpNotFound, NfvoCredentialsNotFound, SubscriptionNotFound, Forbidden, \
+    Conflict, Unprocessable
+
 bp = Blueprint('nfvo', __name__, url_prefix='/nfvo')
 
 
