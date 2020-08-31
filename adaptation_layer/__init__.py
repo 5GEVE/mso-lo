@@ -12,19 +12,19 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import json
 import logging
 import os
-import click
-import json
-from .config import Config
-from flask.cli import with_appcontext
-from flask import current_app
 
-from adaptation_layer.repository.sqlite import NFVO, NFVO_CREDENTIALS
+import click
+from flask import Flask
+from flask.cli import with_appcontext
+
+from adaptation_layer.repository.sqlite import NFVO, NFVO_CREDENTIALS, RANO, \
+    RANO_CREDENTIALS
 # import sqlite
 from . import tasks
-
-from flask import Flask, jsonify
+from .config import Config
 from .db import MsoloDB
 from .error_handler import init_errorhandler
 
@@ -66,9 +66,13 @@ def create_app(test_config=None):
 def my_command():
     basedir = os.path.abspath(os.path.dirname(__file__))
     SEED_NFVO = os.environ.get('DB_SEED_NFVO') or \
-        os.path.join(basedir, 'seed/nfvo.json')
+                os.path.join(basedir, 'seed/nfvo.json')
     SEED_NFVO_CRED = os.environ.get('DB_SEED_NFVO_CRED') or \
-        os.path.join(basedir, 'seed/nfvo_credentials.json')
+                     os.path.join(basedir, 'seed/nfvo_credentials.json')
+    SEED_RANO = os.environ.get('DB_SEED_RANO') or \
+                os.path.join(basedir, 'seed/rano.json')
+    SEED_RANO_CRED = os.environ.get('DB_SEED_RANO_CRED') or \
+                     os.path.join(basedir, 'seed/rano_credentials.json')
 
     with open(SEED_NFVO, 'r') as f:
         nfvo_dict = json.load(f)
@@ -84,4 +88,20 @@ def my_command():
     for new_nfvo_cred in nfvo_cred_dict:
         new_nfvo_cred_model = NFVO_CREDENTIALS(**new_nfvo_cred)
         database.msolo_db.db.session.add(new_nfvo_cred_model)
+        database.msolo_db.db.session.commit()
+
+    with open(SEED_RANO, 'r') as f:
+        rano_dict = json.load(f)
+
+    for new_rano in rano_dict:
+        new_rano_model = RANO(**new_rano)
+        database.msolo_db.db.session.add(new_rano_model)
+        database.msolo_db.db.session.commit()
+
+    with open(SEED_RANO_CRED, 'r') as f:
+        rano_cred_dict = json.load(f)
+
+    for new_rano_cred in rano_cred_dict:
+        new_rano_cred_model = RANO_CREDENTIALS(**new_rano_cred)
+        database.msolo_db.db.session.add(new_rano_cred_model)
         database.msolo_db.db.session.commit()

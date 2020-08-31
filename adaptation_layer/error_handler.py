@@ -58,6 +58,11 @@ class NfvoNotFound(Error):
         super().__init__(description='NFVO {0} not found.'.format(nfvo_id))
 
 
+class RanoNotFound(Error):
+    def __init__(self, rano_id):
+        super().__init__(description='RANO {0} not found.'.format(rano_id))
+
+
 class NfvoCredentialsNotFound(Error):
     def __init__(self, nfvo_id):
         super().__init__(
