@@ -34,7 +34,7 @@ database = MsoloDB()
 def create_app(test_config=None):
 
     # import blueprints
-    from . import nfvo
+    from . import app as mso_lo_app
 
     logging.basicConfig(level=logging.INFO)
 
@@ -55,8 +55,8 @@ def create_app(test_config=None):
     app.cli.add_command(my_command)
 
     # register blueprints
-    app.register_blueprint(nfvo.nfvo_bp)
-    app.register_blueprint(nfvo.rano_bp)
+    app.register_blueprint(mso_lo_app.nfvo_bp)
+    app.register_blueprint(mso_lo_app.rano_bp)
 
     return app
 
