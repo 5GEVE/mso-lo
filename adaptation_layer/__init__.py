@@ -55,7 +55,8 @@ def create_app(test_config=None):
     app.cli.add_command(my_command)
 
     # register blueprints
-    app.register_blueprint(nfvo.bp)
+    app.register_blueprint(nfvo.nfvo_bp)
+    app.register_blueprint(nfvo.rano_bp)
 
     return app
 

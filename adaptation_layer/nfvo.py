@@ -18,31 +18,41 @@ from flask import (
 )
 
 import adaptation_layer.driver.manager as manager
-import tasks
 from adaptation_layer import database
+from adaptation_layer import tasks
 from adaptation_layer.error_handler import Unauthorized, BadRequest, \
     ServerError, NfvoNotFound, NsNotFound, NsdNotFound, \
     NsOpNotFound, NfvoCredentialsNotFound, SubscriptionNotFound, Forbidden, \
     Conflict, Unprocessable
 
-bp = Blueprint('nfvo', __name__, url_prefix='/nfvo')
+nfvo_bp = Blueprint('nfvo', __name__, url_prefix='/nfvo')
+rano_bp = Blueprint('rano', __name__, url_prefix='/rano')
 
 
-@bp.route('/', methods=['GET'])
-def get_nfvo_list():
+@nfvo_bp.route('/', methods=['GET'])
+@rano_bp.route('/', methods=['GET'])
+def get_orchestrator_list():
     try:
-        return make_response(jsonify(database.msolo_db.get_nfvo_list()), 200)
+        if request.blueprint == 'nfvo':
+            return make_response(jsonify(database.msolo_db.get_nfvo_list()), 200)
+        elif request.blueprint == 'rano':
+            return make_response(jsonify(database.msolo_db.get_rano_list()), 200)
     except Unauthorized as e:
         abort(401, description=e.description)
     except ServerError as e:
         abort(500, description=e.description)
 
 
-@bp.route('/<nfvo_id>', methods=['GET'])
-def get_nfvo(nfvo_id):
+@nfvo_bp.route('/<id>', methods=['GET'])
+@rano_bp.route('/<id>', methods=['GET'])
+def get_nfvo(id):
     try:
-        return make_response(
-            jsonify(database.msolo_db.get_nfvo_by_id(nfvo_id)), 200)
+        if request.blueprint == 'nfvo':
+            return make_response(
+                jsonify(database.msolo_db.get_nfvo_by_id(id)), 200)
+        elif request.blueprint == 'rano':
+            return make_response(
+                jsonify(database.msolo_db.get_rano_by_id(id)), 200)
     except Unauthorized as e:
         abort(401, description=e.description)
     except NfvoNotFound as e:
@@ -51,10 +61,11 @@ def get_nfvo(nfvo_id):
         abort(500, description=e.description)
 
 
-@bp.route('/<nfvo_id>/ns_instances', methods=['POST'])
-def create_ns(nfvo_id):
+@nfvo_bp.route('/<id>/ns_instances', methods=['POST'])
+@rano_bp.route('/<id>/ns_instances', methods=['POST'])
+def create_ns(id):
     try:
-        driver = manager.get_driver(nfvo_id, database.msolo_db)
+        driver = manager.get_driver(request.blueprint, id, database.msolo_db)
         ns, headers = driver.create_ns(
             args={'payload': request.json, 'args': request.args.to_dict()})
         return make_response(jsonify(ns), 201, headers)
@@ -74,12 +85,12 @@ def create_ns(nfvo_id):
         abort(500, description=e.description)
 
 
-@bp.route('/<nfvo_id>/ns_instances', methods=['GET'])
-def get_ns_list(nfvo_id):
+@nfvo_bp.route('/<id>/ns_instances', methods=['GET'])
+@rano_bp.route('/<id>/ns_instances', methods=['GET'])
+def get_ns_list(id):
     try:
-        driver = manager.get_driver(nfvo_id, database.msolo_db)
-        ns_list, headers = driver.get_ns_list(
-            args={'args': request.args.to_dict()})
+        driver = manager.get_driver(request.blueprint, id, database.msolo_db)
+        ns_list, headers = driver.get_ns_list(args={'args': request.args.to_dict()})
         return make_response(jsonify(ns_list), 200, headers)
     except BadRequest as e:
         abort(400, description=e.description)
@@ -91,12 +102,12 @@ def get_ns_list(nfvo_id):
         abort(500, description=e.description)
 
 
-@bp.route('/<nfvo_id>/ns_instances/<ns_id>', methods=['GET'])
-def get_ns(nfvo_id, ns_id):
+@nfvo_bp.route('/<id>/ns_instances/<ns_id>', methods=['GET'])
+@rano_bp.route('/<id>/ns_instances/<ns_id>', methods=['GET'])
+def get_ns(id, ns_id):
     try:
-        driver = manager.get_driver(nfvo_id, database.msolo_db)
-        ns, headers = driver.get_ns(
-            ns_id, args={'args': request.args.to_dict()})
+        driver = manager.get_driver(request.blueprint, id, database.msolo_db)
+        ns, headers = driver.get_ns(ns_id, args={'args': request.args.to_dict()})
         return make_response(jsonify(ns), 200, headers)
     except BadRequest as e:
         abort(400, description=e.description)
@@ -108,10 +119,11 @@ def get_ns(nfvo_id, ns_id):
         abort(500, description=e.description)
 
 
-@bp.route('/<nfvo_id>/ns_instances/<ns_id>', methods=['DELETE'])
-def delete_ns(nfvo_id, ns_id):
+@nfvo_bp.route('/<id>/ns_instances/<ns_id>', methods=['DELETE'])
+@rano_bp.route('/<id>/ns_instances/<ns_id>', methods=['DELETE'])
+def delete_ns(id, ns_id):
     try:
-        driver = manager.get_driver(nfvo_id, database.msolo_db)
+        driver = manager.get_driver(request.blueprint, id, database.msolo_db)
         empty_body, headers = driver.delete_ns(
             ns_id, args={'args': request.args.to_dict()})
         return make_response('', 204, headers)
@@ -127,10 +139,11 @@ def delete_ns(nfvo_id, ns_id):
         abort(500, description=e.description)
 
 
-@bp.route('/<nfvo_id>/ns_instances/<ns_id>/instantiate', methods=['POST'])
-def instantiate_ns(nfvo_id, ns_id):
+@nfvo_bp.route('/<id>/ns_instances/<ns_id>/instantiate', methods=['POST'])
+@rano_bp.route('/<id>/ns_instances/<ns_id>/instantiate', methods=['POST'])
+def instantiate_ns(id, ns_id):
     try:
-        driver = manager.get_driver(nfvo_id, database.msolo_db)
+        driver = manager.get_driver(request.blueprint, id, database.msolo_db)
         empty_body, headers = driver.instantiate_ns(
             ns_id,
             args={'payload': request.json, 'args': request.args.to_dict()})
@@ -151,10 +164,11 @@ def instantiate_ns(nfvo_id, ns_id):
         abort(500, description=e.description)
 
 
-@bp.route('/<nfvo_id>/ns_instances/<ns_id>/terminate', methods=['POST'])
-def terminate_ns(nfvo_id, ns_id):
+@nfvo_bp.route('/<id>/ns_instances/<ns_id>/terminate', methods=['POST'])
+@rano_bp.route('/<id>/ns_instances/<ns_id>/terminate', methods=['POST'])
+def terminate_ns(id, ns_id):
     try:
-        driver = manager.get_driver(nfvo_id, database.msolo_db)
+        driver = manager.get_driver(request.blueprint, id, database.msolo_db)
         empty_body, headers = driver.terminate_ns(
             ns_id,
             args={'payload': request.json, 'args': request.args.to_dict()})
@@ -175,10 +189,11 @@ def terminate_ns(nfvo_id, ns_id):
         abort(500, description=e.description)
 
 
-@bp.route('/<nfvo_id>/ns_instances/<ns_id>/scale', methods=['POST'])
-def scale_ns(nfvo_id, ns_id):
+@nfvo_bp.route('/<id>/ns_instances/<ns_id>/scale', methods=['POST'])
+@rano_bp.route('/<id>/ns_instances/<ns_id>/scale', methods=['POST'])
+def scale_ns(id, ns_id):
     try:
-        driver = manager.get_driver(nfvo_id, database.msolo_db)
+        driver = manager.get_driver(request.blueprint, id, database.msolo_db)
         empty_body, headers = driver.scale_ns(
             ns_id,
             args={'payload': request.json, 'args': request.args.to_dict()})
@@ -199,12 +214,12 @@ def scale_ns(nfvo_id, ns_id):
         abort(500, description=e.description)
 
 
-@bp.route('/<nfvo_id>/ns_lcm_op_occs', methods=['GET'])
-def get_op_list(nfvo_id):
+@nfvo_bp.route('/<id>/ns_lcm_op_occs', methods=['GET'])
+@rano_bp.route('/<id>/ns_lcm_op_occs', methods=['GET'])
+def get_op_list(id):
     try:
-        driver = manager.get_driver(nfvo_id, database.msolo_db)
-        op_list, headers = driver.get_op_list(
-            args={'args': request.args.to_dict()})
+        driver = manager.get_driver(request.blueprint, id, database.msolo_db)
+        op_list, headers = driver.get_op_list(args={'args': request.args.to_dict()})
         return make_response(jsonify(op_list), 200, headers)
     except BadRequest as e:
         abort(400, description=e.description)
@@ -216,12 +231,12 @@ def get_op_list(nfvo_id):
         abort(500, description=e.description)
 
 
-@bp.route('/<nfvo_id>/ns_lcm_op_occs/<nsLcmOpId>', methods=['GET'])
-def get_op(nfvo_id, nsLcmOpId):
+@nfvo_bp.route('/<id>/ns_lcm_op_occs/<nsLcmOpId>', methods=['GET'])
+@rano_bp.route('/<id>/ns_lcm_op_occs/<nsLcmOpId>', methods=['GET'])
+def get_op(id, nsLcmOpId):
     try:
-        driver = manager.get_driver(nfvo_id, database.msolo_db)
-        ns_op, headers = driver.get_op(
-            nsLcmOpId, args={'args': request.args.to_dict()})
+        driver = manager.get_driver(request.blueprint, id, database.msolo_db)
+        ns_op, headers = driver.get_op(nsLcmOpId, args={'args': request.args.to_dict()})
         return make_response(jsonify(ns_op), 200, headers)
     except BadRequest as e:
         abort(400, description=e.description)
@@ -234,12 +249,12 @@ def get_op(nfvo_id, nsLcmOpId):
         abort(500, description=e.description)
 
 
-@bp.route('/<nfvo_id>/subscriptions', methods=['GET'])
-def get_subscription_list(nfvo_id):
+@nfvo_bp.route('/<id>/subscriptions', methods=['GET'])
+@rano_bp.route('/<id>/subscriptions', methods=['GET'])
+def get_subscription_list(id):
     try:
-        return make_response(
-            jsonify(database.msolo_db.get_subscription_list(nfvo_id)),
-            200)
+        # TODO fix in db functions
+        return make_response(jsonify(database.msolo_db.get_subscription_list(id)), 200)
     except Unauthorized as e:
         abort(401, description=e.description)
     except NfvoNotFound as e:
@@ -248,12 +263,13 @@ def get_subscription_list(nfvo_id):
         abort(500, description=e.description)
 
 
-@bp.route('/<nfvo_id>/subscriptions', methods=['POST'])
-def create_subscription(nfvo_id):
+@nfvo_bp.route('/<id>/subscriptions', methods=['POST'])
+@rano_bp.route('/<id>/subscriptions', methods=['POST'])
+def create_subscription(id):
     try:
+        # TODO fix in db functions
         return make_response(
-            jsonify(database.msolo_db.create_subscription(nfvo_id,
-                                                          request.json)), 201)
+            jsonify(database.msolo_db.create_subscription(id, request.json)), 201)
     except BadRequest as e:
         abort(400, description=e.description)
     except Unauthorized as e:
@@ -270,13 +286,13 @@ def create_subscription(nfvo_id):
         abort(500, description=e.description)
 
 
-@bp.route('/<nfvo_id>/subscriptions/<subscriptionId>', methods=['GET'])
-def get_subscription(nfvo_id, subscriptionId):
+@nfvo_bp.route('/<id>/subscriptions/<subscriptionId>', methods=['GET'])
+@rano_bp.route('/<id>/subscriptions/<subscriptionId>', methods=['GET'])
+def get_subscription(id, subscriptionId):
     try:
+        # TODO fix in db functions
         return make_response(
-            jsonify(database.msolo_db.get_subscription(
-                nfvo_id, subscriptionId)),
-            200)
+            jsonify(database.msolo_db.get_subscription(id, subscriptionId)), 200)
     except Unauthorized as e:
         abort(401, description=e.description)
     except (NfvoNotFound, NfvoCredentialsNotFound, SubscriptionNotFound) as e:
@@ -285,9 +301,11 @@ def get_subscription(nfvo_id, subscriptionId):
         abort(500, description=e.description)
 
 
-@bp.route('/<nfvo_id>/subscriptions/<subscriptionId>', methods=['DELETE'])
-def delete_subscription(nfvo_id, subscriptionId):
+@nfvo_bp.route('/<id>/subscriptions/<subscriptionId>', methods=['DELETE'])
+@rano_bp.route('/<id>/subscriptions/<subscriptionId>', methods=['DELETE'])
+def delete_subscription(id, subscriptionId):
     try:
+        # TODO fix in db functions
         database.msolo_db.delete_subscription(subscriptionId)
         return make_response('', 204)
     except Unauthorized as e:
@@ -298,8 +316,9 @@ def delete_subscription(nfvo_id, subscriptionId):
         abort(500, description=e.description)
 
 
-@bp.route('/<nfvo_id>/notifications', methods=['POST'])
-def post_notification(nfvo_id):
+@nfvo_bp.route('/<id>/notifications', methods=['POST'])
+@rano_bp.route('/<id>/notifications', methods=['POST'])
+def post_notification(id):
     required = ('nsInstanceId', 'operation', 'operationState')
     if not all(k in request.json for k in required):
         abort(400, 'One of {0} is missing'.format(str(required)))
