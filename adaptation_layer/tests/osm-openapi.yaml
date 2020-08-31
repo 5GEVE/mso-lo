@@ -1624,9 +1624,6 @@ paths:
         Occurrence" resource for the request, and the NS instance state becomes
         NOT_INSTANTIATED.
       operationId: terminateNSinstance
-      requestBody:
-        # Request data is not required
-        $ref: '#/components/requestBodies/TerminateNsRequest'
       responses:
         '202':
           description: Accepted
@@ -4468,16 +4465,6 @@ components:
               additionalProperties: true
           additionalProperties: true
       additionalProperties: true
-    TerminateNsRequest:
-      type: object
-      properties:
-        terminationTime:
-          description: |
-            Timestamp indicating the end time of the NS, i.e. the NS will be terminated
-            automatically at this timestamp. Cardinality "0" indicates the NS termination
-            takes place immediately.
-          type: string
-          format: date-time
     ArrayOfNsInstance:
       type: array
       items:
@@ -5147,14 +5134,6 @@ components:
         application/yaml:
           schema:
             $ref: '#/components/schemas/ScaleNsRequest'
-    TerminateNsRequest:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/TerminateNsRequest'
-        application/yaml:
-          schema:
-            $ref: '#/components/schemas/TerminateNsRequest'
     CreateNSinstanceContentRequest:
       content:
         application/json:
