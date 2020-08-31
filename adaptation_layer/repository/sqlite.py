@@ -146,6 +146,13 @@ def get_nfvo_cred(nfvo_id: int) -> Dict:
     return nfvo_cred.serialize
 
 
+def get_rano_cred(rano_id: int) -> Dict:
+    rano_cred = RANO_CREDENTIALS.query.filter_by(rano_id=rano_id).first()
+    if rano_cred is None:
+        raise RanoNotFound(rano_id=rano_id)
+    return rano_cred.serialize
+
+
 def get_subscription_list(nfvo_id: int) -> Dict:
     raise NotImplementedError("The method is not implemented")
 
