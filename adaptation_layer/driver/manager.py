@@ -18,8 +18,8 @@ from .osm import OSM
 from .ever import EVER
 
 
-def get_driver(type: str, id: int, db) -> Driver:
-    if type == 'nfvo':
+def get_driver(orc_type: str, id: int, db) -> Driver:
+    if orc_type == 'nfvo':
         nfvo = db.get_nfvo_by_id(id)
         nfvo_type = nfvo['type'].casefold()
         nfvo_cred = db.get_nfvo_cred(id)
@@ -32,7 +32,7 @@ def get_driver(type: str, id: int, db) -> Driver:
         else:
             raise NotImplementedError(
                 'Driver type: {} is not implemented'.format(nfvo_type))
-    elif type == 'rano':
+    elif orc_type == 'rano':
         rano = db.get_rano_by_id(id)
         rano_type = rano['type'].casefold()
         rano_cred = db.get_rano_cred(id)
