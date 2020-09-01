@@ -27,7 +27,3 @@ mock_ns = {
     "nsName": "test",
     "nsDescription": "test description"
 }
-
-mock_ns_terminate = {
-    "terminationTime": "2017-07-21T17:32:28Z"
-}

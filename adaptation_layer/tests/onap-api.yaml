@@ -1,17 +1,17 @@
 openapi: 3.0.0
 
 servers:
-  - description: ns-server
+  - description: ONAP Translation Component
     url: https://github.com/chabimic/NS-InstantiationServer
   - description: Onap driver
     url: https://github.com/TheWall89/adaptation-layer/tree/onap_driver
 
 info:
   description:
-    ONAP ns-server API
-    version with Celery and rabbitMQ with vnf info #and exCpInfo
-  version: "2.0"
-  title: ONAP NS-server API
+    ONAP Translation Component API
+    version with Celery and rabbitMQ with vnf info
+  version: "2.1"
+  title: ONAP Translation Component API
   contact:
     email: michal.grzesik@orange.com
   license:
@@ -26,7 +26,7 @@ tags:
   - name: 'IWL Catalogue API'
     description: API to retrieve the list of service specification and .csar archives
 
-# paths onap nbi & ns-server
+# paths
 paths:
 # get all ns instances info
   '/instances':
@@ -193,11 +193,6 @@ paths:
       summary: terminate a NS Instance with given Id
       description: terminate NS Instance
       operationId: terminateNS
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TerminationTime'
       responses:
         '202':
           description: Accepted
@@ -520,15 +515,6 @@ components:
       required:
         - error
 #
-    TerminationTime:
-      type: object
-      properties:
-        terminationTime:
-          type: string
-          format: date-time
-      required:
-        - terminationTime
-#
     NsInstanceList:
       # description: list of ns instances
       type: array
@@ -776,11 +762,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/createNsId'
-    TerminationTime:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/TerminationTime'
   # END REQUEST BODIES
 #
 # # commented
