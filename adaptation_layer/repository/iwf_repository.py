@@ -49,12 +49,10 @@ def _server_error(func):
 
 @_server_error
 def post_vim_safe(osm_vim: Dict, nfvo_self: str):
-    # TODO refactor this to take a list
     vim_found = get(f'{url}/vimAccounts/search/findByVimAccountNfvoId', params={'uuid': osm_vim['_id']})
     vim_found.raise_for_status()
     if vim_found.json()['_embedded']['vimAccounts']:
-        logger.info('vim {} found in iwf repository, skip'.format(osm_vim['_id']
-                                                                  ))
+        logger.info('vim {} found in iwf repository, skip'.format(osm_vim['_id']))
     else:
         payload = {
             'vimAccountNfvoId': osm_vim['_id'],
