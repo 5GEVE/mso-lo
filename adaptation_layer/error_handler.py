@@ -69,6 +69,12 @@ class NfvoCredentialsNotFound(Error):
             description='Credentials not found for NFVO {0}.'.format(nfvo_id))
 
 
+class RanoCredentialsNotFound(Error):
+    def __init__(self, rano_id):
+        super().__init__(
+            description='Credentials not found for RANO {0}.'.format(rano_id))
+
+
 class VimNotFound(Error):
     def __init__(self):
         super().__init__(description='Vim not found.')

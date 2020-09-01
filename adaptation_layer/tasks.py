@@ -64,7 +64,7 @@ def post_osm_vims():
         osm_vims = []
         if osm['credentials']:
             try:
-                driver = OSM(iwf_repository.convert_cred(osm))
+                driver = OSM(iwf_repository.convert_nfvo_cred(osm))
                 osm_vims, headers = driver.get_vim_list()
             except Error as e:
                 logger.warning(
@@ -94,7 +94,7 @@ def osm_notifications():
         ops = []
         if osm['credentials']:
             try:
-                driver = OSM(iwf_repository.convert_cred(osm))
+                driver = OSM(iwf_repository.convert_nfvo_cred(osm))
                 ops, headers = driver.get_op_list({'args': {}})
             except Error as e:
                 logger.warning(
