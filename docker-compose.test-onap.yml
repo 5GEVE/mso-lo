@@ -20,6 +20,8 @@ services:
       args:
         DB_SEED_NFVO: adaptation_layer/seed/nfvo_mock.json
         DB_SEED_NFVO_CRED: adaptation_layer/seed/nfvo_credentials_mock.json
+        DB_SEED_RANO: adaptation_layer/seed/rano_mock.json
+        DB_SEED_RANO_CRED: adaptation_layer/seed/rano_credentials_mock.json
     container_name: test-onap
     depends_on:
       - prism-onap
@@ -27,7 +29,7 @@ services:
       TESTING: "True"
       PRISM_ALIAS: prism-onap
       OPENAPI_PATH: ./openapi/MSO-LO-swagger-resolved.yaml
-    command: ["./adaptation_layer/tests/wait-for-it.sh", "prism-onap:9999", "--", "pytest", "-v", "adaptation_layer/tests/test_onap.py"]
+    command: ["adaptation_layer/tests/wait-for-it.sh", "prism-onap:9999", "--", "pytest", "-v", "adaptation_layer/tests/test_onap.py"]
     networks:
       mso-lo-net:
         aliases:
