@@ -13,7 +13,7 @@
 #  limitations under the License.
 import unittest
 
-from repository.iwf_repository import get_nfvo_by_id, get_rano_by_id, \
+from adaptation_layer.repository.iwf_repository import get_nfvo_by_id, get_rano_by_id, \
     get_nfvo_cred, get_rano_cred, add_orc_cred_test, get_nfvo_list, \
     get_rano_list, create_subscription, delete_subscription, get_subscription, \
     get_subscription_list, \
