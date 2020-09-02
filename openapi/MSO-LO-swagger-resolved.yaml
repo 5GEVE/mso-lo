@@ -8,8 +8,8 @@ info:
 host: example.com
 basePath: /api
 tags:
-  - name: Local NFVO
-    description: Local NFVO information
+  - name: Local NFVO/RANO
+    description: Local NFVO/RANO information
   - name: NS instances
     description: Network Service instance management
   - name: NS Subscriptions
@@ -25,7 +25,7 @@ paths:
   /nfvo:
     get:
       tags:
-        - Local NFVO
+        - Local NFVO/RANO
       summary: Retrieve list of local NFVO.
       description: |
         By passing in the appropriate options, you can search for available Local Orchestrators
@@ -59,7 +59,7 @@ paths:
   /nfvo/{nfvoId}:
     get:
       tags:
-        - Local NFVO
+        - Local NFVO/RANO
       summary: Read an individual NFVO.
       description: |
         By passing in the appropriate options, you can search for available Local Orchestrators
@@ -760,7 +760,7 @@ paths:
   /rano:
     get:
       tags:
-        - Local RANO
+        - Local NFVO/RANO
       summary: Retrieve list of local RANO.
       description: |
         By passing in the appropriate options, you can search for available Local Orchestrators
@@ -794,7 +794,7 @@ paths:
   /rano/{ranoId}:
     get:
       tags:
-        - Local RANO
+        - Local NFVO/RANO
       summary: Read an individual RANO.
       description: |
         By passing in the appropriate options, you can search for available Local Orchestrators
