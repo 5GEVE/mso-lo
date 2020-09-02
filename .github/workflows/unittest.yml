@@ -14,6 +14,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Copy the NFVO mock files 1
+      run: cp adaptation_layer/seed/nfvo_mock.json adaptation_layer/seed/nfvo.json
+    - name: Copy the NFVO mock files 2
+      run: cp adaptation_layer/seed/nfvo_credentials_mock.json adaptation_layer/seed/nfvo_credentials.json
+    - name: Copy the RANO mock files 1
+      run: cp adaptation_layer/seed/rano_mock.json adaptation_layer/seed/rano.json
+    - name: Copy the RANO mock files 2
+      run: cp adaptation_layer/seed/rano_credentials_mock.json adaptation_layer/seed/rano_credentials.json
     - name: Build Docker compose test NFVO
       run: docker-compose --file docker-compose.test-nfvo.yml --project-name test-nfvo build
     - name: Run the test for NFVO
