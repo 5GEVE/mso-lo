@@ -11,7 +11,7 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-
+import copy
 import os
 import re
 from typing import Dict, Tuple
@@ -169,9 +169,17 @@ class EVER(Driver):
     def terminate_ns(self, nsId: str, args=None) -> Tuple[None, Headers]:
         _url = '{0}/terminate/{1}'.format(self._base_path, nsId)
         _url = self._build_url_query(_url, args)
+        req_headers = copy.deepcopy(self._headers)
         try:
-            emtpy_body, resp_headers = self._exec_post(
-                _url, json=args['payload'], headers={"Content-Type": "application/json"})
+            del req_headers["Content-Type"]
+        except KeyError:
+            pass
+        try:
+            del req_headers["Accept"]
+        except KeyError:
+            pass
+        try:
+            emtpy_body, resp_headers = self._exec_post(_url, headers=req_headers)
         except ResourceNotFound:
             raise NsNotFound(ns_id=nsId)
         headers = self._build_headers(resp_headers)
