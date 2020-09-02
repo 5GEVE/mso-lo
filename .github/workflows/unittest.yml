@@ -14,7 +14,27 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Copy the NFVO mock files 1
+      run: cp adaptation_layer/seed/nfvo_mock.json adaptation_layer/seed/nfvo.json
+    - name: Copy the NFVO mock files 2
+      run: cp adaptation_layer/seed/nfvo_credentials_mock.json adaptation_layer/seed/nfvo_credentials.json
+    - name: Copy the RANO mock files 1
+      run: cp adaptation_layer/seed/rano_mock.json adaptation_layer/seed/rano.json
+    - name: Copy the RANO mock files 2
+      run: cp adaptation_layer/seed/rano_credentials_mock.json adaptation_layer/seed/rano_credentials.json
+    - name: Build Docker compose test NFVO
+      run: docker-compose --file docker-compose.test-nfvo.yml --project-name test-nfvo build
+    - name: Run the test for NFVO
+      run: docker-compose --file docker-compose.test-nfvo.yml --project-name test-nfvo up --abort-on-container-exit --exit-code-from test-nfvo
     - name: Build Docker compose test OSM
       run: docker-compose --file docker-compose.test-osm.yml --project-name test-osm build
     - name: Run the test for OSM
       run: docker-compose --file docker-compose.test-osm.yml --project-name test-osm up --abort-on-container-exit --exit-code-from test-osm
+    - name: Build Docker compose test EVER
+      run: docker-compose --file docker-compose.test-ever.yml --project-name test-ever build
+    - name: Run the test for EVER
+      run: docker-compose --file docker-compose.test-ever.yml --project-name test-ever up --abort-on-container-exit --exit-code-from test-ever
+    - name: Build Docker compose test IWF-repository
+      run: docker-compose -f docker-compose.test-iwf-repository.yml --project-name test-iwf-repository  build
+    - name: Run the test for IWF-repository
+      run: docker-compose --file docker-compose.test-iwf-repository.yml  --project-name test-iwf-repository up --abort-on-container-exit --exit-code-from test-iwf-repository

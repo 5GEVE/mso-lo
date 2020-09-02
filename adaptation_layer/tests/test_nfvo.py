@@ -19,7 +19,7 @@ import unittest
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError, SchemaError
 
-from app import app
+from adaptation_layer import create_app
 from .response_schemas import nfvo_schema, nfvo_list_schema
 
 
@@ -27,7 +27,7 @@ class NFVOTestCase(unittest.TestCase):
 
     def setUp(self):
         """Define test variables and initialize app."""
-        self.app = app
+        self.app = create_app()
         self.client = self.app.test_client
 
     def tearDown(self):

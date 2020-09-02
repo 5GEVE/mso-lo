@@ -20,9 +20,9 @@ from celery import Celery
 from celery.utils.log import get_task_logger
 from requests import post, RequestException
 
-import iwf_repository
-from driver.osm import OSM
-from error_handler import ServerError, Error
+from adaptation_layer.repository import iwf_repository
+from adaptation_layer.driver.osm import OSM
+from adaptation_layer.error_handler import ServerError, Error
 
 IWFREPO = os.getenv('IWFREPO', 'false').lower()
 redis_host = os.getenv('REDIS_HOST') if os.getenv('REDIS_HOST') else 'redis'
@@ -37,11 +37,11 @@ celery = Celery('tasks',
 if IWFREPO == 'true':
     celery.conf.beat_schedule = {
         'add_post_osm_vims_periodic': {
-            'task': 'tasks.post_osm_vims',
+            'task': 'adaptation_layer.tasks.post_osm_vims',
             'schedule': iwf_repository.interval
         },
         'add_osm_notifications': {
-            'task': 'tasks.osm_notifications',
+            'task': 'adaptation_layer.tasks.osm_notifications',
             'schedule': 5.0
         }
     }
@@ -64,7 +64,7 @@ def post_osm_vims():
         osm_vims = []
         if osm['credentials']:
             try:
-                driver = OSM(iwf_repository.convert_cred(osm))
+                driver = OSM(iwf_repository.convert_nfvo_cred(osm))
                 osm_vims, headers = driver.get_vim_list()
             except Error as e:
                 logger.warning(
@@ -94,7 +94,7 @@ def osm_notifications():
         ops = []
         if osm['credentials']:
             try:
-                driver = OSM(iwf_repository.convert_cred(osm))
+                driver = OSM(iwf_repository.convert_nfvo_cred(osm))
                 ops, headers = driver.get_op_list({'args': {}})
             except Error as e:
                 logger.warning(

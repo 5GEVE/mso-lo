@@ -13,10 +13,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Copy the mock files
-        run: cp adaptation_layer/seed/nfvo_mock.json  adaptation_layer/seed/nfvo.json
-      - name: Copy the mock files
-        run: cp adaptation_layer/seed/nfvo_credentials_mock.json  adaptation_layer/seed/nfvo_credentials.json
+      - name: Copy the NFVO mock files 1
+        run: cp adaptation_layer/seed/nfvo_mock.json adaptation_layer/seed/nfvo.json
+      - name: Copy the NFVO mock files 2
+        run: cp adaptation_layer/seed/nfvo_credentials_mock.json adaptation_layer/seed/nfvo_credentials.json
+      - name: Copy the RANO mock files 1
+        run: cp adaptation_layer/seed/rano_mock.json adaptation_layer/seed/rano.json
+      - name: Copy the RANO mock files 2
+        run: cp adaptation_layer/seed/rano_credentials_mock.json adaptation_layer/seed/rano_credentials.json
       - name: Build and push on the Docker Hub
         uses: docker/build-push-action@v1
         with:

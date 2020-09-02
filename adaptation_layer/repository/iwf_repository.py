@@ -17,10 +17,11 @@ from functools import wraps
 from typing import List, Dict
 
 from requests import get, ConnectionError, Timeout, \
-    TooManyRedirects, URLRequired, HTTPError, post, put, delete
+    TooManyRedirects, URLRequired, HTTPError, post, put, delete, patch
 
-from error_handler import ServerError, NfvoNotFound, NfvoCredentialsNotFound, \
-    Unauthorized, BadRequest, SubscriptionNotFound, Unprocessable
+from adaptation_layer.error_handler import ServerError, NfvoNotFound, \
+    NfvoCredentialsNotFound, Unauthorized, BadRequest, \
+    SubscriptionNotFound, Unprocessable, RanoNotFound, RanoCredentialsNotFound
 
 logger = logging.getLogger('app.iwf_repository')
 IWFREPO_HTTPS = os.getenv('IWFREPO_HTTPS', 'false').lower()
@@ -48,14 +49,10 @@ def _server_error(func):
 
 @_server_error
 def post_vim_safe(osm_vim: Dict, nfvo_self: str):
-    vim_found = get(
-        url + '/vimAccounts/search/findByVimAccountNfvoId',
-        params={'uuid': osm_vim['_id']})
+    vim_found = get(f'{url}/vimAccounts/search/findByVimAccountNfvoId', params={'uuid': osm_vim['_id']})
     vim_found.raise_for_status()
     if vim_found.json()['_embedded']['vimAccounts']:
-        logger.info('vim {} found in iwf repository, skip'.format(
-            osm_vim['_id']
-        ))
+        logger.info('vim {} found in iwf repository, skip'.format(osm_vim['_id']))
     else:
         payload = {
             'vimAccountNfvoId': osm_vim['_id'],
@@ -64,7 +61,7 @@ def post_vim_safe(osm_vim: Dict, nfvo_self: str):
             'uri': osm_vim['vim_url'],
             'tenant': osm_vim['vim_tenant_name'],
         }
-        new_vim = post(url + '/vimAccounts', json=payload)
+        new_vim = post(f'{url}/vimAccounts', json=payload)
         new_vim.raise_for_status()
         logger.info('created new vimAccount with id {0}'.format(
             new_vim.json()['vimAccountNfvoId']))
@@ -76,9 +73,7 @@ def post_vim_safe(osm_vim: Dict, nfvo_self: str):
 
 @_server_error
 def find_nfvos_by_type(nfvo_type: str):
-    response = get(
-        url + '/nfvOrchestrators/search/findByTypeIgnoreCase',
-        params={'type': nfvo_type})
+    response = get(f'{url}/nfvOrchestrators/search/findByTypeIgnoreCase', params={'type': nfvo_type})
     response.raise_for_status()
     return response.json()['_embedded']['nfvOrchestrators']
 
@@ -86,9 +81,8 @@ def find_nfvos_by_type(nfvo_type: str):
 @_server_error
 def _get_nfvo(nfvo_id) -> Dict:
     try:
-        resp = get(url + '/nfvOrchestrators/' + nfvo_id)
+        resp = get(f'{url}/nfvOrchestrators/{nfvo_id}')
         resp.raise_for_status()
-        nfvo = resp.json()
     except HTTPError as e:
         if e.response.status_code == 404:
             raise NfvoNotFound(nfvo_id)
@@ -96,7 +90,22 @@ def _get_nfvo(nfvo_id) -> Dict:
             raise Unauthorized()
         else:
             raise
-    return nfvo
+    return resp.json()
+
+
+@_server_error
+def _get_rano(rano_id) -> Dict:
+    try:
+        resp = get(f'{url}/ranOrchestrators/{rano_id}')
+        resp.raise_for_status()
+    except HTTPError as e:
+        if e.response.status_code == 404:
+            raise RanoNotFound(rano_id)
+        elif e.response.status_code == 401:
+            raise Unauthorized()
+        else:
+            raise
+    return resp.json()
 
 
 @_server_error
@@ -120,11 +129,35 @@ def _convert_nfvo(nfvo: Dict) -> Dict:
     return conv
 
 
-def convert_cred(nfvo):
-    del nfvo['credentials']['id']
-    nfvo['credentials']['nfvo_id'] = nfvo['id']
-    nfvo['credentials']['user'] = nfvo['credentials'].pop('username')
-    return nfvo['credentials']
+@_server_error
+def _convert_rano(rano: Dict) -> Dict:
+    try:
+        site = get(rano['_links']['site']['href']).json()['name']
+    except HTTPError:
+        site = None
+    conv = {
+        'id': rano['id'],
+        'name': rano['name'],
+        'type': rano['type'],
+        'site': site
+    }
+    if rano['uri'] is not None:
+        conv['uri'] = rano['uri']
+    return conv
+
+
+def convert_nfvo_cred(orc):
+    del orc['credentials']['id']
+    orc['credentials']['nfvo_id'] = orc['id']
+    orc['credentials']['user'] = orc['credentials'].pop('username')
+    return orc['credentials']
+
+
+def convert_rano_cred(orc):
+    del orc['credentials']['id']
+    orc['credentials']['rano_id'] = orc['id']
+    orc['credentials']['user'] = orc['credentials'].pop('username')
+    return orc['credentials']
 
 
 def get_nfvo_by_id(nfvo_id: int) -> Dict:
@@ -132,26 +165,51 @@ def get_nfvo_by_id(nfvo_id: int) -> Dict:
     return _convert_nfvo(nfvo)
 
 
+def get_rano_by_id(rano_id: int) -> Dict:
+    rano = _get_rano(rano_id)
+    return _convert_rano(rano)
+
+
 def get_nfvo_cred(nfvo_id: int) -> Dict:
     nfvo = _get_nfvo(nfvo_id)
     if nfvo['credentials'] is None:
         raise NfvoCredentialsNotFound(nfvo_id)
     else:
-        return convert_cred(nfvo)
+        return convert_nfvo_cred(nfvo)
+
+
+def get_rano_cred(rano_id: int) -> Dict:
+    rano = _get_rano(rano_id)
+    if rano['credentials'] is None:
+        raise RanoCredentialsNotFound(rano_id)
+    else:
+        return convert_rano_cred(rano)
 
 
 @_server_error
 def get_nfvo_list() -> List[Dict]:
     try:
-        resp = get(url + '/nfvOrchestrators')
+        resp = get(f'{url}/nfvOrchestrators')
         resp.raise_for_status()
     except HTTPError as e:
         if e.response.status_code == 401:
             raise Unauthorized()
         else:
             raise
-    return [_convert_nfvo(nfvo) for nfvo in
-            resp.json()['_embedded']['nfvOrchestrators']]
+    return [_convert_nfvo(nfvo) for nfvo in resp.json()['_embedded']['nfvOrchestrators']]
+
+
+@_server_error
+def get_rano_list() -> List[Dict]:
+    try:
+        resp = get(f'{url}/ranOrchestrators')
+        resp.raise_for_status()
+    except HTTPError as e:
+        if e.response.status_code == 401:
+            raise Unauthorized()
+        else:
+            raise
+    return [_convert_rano(rano) for rano in resp.json()['_embedded']['ranOrchestrators']]
 
 
 @_server_error
@@ -198,7 +256,8 @@ def get_subscription(nfvo_id: int, subscriptionId: int) -> Dict:
         resp = get(
             '{0}/nfvOrchestrators/{1}/subscriptions/{2}'.format(url,
                                                                 nfvo_id,
-                                                                subscriptionId))
+                                                                subscriptionId)
+        )
         resp.raise_for_status()
     except HTTPError as e:
         if e.response.status_code == 404:
@@ -224,9 +283,25 @@ def delete_subscription(subscriptionId: int) -> None:
 @_server_error
 def search_subs_by_ns_instance(ns_instance_id: str) -> List[Dict]:
     try:
-        subs = get(url + '/subscriptions/search/findByNsInstanceId',
-                   params={'nsInstanceId': ns_instance_id})
+        subs = get(f'{url}/subscriptions/search/findByNsInstanceId', params={'nsInstanceId': ns_instance_id})
         subs.raise_for_status()
     except HTTPError:
         raise
     return subs.json()['_embedded']['subscriptions'] if subs else []
+
+
+def add_orc_cred_test(orc_type: str, orc_id: int):
+    payload = {
+        "credentials": {
+            "host": "192.168.1.2",
+            "port": 9999,
+            "username": "admin",
+            "password": "admin",
+            "project": "admin"
+        }
+    }
+    if orc_type == 'nfvo':
+        resp = patch(f'{url}/nfvOrchestrators/{orc_id}', json=payload)
+    if orc_type == 'rano':
+        resp = patch(f'{url}/ranOrchestrators/{orc_id}', json=payload)
+    resp.raise_for_status()

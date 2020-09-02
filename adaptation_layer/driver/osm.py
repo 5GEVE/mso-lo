@@ -29,8 +29,8 @@ from requests import ConnectionError, Timeout, TooManyRedirects, URLRequired, \
     api, HTTPError, get, post, delete
 from urllib3.exceptions import InsecureRequestWarning
 
-from error_handler import ResourceNotFound, NsNotFound, VnfNotFound, \
-    Unauthorized, ServerError, NsOpNotFound, VnfPkgNotFound, \
+from adaptation_layer.error_handler import ResourceNotFound, NsNotFound, \
+    VnfNotFound, Unauthorized, ServerError, NsOpNotFound, VnfPkgNotFound, \
     VimNotFound, NsdNotFound, BadRequest, Forbidden, MethodNotAllowed, \
     Unprocessable, Conflict
 from .interface import Driver, Headers, BodyList, Body
@@ -232,8 +232,14 @@ class OSM(Driver):
         _url = "{0}/nslcm/v1/ns_instances/{1}".format(self._base_path, nsId)
         _url = self._build_url_query(_url, args)
         req_headers = copy.deepcopy(self._headers)
-        del req_headers["Content-Type"]
-        del req_headers["Accept"]
+        try:
+            del req_headers["Content-Type"]
+        except KeyError:
+            pass
+        try:
+            del req_headers["Accept"]
+        except KeyError:
+            pass
         try:
             empty_body, osm_headers = self._request(
                 delete, _url, params=None, headers=req_headers)
@@ -291,7 +297,14 @@ class OSM(Driver):
             self._base_path, nsId)
         _url = self._build_url_query(_url, args)
         req_headers = copy.deepcopy(self._headers)
-        del req_headers["Content-Type"]
+        try:
+            del req_headers["Content-Type"]
+        except KeyError:
+            pass
+        try:
+            del req_headers["Accept"]
+        except KeyError:
+            pass
         try:
             emtpy_body, osm_headers = self._request(post, _url,
                                                     headers=req_headers)

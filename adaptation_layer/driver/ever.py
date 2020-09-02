@@ -11,7 +11,7 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-
+import copy
 import os
 import re
 from typing import Dict, Tuple
@@ -21,7 +21,7 @@ import requests
 import urllib3
 from urllib3.exceptions import InsecureRequestWarning
 
-from error_handler import ResourceNotFound, NsNotFound, \
+from adaptation_layer.error_handler import ResourceNotFound, NsNotFound, \
     BadRequest, ServerError, NsOpNotFound, NsdNotFound
 from .interface import Driver, Headers, BodyList, Body
 
@@ -32,10 +32,10 @@ PRISM_ALIAS = os.environ.get("PRISM_ALIAS", "prism-ever")
 
 class EVER(Driver):
 
-    def __init__(self, nfvo_cred):
-        self._nfvoId = nfvo_cred["nfvo_id"]
-        self._host = nfvo_cred["host"]
-        self._port = nfvo_cred["port"] if "port" in nfvo_cred else 8080
+    def __init__(self, rano_cred):
+        self._ranoId = rano_cred["rano_id"]
+        self._host = rano_cred["host"]
+        self._port = rano_cred["port"] if "port" in rano_cred else 8080
         self._headers = {"Content-Type": "application/json",
                          "Accept": "application/json"}
 
@@ -169,9 +169,17 @@ class EVER(Driver):
     def terminate_ns(self, nsId: str, args=None) -> Tuple[None, Headers]:
         _url = '{0}/terminate/{1}'.format(self._base_path, nsId)
         _url = self._build_url_query(_url, args)
+        req_headers = copy.deepcopy(self._headers)
         try:
-            emtpy_body, resp_headers = self._exec_post(
-                _url, json=args['payload'], headers={"Content-Type": "application/json"})
+            del req_headers["Content-Type"]
+        except KeyError:
+            pass
+        try:
+            del req_headers["Accept"]
+        except KeyError:
+            pass
+        try:
+            emtpy_body, resp_headers = self._exec_post(_url, headers=req_headers)
         except ResourceNotFound:
             raise NsNotFound(ns_id=nsId)
         headers = self._build_headers(resp_headers)
@@ -210,5 +218,5 @@ class EVER(Driver):
             re_res = re.findall(
                 r"/(instances|ns_lcm_op_occs)/([A-Za-z0-9\-]+)", resp_headers['location'])
             if len(re_res):
-                headers['location'] = '/nfvo/{0}/ns_lcm_op_occs/{1}'.format(self._nfvoId, re_res[0][1])
+                headers['location'] = '/rano/{0}/ns_lcm_op_occs/{1}'.format(self._ranoId, re_res[0][1])
         return headers
