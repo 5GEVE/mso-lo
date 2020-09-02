@@ -1181,6 +1181,124 @@ paths:
           schema:
             $ref: '#/definitions/ErrorResponse'
       deprecated: false
+  /rano/{ranoId}/ns_lcm_op_occs:
+    get:
+      tags:
+        - NS LCM Operations
+      summary: Query multiple NS LCM operation occurrences.
+      description: |
+        Get Operation Status. The client can use this method to query status information about multiple NS lifecycle management operation occurrences. This method shall follow the provisions specified in the Tables 6.4.9.3.2-1 and 6.4.9.3.2-2 for URI query parameters, request and response data structures, and response codes.
+      operationId: Rano.NS_LCM_OP.list
+      produces:
+        - application/json
+      parameters:
+        - name: filter
+          in: query
+          description: |
+            Only 'nsInstanceId' is supported.
+            Attribute-based filtering expression according to clause 5.2 of ETSI GS NFV SOL 013. The RANO shall support receiving this parameter as part of the URI query string. The OSS/BSS may supply this parameter. All attribute names that appear in the NsLcmOpOcc and in data types referenced from it shall be supported by the RANO in the filter expression.
+          required: false
+          type: string
+        - name: ranoId
+          in: path
+          description: Identifier of a RANO
+          required: true
+          type: string
+        - name: Accept
+          in: header
+          description: |
+            Content-Types that are acceptable for the response. Reference: IETF RFC 7231
+          required: true
+          type: string
+      responses:
+        "200":
+          description: |
+            200 OK
+            Status information for zero or more NS lifecycle management operation  occurrences has been queried successfully. The response body shall contain in an array the representations of zero or more NS instances, as defined in clause 6.5.2.3.
+            If the 'filter' URI parameter or one of the 'all_fields', 'fields', 'exclude_fields' or 'exclude_default' URI parameters was supplied in the request and is supported, the data in the response body shall have been transformed according to the rules specified in clauses 5.2.2 and 5.3.2 of ETSI GS NFV SOL 013, respectively.
+            If the RANO supports alternative 2 (paging) according to  clause 5.4.2.1 of ETSI GS NFV SOL 013 for this resource, inclusion of the Link HTTP header in this response shall follow the provisions in clause 5.4.2.3 of ETSI GS NFV SOL 013.
+          headers:
+            Content-Type:
+              type: string
+              description: The MIME type of the body of the response.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/NsLcmOpOcc'
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+  /rano/{ranoId}/ns_lcm_op_occs/{nsLcmOpOccId}:
+    get:
+      tags:
+        - NS LCM Operations
+      summary: Read an individual NS LCM operation occurrence resource.
+      description: |
+        The client can use this method to retrieve status information about a NS lifecycle management operation occurrence by reading an individual 'NS LCM operation occurrence' resource. This method shall follow the provisions specified in the Tables 6.4.10.3.2-1 and 6.4.10.3.2-2 for URI query parameters, request and response data structures, and response codes.
+      operationId: Rano.NS_LCM_OP.fetch
+      produces:
+        - application/json
+      parameters:
+        - name: ranoId
+          in: path
+          description: Identifier of a Rano
+          required: true
+          type: string
+        - name: nsLcmOpOccId
+          in: path
+          description: |
+            Identifier of a NS lifecycle management operation occurrence.
+          required: true
+          type: string
+        - name: Accept
+          in: header
+          description: |
+            Content-Types that are acceptable for the response. Reference: IETF RFC 7231
+          required: true
+          type: string
+      responses:
+        "200":
+          description: |
+            200 OK
+            Information about a NS LCM operation occurrence has been queried successfully. The response body shall contain status information about a NS  lifecycle management operation occurrence (see clause 6.5.2.3).
+          headers:
+            Content-Type:
+              type: string
+              description: |
+                The MIME type of the body of the response.This header field shall be present if the response has a non-empty message body.
+            WWW-Authenticate:
+              type: string
+              description: |
+                Challenge if the corresponding HTTP request has not provided authorization, or error details if the corresponding HTTP request has provided an invalid authorization token.
+            Version:
+              type: string
+              description: |
+                Version of the API used in the response.
+          schema:
+            $ref: '#/definitions/NsLcmOpOcc'
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
 definitions:
   RANO:
     type: object
