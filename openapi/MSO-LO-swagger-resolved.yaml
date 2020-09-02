@@ -757,7 +757,96 @@ paths:
           schema:
             $ref: '#/definitions/ErrorResponse'
       deprecated: false
+  /rano:
+    get:
+      tags:
+        - Local RANO
+      summary: Retrieve list of local RANO.
+      description: |
+        By passing in the appropriate options, you can search for available Local Orchestrators
+      operationId: RANO.fetch
+      produces:
+        - application/json
+      parameters:
+        - name: RANO parameters
+          in: query
+          description: rano identifier
+          required: false
+          type: string
+        - name: Pagination parameters
+          in: query
+          description: The parameters are used to create pagination
+          required: false
+          type: string
+      responses:
+        "200":
+          description: search results matching criteria
+          headers: {}
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RANO'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+  /rano/{ranoId}:
+    get:
+      tags:
+        - Local RANO
+      summary: Read an individual RANO.
+      description: |
+        By passing in the appropriate options, you can search for available Local Orchestrators
+      operationId: RANO.getById
+      produces:
+        - application/json
+      parameters:
+        - name: ranoId
+          in: path
+          description: Identifier of a RANO
+          required: true
+          type: string
+      responses:
+        "200":
+          description: RANO found
+          headers: {}
+          schema:
+            $ref: '#/definitions/RANO'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
 definitions:
+  RANO:
+    type: object
+    required:
+      - id
+      - name
+      - site
+      - type
+    properties:
+      id:
+        type: integer
+        example: 1
+      name:
+        type: string
+        example: EVER-italia
+      type:
+        type: string
+        example: EVER
+      site:
+        type: string
+        example: ITALY_TURIN
+      uri:
+        type: string
+        example: https://ever.5g-eve.eu
+    title: RANO
   NFVO:
     type: object
     required:
