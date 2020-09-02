@@ -10,6 +10,8 @@ COPY ./adaptation_layer ./adaptation_layer
 # setup env variables to initialize database
 ARG DB_SEED_NFVO
 ENV DB_SEED_NFVO $DB_SEED_NFVO
+ARG DB_SEED_NFVO_CRED
+ENV DB_SEED_NFVO_CRED $DB_SEED_NFVO_CRED
 ARG DB_SEED_RANO
 ENV DB_SEED_RANO $DB_SEED_RANO
 ARG DB_SEED_RANO_CRED
