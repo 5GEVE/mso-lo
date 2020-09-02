@@ -410,12 +410,6 @@ paths:
           description: Identifier of a Nfvo
           required: true
           type: string
-        - in: body
-          name: body
-          description: ""
-          required: false
-          schema:
-            $ref: '#/definitions/TerminateNsRequest'
       responses:
         "202":
           description: |
@@ -1145,12 +1139,6 @@ paths:
           description: Identifier of a Rano
           required: true
           type: string
-        - in: body
-          name: body
-          description: ""
-          required: false
-          schema:
-            $ref: '#/definitions/TerminateNsRequest'
       responses:
         "202":
           description: |
@@ -1610,17 +1598,6 @@ definitions:
           $ref: '#/definitions/ErrorResponse_details'
     title: ErrorResponse
     description: Error rappresentation
-  TerminateNsRequest:
-    type: object
-    properties:
-      terminationTime:
-        type: string
-        format: date-time
-        description: |-
-          Timestamp indicating the end time of the NS, i.e. the NS will be terminated
-          automatically at this timestamp. Cardinality '0' indicates the NS termination
-          takes place immediately.
-    title: TerminateNsRequest
   ErrorResponse_details:
     type: object
     properties:

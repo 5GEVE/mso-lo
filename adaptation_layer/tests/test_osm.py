@@ -21,7 +21,7 @@ from jsonschema import validate
 from jsonschema.exceptions import ValidationError, SchemaError
 
 from adaptation_layer import create_app
-from .request_mock import mock_ns, mock_ns_scale, mock_ns_terminate
+from .request_mock import mock_ns, mock_ns_scale
 from .response_schemas import ns_lcm_op_occ_schema, ns_list_schema, ns_schema, \
     ns_lcm_op_occ_list_schema
 
@@ -126,22 +126,23 @@ class OSMTestCase(unittest.TestCase):
 
     # Check status codes 202, 401, 404, headers and payload for terminate_ns()
     def test_terminate_ns_202(self):
-        res = self.client().post('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/terminate?__code=202',
-                                 json=mock_ns_terminate)
+        res = self.client().post(
+            '/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/terminate?__code=202')
         self.assertEqual(202, res.status_code)
 
         self.assertIn('Location', res.headers)
         validate_url = urlparse(res.headers["Location"])
-        self.assertTrue(all([validate_url.scheme, validate_url.netloc, validate_url.path]))
+        self.assertTrue(
+            all([validate_url.scheme, validate_url.netloc, validate_url.path]))
 
     def test_terminate_ns_404(self):
-        res = self.client().post('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/terminate?__code=404',
-                                 json=mock_ns_terminate)
+        res = self.client().post(
+            '/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/terminate?__code=404')
         self.assertEqual(404, res.status_code)
 
     def test_terminate_ns_401(self):
-        res = self.client().post('/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/terminate?__code=401',
-                                 json=mock_ns_terminate)
+        res = self.client().post(
+            '/nfvo/1/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/terminate?__code=401')
         self.assertEqual(401, res.status_code)
 
     # Check status codes 202, 401, 404, headers and payload for scale_ns()

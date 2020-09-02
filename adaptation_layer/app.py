@@ -169,7 +169,7 @@ def terminate_ns(orc_id, ns_id):
         driver = manager.get_driver(request.blueprint, orc_id, database.msolo_db)
         empty_body, headers = driver.terminate_ns(
             ns_id,
-            args={'payload': request.json, 'args': request.args.to_dict()})
+            args={'args': request.args.to_dict()})
         return make_response('', 202, headers)
     except BadRequest as e:
         abort(400, description=e.description)
