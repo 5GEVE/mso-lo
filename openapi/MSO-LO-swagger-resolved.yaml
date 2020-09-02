@@ -396,7 +396,7 @@ paths:
       summary: Terminate a NS instance.
       description: |
         Terminate NS task.   The POST method terminates a NS instance. This method can only be  used with a NS instance in the INSTANTIATED state. Terminating a NS instance does not delete the NS instance identifier,  but rather transitions the NS into the NOT_INSTANTIATED state.
-      operationId: terminateNSinstance
+      operationId: NFVOTerminateNSinstance
       produces:
         - application/json
       parameters:
@@ -819,6 +819,365 @@ paths:
             $ref: '#/definitions/ErrorResponse'
         "404":
           description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+  /rano/{ranoId}/ns_instances:
+    get:
+      tags:
+        - NS instances
+      summary: Retrieve list of NS instances.
+      description: |
+        This operation allows to retrieve the list of NS from a specific Rano
+      operationId: Rano.NS.list
+      produces:
+        - application/json
+      parameters:
+        - name: ranoId
+          in: path
+          description: Identifier of a Rano
+          required: true
+          type: string
+        - name: Pagination parameters
+          in: query
+          description: The parameters are used to create pagination
+          required: false
+          type: string
+      responses:
+        "200":
+          description: search results matching criteria
+          headers: {}
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/NsInstance'
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+    post:
+      tags:
+        - NS instances
+      summary: Create a new NS instance ID.
+      description: Creates and returns a Network Service identifier (nsId) in a Rano
+      operationId: Rano.NS.onboard
+      produces:
+        - application/json
+      parameters:
+        - name: ranoId
+          in: path
+          description: Identifier of a Rano
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Create NS request body
+          required: false
+          schema:
+            $ref: '#/definitions/NfvoNsInstancesRequest'
+      responses:
+        "201":
+          description: |
+            201 Created
+            A NS Instance identifier has been created successfully. The response body shall contain a representation of the created NS instance, as defined in clause 6.5.2.8. The HTTP response shall include a 'Location' HTTP header that contains the resource URI of the created NS instance.
+          headers:
+            Location:
+              type: string
+              description: nsInstanceId of the created NS
+          schema:
+            $ref: '#/definitions/NsInstance'
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "403":
+          description: Not enough permissions to do this operation
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "409":
+          description: The operation cannot be executed currently, due to a conflict with the state of the resource.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "422":
+          description: The request was well-formed but was unable to be followed due to semantic errors.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+  /rano/{ranoId}/ns_instances/{nsInstanceId}:
+    get:
+      tags:
+        - NS instances
+      summary: Read an individual NS instance resource.
+      description: |
+        This operation allows to retrieve an existing NS from a specific Rano.
+      operationId: Rano.NS.fetch
+      produces:
+        - application/json
+      parameters:
+        - name: nsInstanceId
+          in: path
+          description: Identifier of the network service
+          required: true
+          type: string
+        - name: ranoId
+          in: path
+          description: Identifier of a Rano
+          required: true
+          type: string
+      responses:
+        "200":
+          description: NS
+          headers: {}
+          schema:
+            $ref: '#/definitions/NsInstance'
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+    delete:
+      tags:
+        - NS instances
+      summary: Delete an individual NS instance resource.
+      description: |
+        Delete an individual NS instance resource.
+      operationId: Rano.NS.terminate
+      produces:
+        - application/json
+      parameters:
+        - name: nsInstanceId
+          in: path
+          description: Identifier of the network service
+          required: true
+          type: string
+        - name: ranoId
+          in: path
+          description: Identifier of a Rano
+          required: true
+          type: string
+      responses:
+        "204":
+          description: |
+            204 No Content The NS instance resource and the associated NS identifier were deleted successfully. The response body shall be empty.
+          headers: {}
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "403":
+          description: Not enough permissions to do this operation
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "409":
+          description: The operation cannot be executed currently, due to a conflict with the state of the resource.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "422":
+          description: The request was well-formed but was unable to be followed due to semantic errors.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+  /rano/{ranoId}/ns_instances/{nsInstanceId}/instantiate:
+    post:
+      tags:
+        - NS instances
+      summary: Instantiate a NS instance.
+      description: |
+        Instantiate a NS. The precondition is that the NS instance must have
+        been created and must be in NOT_INSTANTIATED state. As a result of the
+        success of this operation, the RANO creates a 'NS Lifecycle Operation
+        Occurrence' resource for the request, and the NS instance state becomes
+        INSTANTIATED.
+      operationId: Rano.NS.instantiate
+      produces:
+        - application/json
+      parameters:
+        - name: nsInstanceId
+          in: path
+          description: Identifier of the network service
+          required: true
+          type: string
+        - name: ranoId
+          in: path
+          description: Identifier of a Rano
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Instantiate NS request body
+          required: false
+          schema:
+            $ref: '#/definitions/NfvoNsInstantiateRequest'
+      responses:
+        "202":
+          description: |
+            202 ACCEPTED
+          headers:
+            Location:
+              type: string
+              description: nsLcmOpOccId of the instantiated NS
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+  /rano/{ranoId}/ns_instances/{nsInstanceId}/scale:
+    post:
+      tags:
+        - NS instances
+      summary: Scale NS instance.
+      description: |
+        WARNING: not tested
+        Scale a NS instance. The precondition is that the NS instance must have
+        been created and must be in INSTANTIATED state. As a result of the
+        success of this operation, the RANO creates a 'NS Lifecycle Operation
+        Occurrence' resource for the request, and the NS instance state remains
+        INSTANTIATED.
+      operationId: Rano.NS.scale
+      produces:
+        - application/json
+      parameters:
+        - name: nsInstanceId
+          in: path
+          description: Identifier of the network service
+          required: true
+          type: string
+        - name: ranoId
+          in: path
+          description: Identifier of a Rano
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Scale NS request body
+          required: false
+          schema:
+            $ref: '#/definitions/NfvoNsInstancesScaleRequest'
+      responses:
+        "202":
+          description: |
+            202 ACCEPTED
+          headers: {}
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "403":
+          description: Not enough permissions to do this operation
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "409":
+          description: The operation cannot be executed currently, due to a conflict with the state of the resource.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "422":
+          description: The request was well-formed but was unable to be followed due to semantic errors.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+  /rano/{ranoId}/ns_instances/{nsInstanceId}/terminate:
+    post:
+      tags:
+        - NS instances
+      summary: Terminate a NS instance.
+      description: |
+        Terminate NS task.   The POST method terminates a NS instance. This method can only be  used with a NS instance in the INSTANTIATED state. Terminating a NS instance does not delete the NS instance identifier,  but rather transitions the NS into the NOT_INSTANTIATED state.
+      operationId: RanoTerminateNSinstance
+      produces:
+        - application/json
+      parameters:
+        - name: nsInstanceId
+          in: path
+          description: Identifier of the network service
+          required: true
+          type: string
+        - name: ranoId
+          in: path
+          description: Identifier of a Rano
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: ""
+          required: false
+          schema:
+            $ref: '#/definitions/TerminateNsRequest'
+      responses:
+        "202":
+          description: |
+            202 ACCEPTED
+          headers: {}
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "403":
+          description: Not enough permissions to do this operation
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "409":
+          description: The operation cannot be executed currently, due to a conflict with the state of the resource.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "422":
+          description: The request was well-formed but was unable to be followed due to semantic errors.
           schema:
             $ref: '#/definitions/ErrorResponse'
       deprecated: false
