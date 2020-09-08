@@ -4,22 +4,22 @@ services:
     image: nginx:latest
     container_name: nginx
     depends_on:
-      - flask
+      - flask-app
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
     networks:
       - mso-lo-net
     ports:
       - 80:80
-  flask:
+  flask-app:
     image: 5geve/mso-lo:latest
-    container_name: mso-lo
+    container_name: flask-app
     depends_on:
-      - redis
+      - celery-worker
     environment:
       IWFREPO: 'true'
       IWFREPO_HTTPS: 'false'
-      IWFREPO_HOST: '192.168.17.20'
+      IWFREPO_HOST: '192.168.18.14'
       IWFREPO_PORT: '8087'
       IWFREPO_INTERVAL: '300'
       REDIS_HOST: 'redis'
@@ -30,6 +30,24 @@ services:
           - flask-app
     volumes:
       - mso-lo-data:/usr/src/app/data
+  celery-worker:
+    image: 5geve/mso-lo:latest
+    container_name: celery-worker
+    depends_on:
+      - redis
+    command: [celery, -A, adaptation_layer.tasks, worker, -B, -s, /tmp/celerybeat-schedule, --loglevel=info, --uid=nobody, --gid=nogroup]
+    environment:
+      IWFREPO: 'true'
+      IWFREPO_HTTPS: 'false'
+      IWFREPO_HOST: '192.168.18.14'
+      IWFREPO_PORT: '8087'
+      IWFREPO_INTERVAL: '5'
+      REDIS_HOST: 'redis'
+      REDIS_PORT: '6379'
+    networks:
+      mso-lo-net:
+        aliases:
+          - celery-worker
   redis:
     image: redis:latest
     container_name: redis
