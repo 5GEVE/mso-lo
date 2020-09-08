@@ -24,51 +24,34 @@ Software is distributed under [Apache License, Version 2.0](http://www.apache.or
 
 ## Install guide
 
-Copy the mock files (needed for a correct build):
+### Environment with iwf repository
 
+If [iwf-repository](https://github.com/5GEVE/iwf-repository) is available in your environment,
+edit [docker-compose.yaml](docker-compose.yml) and change the relevant environment variables:
+```yaml
+x-environment: &environment
+  IWFREPO: 'true'
+  IWFREPO_HTTPS: 'false'
+  IWFREPO_HOST: '192.168.18.14'
+  IWFREPO_PORT: '8087'
+  IWFREPO_INTERVAL: '300'
+```
+
+Then, deploy with:
 ```shell script
-cd adaptation-layer/seed
-cp nfvo_mock.json nfvo.json
-cp nfvo_credentials_mock.json nfvo_credentials.json
-cp rano_mock.json rano.json
-cp rano_credentials_mock.json rano_credentials.json
+docker-compose up
 ```
 
 ### Environment with local database
 
 Edit [docker-compose.yaml](docker-compose.yml) and disable iwf repository support.
-
 ```yaml
-IWFREPO: "false"
+x-environment: &environment
+  IWFREPO: 'true'
 ```
-
-Edit files created in [install guide](#install-guide) and insert your NFVO and RANO data.
 
 Deploy with:
-
 ```shell script
-docker pull python:3.6-slim
-docker-compose build
-docker-compose up
-```
-
-### Environment with iwf repository
-
-If [iwf-repository](https://github.com/5GEVE/iwf-repository) is available in your environment,
-edit [docker-compose.yaml](docker-compose.yml) and change the environment variables for the `flask` service:
-
-```yaml
-IWFREPO: "true"
-IWFREPO_HOST: "192.168.17.20"
-IWFREPO_PORT: "8087"
-IWFREPO_INTERVAL: "300"
-```
-
-Then, deploy with:
-
-```shell script
-docker pull python:3.6-slim
-docker-compose build
 docker-compose up
 ```
 
@@ -128,10 +111,18 @@ git config --add merge.ff false
 ### Environment setup
 
 For dependencies we use [Pipenv](https://pipenv.readthedocs.io/en/latest/).
+
+Copy the mock files (needed for a correct build):
+
+```shell script
+cd adaptation-layer/seed
+cp nfvo_mock.json nfvo.json
+cp nfvo_credentials_mock.json nfvo_credentials.json
+cp rano_mock.json rano.json
+cp rano_credentials_mock.json rano_credentials.json
+```
+
 To setup the environment use:
-
-**Remember to copy and edit the mock files as said in the [install guide](#install-guide)**
-
 ```shell script
 git checkout development
 cd adaptation_layer
@@ -151,6 +142,12 @@ Simply setup a docker container with redis and run a celery worker.
 docker run -p 6379:6379 --name some-redis -d redis
 export REDIS_HOST=localhost
 celery -A tasks worker -B --loglevel=info
+```
+
+A [docker-compose.dev.yml](docker-compose.dev.yml) is also available.
+Deploy it with
+```shell script
+docker-compose -f docker-compose.dev.yml up --build
 ```
 
 ---
