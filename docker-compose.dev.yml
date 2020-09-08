@@ -43,7 +43,7 @@ services:
     container_name: celery-worker
     depends_on:
       - redis
-    command: [celery, -A, adaptation_layer.tasks, worker, -B, -s, /tmp/celerybeat-schedule, --loglevel=info, --uid=nobody, --gid=nogroup]
+    command: [celery, -A, adaptation_layer.tasks, worker, -B, -s, /tmp/celerybeat-schedule, --loglevel=WARNING, --uid=nobody, --gid=nogroup]
     environment:
       *environment
     networks:
