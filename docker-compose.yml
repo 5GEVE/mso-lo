@@ -5,7 +5,7 @@ x-environment: &environment
   IWFREPO_HTTPS: 'false'
   IWFREPO_HOST: '192.168.18.14'
   IWFREPO_PORT: '8087'
-  IWFREPO_INTERVAL: '5'
+  IWFREPO_INTERVAL: '300'
   REDIS_HOST: 'redis'
   REDIS_PORT: '6379'
 
