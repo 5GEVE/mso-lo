@@ -1,4 +1,14 @@
 version: '3.7'
+
+x-environment: &environment
+  IWFREPO: 'true'
+  IWFREPO_HTTPS: 'false'
+  IWFREPO_HOST: '192.168.18.14'
+  IWFREPO_PORT: '8087'
+  IWFREPO_INTERVAL: '5'
+  REDIS_HOST: 'redis'
+  REDIS_PORT: '6379'
+
 services:
   nginx:
     image: nginx:latest
@@ -17,13 +27,7 @@ services:
     depends_on:
       - celery-worker
     environment:
-      IWFREPO: 'true'
-      IWFREPO_HTTPS: 'false'
-      IWFREPO_HOST: '192.168.18.14'
-      IWFREPO_PORT: '8087'
-      IWFREPO_INTERVAL: '300'
-      REDIS_HOST: 'redis'
-      REDIS_PORT: '6379'
+      *environment
     networks:
       mso-lo-net:
         aliases:
@@ -37,13 +41,7 @@ services:
       - redis
     command: [celery, -A, adaptation_layer.tasks, worker, -B, -s, /tmp/celerybeat-schedule, --loglevel=info, --uid=nobody, --gid=nogroup]
     environment:
-      IWFREPO: 'true'
-      IWFREPO_HTTPS: 'false'
-      IWFREPO_HOST: '192.168.18.14'
-      IWFREPO_PORT: '8087'
-      IWFREPO_INTERVAL: '5'
-      REDIS_HOST: 'redis'
-      REDIS_PORT: '6379'
+      *environment
     networks:
       mso-lo-net:
         aliases:
@@ -63,4 +61,3 @@ networks:
 volumes:
   mso-lo-data:
     name: mso-lo-data
-
