@@ -5,7 +5,7 @@ x-environment: &environment
   IWFREPO_HTTPS: 'false'
   IWFREPO_HOST: '192.168.18.14'
   IWFREPO_PORT: '8087'
-  IWFREPO_INTERVAL: '300'
+  IWFREPO_INTERVAL: '5'
   REDIS_HOST: 'redis'
   REDIS_PORT: '6379'
 
@@ -21,7 +21,9 @@ services:
     ports:
       - 80:80
   flask-app:
-    image: 5geve/mso-lo:latest
+    build:
+      context: .
+      target: prod
     depends_on:
       - celery-worker
     environment:
@@ -33,7 +35,9 @@ services:
     volumes:
       - mso-lo-data:/usr/src/app/data
   celery-worker:
-    image: 5geve/mso-lo:latest
+    build:
+      context: .
+      target: prod
     depends_on:
       - redis
     command: [celery, -A, adaptation_layer.tasks, worker, -B, -s, /tmp/celerybeat-schedule, --loglevel=WARNING, --uid=nobody, --gid=nogroup]
