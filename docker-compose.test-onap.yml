@@ -2,7 +2,6 @@ version: '3.6'
 services:
   prism-onap:
     image: stoplight/prism:3.1.1
-    container_name: prism-onap
     command: mock --host 0.0.0.0 --port 9999 /etc/onap-api.yaml
     volumes:
       - ./adaptation_layer/tests/onap-api.yaml:/etc/onap-api.yaml
@@ -22,7 +21,6 @@ services:
         DB_SEED_NFVO_CRED: adaptation_layer/seed/nfvo_credentials_mock.json
         DB_SEED_RANO: adaptation_layer/seed/rano_mock.json
         DB_SEED_RANO_CRED: adaptation_layer/seed/rano_credentials_mock.json
-    container_name: test-onap
     depends_on:
       - prism-onap
     environment:

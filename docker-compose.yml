@@ -12,7 +12,6 @@ x-environment: &environment
 services:
   nginx:
     image: nginx:1.18-alpine
-    container_name: nginx
     depends_on:
       - flask-app
     volumes:
@@ -23,7 +22,6 @@ services:
       - 80:80
   flask-app:
     image: 5geve/mso-lo:latest
-    container_name: flask-app
     depends_on:
       - celery-worker
     environment:
@@ -36,7 +34,6 @@ services:
       - mso-lo-data:/usr/src/app/data
   celery-worker:
     image: 5geve/mso-lo:latest
-    container_name: celery-worker
     depends_on:
       - redis
     command: [celery, -A, adaptation_layer.tasks, worker, -B, -s, /tmp/celerybeat-schedule, --loglevel=WARNING, --uid=nobody, --gid=nogroup]
@@ -48,7 +45,6 @@ services:
           - celery-worker
   redis:
     image: redis:6-alpine
-    container_name: redis
     command: redis-server /usr/local/etc/redis/redis.conf
     volumes:
       - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
