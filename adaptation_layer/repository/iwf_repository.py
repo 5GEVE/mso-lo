@@ -28,12 +28,14 @@ IWFREPO_HTTPS = os.getenv('IWFREPO_HTTPS', 'false').lower()
 IWFREPO_HOST = os.getenv('IWFREPO_HOST')
 IWFREPO_PORT = os.getenv('IWFREPO_PORT')
 IWFREPO_INTERVAL = os.getenv('IWFREPO_INTERVAL')
+accept_h = {'Accept': 'application/hal+json'}
+texturi_h = {'Content-Type': 'text/uri-list'}
 
 prot = 'https' if IWFREPO_HTTPS == 'true' else 'http'
 host = IWFREPO_HOST if IWFREPO_HOST else 'localhost'
 port = int(IWFREPO_PORT) if IWFREPO_PORT else 8087
 interval = int(IWFREPO_INTERVAL) if IWFREPO_INTERVAL else 300
-url = '{0}://{1}:{2}'.format(prot, host, port)
+url = f'{prot}://{host}:{port}'
 
 
 def _server_error(func):
@@ -42,17 +44,18 @@ def _server_error(func):
         try:
             return func(*args, **kwargs)
         except (ConnectionError, Timeout, TooManyRedirects, URLRequired) as e:
-            raise ServerError('problem contacting iwf repository: ' + str(e))
+            raise ServerError(f'problem contacting iwf repository: {str(e)}')
 
     return wrapper
 
 
 @_server_error
 def post_vim_safe(osm_vim: Dict, nfvo_self: str):
-    vim_found = get(f'{url}/vimAccounts/search/findByVimAccountNfvoId', params={'uuid': osm_vim['_id']})
+    vim_found = get(f'{url}/vimAccounts/search/findByVimAccountNfvoId', params={'uuid': osm_vim['_id']},
+                    headers=accept_h)
     vim_found.raise_for_status()
     if vim_found.json()['_embedded']['vimAccounts']:
-        logger.info('vim {} found in iwf repository, skip'.format(osm_vim['_id']))
+        logger.info(f'vim {osm_vim["_id"]} found in iwf repository, skip')
     else:
         payload = {
             'vimAccountNfvoId': osm_vim['_id'],
@@ -61,19 +64,17 @@ def post_vim_safe(osm_vim: Dict, nfvo_self: str):
             'uri': osm_vim['vim_url'],
             'tenant': osm_vim['vim_tenant_name'],
         }
-        new_vim = post(f'{url}/vimAccounts', json=payload)
+        new_vim = post(f'{url}/vimAccounts', json=payload, headers=accept_h)
         new_vim.raise_for_status()
-        logger.info('created new vimAccount with id {0}'.format(
-            new_vim.json()['vimAccountNfvoId']))
-        put(new_vim.json()['_links']['nfvOrchestrators']['href'],
-            data=nfvo_self,
-            headers={'Content-Type': 'text/uri-list'}).raise_for_status()
-        logger.info('associated vimAccount to {0}'.format(nfvo_self))
+        logger.info(f'created new vimAccount with id {new_vim.json()["vimAccountNfvoId"]}')
+        put(new_vim.json()['_links']['nfvOrchestrators']['href'], data=nfvo_self,
+            headers={**texturi_h, **accept_h}).raise_for_status()
+        logger.info(f'associated vimAccount to {nfvo_self}')
 
 
 @_server_error
 def find_nfvos_by_type(nfvo_type: str):
-    response = get(f'{url}/nfvOrchestrators/search/findByTypeIgnoreCase', params={'type': nfvo_type})
+    response = get(f'{url}/nfvOrchestrators/search/findByTypeIgnoreCase', params={'type': nfvo_type}, headers=accept_h)
     response.raise_for_status()
     return response.json()['_embedded']['nfvOrchestrators']
 
@@ -81,7 +82,7 @@ def find_nfvos_by_type(nfvo_type: str):
 @_server_error
 def _get_nfvo(nfvo_id) -> Dict:
     try:
-        resp = get(f'{url}/nfvOrchestrators/{nfvo_id}')
+        resp = get(f'{url}/nfvOrchestrators/{nfvo_id}', headers=accept_h)
         resp.raise_for_status()
     except HTTPError as e:
         if e.response.status_code == 404:
@@ -96,7 +97,7 @@ def _get_nfvo(nfvo_id) -> Dict:
 @_server_error
 def _get_rano(rano_id) -> Dict:
     try:
-        resp = get(f'{url}/ranOrchestrators/{rano_id}')
+        resp = get(f'{url}/ranOrchestrators/{rano_id}', headers=accept_h)
         resp.raise_for_status()
     except HTTPError as e:
         if e.response.status_code == 404:
@@ -111,7 +112,9 @@ def _get_rano(rano_id) -> Dict:
 @_server_error
 def _convert_nfvo(nfvo: Dict) -> Dict:
     try:
-        site = get(nfvo['_links']['site']['href']).json()['name']
+        resp = get(nfvo['_links']['site']['href'], headers=accept_h)
+        resp.raise_for_status()
+        site = resp.json()['name']
     except HTTPError:
         site = None
     conv = {
@@ -132,7 +135,9 @@ def _convert_nfvo(nfvo: Dict) -> Dict:
 @_server_error
 def _convert_rano(rano: Dict) -> Dict:
     try:
-        site = get(rano['_links']['site']['href']).json()['name']
+        resp = get(rano['_links']['site']['href'], headers=accept_h)
+        resp.raise_for_status()
+        site = resp.json()['name']
     except HTTPError:
         site = None
     conv = {
@@ -189,7 +194,7 @@ def get_rano_cred(rano_id: int) -> Dict:
 @_server_error
 def get_nfvo_list() -> List[Dict]:
     try:
-        resp = get(f'{url}/nfvOrchestrators')
+        resp = get(f'{url}/nfvOrchestrators', headers=accept_h)
         resp.raise_for_status()
     except HTTPError as e:
         if e.response.status_code == 401:
@@ -202,7 +207,7 @@ def get_nfvo_list() -> List[Dict]:
 @_server_error
 def get_rano_list() -> List[Dict]:
     try:
-        resp = get(f'{url}/ranOrchestrators')
+        resp = get(f'{url}/ranOrchestrators', headers=accept_h)
         resp.raise_for_status()
     except HTTPError as e:
         if e.response.status_code == 401:
@@ -215,8 +220,7 @@ def get_rano_list() -> List[Dict]:
 @_server_error
 def get_subscription_list(nfvo_id: int) -> Dict:
     try:
-        resp = get('{0}/nfvOrchestrators/{1}/subscriptions'.format(url,
-                                                                   nfvo_id))
+        resp = get(f'{url}/nfvOrchestrators/{nfvo_id}/subscriptions', headers=accept_h)
         resp.raise_for_status()
     except HTTPError as e:
         if e.response.status_code == 401:
@@ -231,12 +235,11 @@ def get_subscription_list(nfvo_id: int) -> Dict:
 @_server_error
 def create_subscription(nfvo_id: int, body: Dict):
     try:
-        create = post('{0}/subscriptions'.format(url), json=body)
+        create = post(f'{url}/subscriptions', json=body, headers=accept_h)
         create.raise_for_status()
         associate = put(create.json()['_links']['nfvOrchestrators']['href'],
-                        data='{0}/nfvOrchestrators/{1}'.format(url,
-                                                               nfvo_id),
-                        headers={'Content-Type': 'text/uri-list'})
+                        data=f'{url}/nfvOrchestrators/{nfvo_id}',
+                        headers={**texturi_h, **accept_h})
         associate.raise_for_status()
     except HTTPError as e:
         if e.response.status_code == 400:
@@ -253,11 +256,7 @@ def create_subscription(nfvo_id: int, body: Dict):
 @_server_error
 def get_subscription(nfvo_id: int, subscriptionId: int) -> Dict:
     try:
-        resp = get(
-            '{0}/nfvOrchestrators/{1}/subscriptions/{2}'.format(url,
-                                                                nfvo_id,
-                                                                subscriptionId)
-        )
+        resp = get(f'{url}/nfvOrchestrators/{nfvo_id}/subscriptions/{subscriptionId}', headers=accept_h)
         resp.raise_for_status()
     except HTTPError as e:
         if e.response.status_code == 404:
@@ -270,8 +269,7 @@ def get_subscription(nfvo_id: int, subscriptionId: int) -> Dict:
 @_server_error
 def delete_subscription(subscriptionId: int) -> None:
     try:
-        resp = delete(
-            '{0}/subscriptions/{1}'.format(url, subscriptionId))
+        resp = delete(f'{url}/subscriptions/{subscriptionId}')
         resp.raise_for_status()
     except HTTPError as e:
         if e.response.status_code == 404:
@@ -283,7 +281,8 @@ def delete_subscription(subscriptionId: int) -> None:
 @_server_error
 def search_subs_by_ns_instance(ns_instance_id: str) -> List[Dict]:
     try:
-        subs = get(f'{url}/subscriptions/search/findByNsInstanceId', params={'nsInstanceId': ns_instance_id})
+        subs = get(f'{url}/subscriptions/search/findByNsInstanceId', params={'nsInstanceId': ns_instance_id},
+                   headers=accept_h)
         subs.raise_for_status()
     except HTTPError:
         raise
@@ -301,7 +300,7 @@ def add_orc_cred_test(orc_type: str, orc_id: int):
         }
     }
     if orc_type == 'nfvo':
-        resp = patch(f'{url}/nfvOrchestrators/{orc_id}', json=payload)
+        resp = patch(f'{url}/nfvOrchestrators/{orc_id}', json=payload, headers=accept_h)
     if orc_type == 'rano':
-        resp = patch(f'{url}/ranOrchestrators/{orc_id}', json=payload)
+        resp = patch(f'{url}/ranOrchestrators/{orc_id}', json=payload, headers=accept_h)
     resp.raise_for_status()
