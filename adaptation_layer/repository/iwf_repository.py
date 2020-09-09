@@ -112,7 +112,9 @@ def _get_rano(rano_id) -> Dict:
 @_server_error
 def _convert_nfvo(nfvo: Dict) -> Dict:
     try:
-        site = get(nfvo['_links']['site']['href'], headers=accept_h).json()['name']
+        resp = get(nfvo['_links']['site']['href'], headers=accept_h)
+        resp.raise_for_status()
+        site = resp.json()['name']
     except HTTPError:
         site = None
     conv = {
@@ -133,7 +135,9 @@ def _convert_nfvo(nfvo: Dict) -> Dict:
 @_server_error
 def _convert_rano(rano: Dict) -> Dict:
     try:
-        site = get(rano['_links']['site']['href'], headers=accept_h).json()['name']
+        resp = get(rano['_links']['site']['href'], headers=accept_h)
+        resp.raise_for_status()
+        site = resp.json()['name']
     except HTTPError:
         site = None
     conv = {
