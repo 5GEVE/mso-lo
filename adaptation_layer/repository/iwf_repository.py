@@ -35,7 +35,7 @@ prot = 'https' if IWFREPO_HTTPS == 'true' else 'http'
 host = IWFREPO_HOST if IWFREPO_HOST else 'localhost'
 port = int(IWFREPO_PORT) if IWFREPO_PORT else 8087
 interval = int(IWFREPO_INTERVAL) if IWFREPO_INTERVAL else 300
-url = '{0}://{1}:{2}'.format(prot, host, port)
+url = f'{prot}://{host}:{port}'
 
 
 def _server_error(func):
@@ -44,7 +44,7 @@ def _server_error(func):
         try:
             return func(*args, **kwargs)
         except (ConnectionError, Timeout, TooManyRedirects, URLRequired) as e:
-            raise ServerError('problem contacting iwf repository: ' + str(e))
+            raise ServerError(f'problem contacting iwf repository: {str(e)}')
 
     return wrapper
 
@@ -55,7 +55,7 @@ def post_vim_safe(osm_vim: Dict, nfvo_self: str):
                     headers=accept_h)
     vim_found.raise_for_status()
     if vim_found.json()['_embedded']['vimAccounts']:
-        logger.info('vim {} found in iwf repository, skip'.format(osm_vim['_id']))
+        logger.info(f'vim {osm_vim["_id"]} found in iwf repository, skip')
     else:
         payload = {
             'vimAccountNfvoId': osm_vim['_id'],
@@ -66,10 +66,10 @@ def post_vim_safe(osm_vim: Dict, nfvo_self: str):
         }
         new_vim = post(f'{url}/vimAccounts', json=payload, headers=accept_h)
         new_vim.raise_for_status()
-        logger.info('created new vimAccount with id {0}'.format(new_vim.json()['vimAccountNfvoId']))
+        logger.info(f'created new vimAccount with id {new_vim.json()["vimAccountNfvoId"]}')
         put(new_vim.json()['_links']['nfvOrchestrators']['href'], data=nfvo_self,
             headers={**texturi_h, **accept_h}).raise_for_status()
-        logger.info('associated vimAccount to {0}'.format(nfvo_self))
+        logger.info(f'associated vimAccount to {nfvo_self}')
 
 
 @_server_error
@@ -220,7 +220,7 @@ def get_rano_list() -> List[Dict]:
 @_server_error
 def get_subscription_list(nfvo_id: int) -> Dict:
     try:
-        resp = get('{0}/nfvOrchestrators/{1}/subscriptions'.format(url, nfvo_id), headers=accept_h)
+        resp = get(f'{url}/nfvOrchestrators/{nfvo_id}/subscriptions', headers=accept_h)
         resp.raise_for_status()
     except HTTPError as e:
         if e.response.status_code == 401:
@@ -235,10 +235,10 @@ def get_subscription_list(nfvo_id: int) -> Dict:
 @_server_error
 def create_subscription(nfvo_id: int, body: Dict):
     try:
-        create = post('{0}/subscriptions'.format(url), json=body, headers=accept_h)
+        create = post(f'{url}/subscriptions', json=body, headers=accept_h)
         create.raise_for_status()
         associate = put(create.json()['_links']['nfvOrchestrators']['href'],
-                        data='{0}/nfvOrchestrators/{1}'.format(url, nfvo_id),
+                        data=f'{url}/nfvOrchestrators/{nfvo_id}',
                         headers={**texturi_h, **accept_h})
         associate.raise_for_status()
     except HTTPError as e:
@@ -256,8 +256,7 @@ def create_subscription(nfvo_id: int, body: Dict):
 @_server_error
 def get_subscription(nfvo_id: int, subscriptionId: int) -> Dict:
     try:
-        resp = get('{0}/nfvOrchestrators/{1}/subscriptions/{2}'.format(url, nfvo_id, subscriptionId),
-                   headers=accept_h)
+        resp = get(f'{url}/nfvOrchestrators/{nfvo_id}/subscriptions/{subscriptionId}', headers=accept_h)
         resp.raise_for_status()
     except HTTPError as e:
         if e.response.status_code == 404:
@@ -270,7 +269,7 @@ def get_subscription(nfvo_id: int, subscriptionId: int) -> Dict:
 @_server_error
 def delete_subscription(subscriptionId: int) -> None:
     try:
-        resp = delete('{0}/subscriptions/{1}'.format(url, subscriptionId))
+        resp = delete(f'{url}/subscriptions/{subscriptionId}')
         resp.raise_for_status()
     except HTTPError as e:
         if e.response.status_code == 404:
