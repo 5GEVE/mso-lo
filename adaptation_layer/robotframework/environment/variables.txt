@@ -25,7 +25,7 @@ ${nsInstanceName}    Test-nsInstance
 ${nsInstanceDescription}    description ns
 ${vnfInstanceIds}    []
 ${vimAccountIds}    ['e59a8dfd-dd21-42cc-98f7-a68c83cfbdbd', '77c531ef-ff08-42a3-aeb9-3b8eae19a32f']
-${notificationUri}   http://192.168.17.20:8083/
+${notificationUri}   http://192.168.18.14:8083/
 ${SINGLE_FILE_VNFD}    1    # If VNFD is PLAIN TEXT
 ${ACCEPT_PLAIN}    text/plain
 ${ACCEPT_ZIP}     application/zip
