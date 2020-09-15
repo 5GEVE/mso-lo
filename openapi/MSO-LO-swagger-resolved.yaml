@@ -1034,7 +1034,7 @@ paths:
           description: Instantiate NS request body
           required: false
           schema:
-            $ref: '#/definitions/NfvoNsInstantiateRequest'
+            $ref: '#/definitions/RanoNsInstantiateRequest'
       responses:
         "202":
           description: |
@@ -1624,6 +1624,54 @@ definitions:
     properties:
       additionalParamsForNs:
         $ref: '#/definitions/NfvoNsInstantiateRequest_additionalParamsForNs'
+  RanoNsInstantiateRequest:
+    type: object
+    properties:
+      SapData:
+        required:
+          - sapdId
+          - radioSliceProfile
+        properties:
+          sapdId:
+            type: string
+            description: Reference to the SAPD for this SAP.
+            example: sap_ext_mobile
+          sapName:
+            type: string
+            description: Human readable name for the SAP.
+            example: External Mobile Sap
+          description:
+            type: string
+            description: Human readable description for the SAP.
+            example: Sap description
+          radioSliceProfile:
+            type: object
+            description: Radio Slice Profile parameters
+            required:
+              - sST
+              - coverageArea
+            properties:
+              sST:
+                type: string
+                description: One of eMBB, URLLC and mMTC
+                example: eMBB
+              coverageArea:
+                type: string
+                example: ITALY.TIM_LAB
+              latency:
+                type: integer
+                description: Desired latency in milliseconds
+                example: 10
+              uLThptPerSlice:
+                type: integer
+                example: 50
+                description: Up-Link throughput per slice in Mbps
+              dLThptPerSlice:
+                type: integer
+                example: 50
+                description: Down-Link throughput per slice in Mbps
+      additionalParamsForNs:
+        type: object
   NfvoNsInstancesScaleRequest:
     type: object
     properties:
