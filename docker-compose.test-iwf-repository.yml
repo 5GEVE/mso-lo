@@ -2,7 +2,6 @@ version: '3.7'
 services:
   iwf-repository-app:
     image: 5geve/iwf-repository
-    container_name: iwf-repository-app-test
     depends_on:
       - iwf-repository-db
     networks:
@@ -13,7 +12,6 @@ services:
       - 8087:8087
   iwf-repository-db:
     image: postgres:12-alpine
-    container_name: iwf-repository-db-test
     environment:
       POSTGRES_USER: iwf-repository
       POSTGRES_PASSWORD: iwf-repository
@@ -30,7 +28,6 @@ services:
         DB_SEED_NFVO_CRED: adaptation_layer/seed/nfvo_credentials_mock.json
         DB_SEED_RANO: adaptation_layer/seed/rano_mock.json
         DB_SEED_RANO_CRED: adaptation_layer/seed/rano_credentials_mock.json
-    container_name: test-iwf-repository
     depends_on:
       - iwf-repository-app
       - iwf-repository-db

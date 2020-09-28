@@ -1,38 +1,50 @@
 version: '3.7'
+
+x-environment: &environment
+  IWFREPO: 'true'
+  IWFREPO_HTTPS: 'false'
+  IWFREPO_HOST: '192.168.18.14'
+  IWFREPO_PORT: '8087'
+  IWFREPO_INTERVAL: '300'
+  REDIS_HOST: 'redis'
+  REDIS_PORT: '6379'
+
 services:
   nginx:
-    image: nginx:latest
-    container_name: nginx
+    image: nginx:1.18-alpine
     depends_on:
-      - flask
+      - flask-app
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
     networks:
       - mso-lo-net
     ports:
       - 80:80
-  flask:
+  flask-app:
     image: 5geve/mso-lo:latest
-    container_name: mso-lo
     depends_on:
-      - redis
+      - celery-worker
     environment:
-      IWFREPO: 'true'
-      IWFREPO_HTTPS: 'false'
-      IWFREPO_HOST: '192.168.17.20'
-      IWFREPO_PORT: '8087'
-      IWFREPO_INTERVAL: '300'
-      REDIS_HOST: 'redis'
-      REDIS_PORT: '6379'
+      *environment
     networks:
       mso-lo-net:
         aliases:
           - flask-app
     volumes:
       - mso-lo-data:/usr/src/app/data
+  celery-worker:
+    image: 5geve/mso-lo:latest
+    depends_on:
+      - redis
+    command: [celery, -A, adaptation_layer.tasks, worker, -B, -s, /tmp/celerybeat-schedule, --loglevel=WARNING, --uid=nobody, --gid=nogroup]
+    environment:
+      *environment
+    networks:
+      mso-lo-net:
+        aliases:
+          - celery-worker
   redis:
-    image: redis:latest
-    container_name: redis
+    image: redis:6-alpine
     command: redis-server /usr/local/etc/redis/redis.conf
     volumes:
       - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
@@ -45,4 +57,3 @@ networks:
 volumes:
   mso-lo-data:
     name: mso-lo-data
-
