@@ -29,7 +29,6 @@ Software is distributed under [Apache License, Version 2.0](http://www.apache.or
 If [iwf-repository](https://github.com/5GEVE/iwf-repository) is available in your environment,
 edit [docker-compose.yaml](docker-compose.yml) and change the relevant environment variables:
 ```yaml
-x-environment: &environment
   IWFREPO: 'true'
   IWFREPO_HTTPS: 'false'
   IWFREPO_HOST: '192.168.18.14'
@@ -46,8 +45,7 @@ docker-compose up
 
 Edit [docker-compose.yaml](docker-compose.yml) and disable iwf repository support.
 ```yaml
-x-environment: &environment
-  IWFREPO: 'true'
+  IWFREPO: 'false'
 ```
 
 Deploy with:
@@ -217,7 +215,8 @@ Example:
 
 ```shell script
 docker-compose --file docker-compose.test-osm.yml --project-name test-osm build
-docker-compose --file docker-compose.test-osm.yml --project-name test-osm up --abort-on-container-exit --exit-code-from test-osm
+docker-compose --file docker-compose.test-osm.yml --project-name test-osm up \
+              --abort-on-container-exit --exit-code-from test-osm
 ```
 
 _Note_: the `--project-name` parameter is necessary to distinguish test executions.
@@ -233,4 +232,4 @@ Unit tests execution for a new driver can be added by copying and modifying
 ### Integration tests
 
 Integration tests are run with [Robot Framework](https://robotframework.org/).
-Please refer to the specific [README](./adaptation_layer/robotframework/README.md).
+Please refer to the specific [README](adaptation_layer/robotframework/README.md).
