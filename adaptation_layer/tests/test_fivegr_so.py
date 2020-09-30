@@ -125,8 +125,9 @@ class fivegrSOTestCase(unittest.TestCase):
     self.assertEqual(200, res.status_code)
 
   def test_get_ns_lcm_op_occs_404(self):
-    res = self.client().get('/nfvo/1/ns_lcm_op_occs/49ccb6a2-5bcd-4f35-a2cf-7728c54c48b7?__code=404')
+    res = self.client().get('/nfvo/4/ns_lcm_op_occs/49ccb6a2-5bcd-4f35-a2cf-7728c54c48b7?__code=404')
     self.assertEqual(404, res.status_code)
 
 if __name__ == '__main__':
     unittest.main()
+
