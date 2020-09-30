@@ -191,7 +191,7 @@ class FIVEGR_SO(Driver):
         _url = '{0}/ns/{1}/instantiate'.format(self._base_path, nsId)
         _url = self._build_url_query(_url, args)
         if 'payload' not in args:
-            raise BadRequest(ns_id=nsId)
+            raise BadRequest(description="Empty payload")
         sol005InstantiateNsRequest = SOL005InstantiateNsRequest(**args['payload'])
         ifa013InstantiateNsRequest = sol005InstantiateNsRequest_to_ifa013InstantiateNsRequest(
             sol005InstantiateNsRequest)
