@@ -301,6 +301,8 @@ def add_orc_cred_test(orc_type: str, orc_id: int):
     }
     if orc_type == 'nfvo':
         resp = patch(f'{url}/nfvOrchestrators/{orc_id}', json=payload, headers=accept_h)
-    if orc_type == 'rano':
+    elif orc_type == 'rano':
         resp = patch(f'{url}/ranOrchestrators/{orc_id}', json=payload, headers=accept_h)
+    else:
+        raise NotImplementedError(f'Orchestrator type {orc_type} unknown')
     resp.raise_for_status()
