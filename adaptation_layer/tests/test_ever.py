@@ -23,6 +23,7 @@ from .request_mock import mock_ns
 from .response_schemas import ns_lcm_op_occ_schema, \
     ns_list_schema, ns_schema, ns_lcm_op_occ_list_schema
 
+
 # AUTHORIZATION unsupported by EVER driver
 # scale a ns instance unsupported by EVER driver
 
@@ -41,7 +42,7 @@ class EverTestCase(unittest.TestCase):
     def test_get_ns_list_200(self):
         res = self.client().get('/rano/3/ns_instances?__code=200')
         print(res)
-        #print (ns_list_schema)
+        # print (ns_list_schema)
         try:
             validate(res.json, ns_list_schema)
         except (ValidationError, SchemaError) as e:
@@ -143,6 +144,7 @@ class EverTestCase(unittest.TestCase):
         except (ValidationError, SchemaError) as e:
             self.fail(msg=e.message)
         self.assertEqual(res.status_code, 200)
+
 
 if __name__ == '__main__':
     unittest.main()

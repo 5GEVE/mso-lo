@@ -36,7 +36,7 @@ services:
     image: 5geve/mso-lo:latest
     depends_on:
       - redis
-    command: [celery, -A, adaptation_layer.tasks, worker, -B, -s, /tmp/celerybeat-schedule, --loglevel=WARNING, --uid=nobody, --gid=nogroup]
+    command: [ celery, -A, adaptation_layer.tasks, worker, -B, -s, /tmp/celerybeat-schedule, --loglevel=WARNING, --uid=nobody, --gid=nogroup ]
     environment:
       *environment
     networks:

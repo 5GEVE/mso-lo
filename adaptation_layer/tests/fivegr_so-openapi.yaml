@@ -33,12 +33,12 @@ paths:
           description: Bad Request
           content:
             application/json:
-              schema: {}
+              schema: { }
         "500":
           description: Internal Error
           content:
             application/json:
-              schema: {}
+              schema: { }
       x-swagger-router-controller: swagger_server.controllers.network_service_controller
   "/ns/{nsId}":
     get:
@@ -65,12 +65,12 @@ paths:
           description: Not Found
           content:
             application/json:
-              schema: {}
+              schema: { }
         "500":
           description: Internal Error
           content:
             application/json:
-              schema: {}
+              schema: { }
       x-swagger-router-controller: swagger_server.controllers.network_service_controller
   "/ns/{nsId}/instantiate":
     put:
@@ -104,17 +104,17 @@ paths:
           description: Bad Request
           content:
             application/json:
-              schema: {}
+              schema: { }
         "404":
           description: Not found
           content:
             application/json:
-              schema: {}
+              schema: { }
         "500":
           description: Internal Error
           content:
             application/json:
-              schema: {}
+              schema: { }
       x-swagger-router-controller: swagger_server.controllers.network_service_controller
   "/ns/{nsId}/scale":
     put:
@@ -148,17 +148,17 @@ paths:
           description: Bad Request
           content:
             application/json:
-              schema: {}
+              schema: { }
         "404":
           description: Not found
           content:
             application/json:
-              schema: {}
+              schema: { }
         "500":
           description: Internal Error
           content:
             application/json:
-              schema: {}
+              schema: { }
       x-swagger-router-controller: swagger_server.controllers.network_service_controller
   "/operation/{operationId}":
     get:
@@ -185,12 +185,12 @@ paths:
           description: Not found
           content:
             application/json:
-              schema: {}
+              schema: { }
         "500":
           description: Internal Error
           content:
             application/json:
-              schema: {}
+              schema: { }
       x-swagger-router-controller: swagger_server.controllers.operation_controller
   "/ns/{nsId}/terminate":
     put:
@@ -245,12 +245,12 @@ paths:
           description: Not Found
           content:
             application/json:
-              schema: {}
+              schema: { }
         "500":
           description: Internal Error
           content:
             application/json:
-              schema: {}
+              schema: { }
       x-swagger-router-controller: swagger_server.controllers.network_service_controller
     delete:
       tags:
@@ -282,12 +282,12 @@ paths:
           description: Not Found
           content:
             application/json:
-              schema: {}
+              schema: { }
         "500":
           description: Internal Error
           content:
             application/json:
-              schema: {}
+              schema: { }
       x-swagger-router-controller: swagger_server.controllers.network_service_controller
   "/ns/vnfd/{vnfdId}/{version}":
     get:
@@ -320,12 +320,12 @@ paths:
           description: Not Found
           content:
             application/json:
-              schema: {}
+              schema: { }
         "500":
           description: Internal Error
           content:
             application/json:
-              schema: {}
+              schema: { }
       x-swagger-router-controller: swagger_server.controllers.network_service_controller
     delete:
       tags:
@@ -353,12 +353,12 @@ paths:
           description: Not Found
           content:
             application/json:
-              schema: {}
+              schema: { }
         "500":
           description: Internal Error
           content:
             application/json:
-              schema: {}
+              schema: { }
       x-swagger-router-controller: swagger_server.controllers.network_service_controller
   "/ns/appd/{appdId}/{version}":
     get:
@@ -391,12 +391,12 @@ paths:
           description: Not Found
           content:
             application/json:
-              schema: {}
+              schema: { }
         "500":
           description: Internal Error
           content:
             application/json:
-              schema: {}
+              schema: { }
       x-swagger-router-controller: swagger_server.controllers.network_service_controller
     delete:
       tags:
@@ -424,12 +424,12 @@ paths:
           description: Not Found
           content:
             application/json:
-              schema: {}
+              schema: { }
         "500":
           description: Internal Error
           content:
             application/json:
-              schema: {}
+              schema: { }
       x-swagger-router-controller: swagger_server.controllers.network_service_controller
   /ns/vnfdManagement/vnfPackage:
     post:
@@ -456,17 +456,17 @@ paths:
           description: Bad Request
           content:
             application/json:
-              schema: {}
+              schema: { }
         "404":
           description: Not Found
           content:
             application/json:
-              schema: {}
+              schema: { }
         "500":
           description: Internal Error
           content:
             application/json:
-              schema: {}
+              schema: { }
       x-swagger-router-controller: swagger_server.controllers.network_service_controller
   /ns/appdManagement/appPackage:
     post:
@@ -493,17 +493,17 @@ paths:
           description: Bad Request
           content:
             application/json:
-              schema: {}
+              schema: { }
         "404":
           description: Not Found
           content:
             application/json:
-              schema: {}
+              schema: { }
         "500":
           description: Internal Error
           content:
             application/json:
-              schema: {}
+              schema: { }
       x-swagger-router-controller: swagger_server.controllers.network_service_controller
   /ns/nsdManagement/nsd:
     post:
@@ -530,17 +530,17 @@ paths:
           description: Bad Request
           content:
             application/json:
-              schema: {}
+              schema: { }
         "404":
           description: Not Found
           content:
             application/json:
-              schema: {}
+              schema: { }
         "500":
           description: Internal Error
           content:
             application/json:
-              schema: {}
+              schema: { }
       x-swagger-router-controller: swagger_server.controllers.network_service_controller
 externalDocs:
   description: Find out more about 5G-Transformer
@@ -992,7 +992,7 @@ components:
             $ref: "#/components/schemas/ScaleInfo_im"
         additionalParam:
           type: object
-          properties: {}
+          properties: { }
     ScaleInfo_im:
       type: object
       required:
@@ -1020,7 +1020,7 @@ components:
           type: integer
         additionalParam:
           type: object
-          properties: {}
+          properties: { }
     inline_response_201:
       required:
         - nsId

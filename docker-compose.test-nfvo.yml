@@ -12,5 +12,5 @@ services:
     environment:
       TESTING: "True"
       OPENAPI_PATH: ./openapi/MSO-LO-swagger-resolved.yaml
-    command: ["pytest", "-v", "adaptation_layer/tests/test_nfvo.py"]
+    command: [ "pytest", "-v", "adaptation_layer/tests/test_nfvo.py" ]
 

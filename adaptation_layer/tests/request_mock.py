@@ -17,7 +17,7 @@ mock_ns_scale_v2 = {
     "scaleVnfData": [{
         "scaleVnfType": "SCALE_IN",
         "scaleByStepData": {
-          "aspectId": "1234"
+            "aspectId": "1234"
         }
     }]
 }
@@ -38,28 +38,28 @@ mock_ns = {
 }
 
 mock_ns_instantiate = {
-  "nsFlavourId": "vDCN_001",
-  "nsInstantiationLevelId": "1",
-  "additionalParamsForNs": {
-    "vld": [
-      {
-        "name": "vldnet",
-        "vim-network-name": "netVIM1"
-      }
-    ],
-    "vnf": [
-      {
-        "vnfInstanceId": "string",
-        "vimAccountId": "string"
-      }
-    ],
-    "wim_account": "WimAccount1"
-  }
+    "nsFlavourId": "vDCN_001",
+    "nsInstantiationLevelId": "1",
+    "additionalParamsForNs": {
+        "vld": [
+            {
+                "name": "vldnet",
+                "vim-network-name": "netVIM1"
+            }
+        ],
+        "vnf": [
+            {
+                "vnfInstanceId": "string",
+                "vimAccountId": "string"
+            }
+        ],
+        "wim_account": "WimAccount1"
+    }
 }
 
 mock_ns_instantiatev2 = {
-  "nsFlavourId": "vDCN_001",
-  "nsInstantiationLevelId": "1"
+    "nsFlavourId": "vDCN_001",
+    "nsInstantiationLevelId": "1"
 }
 
 mock_ns_terminate = {

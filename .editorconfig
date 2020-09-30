@@ -32,6 +32,6 @@ insert_final_newline = ignore
 [Makefile]
 indent_style = tab
 
-[*.{yml,yaml}]
+[*.{yml, yaml}]
 indent_style = space
 indent_size = 2

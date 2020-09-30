@@ -28,19 +28,19 @@ tags:
 
 # paths
 paths:
-# get all ns instances info
+  # get all ns instances info
   '/instances':
     parameters:
-    - in: query
-      name: offset
-      schema:
-        type: integer
-      description: The number of items to skip before starting to collect the result set
-    - in: query
-      name: limit
-      schema:
-        type: integer
-      description: The numbers of items to return
+      - in: query
+        name: offset
+        schema:
+          type: integer
+        description: The number of items to skip before starting to collect the result set
+      - in: query
+        name: limit
+        schema:
+          type: integer
+        description: The numbers of items to return
     get:
       tags:
         - 'NS instances'
@@ -64,7 +64,7 @@ paths:
         #   $ref: '#/components/responses/UnexpectedError'
         # default:
         #   $ref: '#/components/responses/UnexpectedError'
-# get ns instnce info
+  # get ns instnce info
   '/instances/{ns_db_id}':
     parameters:
       - name: ns_db_id
@@ -72,7 +72,7 @@ paths:
         required: true
         description: NS insctance Id
         schema:
-          type : string
+          type: string
     get:
       tags:
         - 'NS instances'
@@ -98,7 +98,7 @@ paths:
         #   $ref: '#/components/responses/UnexpectedError'
         # default:
         #   $ref: '#/components/responses/UnexpectedError'
-# create a ns instance ID
+  # create a ns instance ID
   '/create':
     post:
       tags:
@@ -137,7 +137,7 @@ paths:
         #   $ref: '#/components/responses/UnexpectedError'
         # default:
         #   $ref: '#/components/responses/UnexpectedError'
-# instantiate NS with given NsId
+  # instantiate NS with given NsId
   '/instantiate/{ns_db_id}':
     parameters:
       - name: ns_db_id
@@ -145,7 +145,7 @@ paths:
         required: true
         description: NS Instance ID
         schema:
-          type : string
+          type: string
     post:
       tags:
         - 'NS instances'
@@ -178,7 +178,7 @@ paths:
         #   $ref: '#/components/responses/UnexpectedError'
         # default:
         #   $ref: '#/components/responses/UnexpectedError'
-# terminate NS
+  # terminate NS
   '/terminate/{ns_db_id}':
     parameters:
       - name: ns_db_id
@@ -186,7 +186,7 @@ paths:
         required: true
         description: NS Instance Id - from db
         schema:
-          type : string
+          type: string
     post:
       tags:
         - 'NS instances'
@@ -219,7 +219,7 @@ paths:
         #   $ref: '#/components/responses/UnexpectedError'
         # default:
         #   $ref: '#/components/responses/UnexpectedError'
-# delete NS Instance
+  # delete NS Instance
   '/delete/{ns_db_id}':
     parameters:
       - name: ns_db_id
@@ -227,7 +227,7 @@ paths:
         required: true
         description: delete NS Instance
         schema:
-          type : string
+          type: string
     delete:
       tags:
         - 'NS instances'
@@ -249,7 +249,7 @@ paths:
         #   $ref: '#/components/responses/UnexpectedError'
         # default:
         #   $ref: '#/components/responses/UnexpectedError'
-# get list of oll ns_lcm_op_occs
+  # get list of oll ns_lcm_op_occs
   '/ns_lcm_op_occs':
     get:
       tags:
@@ -274,7 +274,7 @@ paths:
         #   $ref: '#/components/responses/UnexpectedError'
         # default:
         #   $ref: '#/components/responses/UnexpectedError'
-#  get a info lcm op occs with given ID
+  #  get a info lcm op occs with given ID
   '/ns_lcm_op_occs/{lcm_id}':
     parameters:
       - name: lcm_id
@@ -282,7 +282,7 @@ paths:
         required: true
         description: lcm ID
         schema:
-          type : string
+          type: string
     get:
       tags:
         - 'NS lcm'
@@ -308,7 +308,7 @@ paths:
         #   $ref: '#/components/responses/UnexpectedError'
         # default:
         #   $ref: '#/components/responses/UnexpectedError'
-#  get a info lcm op occs for given ns_Id
+  #  get a info lcm op occs for given ns_Id
   '/ns_lcm_op_occs/ns_id/{ns_db_id}':
     parameters:
       - name: ns_db_id
@@ -316,7 +316,7 @@ paths:
         required: true
         description: get lcm Info
         schema:
-          type : string
+          type: string
     get:
       tags:
         - 'NS lcm'
@@ -342,7 +342,7 @@ paths:
         #   $ref: '#/components/responses/UnexpectedError'
         # default:
         #   $ref: '#/components/responses/UnexpectedError'
-#  get a list of service specifications
+  #  get a list of service specifications
   '/service_specification':
     get:
       tags:
@@ -369,7 +369,7 @@ paths:
         #   $ref: '#/components/responses/UnexpectedError'
         # default:
         #   $ref: '#/components/responses/UnexpectedError'
-#  get a list of service specifications
+  #  get a list of service specifications
   '/service_specification/{service_uuid}':
     parameters:
       - name: service_uuid
@@ -377,7 +377,7 @@ paths:
         required: true
         description: service specification UUID / nsdId
         schema:
-          type : string
+          type: string
     get:
       tags:
         - 'IWL Catalogue API'
@@ -387,10 +387,10 @@ paths:
       responses:
         '200':
           description: .csar archive
-          # content:
-          #   application/pdf:
-              # schema:
-              #   $ref: '#/components/schemas/ListServiceSpec'
+            # content:
+            #   application/pdf:
+            # schema:
+          #   $ref: '#/components/schemas/ListServiceSpec'
         '400':
           $ref: '#/components/responses/BadRequest'
         '404':
@@ -436,8 +436,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ProblemDetails'
-# end component responses
-#  components schemas
+    # end component responses
+    #  components schemas
     NsInstanceList:
       description: list of NS Instances
       content:
@@ -486,8 +486,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ListServiceSpec'
-# end of schemas in responses
-# END RESPONSES
+  # end of schemas in responses
+  # END RESPONSES
   schemas:
     createNsId:
       # description:
@@ -506,7 +506,7 @@ components:
         - nsdId
         - nsName
         - nsDescription
-#
+    #
     ProblemDetails:
       type: object
       properties:
@@ -514,13 +514,13 @@ components:
           type: string
       required:
         - error
-#
+    #
     NsInstanceList:
       # description: list of ns instances
       type: array
       items:
         $ref: '#/components/schemas/NsInstanceInfo'
-#
+    #
     NsInstanceInfo:
       # description: info about single NS instance
       type: object
@@ -553,7 +553,7 @@ components:
         - nsdId
         - nsState
         - vnfInstance
-#
+    #
     vnfInstance:
       type: object
       properties:
@@ -580,40 +580,40 @@ components:
           type: object
           properties:
             vnfState:
-               type: string
-               example: STARTED
+              type: string
+              example: STARTED
             extCpInfo:
               type: array
               items:
                 $ref: '#/components/schemas/VnfExtCpInfo'
-#
+    #
     vnfInstanceCreated:
-          type: object
-          properties:
-            id:
-              type: string
-              format: uuid
-              example: null #3fa85f64-5717-4562-b3fc-2c963f66afa6
-            vnfdId:
-              type: string
-              format: uuid
-              example: 8a585f64-5717-4562-b3fc-2c963f66afa6
-            vnfProductName:
-              type: string
-            vimId:
-              type: string
-              format: uuid
-              example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-            instantiationState:
-              type: string
-              enum:
-                #- INSTANTIATED
-                - NOT_INSTANTIATED
-#            instantiatedVnfInfo:
-#              type: object
-#
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: null #3fa85f64-5717-4562-b3fc-2c963f66afa6
+        vnfdId:
+          type: string
+          format: uuid
+          example: 8a585f64-5717-4562-b3fc-2c963f66afa6
+        vnfProductName:
+          type: string
+        vimId:
+          type: string
+          format: uuid
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        instantiationState:
+          type: string
+          enum:
+            #- INSTANTIATED
+            - NOT_INSTANTIATED
+    #            instantiatedVnfInfo:
+    #              type: object
+    #
     VnfExtCpInfo:
-#      nullable: true
+      #      nullable: true
       type: object
     #   properties:
     #     id:
@@ -628,35 +628,35 @@ components:
     #       type: array
     #       items:
     #         $ref: '#/components/schemas/CpProtocolInfo'
-#
-#     CpProtocolInfo:
-#       type: object
-#       required:
-#       - ipOverEthernet
-#       - layerProtocol
-#       properties:
-#         layerProtocol:
-#           type: string
-#           enum:
-#             - IP_OVER_ETHERNET
-#         ipOverEthernet:
-#           allOf:
-#           - $ref: '#/components/schemas/IpOverEthernetAddressInfo'
-# # #
-#     IpOverEthernetAddressInfo:
-#       type: object
-#       required:
-#       - ipAddresses
-#       - macAddress
-#       properties:
-#         macAddress:
-#           type: string
-#           format: MAC
-#         ipAddresses:
-#           type: array
-#           items:
-#               $ref: '#/components/schemas/IpOverEthernetAddressInfo_ipAddresses'
-#
+    #
+    #     CpProtocolInfo:
+    #       type: object
+    #       required:
+    #       - ipOverEthernet
+    #       - layerProtocol
+    #       properties:
+    #         layerProtocol:
+    #           type: string
+    #           enum:
+    #             - IP_OVER_ETHERNET
+    #         ipOverEthernet:
+    #           allOf:
+    #           - $ref: '#/components/schemas/IpOverEthernetAddressInfo'
+    # # #
+    #     IpOverEthernetAddressInfo:
+    #       type: object
+    #       required:
+    #       - ipAddresses
+    #       - macAddress
+    #       properties:
+    #         macAddress:
+    #           type: string
+    #           format: MAC
+    #         ipAddresses:
+    #           type: array
+    #           items:
+    #               $ref: '#/components/schemas/IpOverEthernetAddressInfo_ipAddresses'
+    #
     # IpOverEthernetAddressInfo_ipAddresses:
     #   type: object
     #   required:
@@ -671,11 +671,11 @@ components:
     #       type: array
     #       items:
     #         $ref: '#/components/schemas/IpAddress'
-#
+    #
     # IpAddress:
     #   type: string
     #   format: IP
-#
+    #
     NsInstanceIdCreated:
       type: object
       properties:
@@ -706,17 +706,17 @@ components:
         - nsdId
         - nsState
         - vnfInstance
-#
+    #
     List_lcm_op_occs:
       type: array
       items:
         $ref: '#/components/schemas/ID_lcm_op_occs'
-#
+    #
     List_ns_lcm_op_occs:
       type: array
       items:
         $ref: '#/components/schemas/ID_lcm_op_occs'
-#
+    #
     ID_lcm_op_occs:
       type: object
       properties:
@@ -739,12 +739,12 @@ components:
         startTime:
           type: string
           format: date-time
-#
+    #
     ListServiceSpec:
       type: array
       items:
         $ref: '#/components/schemas/serviceSpec'
-#
+    #
     serviceSpec:
       type: object
       properties:

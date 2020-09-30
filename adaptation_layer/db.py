@@ -13,9 +13,11 @@
 #  limitations under the License.
 
 import os
+
+from flask import _app_ctx_stack
 from flask_migrate import Migrate
+
 from adaptation_layer.repository import sqlite, iwf_repository
-from flask import current_app, _app_ctx_stack
 
 
 class MsoloDB(object):

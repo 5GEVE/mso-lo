@@ -27,11 +27,11 @@ services:
       TESTING: "True"
       PRISM_ALIAS: prism-onap
       OPENAPI_PATH: ./openapi/MSO-LO-swagger-resolved.yaml
-    command: ["adaptation_layer/tests/wait-for-it.sh", "prism-onap:9999", "--", "pytest", "-v", "adaptation_layer/tests/test_onap.py"]
+    command: [ "adaptation_layer/tests/wait-for-it.sh", "prism-onap:9999", "--", "pytest", "-v", "adaptation_layer/tests/test_onap.py" ]
     networks:
       mso-lo-net:
         aliases:
           - test-onap
 networks:
-    mso-lo-net:
+  mso-lo-net:
 

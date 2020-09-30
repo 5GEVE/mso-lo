@@ -12,11 +12,11 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+from .ever import EVER
+from .fivegr_so import FIVEGR_SO
 from .interface import Driver
 from .onap import ONAP
 from .osm import OSM
-from .ever import EVER
-from .fivegr_so import FIVEGR_SO
 
 
 def get_driver(orc_type: str, orc_id: int, db) -> Driver:

@@ -4,7 +4,7 @@ info:
   description: 5G-EVE Adaptation Layer API spec.
   version: '1.4.1'
   title: 5G-EVE Adaptation Layer API
-  contact: {}
+  contact: { }
 host: example.com
 basePath: /api
 tags:
@@ -16,7 +16,7 @@ tags:
     description: Subscriptions to notifications about NS instances status
   - name: Notification send
     description: Operations for sending notifications to subscribed clients
-schemes: []
+schemes: [ ]
 consumes:
   - application/json
 produces:
@@ -46,7 +46,7 @@ paths:
       responses:
         "200":
           description: search results matching criteria
-          headers: {}
+          headers: { }
           schema:
             type: array
             items:
@@ -75,7 +75,7 @@ paths:
       responses:
         "200":
           description: NFVO found
-          headers: {}
+          headers: { }
           schema:
             $ref: '#/definitions/NFVO'
         "401":
@@ -111,7 +111,7 @@ paths:
       responses:
         "200":
           description: search results matching criteria
-          headers: {}
+          headers: { }
           schema:
             type: array
             items:
@@ -209,7 +209,7 @@ paths:
       responses:
         "200":
           description: NS
-          headers: {}
+          headers: { }
           schema:
             $ref: '#/definitions/NsInstance'
         "400":
@@ -249,7 +249,7 @@ paths:
         "204":
           description: |
             204 No Content The NS instance resource and the associated NS identifier were deleted successfully. The response body shall be empty.
-          headers: {}
+          headers: { }
         "400":
           description: The request is malformed
           schema:
@@ -363,7 +363,7 @@ paths:
         "202":
           description: |
             202 ACCEPTED
-          headers: {}
+          headers: { }
         "400":
           description: The request is malformed
           schema:
@@ -414,7 +414,7 @@ paths:
         "202":
           description: |
             202 ACCEPTED
-          headers: {}
+          headers: { }
         "400":
           description: The request is malformed
           schema:
@@ -580,7 +580,7 @@ paths:
           description: |
             200 OK
             The list of subscriptions has been queried successfully. The response body shall contain the representations of all active  subscriptions of the functional block that invokes the method. If the NFVO supports alternative 2 (paging) according to  clause 5.4.2.1 of ETSI GS NFV SOL 013 for this resource, inclusion of the Link HTTP header in this response shall follow the provisions in clause 5.4.2.3 of ETSI GS NFV SOL 013.
-          headers: {}
+          headers: { }
           schema:
             type: array
             items:
@@ -618,7 +618,7 @@ paths:
       responses:
         "201":
           description: 201 Created. The subscription has been created successfully.
-          headers: {}
+          headers: { }
           schema:
             $ref: '#/definitions/LccnSubscription'
         "400":
@@ -671,7 +671,7 @@ paths:
         "200":
           description: |
             200 OK. The operation has completed successfully. The response body shall contain a representation of the subscription resource.
-          headers: {}
+          headers: { }
           schema:
             $ref: '#/definitions/LccnSubscription'
         "401":
@@ -707,7 +707,7 @@ paths:
         "204":
           description: |
             204 NO CONTENT. The subscription resource has been deleted successfully. The response body shall be empty.
-          headers: {}
+          headers: { }
         "401":
           description: Unauthorized, Invalid credentials (client or user)
           schema:
@@ -745,7 +745,7 @@ paths:
           description: |
             204 No Content
             Shall be returned when the notification has been delivered successfully.
-          headers: {}
+          headers: { }
         "400":
           description: The request is malformed
           schema:
@@ -775,7 +775,7 @@ paths:
       responses:
         "200":
           description: search results matching criteria
-          headers: {}
+          headers: { }
           schema:
             type: array
             items:
@@ -804,7 +804,7 @@ paths:
       responses:
         "200":
           description: RANO found
-          headers: {}
+          headers: { }
           schema:
             $ref: '#/definitions/RANO'
         "401":
@@ -840,7 +840,7 @@ paths:
       responses:
         "200":
           description: search results matching criteria
-          headers: {}
+          headers: { }
           schema:
             type: array
             items:
@@ -938,7 +938,7 @@ paths:
       responses:
         "200":
           description: NS
-          headers: {}
+          headers: { }
           schema:
             $ref: '#/definitions/NsInstance'
         "400":
@@ -978,7 +978,7 @@ paths:
         "204":
           description: |
             204 No Content The NS instance resource and the associated NS identifier were deleted successfully. The response body shall be empty.
-          headers: {}
+          headers: { }
         "400":
           description: The request is malformed
           schema:
@@ -1092,7 +1092,7 @@ paths:
         "202":
           description: |
             202 ACCEPTED
-          headers: {}
+          headers: { }
         "400":
           description: The request is malformed
           schema:
@@ -1143,7 +1143,7 @@ paths:
         "202":
           description: |
             202 ACCEPTED
-          headers: {}
+          headers: { }
         "400":
           description: The request is malformed
           schema:
@@ -1613,7 +1613,7 @@ definitions:
     properties:
       nsdId:
         type: object
-        properties: {}
+        properties: { }
       nsName:
         type: string
       nsDescription:
@@ -1631,10 +1631,10 @@ definitions:
         $ref: '#/definitions/ScaleType'
       scaleVnfData:
         type: object
-        properties: {}
+        properties: { }
       scaleNsData:
         type: object
-        properties: {}
+        properties: { }
     title: NfvoNsInstancesScaleRequest
   LccnSubscription:
     type: object

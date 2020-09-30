@@ -32,7 +32,6 @@ database = MsoloDB()
 
 
 def create_app(test_config=None):
-
     # import blueprints
     from . import app as mso_lo_app
 

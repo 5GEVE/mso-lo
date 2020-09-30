@@ -13,7 +13,8 @@
 #  limitations under the License.
 import unittest
 
-from adaptation_layer.repository.iwf_repository import get_nfvo_by_id, get_rano_by_id, \
+from adaptation_layer.repository.iwf_repository import get_nfvo_by_id, \
+    get_rano_by_id, \
     get_nfvo_cred, get_rano_cred, add_orc_cred_test, get_nfvo_list, \
     get_rano_list, create_subscription, delete_subscription, get_subscription, \
     get_subscription_list, \
@@ -27,6 +28,7 @@ class TestIwfRepository(unittest.TestCase):
     IWFREPO_HOST=localhost
     and have a iwf-repository instance running locally.
     """
+
     def setUp(self) -> None:
         self.nfvo_id = 1
         add_orc_cred_test('nfvo', self.nfvo_id)

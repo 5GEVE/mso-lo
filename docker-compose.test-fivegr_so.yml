@@ -27,10 +27,10 @@ services:
       TESTING: "True"
       PRISM_ALIAS: prism-fivegr-so
       OPENAPI_PATH: ./openapi/MSO-LO-swagger-resolved.yaml
-    command: ["adaptation_layer/tests/wait-for-it.sh", "prism-fivegr-so:9999", "--", "pytest", "-v", "adaptation_layer/tests/test_fivegr_so.py"]
+    command: [ "adaptation_layer/tests/wait-for-it.sh", "prism-fivegr-so:9999", "--", "pytest", "-v", "adaptation_layer/tests/test_fivegr_so.py" ]
     networks:
       mso-lo-net:
         aliases:
           - test-fivegr-so
 networks:
-    mso-lo-net:
+  mso-lo-net:

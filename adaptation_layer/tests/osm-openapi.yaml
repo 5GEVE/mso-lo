@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 servers:
-# Added by API Auto Mocking Plugin
+  # Added by API Auto Mocking Plugin
   - description: SwaggerHub API Auto Mocking
     url: https://virtserver.swaggerhub.com/matpergo/osm_nbi/6
   - description: OSM NB API
@@ -42,7 +42,7 @@ tags:
 
 paths:
 
-# BEGIN NS Packages
+  # BEGIN NS Packages
   '/osm/nsd/v1/ns_descriptors':
     get:
       tags:
@@ -138,7 +138,7 @@ paths:
         required: true
         description: NSD Info ID
         schema:
-          type : string
+          type: string
     get:
       tags:
         - "NS packages"
@@ -254,7 +254,7 @@ paths:
         required: true
         description: NSD Info ID
         schema:
-          type : string
+          type: string
     get:
       tags:
         - "NS packages"
@@ -346,13 +346,13 @@ paths:
         required: true
         description: NS Package ID
         schema:
-          type : string
+          type: string
       - name: artifactPath
         in: path
         required: true
         description: Artifact Path
         schema:
-          type : string
+          type: string
     get:
       tags:
         - "NS packages"
@@ -409,7 +409,7 @@ paths:
         required: true
         description: NS Package ID
         schema:
-          type : string
+          type: string
     get:
       tags:
         - "NS packages"
@@ -560,7 +560,7 @@ paths:
         required: true
         description: NS Package ID
         schema:
-          type : string
+          type: string
     get:
       tags:
         - "NS packages"
@@ -669,9 +669,9 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-# END NS Packages
+  # END NS Packages
 
-# BEGIN VNF Packages
+  # BEGIN VNF Packages
   '/osm/vnfpkgm/v1/vnf_packages':
     get:
       tags:
@@ -767,7 +767,7 @@ paths:
         required: true
         description: VNF Package ID
         schema:
-          type : string
+          type: string
     get:
       tags:
         - "VNF packages"
@@ -883,7 +883,7 @@ paths:
         required: true
         description: VNF Package ID
         schema:
-          type : string
+          type: string
     get:
       tags:
         - "VNF packages"
@@ -928,7 +928,7 @@ paths:
         required: true
         description: VNF Package ID
         schema:
-          type : string
+          type: string
     get:
       tags:
         - "VNF packages"
@@ -1023,13 +1023,13 @@ paths:
         required: true
         description: VNF Package ID
         schema:
-          type : string
+          type: string
       - name: artifactPath
         in: path
         required: true
         description: Artifact Path
         schema:
-          type : string
+          type: string
     get:
       tags:
         - "VNF packages"
@@ -1192,7 +1192,7 @@ paths:
         required: true
         description: VNF Package Content ID
         schema:
-          type : string
+          type: string
     get:
       tags:
         - "VNF packages"
@@ -1301,9 +1301,9 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-# END VNF Packages
+  # END VNF Packages
 
-# BEGIN NS Instances
+  # BEGIN NS Instances
   '/osm/nslcm/v1/ns_instances':
     get:
       tags:
@@ -1403,7 +1403,7 @@ paths:
         required: true
         description: NS Instance ID
         schema:
-          type : string
+          type: string
     get:
       tags:
         - "NS instances"
@@ -1484,7 +1484,7 @@ paths:
         required: true
         description: NS Instance ID
         schema:
-          type : string
+          type: string
     post:
       tags:
         - "NS instances"
@@ -1548,7 +1548,7 @@ paths:
         required: true
         description: NS Instance ID
         schema:
-          type : string
+          type: string
     post:
       tags:
         - "NS instances"
@@ -1612,7 +1612,7 @@ paths:
         required: true
         description: NS Instance ID
         schema:
-          type : string
+          type: string
     post:
       tags:
         - "NS instances"
@@ -1674,7 +1674,7 @@ paths:
         required: true
         description: NS Instance ID
         schema:
-          type : string
+          type: string
     post:
       tags:
         - "NS instances"
@@ -1829,7 +1829,7 @@ paths:
         required: true
         description: NS Instance Content ID
         schema:
-          type : string
+          type: string
     get:
       tags:
         - "NS instances"
@@ -1960,7 +1960,7 @@ paths:
         required: true
         description: NS LCM Operation Occurrence ID
         schema:
-          type : string
+          type: string
     get:
       tags:
         - "NS instances"
@@ -2049,7 +2049,7 @@ paths:
         required: true
         description: VNF Instance ID
         schema:
-          type : string
+          type: string
     get:
       tags:
         - "NS instances"
@@ -2090,9 +2090,9 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-# END NS Instances
+  # END NS Instances
 
-# BEGIN NetSlice Templates
+  # BEGIN NetSlice Templates
   '/osm/nst/v1/netslice_templates':
     get:
       tags:
@@ -2188,7 +2188,7 @@ paths:
         required: true
         description: NetSlice Template ID
         schema:
-          type : string
+          type: string
     get:
       tags:
         - "NetSlice templates"
@@ -2269,13 +2269,13 @@ paths:
         required: true
         description: NetSlice Template ID
         schema:
-          type : string
+          type: string
       - name: artifactPath
         in: path
         required: true
         description: Artifact Path
         schema:
-          type : string
+          type: string
     get:
       tags:
         - "NetSlice templates"
@@ -2332,7 +2332,7 @@ paths:
         required: true
         description: NetSlice Template ID
         schema:
-          type : string
+          type: string
     get:
       tags:
         - "NetSlice templates"
@@ -2377,7 +2377,7 @@ paths:
         required: true
         description: NetSlice Template ID
         schema:
-          type : string
+          type: string
     get:
       tags:
         - "NetSlice templates"
@@ -2575,7 +2575,7 @@ paths:
         required: true
         description: NetSlice Template ID
         schema:
-          type : string
+          type: string
     get:
       tags:
         - "NetSlice templates"
@@ -2684,9 +2684,9 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-# END NetSlice Templates
+  # END NetSlice Templates
 
-# BEGIN NetSlice Instances
+  # BEGIN NetSlice Instances
   '/osm/nsilcm/v1/netslice_instances':
     get:
       tags:
@@ -2782,7 +2782,7 @@ paths:
         required: true
         description: NetSlice Instance ID
         schema:
-          type : string
+          type: string
     get:
       tags:
         - "NetSlice instances"
@@ -2863,7 +2863,7 @@ paths:
         required: true
         description: NetSlice Instance ID
         schema:
-          type : string
+          type: string
     post:
       tags:
         - "NetSlice instances"
@@ -2926,7 +2926,7 @@ paths:
         required: true
         description: NetSlice Instance ID
         schema:
-          type : string
+          type: string
     post:
       tags:
         - "NetSlice instances"
@@ -2990,7 +2990,7 @@ paths:
         required: true
         description: NetSlice Instance ID
         schema:
-          type : string
+          type: string
     post:
       tags:
         - "NetSlice instances"
@@ -3144,7 +3144,7 @@ paths:
         required: true
         description: NetSlice Instance Content ID
         schema:
-          type : string
+          type: string
     get:
       tags:
         - "NetSlice instances"
@@ -3275,7 +3275,7 @@ paths:
         required: true
         description: NetSlice LCM Operation Occurrence ID
         schema:
-          type : string
+          type: string
     get:
       tags:
         - "NetSlice instances"
@@ -3316,18 +3316,18 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-# END NetSlice Instances
+  # END NetSlice Instances
 
-# BEGIN NSPM
+  # BEGIN NSPM
   # /nspm/v1/pm_jobs/{pmJobId}/reports/{reportId}
-# END NSPM
+  # END NSPM
 
-# BEGIN PDU
+  # BEGIN PDU
   # /pdu/v1/pdu_descriptors
   # /pdu/v1/pdu_descriptors/{pduDescriptorId}
-# END PDU
+  # END PDU
 
-# BEGIN Admin
+  # BEGIN Admin
   '/osm/admin/v1/vims':
     get:
       tags:
@@ -3610,7 +3610,7 @@ components:
               type: string
             userDefinedData:
               description: None
-              properties: {}
+              properties: { }
               type: object
           type: object
         _id:
@@ -3728,7 +3728,7 @@ components:
     VimInfo:
       description: |
         Vim Information
-        Only generic fields (_id, uuid, vim_type) 
+        Only generic fields (_id, uuid, vim_type)
       type: object
       properties:
         _id:
@@ -3872,7 +3872,7 @@ components:
               type: string
             userDefinedData:
               description: None
-              properties: {}
+              properties: { }
               type: object
           type: object
         _id:
@@ -4247,7 +4247,7 @@ components:
                   type: string
                 userDefinedData:
                   description: None
-                  properties: {}
+                  properties: { }
                   type: object
               type: object
             _id:
@@ -4379,7 +4379,7 @@ components:
           type: string
         orchestration-progress:
           description: None
-          properties: {}
+          properties: { }
           type: object
         resource-orchestrator:
           description: None

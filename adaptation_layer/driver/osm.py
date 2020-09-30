@@ -61,7 +61,7 @@ def _authenticate(func):
                 if s_token:
                     self._token = json.loads(str(s_token))
             if not self._token or datetime.utcfromtimestamp(
-                    self._token["expires"]) < datetime.utcnow():
+                self._token["expires"]) < datetime.utcnow():
                 auth_payload = {'username': self._user,
                                 'password': self._password,
                                 'project_id': self._project}
@@ -213,7 +213,7 @@ class OSM(Driver):
 
     @_authenticate
     def get_ns(self, nsId: str, args=None, skip_sol=False) \
-            -> Tuple[Body, Headers]:
+        -> Tuple[Body, Headers]:
         _url = "{0}/nslcm/v1/ns_instances/{1}".format(self._base_path, nsId)
         _url = self._build_url_query(_url, args)
         try:
