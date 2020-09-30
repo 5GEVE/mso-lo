@@ -28,10 +28,5 @@ max_line_length = 119
 indent_size = 2
 insert_final_newline = false
 
-# Makefiles always use tabs for indentation
-[Makefile]
-indent_style = tab
-
 [*.{yml, yaml}]
-indent_style = space
 indent_size = 2
