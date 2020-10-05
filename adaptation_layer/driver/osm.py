@@ -256,7 +256,6 @@ class OSM(Driver):
         instantiate_payload = {}
         ns_res, ns_head = self.get_ns(nsId, skip_sol=True)
         instantiate_payload.update(ns_res['instantiate_params'])
-
         additional_params = None
         try:
             additional_params = args['payload']['additionalParamsForNs']
@@ -265,6 +264,12 @@ class OSM(Driver):
         if additional_params:
             if 'vld' in additional_params:
                 instantiate_payload['vld'] = additional_params['vld']
+                # TODO CHECK if floating ip is supported
+                vnf_items = self._force_float_ip(
+                    additional_params['vld'], ns_res)
+                if 'vnf' not in instantiate_payload:
+                    instantiate_payload['vnf'] = []
+                instantiate_payload['vnf'].extend(vnf_items)
             if 'vnf' in additional_params:
                 mapping = {v: str(i + 1) for i, v in
                            enumerate(ns_res['constituent-vnfr-ref'])}
@@ -272,7 +277,9 @@ class OSM(Driver):
                     for vnf in additional_params['vnf']:
                         vnf['member-vnf-index'] = mapping[
                             vnf.pop('vnfInstanceId')]
-                    instantiate_payload['vnf'] = additional_params['vnf']
+                    if 'vnf' not in instantiate_payload:
+                        instantiate_payload['vnf'] = []
+                    instantiate_payload['vnf'].extend(additional_params['vnf'])
                 except KeyError as e:
                     logger.warning('cannot map vnf. KeyError on {}'.format(e))
             if 'wim_account' in additional_params:
@@ -351,6 +358,49 @@ class OSM(Driver):
         sol_op = self._op_im_converter(osm_op)
         headers = self._build_headers(osm_headers)
         return sol_op, headers
+
+    def _force_float_ip(self, ap_vld, osm_ns):
+        vnf_items = []
+        for vld in ap_vld:
+            vnf_items.extend(
+                self._force_float_ip_vld_interfaces(osm_ns, vld['name']))
+        return vnf_items
+
+    def _force_float_ip_vld_interfaces(self, osm_ns, vld_id):
+        res_vnf = []
+        nsd = osm_ns["nsd"]
+        osm_vnfs = []
+        for vnf_id in osm_ns["constituent-vnfr-ref"]:
+            try:
+                vnf, headers = self._get_vnf(vnf_id)
+                osm_vnfs.append(vnf)
+            except VnfNotFound:
+                pass
+
+        for vld in nsd['vld']:
+            if vld["id"] == vld_id:
+                for vnfd_cp_ref in vld["vnfd-connection-point-ref"]:
+                    cp_ref = vnfd_cp_ref["vnfd-connection-point-ref"]
+                    vnf = osm_vnfs[int(vnfd_cp_ref["member-vnf-index-ref"])-1]
+                    vnf_res = {
+                        "member-vnf-index": vnfd_cp_ref["member-vnf-index-ref"],
+                        "vdu": []
+                    }
+                    for vdur in vnf['vdur']:
+                        vdu_id = vdur["vdu-id-ref"]
+                        interfaces = []
+                        for interface in vdur["interfaces"]:
+                            if interface["ns-vld-id"] == vld_id:
+                                interfaces.append({
+                                    "name": interface["name"],
+                                    "floating-ip-required": True})
+                        vnf_res["vdu"].append({
+                            "id": vdu_id,
+                            "interface": interfaces
+                        })
+
+                    res_vnf.append(vnf_res)
+        return res_vnf
 
     def _cpinfo_converter(self, osm_vnf: Dict) -> List[Dict]:
         cp_info = []
