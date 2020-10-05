@@ -16,6 +16,7 @@ from .interface import Driver
 from .onap import ONAP
 from .osm import OSM
 from .ever import EVER
+from .fivegr_so import FIVEGR_SO
 
 
 def get_driver(orc_type: str, orc_id: int, db) -> Driver:
@@ -29,6 +30,8 @@ def get_driver(orc_type: str, orc_id: int, db) -> Driver:
             return ONAP(nfvo_cred)
         elif nfvo_type == 'ever':
             return EVER(nfvo_cred)
+        elif nfvo_type == '5gr-so':
+            return FIVEGR_SO(nfvo_cred)
         else:
             raise NotImplementedError(
                 'Driver type: {} is not implemented'.format(nfvo_type))

@@ -267,9 +267,7 @@ class OSM(Driver):
                 # TODO CHECK if floating ip is supported
                 vnf_items = self._force_float_ip(
                     additional_params['vld'], ns_res)
-                if 'vnf' not in instantiate_payload:
-                    instantiate_payload['vnf'] = []
-                instantiate_payload['vnf'].extend(vnf_items)
+                self._extend_vnf_add_params(instantiate_payload, vnf_items)
             if 'vnf' in additional_params:
                 mapping = {v: str(i + 1) for i, v in
                            enumerate(ns_res['constituent-vnfr-ref'])}
@@ -277,9 +275,8 @@ class OSM(Driver):
                     for vnf in additional_params['vnf']:
                         vnf['member-vnf-index'] = mapping[
                             vnf.pop('vnfInstanceId')]
-                    if 'vnf' not in instantiate_payload:
-                        instantiate_payload['vnf'] = []
-                    instantiate_payload['vnf'].extend(additional_params['vnf'])
+                    self._extend_vnf_add_params(
+                        instantiate_payload, additional_params['vnf'])
                 except KeyError as e:
                     logger.warning('cannot map vnf. KeyError on {}'.format(e))
             if 'wim_account' in additional_params:
@@ -505,6 +502,22 @@ class OSM(Driver):
             url_query = urlencode(args['args'])
             return "{0}?{1}".format(base, url_query)
         return base
+
+    @staticmethod
+    def _extend_vnf_add_params(instantiate_payload, vnf_items):
+        if 'vnf' not in instantiate_payload:
+            instantiate_payload['vnf'] = []
+        for item_a in vnf_items:
+            mvi_a = item_a["member-vnf-index"]
+            found = False
+            for item_b in instantiate_payload['vnf']:
+                mvi_b = item_b["member-vnf-index"]
+                if mvi_a == mvi_b:
+                    item_b.update(item_a)
+                    found = True
+            if not found:
+                instantiate_payload['vnf'].append(item_a)
+        return instantiate_payload['vnf']
 
     def _build_headers(self, osm_headers):
         headers = {}
