@@ -128,10 +128,12 @@ git checkout development
 cd adaptation_layer
 pipenv install --dev
 # Create database with mock data
+export FLASK_APP=.
+export FLASK_ENV=development
 pipenv run flask db upgrade
 pipenv run flask seed
 # Run the flask app
-FLASK_ENV=development FLASK_APP=. pipenv run flask run
+pipenv run flask run
 ```
 
 Some features like notifications need [celery](https://docs.celeryproject.org/en/stable/index.html) and
