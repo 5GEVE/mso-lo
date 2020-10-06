@@ -362,9 +362,8 @@ class OSM(Driver):
                 net = iwf_repository.get_site_network(ap_vld['vim_network_name'],
                                                       self._nfvoId)
             except NetworkNotFound as e:
-                # TODO what to do if the network is not found? Better to fail or to continue?
-                logger.warning(e.description)
-                continue
+                logger.error(e.description)
+                raise Unprocessable(e.description)
             if net['floating_ip']:
                 vnf_items.extend(
                     self._force_float_ip_vld_interfaces(osm_ns, vld['name']))
