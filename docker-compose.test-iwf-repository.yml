@@ -8,8 +8,6 @@ services:
       iwf-repository-net:
         aliases:
           - iwf-repository-app
-    ports:
-      - 8087:8087
   iwf-repository-db:
     image: postgres:12-alpine
     environment:

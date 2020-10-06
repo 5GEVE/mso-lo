@@ -13,11 +13,14 @@
 #  limitations under the License.
 import unittest
 
-from adaptation_layer.repository.iwf_repository import get_nfvo_by_id, get_rano_by_id, \
+from adaptation_layer.error_handler import NetworkNotFound
+from adaptation_layer.repository.iwf_repository import get_nfvo_by_id, \
+    get_rano_by_id, \
     get_nfvo_cred, get_rano_cred, add_orc_cred_test, get_nfvo_list, \
     get_rano_list, create_subscription, delete_subscription, get_subscription, \
     get_subscription_list, \
-    search_subs_by_ns_instance, find_nfvos_by_type, post_vim_safe
+    search_subs_by_ns_instance, find_nfvos_by_type, post_vim_safe, \
+    get_site_network
 
 
 class TestIwfRepository(unittest.TestCase):
@@ -27,6 +30,7 @@ class TestIwfRepository(unittest.TestCase):
     IWFREPO_HOST=localhost
     and have a iwf-repository instance running locally.
     """
+
     def setUp(self) -> None:
         self.nfvo_id = 1
         add_orc_cred_test('nfvo', self.nfvo_id)
@@ -147,6 +151,32 @@ class TestIwfRepository(unittest.TestCase):
             "name": "microstack-admin"
         }
         post_vim_safe(osm_vim, f'http://localhost:8087/nfvOrchestrators/{self.nfvo_id}')
+
+    def test_get_site_network(self):
+        net = get_site_network('floating', self.nfvo_id)
+        self.assertDictEqual({
+            "id": 1,
+            "vim_network_name": "floating",
+            "floating_ip": True,
+            "mgmt_net": False,
+            "external_net": True,
+            "cidr": "10.50.160.0/24",
+            "ip_mapping": None,
+            "_links": {
+                "self": {
+                    "href": "http://localhost:8087/networks/1"
+                },
+                "network": {
+                    "href": "http://localhost:8087/networks/1"
+                },
+                "site": {
+                    "href": "http://localhost:8087/networks/1/site"
+                }
+            }
+        }, net)
+
+    def test_get_site_network_not_found(self):
+        self.assertRaises(NetworkNotFound, get_site_network, 'notfound', self.nfvo_id)
 
 
 if __name__ == '__main__':
