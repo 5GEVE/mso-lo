@@ -32,7 +32,8 @@ from urllib3.exceptions import InsecureRequestWarning
 from adaptation_layer.error_handler import ResourceNotFound, NsNotFound, \
     VnfNotFound, Unauthorized, ServerError, NsOpNotFound, VnfPkgNotFound, \
     VimNotFound, NsdNotFound, BadRequest, Forbidden, MethodNotAllowed, \
-    Unprocessable, Conflict
+    Unprocessable, Conflict, NetworkNotFound
+from adaptation_layer.repository import iwf_repository
 from .interface import Driver, Headers, BodyList, Body
 
 urllib3.disable_warnings(InsecureRequestWarning)
@@ -264,9 +265,7 @@ class OSM(Driver):
         if additional_params:
             if 'vld' in additional_params:
                 instantiate_payload['vld'] = additional_params['vld']
-                # TODO CHECK if floating ip is supported
-                vnf_items = self._force_float_ip(
-                    additional_params['vld'], ns_res)
+                vnf_items = self._force_float_ip(additional_params['vld'], ns_res)
                 self._extend_vnf_add_params(instantiate_payload, vnf_items)
             if 'vnf' in additional_params:
                 mapping = {v: str(i + 1) for i, v in
@@ -359,8 +358,16 @@ class OSM(Driver):
     def _force_float_ip(self, ap_vld, osm_ns):
         vnf_items = []
         for vld in ap_vld:
-            vnf_items.extend(
-                self._force_float_ip_vld_interfaces(osm_ns, vld['name']))
+            try:
+                net = iwf_repository.get_site_network(ap_vld['vim_network_name'],
+                                                      self._nfvoId)
+            except NetworkNotFound as e:
+                # TODO what to do if the network is not found? Better to fail or to continue?
+                logger.warning(e.description)
+                continue
+            if net['floating_ip']:
+                vnf_items.extend(
+                    self._force_float_ip_vld_interfaces(osm_ns, vld['name']))
         return vnf_items
 
     def _force_float_ip_vld_interfaces(self, osm_ns, vld_id):
