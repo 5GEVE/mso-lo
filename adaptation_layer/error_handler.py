@@ -80,6 +80,11 @@ class VimNotFound(Error):
         super().__init__(description='Vim not found.')
 
 
+class NetworkNotFound(Error):
+    def __init__(self, vim_network_name: str, site_name: str):
+        super().__init__(description=f'{vim_network_name} not found on site {site_name}.')
+
+
 class NsOpNotFound(Error):
     def __init__(self, ns_op_id=None):
         super().__init__('NS LCM operation {0} not found.'.format(ns_op_id))
