@@ -3,7 +3,7 @@ version: '3.7'
 x-environment: &environment
   IWFREPO: 'true'
   IWFREPO_HTTPS: 'false'
-  IWFREPO_HOST: '192.168.18.14'
+  IWFREPO_HOST: '192.168.1.75'
   IWFREPO_PORT: '8087'
   IWFREPO_INTERVAL: '5'
   REDIS_HOST: 'redis'

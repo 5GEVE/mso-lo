@@ -24,7 +24,9 @@ ${ConflictNsInstanceId}    007c111c-e602-4afa-8e13-962fb5a7d81d
 ${nsInstanceName}    Test-nsInstance
 ${nsInstanceDescription}    description ns
 ${vnfInstanceIds}    []
-${vimAccountIds}    ['e59a8dfd-dd21-42cc-98f7-a68c83cfbdbd', '77c531ef-ff08-42a3-aeb9-3b8eae19a32f']
+${vimAccountIds}    ['c25ce403-b664-48e3-b790-9ed7635feffc']
+${vldName}          'mgmt_vl'
+${vimNetworkName}   'test'
 ${notificationUri}   http://192.168.18.14:8083/
 ${SINGLE_FILE_VNFD}    1    # If VNFD is PLAIN TEXT
 ${ACCEPT_PLAIN}    text/plain

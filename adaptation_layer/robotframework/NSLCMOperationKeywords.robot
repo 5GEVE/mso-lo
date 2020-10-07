@@ -1,5 +1,5 @@
 *** Settings ***
-Resource   environment/variables.txt
+Resource   environment/variables.robot
 Library    REST     ${MSO-LO_BASE_API}
 Library    JSONLibrary
 Library    Process
@@ -178,7 +178,7 @@ DELETE IndividualNSInstance
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 
-POST Instantiate nsInstance with vnf in additionalParamsForNs
+POST Instantiate nsInstance with vnf/vld in additionalParamsForNs
     Log    Trying to Instantiate a ns Instance
     Set Headers  {"Accept":"${ACCEPT}"}
     Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
@@ -188,6 +188,9 @@ POST Instantiate nsInstance with vnf in additionalParamsForNs
     ${vnf}=    evaluate    [{"vnfInstanceId": vnfId,"vimAccountId": random.choice(${vimAccountIds})} for vnfId in ${vnfInstanceIds}]    random
     Log    ${vnf}
     ${body}=    Update Value To Json    ${body}    $.additionalParamsForNs.vnf    ${vnf}
+    ${vld}=    evaluate     [{'name': ${vldName}, 'vim-network-name': ${vimNetworkName}}]
+    Log    ${vld}
+    ${body}=    Update Value To Json    ${body}    $.additionalParamsForNs.vld    ${vld}
     Log    ${body}
     Post    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/instantiate    ${body}
     ${outputResponse}=    Output    response

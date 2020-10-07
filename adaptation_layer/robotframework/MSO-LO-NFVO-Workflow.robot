@@ -1,5 +1,5 @@
 *** Settings ***
-Resource    environment/variables.txt
+Resource    environment/variables.robot
 Variables   ${SCHEMAS_PATH}
 Resource   NSLCMOperationKeywords.robot
 Resource   NFVOOperationKeywords.robot
