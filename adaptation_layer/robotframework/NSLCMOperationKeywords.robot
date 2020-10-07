@@ -1,5 +1,5 @@
 *** Settings ***
-Resource   environment/variables.txt
+Resource   environment/variables.robot
 Library    REST     ${MSO-LO_BASE_API}
 Library    JSONLibrary
 Library    Process
