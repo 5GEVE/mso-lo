@@ -47,7 +47,7 @@ docker-compose up
 Edit [docker-compose.yaml](docker-compose.yml) and disable iwf repository support.
 ```yaml
 x-environment: &environment
-  IWFREPO: 'true'
+  IWFREPO: 'false'
 ```
 
 Deploy with:
@@ -147,7 +147,8 @@ celery -A tasks worker -B --loglevel=info
 ```
 
 A [docker-compose.dev.yml](docker-compose.dev.yml) is also available.
-Deploy it with
+Remember to copy the mock files as said above for a correct build.
+Deploy with:
 ```shell script
 docker-compose -f docker-compose.dev.yml up --build
 ```
