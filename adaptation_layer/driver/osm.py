@@ -359,7 +359,7 @@ class OSM(Driver):
         vnf_items = []
         for vld in ap_vld:
             try:
-                net = iwf_repository.get_site_network(ap_vld['vim_network_name'],
+                net = iwf_repository.get_site_network(vld['vim-network-name'],
                                                       self._nfvoId)
             except VimNetworkNotFound as e:
                 logger.error(e.description)
