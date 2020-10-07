@@ -40,6 +40,7 @@ urllib3.disable_warnings(InsecureRequestWarning)
 TESTING = os.getenv('TESTING', 'false').lower()
 PRISM_ALIAS = os.getenv("PRISM_ALIAS", "prism-osm")
 
+IWFREPO = os.getenv('IWFREPO', 'false').lower()
 redis_host = os.getenv('REDIS_HOST') if os.getenv('REDIS_HOST') else 'redis'
 redis_port = int(os.getenv('REDIS_PORT')) if os.getenv('REDIS_PORT') else 6379
 # TTL (seconds) for key in redis
@@ -357,16 +358,17 @@ class OSM(Driver):
 
     def _force_float_ip(self, ap_vld, osm_ns):
         vnf_items = []
-        for vld in ap_vld:
-            try:
-                net = iwf_repository.get_site_network(vld['vim-network-name'],
-                                                      self._nfvoId)
-            except VimNetworkNotFound as e:
-                logger.error(e.description)
-                raise Unprocessable(e.description)
-            if net['floating_ip']:
-                vnf_items.extend(
-                    self._force_float_ip_vld_interfaces(osm_ns, vld['name']))
+        if IWFREPO == 'true':
+            for vld in ap_vld:
+                try:
+                    net = iwf_repository.get_site_network(vld['vim-network-name'],
+                                                          self._nfvoId)
+                except VimNetworkNotFound as e:
+                    logger.error(e.description)
+                    raise Unprocessable(e.description)
+                if net['floating_ip']:
+                    vnf_items.extend(
+                        self._force_float_ip_vld_interfaces(osm_ns, vld['name']))
         return vnf_items
 
     def _force_float_ip_vld_interfaces(self, osm_ns, vld_id):
