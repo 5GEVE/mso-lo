@@ -22,7 +22,7 @@ from requests import get, ConnectionError, Timeout, \
 from adaptation_layer.error_handler import ServerError, NfvoNotFound, \
     NfvoCredentialsNotFound, Unauthorized, BadRequest, \
     SubscriptionNotFound, Unprocessable, RanoNotFound, RanoCredentialsNotFound, \
-    NetworkNotFound
+    VimNetworkNotFound
 
 logger = logging.getLogger('app.iwf_repository')
 IWFREPO_HTTPS = os.getenv('IWFREPO_HTTPS', 'false').lower()
@@ -323,4 +323,4 @@ def get_site_network(vim_network_name: str, nfvo_id: int):
     try:
         return next((n for n in networks if n['vim_network_name'] == vim_network_name))
     except StopIteration:
-        raise NetworkNotFound(vim_network_name, site['name'])
+        raise VimNetworkNotFound(vim_network_name, site['name'])

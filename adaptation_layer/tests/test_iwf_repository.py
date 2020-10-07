@@ -13,7 +13,7 @@
 #  limitations under the License.
 import unittest
 
-from adaptation_layer.error_handler import NetworkNotFound
+from adaptation_layer.error_handler import VimNetworkNotFound
 from adaptation_layer.repository.iwf_repository import get_nfvo_by_id, \
     get_rano_by_id, \
     get_nfvo_cred, get_rano_cred, add_orc_cred_test, get_nfvo_list, \
@@ -176,7 +176,7 @@ class TestIwfRepository(unittest.TestCase):
         }, net)
 
     def test_get_site_network_not_found(self):
-        self.assertRaises(NetworkNotFound, get_site_network, 'notfound', self.nfvo_id)
+        self.assertRaises(VimNetworkNotFound, get_site_network, 'notfound', self.nfvo_id)
 
 
 if __name__ == '__main__':

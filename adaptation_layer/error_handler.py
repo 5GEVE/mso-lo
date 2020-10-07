@@ -80,7 +80,7 @@ class VimNotFound(Error):
         super().__init__(description='Vim not found.')
 
 
-class NetworkNotFound(Error):
+class VimNetworkNotFound(Error):
     def __init__(self, vim_network_name: str, site_name: str):
         super().__init__(description=f'{vim_network_name} not found on site {site_name}.')
 

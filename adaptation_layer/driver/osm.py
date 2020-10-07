@@ -32,7 +32,7 @@ from urllib3.exceptions import InsecureRequestWarning
 from adaptation_layer.error_handler import ResourceNotFound, NsNotFound, \
     VnfNotFound, Unauthorized, ServerError, NsOpNotFound, VnfPkgNotFound, \
     VimNotFound, NsdNotFound, BadRequest, Forbidden, MethodNotAllowed, \
-    Unprocessable, Conflict, NetworkNotFound
+    Unprocessable, Conflict, VimNetworkNotFound
 from adaptation_layer.repository import iwf_repository
 from .interface import Driver, Headers, BodyList, Body
 
@@ -361,7 +361,7 @@ class OSM(Driver):
             try:
                 net = iwf_repository.get_site_network(ap_vld['vim_network_name'],
                                                       self._nfvoId)
-            except NetworkNotFound as e:
+            except VimNetworkNotFound as e:
                 logger.error(e.description)
                 raise Unprocessable(e.description)
             if net['floating_ip']:
