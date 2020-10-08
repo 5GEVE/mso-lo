@@ -164,13 +164,13 @@ class TestIwfRepository(unittest.TestCase):
             "ip_mapping": None,
             "_links": {
                 "self": {
-                    "href": "http://localhost:8087/networks/1"
+                    "href": "http://iwf-repository-app:8087/networks/1"
                 },
                 "network": {
-                    "href": "http://localhost:8087/networks/1"
+                    "href": "http://iwf-repository-app:8087/networks/1"
                 },
                 "site": {
-                    "href": "http://localhost:8087/networks/1/site"
+                    "href": "http://iwf-repository-app:8087/networks/1/site"
                 }
             }
         }, net)
