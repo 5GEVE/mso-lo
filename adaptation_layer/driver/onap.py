@@ -21,7 +21,7 @@ import requests
 import urllib3
 from urllib3.exceptions import InsecureRequestWarning
 
-from error_handler import ResourceNotFound, NsNotFound, \
+from adaptation_layer.error_handler import ResourceNotFound, NsNotFound, \
     BadRequest, ServerError, NsOpNotFound, NsdNotFound
 from .interface import Driver, Headers, BodyList, Body
 
@@ -171,7 +171,7 @@ class ONAP(Driver):
         _url = self._build_url_query(_url, args)
         try:
             emtpy_body, resp_headers = self._exec_post(
-                _url, json=args['payload'], headers={"Content-Type": "application/json"})
+                _url, headers={})
         except ResourceNotFound:
             raise NsNotFound(ns_id=nsId)
         headers = self._build_headers(resp_headers)

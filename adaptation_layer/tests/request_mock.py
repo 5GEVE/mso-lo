@@ -12,6 +12,15 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+mock_ns_scale_v2 = {
+    "scaleType": "SCALE_VNF",
+    "scaleVnfData": [{
+        "scaleVnfType": "SCALE_IN",
+        "scaleByStepData": {
+          "aspectId": "1234"
+        }
+    }]
+}
 mock_ns_scale = {
     "scaleType": "SCALE_VNF",
     "scaleVnfData": {
@@ -26,6 +35,31 @@ mock_ns = {
     "nsdId": "49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7",
     "nsName": "test",
     "nsDescription": "test description"
+}
+
+mock_ns_instantiate = {
+  "nsFlavourId": "vDCN_001",
+  "nsInstantiationLevelId": "1",
+  "additionalParamsForNs": {
+    "vld": [
+      {
+        "name": "vldnet",
+        "vim-network-name": "netVIM1"
+      }
+    ],
+    "vnf": [
+      {
+        "vnfInstanceId": "string",
+        "vimAccountId": "string"
+      }
+    ],
+    "wim_account": "WimAccount1"
+  }
+}
+
+mock_ns_instantiatev2 = {
+  "nsFlavourId": "vDCN_001",
+  "nsInstantiationLevelId": "1"
 }
 
 mock_ns_terminate = {

@@ -169,11 +169,6 @@ paths:
       summary: terminate a NS Instance with given Id
       description: terminate NS Instance
       operationId: terminateNS
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TerminationTime'
       responses:
         '202':
           description: Accepted

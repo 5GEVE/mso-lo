@@ -5,11 +5,12 @@ services:
       context: .
       target: test
       args:
-        DB_SEED_NFVO: seed/nfvo_mock.json
-        DB_SEED_NFVO_CRED: seed/nfvo_credentials_mock.json
-    container_name: test-nfvo
+        DB_SEED_NFVO: adaptation_layer/seed/nfvo_mock.json
+        DB_SEED_NFVO_CRED: adaptation_layer/seed/nfvo_credentials_mock.json
+        DB_SEED_RANO: adaptation_layer/seed/rano_mock.json
+        DB_SEED_RANO_CRED: adaptation_layer/seed/rano_credentials_mock.json
     environment:
       TESTING: "True"
       OPENAPI_PATH: ./openapi/MSO-LO-swagger-resolved.yaml
-    command: ["pytest", "-v", "tests/test_nfvo.py"]
+    command: ["pytest", "-v", "adaptation_layer/tests/test_nfvo.py"]
 

@@ -1,6 +1,7 @@
-![Unit Tests](https://github.com/5GEVE/mso-lo/workflows/Unit%20Tests/badge.svg)
 
 # 5G EVE - MSO-LO interface
+
+![Unit Tests](https://github.com/5GEVE/mso-lo/workflows/Unit%20Tests/badge.svg)
 
 MSO-LO is a REST API application to provide an
 [ETSI SOL 005 v2.6.1](https://www.etsi.org/deliver/etsi_gs/NFV-SOL/001_099/001/02.06.01_60/gs_NFV-SOL001v020601p.pdf)
@@ -13,60 +14,44 @@ The software is developed under the [5G EVE](https://www.5g-eve.eu/) project.
 
 List of authors/contributors:
 
-- Francesco Lombardo, CNIT
-- Matteo Pergolesi, CNIT
-- Grzesik Michal, Orange
-- Panek Grzegorz, Orange
-- Chabiera Michal, Orange
+-   Francesco Lombardo, CNIT
+-   Matteo Pergolesi, CNIT
+-   Grzesik Michal, Orange
+-   Panek Grzegorz, Orange
+-   Chabiera Michal, Orange
 
 Software is distributed under [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
 ## Install guide
 
-Copy the mock files (needed for a correct build):
+### Environment with iwf repository
 
+If [iwf-repository](https://github.com/5GEVE/iwf-repository) is available in your environment,
+edit [docker-compose.yaml](docker-compose.yml) and change the relevant environment variables:
+```yaml
+x-environment: &environment
+  IWFREPO: 'true'
+  IWFREPO_HTTPS: 'false'
+  IWFREPO_HOST: '192.168.18.14'
+  IWFREPO_PORT: '8087'
+  IWFREPO_INTERVAL: '300'
+```
+
+Then, deploy with:
 ```shell script
-cd adaptation-layer/seed
-cp nfvo_mock.json nfvo.json
-cp nfvo_credentials_mock.json nfvo_credentials.json
+docker-compose up
 ```
 
 ### Environment with local database
 
 Edit [docker-compose.yaml](docker-compose.yml) and disable iwf repository support.
-
 ```yaml
-IWFREPO: 'false'
+x-environment: &environment
+  IWFREPO: 'false'
 ```
-
-Edit `adaptation-layer/seed/nfvo.json` and `adaptation-layer/seed/nfvo_credentials.json` (copied before)
-and insert your NFVO data.
 
 Deploy with:
-
 ```shell script
-docker pull python:3.6-slim
-docker-compose build
-docker-compose up
-```
-
-### Environment with iwf repository
-
-If [iwf-repository](https://github.com/5GEVE/iwf-repository) is available in your environment,
-edit [docker-compose.yaml](docker-compose.yml) and change the environment variables for the `flask` service:
-
-```yaml
-IWFREPO: 'true'
-IWFREPO_HOST: '192.168.17.20'
-IWFREPO_PORT: '8087'
-IWFREPO_INTERVAL: '300'
-```
-
-Then, deploy with:
-
-```shell script
-docker pull python:3.6-slim
-docker-compose build
 docker-compose up
 ```
 
@@ -74,11 +59,11 @@ docker-compose up
 
 In the following table we report all the Redis database indexes used in MSO-LO application and the relative purpose.
 
-| Index 	| Purpose 	|
-|-	|-	|
-| 0 	| Celery Background Task 	|
-| 1         	| NS last operationState 	|
-| 2                   	| OSM token cache 	|
+| Index | Purpose                |
+| ----- | ---------------------- |
+| 0     | Celery Background Task |
+| 1     | NS last operationState |
+| 2     | OSM token cache        |
 
 ### Simple test
 
@@ -87,6 +72,7 @@ You can test the app with:
 ```shell script
 curl --request GET --url http://127.0.0.1:80/nfvo
 ```
+
 ### Uninstall
 
 To remove the containers and volumes, use:
@@ -101,17 +87,17 @@ docker-compose down --remove-orphans --volumes
 
 There are two main branches:
 
-- `master`: used for software releases, push not allowed
-- `development`: used for daily work on code
+-   `master`: used for software releases, push not allowed
+-   `development`: used for daily work on code
 
 To add a new feature, we follow this pattern:
 
 1. Move to development branch: `git checkout development`
 2. Create a new branch named after the feature you want to add. E.g.:
-`git checkout -b onap_driver`
+   `git checkout -b onap_driver`
 3. Work freely on the branch
 4. When done, merge your branch into development:
-`git checkout development; git merge --no-ff onap_driver;`
+   `git checkout development; git merge --no-ff onap_driver;`
 
 Note: The `--no-ff` option is useful to create a commit dedicated to the merge
 and record the existence of the feature branch.
@@ -125,19 +111,29 @@ git config --add merge.ff false
 ### Environment setup
 
 For dependencies we use [Pipenv](https://pipenv.readthedocs.io/en/latest/).
+
+Copy the mock files (needed for a correct build):
+
+```shell script
+cd adaptation-layer/seed
+cp nfvo_mock.json nfvo.json
+cp nfvo_credentials_mock.json nfvo_credentials.json
+cp rano_mock.json rano.json
+cp rano_credentials_mock.json rano_credentials.json
+```
+
 To setup the environment use:
-
-**Remember to copy and edit the mock files as said in the [install guide](#install-guide)**
-
 ```shell script
 git checkout development
 cd adaptation_layer
 pipenv install --dev
 # Create database with mock data
+export FLASK_APP=.
+export FLASK_ENV=development
 pipenv run flask db upgrade
-pipenv run python manage.py seed
+pipenv run flask seed
 # Run the flask app
-FLASK_ENV=development flask run
+pipenv run flask run
 ```
 
 Some features like notifications need [celery](https://docs.celeryproject.org/en/stable/index.html) and
@@ -148,6 +144,13 @@ Simply setup a docker container with redis and run a celery worker.
 docker run -p 6379:6379 --name some-redis -d redis
 export REDIS_HOST=localhost
 celery -A tasks worker -B --loglevel=info
+```
+
+A [docker-compose.dev.yml](docker-compose.dev.yml) is also available.
+Remember to copy the mock files as said above for a correct build.
+Deploy with:
+```shell script
+docker-compose -f docker-compose.dev.yml up --build
 ```
 
 ---
@@ -163,13 +166,13 @@ pipenv uninstall <package-name>
 If everything works with the new dependencies, run `pipenv lock` and commit
 both `Pipfile` and `Pipfile.lock`.
 
-### Add a new NFVO driver
+### Add a new NFVO/RANO driver
 
-To create a new NFVO driver, it is enough to create a new python module
+To create a new NFVO/RANO driver, it is enough to create a new python module
 extending the `Driver` interface.
 For example, let's create `adaptation_layer/driver/onap.py`:
 
-```
+``` python
 from .interface import Driver
 
 class ONAP(Driver):
@@ -183,9 +186,9 @@ To enable a newly created driver, edit [manager.py](adaptation_layer/driver/mana
 The `get_driver()` method is simply a switch that returns an instance of the
 proper driver.
 
-### Add unit tests for a NFVO driver
+### Add unit tests for a NFVO/RANO driver
 
-In order to test our software against an NFVO NBI, we need to mock it.
+In order to test our software against an NBI, we need to mock it.
 For this purpose, we use [Prism](https://stoplight.io/open-source/prism/).
 You can control the kind of HTTP response returned by Prism by modifying the request URL.
 Example: `/nfvo/nfvo_osm1/ns?__code=200`
@@ -206,17 +209,19 @@ status code.
 Unit tests can be executed by using Docker Compose files.
 The following unit tests are currently available:
 
-- [docker-compose.test-nfvo.yml](docker-compose.test-nfvo.yml) Test NFVO information retrieve
-- [docker-compose.test-osm.yml](docker-compose.test-osm.yml) Test interactions with a mocked OSM
-- [docker-compose.test-onap.yml](docker-compose.test-onap.yml) Test interactions with a mocked ONAP
+-   [docker-compose.test-nfvo.yml](docker-compose.test-nfvo.yml) Test NFVO information retrieve
+-   [docker-compose.test-osm.yml](docker-compose.test-osm.yml) Test interactions with a mocked OSM
+-   [docker-compose.test-onap.yml](docker-compose.test-onap.yml) Test interactions with a mocked ONAP
+-   [docker-compose.test-ever.yml](docker-compose.test-ever.yml) Test interactions with a mocked EVER
 
 Example:
+
 ```shell script
 docker-compose --file docker-compose.test-osm.yml --project-name test-osm build
 docker-compose --file docker-compose.test-osm.yml --project-name test-osm up --abort-on-container-exit --exit-code-from test-osm
 ```
 
-*Note*: the `--project-name` parameter is necessary to distinguish test executions.
+_Note_: the `--project-name` parameter is necessary to distinguish test executions.
 
 The file will run two containers:
 

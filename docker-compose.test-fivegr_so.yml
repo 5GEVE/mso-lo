@@ -1,18 +1,18 @@
-version: '3.6'
+version: '3.7'
 services:
-  prism-onap:
+  prism-fivegr-so:
     image: stoplight/prism:3.1.1
-    command: mock --host 0.0.0.0 --port 9999 /etc/onap-api.yaml
+    command: mock --host 0.0.0.0 --port 9999 /etc/fivegr_so-openapi.yaml
     volumes:
-      - ./adaptation_layer/tests/onap-api.yaml:/etc/onap-api.yaml
+      - ./adaptation_layer/tests/fivegr_so-openapi.yaml:/etc/fivegr_so-openapi.yaml
     networks:
       mso-lo-net:
         aliases:
-          - prism-onap
+          - prism-fivegr-so
     # export prism port for debugging
     ports:
       - 9999:9999
-  test-onap:
+  test-fivegr-so:
     build:
       context: .
       target: test
@@ -22,16 +22,15 @@ services:
         DB_SEED_RANO: adaptation_layer/seed/rano_mock.json
         DB_SEED_RANO_CRED: adaptation_layer/seed/rano_credentials_mock.json
     depends_on:
-      - prism-onap
+      - prism-fivegr-so
     environment:
       TESTING: "True"
-      PRISM_ALIAS: prism-onap
+      PRISM_ALIAS: prism-fivegr-so
       OPENAPI_PATH: ./openapi/MSO-LO-swagger-resolved.yaml
-    command: ["adaptation_layer/tests/wait-for-it.sh", "prism-onap:9999", "--", "pytest", "-v", "adaptation_layer/tests/test_onap.py"]
+    command: ["adaptation_layer/tests/wait-for-it.sh", "prism-fivegr-so:9999", "--", "pytest", "-v", "adaptation_layer/tests/test_fivegr_so.py"]
     networks:
       mso-lo-net:
         aliases:
-          - test-onap
+          - test-fivegr-so
 networks:
     mso-lo-net:
-

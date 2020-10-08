@@ -2,14 +2,14 @@
 swagger: '2.0'
 info:
   description: 5G-EVE Adaptation Layer API spec.
-  version: '3.5'
+  version: '1.4.1'
   title: 5G-EVE Adaptation Layer API
   contact: {}
 host: example.com
 basePath: /api
 tags:
-  - name: Local NFVO
-    description: Local NFVO information
+  - name: Local NFVO/RANO
+    description: Local NFVO/RANO information
   - name: NS instances
     description: Network Service instance management
   - name: NS Subscriptions
@@ -25,7 +25,7 @@ paths:
   /nfvo:
     get:
       tags:
-        - Local NFVO
+        - Local NFVO/RANO
       summary: Retrieve list of local NFVO.
       description: |
         By passing in the appropriate options, you can search for available Local Orchestrators
@@ -59,7 +59,7 @@ paths:
   /nfvo/{nfvoId}:
     get:
       tags:
-        - Local NFVO
+        - Local NFVO/RANO
       summary: Read an individual NFVO.
       description: |
         By passing in the appropriate options, you can search for available Local Orchestrators
@@ -396,7 +396,7 @@ paths:
       summary: Terminate a NS instance.
       description: |
         Terminate NS task.   The POST method terminates a NS instance. This method can only be  used with a NS instance in the INSTANTIATED state. Terminating a NS instance does not delete the NS instance identifier,  but rather transitions the NS into the NOT_INSTANTIATED state.
-      operationId: terminateNSinstance
+      operationId: NFVOTerminateNSinstance
       produces:
         - application/json
       parameters:
@@ -410,12 +410,6 @@ paths:
           description: Identifier of a Nfvo
           required: true
           type: string
-        - in: body
-          name: body
-          description: ""
-          required: false
-          schema:
-            $ref: '#/definitions/TerminateNsRequest'
       responses:
         "202":
           description: |
@@ -757,7 +751,567 @@ paths:
           schema:
             $ref: '#/definitions/ErrorResponse'
       deprecated: false
+  /rano:
+    get:
+      tags:
+        - Local NFVO/RANO
+      summary: Retrieve list of local RANO.
+      description: |
+        By passing in the appropriate options, you can search for available Local Orchestrators
+      operationId: RANO.fetch
+      produces:
+        - application/json
+      parameters:
+        - name: RANO parameters
+          in: query
+          description: rano identifier
+          required: false
+          type: string
+        - name: Pagination parameters
+          in: query
+          description: The parameters are used to create pagination
+          required: false
+          type: string
+      responses:
+        "200":
+          description: search results matching criteria
+          headers: {}
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RANO'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+  /rano/{ranoId}:
+    get:
+      tags:
+        - Local NFVO/RANO
+      summary: Read an individual RANO.
+      description: |
+        By passing in the appropriate options, you can search for available Local Orchestrators
+      operationId: RANO.getById
+      produces:
+        - application/json
+      parameters:
+        - name: ranoId
+          in: path
+          description: Identifier of a RANO
+          required: true
+          type: string
+      responses:
+        "200":
+          description: RANO found
+          headers: {}
+          schema:
+            $ref: '#/definitions/RANO'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+  /rano/{ranoId}/ns_instances:
+    get:
+      tags:
+        - NS instances
+      summary: Retrieve list of NS instances.
+      description: |
+        This operation allows to retrieve the list of NS from a specific Rano
+      operationId: Rano.NS.list
+      produces:
+        - application/json
+      parameters:
+        - name: ranoId
+          in: path
+          description: Identifier of a Rano
+          required: true
+          type: string
+        - name: Pagination parameters
+          in: query
+          description: The parameters are used to create pagination
+          required: false
+          type: string
+      responses:
+        "200":
+          description: search results matching criteria
+          headers: {}
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/NsInstance'
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+    post:
+      tags:
+        - NS instances
+      summary: Create a new NS instance ID.
+      description: Creates and returns a Network Service identifier (nsId) in a Rano
+      operationId: Rano.NS.onboard
+      produces:
+        - application/json
+      parameters:
+        - name: ranoId
+          in: path
+          description: Identifier of a Rano
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Create NS request body
+          required: false
+          schema:
+            $ref: '#/definitions/NfvoNsInstancesRequest'
+      responses:
+        "201":
+          description: |
+            201 Created
+            A NS Instance identifier has been created successfully. The response body shall contain a representation of the created NS instance, as defined in clause 6.5.2.8. The HTTP response shall include a 'Location' HTTP header that contains the resource URI of the created NS instance.
+          headers:
+            Location:
+              type: string
+              description: nsInstanceId of the created NS
+          schema:
+            $ref: '#/definitions/NsInstance'
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "403":
+          description: Not enough permissions to do this operation
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "409":
+          description: The operation cannot be executed currently, due to a conflict with the state of the resource.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "422":
+          description: The request was well-formed but was unable to be followed due to semantic errors.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+  /rano/{ranoId}/ns_instances/{nsInstanceId}:
+    get:
+      tags:
+        - NS instances
+      summary: Read an individual NS instance resource.
+      description: |
+        This operation allows to retrieve an existing NS from a specific Rano.
+      operationId: Rano.NS.fetch
+      produces:
+        - application/json
+      parameters:
+        - name: nsInstanceId
+          in: path
+          description: Identifier of the network service
+          required: true
+          type: string
+        - name: ranoId
+          in: path
+          description: Identifier of a Rano
+          required: true
+          type: string
+      responses:
+        "200":
+          description: NS
+          headers: {}
+          schema:
+            $ref: '#/definitions/NsInstance'
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+    delete:
+      tags:
+        - NS instances
+      summary: Delete an individual NS instance resource.
+      description: |
+        Delete an individual NS instance resource.
+      operationId: Rano.NS.terminate
+      produces:
+        - application/json
+      parameters:
+        - name: nsInstanceId
+          in: path
+          description: Identifier of the network service
+          required: true
+          type: string
+        - name: ranoId
+          in: path
+          description: Identifier of a Rano
+          required: true
+          type: string
+      responses:
+        "204":
+          description: |
+            204 No Content The NS instance resource and the associated NS identifier were deleted successfully. The response body shall be empty.
+          headers: {}
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "403":
+          description: Not enough permissions to do this operation
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "409":
+          description: The operation cannot be executed currently, due to a conflict with the state of the resource.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "422":
+          description: The request was well-formed but was unable to be followed due to semantic errors.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+  /rano/{ranoId}/ns_instances/{nsInstanceId}/instantiate:
+    post:
+      tags:
+        - NS instances
+      summary: Instantiate a NS instance.
+      description: |
+        Instantiate a NS. The precondition is that the NS instance must have
+        been created and must be in NOT_INSTANTIATED state. As a result of the
+        success of this operation, the RANO creates a 'NS Lifecycle Operation
+        Occurrence' resource for the request, and the NS instance state becomes
+        INSTANTIATED.
+      operationId: Rano.NS.instantiate
+      produces:
+        - application/json
+      parameters:
+        - name: nsInstanceId
+          in: path
+          description: Identifier of the network service
+          required: true
+          type: string
+        - name: ranoId
+          in: path
+          description: Identifier of a Rano
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Instantiate NS request body
+          required: false
+          schema:
+            $ref: '#/definitions/NfvoNsInstantiateRequest'
+      responses:
+        "202":
+          description: |
+            202 ACCEPTED
+          headers:
+            Location:
+              type: string
+              description: nsLcmOpOccId of the instantiated NS
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+  /rano/{ranoId}/ns_instances/{nsInstanceId}/scale:
+    post:
+      tags:
+        - NS instances
+      summary: Scale NS instance.
+      description: |
+        WARNING: not tested
+        Scale a NS instance. The precondition is that the NS instance must have
+        been created and must be in INSTANTIATED state. As a result of the
+        success of this operation, the RANO creates a 'NS Lifecycle Operation
+        Occurrence' resource for the request, and the NS instance state remains
+        INSTANTIATED.
+      operationId: Rano.NS.scale
+      produces:
+        - application/json
+      parameters:
+        - name: nsInstanceId
+          in: path
+          description: Identifier of the network service
+          required: true
+          type: string
+        - name: ranoId
+          in: path
+          description: Identifier of a Rano
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Scale NS request body
+          required: false
+          schema:
+            $ref: '#/definitions/NfvoNsInstancesScaleRequest'
+      responses:
+        "202":
+          description: |
+            202 ACCEPTED
+          headers: {}
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "403":
+          description: Not enough permissions to do this operation
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "409":
+          description: The operation cannot be executed currently, due to a conflict with the state of the resource.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "422":
+          description: The request was well-formed but was unable to be followed due to semantic errors.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+  /rano/{ranoId}/ns_instances/{nsInstanceId}/terminate:
+    post:
+      tags:
+        - NS instances
+      summary: Terminate a NS instance.
+      description: |
+        Terminate NS task.   The POST method terminates a NS instance. This method can only be  used with a NS instance in the INSTANTIATED state. Terminating a NS instance does not delete the NS instance identifier,  but rather transitions the NS into the NOT_INSTANTIATED state.
+      operationId: RanoTerminateNSinstance
+      produces:
+        - application/json
+      parameters:
+        - name: nsInstanceId
+          in: path
+          description: Identifier of the network service
+          required: true
+          type: string
+        - name: ranoId
+          in: path
+          description: Identifier of a Rano
+          required: true
+          type: string
+      responses:
+        "202":
+          description: |
+            202 ACCEPTED
+          headers: {}
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "403":
+          description: Not enough permissions to do this operation
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "409":
+          description: The operation cannot be executed currently, due to a conflict with the state of the resource.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "422":
+          description: The request was well-formed but was unable to be followed due to semantic errors.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+  /rano/{ranoId}/ns_lcm_op_occs:
+    get:
+      tags:
+        - NS LCM Operations
+      summary: Query multiple NS LCM operation occurrences.
+      description: |
+        Get Operation Status. The client can use this method to query status information about multiple NS lifecycle management operation occurrences. This method shall follow the provisions specified in the Tables 6.4.9.3.2-1 and 6.4.9.3.2-2 for URI query parameters, request and response data structures, and response codes.
+      operationId: Rano.NS_LCM_OP.list
+      produces:
+        - application/json
+      parameters:
+        - name: filter
+          in: query
+          description: |
+            Only 'nsInstanceId' is supported.
+            Attribute-based filtering expression according to clause 5.2 of ETSI GS NFV SOL 013. The RANO shall support receiving this parameter as part of the URI query string. The OSS/BSS may supply this parameter. All attribute names that appear in the NsLcmOpOcc and in data types referenced from it shall be supported by the RANO in the filter expression.
+          required: false
+          type: string
+        - name: ranoId
+          in: path
+          description: Identifier of a RANO
+          required: true
+          type: string
+        - name: Accept
+          in: header
+          description: |
+            Content-Types that are acceptable for the response. Reference: IETF RFC 7231
+          required: true
+          type: string
+      responses:
+        "200":
+          description: |
+            200 OK
+            Status information for zero or more NS lifecycle management operation  occurrences has been queried successfully. The response body shall contain in an array the representations of zero or more NS instances, as defined in clause 6.5.2.3.
+            If the 'filter' URI parameter or one of the 'all_fields', 'fields', 'exclude_fields' or 'exclude_default' URI parameters was supplied in the request and is supported, the data in the response body shall have been transformed according to the rules specified in clauses 5.2.2 and 5.3.2 of ETSI GS NFV SOL 013, respectively.
+            If the RANO supports alternative 2 (paging) according to  clause 5.4.2.1 of ETSI GS NFV SOL 013 for this resource, inclusion of the Link HTTP header in this response shall follow the provisions in clause 5.4.2.3 of ETSI GS NFV SOL 013.
+          headers:
+            Content-Type:
+              type: string
+              description: The MIME type of the body of the response.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/NsLcmOpOcc'
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
+  /rano/{ranoId}/ns_lcm_op_occs/{nsLcmOpOccId}:
+    get:
+      tags:
+        - NS LCM Operations
+      summary: Read an individual NS LCM operation occurrence resource.
+      description: |
+        The client can use this method to retrieve status information about a NS lifecycle management operation occurrence by reading an individual 'NS LCM operation occurrence' resource. This method shall follow the provisions specified in the Tables 6.4.10.3.2-1 and 6.4.10.3.2-2 for URI query parameters, request and response data structures, and response codes.
+      operationId: Rano.NS_LCM_OP.fetch
+      produces:
+        - application/json
+      parameters:
+        - name: ranoId
+          in: path
+          description: Identifier of a Rano
+          required: true
+          type: string
+        - name: nsLcmOpOccId
+          in: path
+          description: |
+            Identifier of a NS lifecycle management operation occurrence.
+          required: true
+          type: string
+        - name: Accept
+          in: header
+          description: |
+            Content-Types that are acceptable for the response. Reference: IETF RFC 7231
+          required: true
+          type: string
+      responses:
+        "200":
+          description: |
+            200 OK
+            Information about a NS LCM operation occurrence has been queried successfully. The response body shall contain status information about a NS  lifecycle management operation occurrence (see clause 6.5.2.3).
+          headers:
+            Content-Type:
+              type: string
+              description: |
+                The MIME type of the body of the response.This header field shall be present if the response has a non-empty message body.
+            WWW-Authenticate:
+              type: string
+              description: |
+                Challenge if the corresponding HTTP request has not provided authorization, or error details if the corresponding HTTP request has provided an invalid authorization token.
+            Version:
+              type: string
+              description: |
+                Version of the API used in the response.
+          schema:
+            $ref: '#/definitions/NsLcmOpOcc'
+        "400":
+          description: The request is malformed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized, Invalid credentials (client or user)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The specified resource was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      deprecated: false
 definitions:
+  RANO:
+    type: object
+    required:
+      - id
+      - name
+      - site
+      - type
+    properties:
+      id:
+        type: integer
+        example: 1
+      name:
+        type: string
+        example: EVER-italia
+      type:
+        type: string
+        example: EVER
+      site:
+        type: string
+        example: ITALY_TURIN
+      uri:
+        type: string
+        example: https://ever.5g-eve.eu
+    title: RANO
   NFVO:
     type: object
     required:
@@ -1044,17 +1598,6 @@ definitions:
           $ref: '#/definitions/ErrorResponse_details'
     title: ErrorResponse
     description: Error rappresentation
-  TerminateNsRequest:
-    type: object
-    properties:
-      terminationTime:
-        type: string
-        format: date-time
-        description: |-
-          Timestamp indicating the end time of the NS, i.e. the NS will be terminated
-          automatically at this timestamp. Cardinality '0' indicates the NS termination
-          takes place immediately.
-    title: TerminateNsRequest
   ErrorResponse_details:
     type: object
     properties:

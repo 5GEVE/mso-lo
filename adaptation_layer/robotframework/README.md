@@ -9,7 +9,7 @@ To execute the tests you need:
 - An instance of a real NFVO
 - Correct communication between the two above (check your database)
 
-Check the file [variables.txt](./environment/variables.txt) and change the variables according
+Check the file [variables.robot](./environment/variables.robot) and change the variables according
 to your setup. The important variables to change are:
 
 - `${MSO-LO_HOST}`
@@ -33,4 +33,4 @@ Script [MSO-LO-LCM-Workflow.robot](./MSO-LO-LCM-Workflow.robot) contains a workf
 instantiates and terminates a Network Service on the configured NFVO.
 Some test cases include features to wait for the NS to be deployed. Maximum waiting time is set to
 2 minutes. You can increase it if it is not enough by changing `${MAXIMUM_WAIT}` variable in
-[variables.txt](./environment/variables.txt).
+[variables.robot](./environment/variables.robot).

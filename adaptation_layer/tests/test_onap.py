@@ -18,8 +18,8 @@ from urllib.parse import urlparse
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError, SchemaError
 
-from app import app
-from .request_mock import mock_ns, mock_ns_terminate
+from adaptation_layer import create_app
+from .request_mock import mock_ns
 from .response_schemas import ns_lcm_op_occ_schema, \
     ns_list_schema, ns_schema, ns_lcm_op_occ_list_schema
 
@@ -32,7 +32,7 @@ class OnapTestCase(unittest.TestCase):
 
     def setUp(self):
         """Define test variables and initialize app."""
-        self.app = app
+        self.app = create_app()
         self.client = self.app.test_client
 
     def tearDown(self):
@@ -99,8 +99,7 @@ class OnapTestCase(unittest.TestCase):
 
     # Check status codes 202, 404, headers and payload for terminate_ns()
     def test_terminate_ns_202(self):
-        res = self.client().post('/nfvo/2/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/terminate?__code=202',
-                                 json=mock_ns_terminate)
+        res = self.client().post('/nfvo/2/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/terminate?__code=202')
         self.assertEqual(202, res.status_code)
 
         self.assertIn('Location', res.headers)
@@ -108,8 +107,7 @@ class OnapTestCase(unittest.TestCase):
         self.assertTrue(all([validate_url.scheme, validate_url.netloc, validate_url.path]))
 
     def test_terminate_ns_404(self):
-        res = self.client().post('/nfvo/2/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/terminate?__code=404',
-                                 json=mock_ns_terminate)
+        res = self.client().post('/nfvo/2/ns_instances/49ccb6a2-5bcd-4f35-a2cf-7728c54e48b7/terminate?__code=404')
         self.assertEqual(404, res.status_code)
 
     # Check status codes 204, 404, headers and payload for delete_ns()

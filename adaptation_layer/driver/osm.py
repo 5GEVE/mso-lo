@@ -29,16 +29,18 @@ from requests import ConnectionError, Timeout, TooManyRedirects, URLRequired, \
     api, HTTPError, get, post, delete
 from urllib3.exceptions import InsecureRequestWarning
 
-from error_handler import ResourceNotFound, NsNotFound, VnfNotFound, \
-    Unauthorized, ServerError, NsOpNotFound, VnfPkgNotFound, \
+from adaptation_layer.error_handler import ResourceNotFound, NsNotFound, \
+    VnfNotFound, Unauthorized, ServerError, NsOpNotFound, VnfPkgNotFound, \
     VimNotFound, NsdNotFound, BadRequest, Forbidden, MethodNotAllowed, \
-    Unprocessable, Conflict
+    Unprocessable, Conflict, VimNetworkNotFound
+from adaptation_layer.repository import iwf_repository
 from .interface import Driver, Headers, BodyList, Body
 
 urllib3.disable_warnings(InsecureRequestWarning)
 TESTING = os.getenv('TESTING', 'false').lower()
 PRISM_ALIAS = os.getenv("PRISM_ALIAS", "prism-osm")
 
+IWFREPO = os.getenv('IWFREPO', 'false').lower()
 redis_host = os.getenv('REDIS_HOST') if os.getenv('REDIS_HOST') else 'redis'
 redis_port = int(os.getenv('REDIS_PORT')) if os.getenv('REDIS_PORT') else 6379
 # TTL (seconds) for key in redis
@@ -232,8 +234,14 @@ class OSM(Driver):
         _url = "{0}/nslcm/v1/ns_instances/{1}".format(self._base_path, nsId)
         _url = self._build_url_query(_url, args)
         req_headers = copy.deepcopy(self._headers)
-        del req_headers["Content-Type"]
-        del req_headers["Accept"]
+        try:
+            del req_headers["Content-Type"]
+        except KeyError:
+            pass
+        try:
+            del req_headers["Accept"]
+        except KeyError:
+            pass
         try:
             empty_body, osm_headers = self._request(
                 delete, _url, params=None, headers=req_headers)
@@ -250,7 +258,6 @@ class OSM(Driver):
         instantiate_payload = {}
         ns_res, ns_head = self.get_ns(nsId, skip_sol=True)
         instantiate_payload.update(ns_res['instantiate_params'])
-
         additional_params = None
         try:
             additional_params = args['payload']['additionalParamsForNs']
@@ -259,6 +266,8 @@ class OSM(Driver):
         if additional_params:
             if 'vld' in additional_params:
                 instantiate_payload['vld'] = additional_params['vld']
+                vnf_items = self._force_float_ip(additional_params['vld'], ns_res)
+                self._extend_vnf_add_params(instantiate_payload, vnf_items)
             if 'vnf' in additional_params:
                 mapping = {v: str(i + 1) for i, v in
                            enumerate(ns_res['constituent-vnfr-ref'])}
@@ -266,7 +275,8 @@ class OSM(Driver):
                     for vnf in additional_params['vnf']:
                         vnf['member-vnf-index'] = mapping[
                             vnf.pop('vnfInstanceId')]
-                    instantiate_payload['vnf'] = additional_params['vnf']
+                    self._extend_vnf_add_params(
+                        instantiate_payload, additional_params['vnf'])
                 except KeyError as e:
                     logger.warning('cannot map vnf. KeyError on {}'.format(e))
             if 'wim_account' in additional_params:
@@ -290,9 +300,18 @@ class OSM(Driver):
         _url = "{0}/nslcm/v1/ns_instances/{1}/terminate".format(
             self._base_path, nsId)
         _url = self._build_url_query(_url, args)
+        req_headers = copy.deepcopy(self._headers)
         try:
-            emtpy_body, osm_headers = self._request(
-                post, _url, json=args['payload'], headers=self._headers)
+            del req_headers["Content-Type"]
+        except KeyError:
+            pass
+        try:
+            del req_headers["Accept"]
+        except KeyError:
+            pass
+        try:
+            emtpy_body, osm_headers = self._request(post, _url,
+                                                    headers=req_headers)
         except ResourceNotFound:
             raise NsNotFound(ns_id=nsId)
         headers = self._build_headers(osm_headers)
@@ -336,6 +355,57 @@ class OSM(Driver):
         sol_op = self._op_im_converter(osm_op)
         headers = self._build_headers(osm_headers)
         return sol_op, headers
+
+    def _force_float_ip(self, ap_vld, osm_ns):
+        vnf_items = []
+        if IWFREPO == 'true':
+            for vld in ap_vld:
+                try:
+                    net = iwf_repository.get_site_network(vld['vim-network-name'],
+                                                          self._nfvoId)
+                except VimNetworkNotFound as e:
+                    logger.error(e.description)
+                    raise Unprocessable(e.description)
+                if net['floating_ip']:
+                    vnf_items.extend(
+                        self._force_float_ip_vld_interfaces(osm_ns, vld['name']))
+        return vnf_items
+
+    def _force_float_ip_vld_interfaces(self, osm_ns, vld_id):
+        res_vnf = []
+        nsd = osm_ns["nsd"]
+        osm_vnfs = []
+        for vnf_id in osm_ns["constituent-vnfr-ref"]:
+            try:
+                vnf, headers = self._get_vnf(vnf_id)
+                osm_vnfs.append(vnf)
+            except VnfNotFound:
+                pass
+
+        for vld in nsd['vld']:
+            if vld["id"] == vld_id:
+                for vnfd_cp_ref in vld["vnfd-connection-point-ref"]:
+                    cp_ref = vnfd_cp_ref["vnfd-connection-point-ref"]
+                    vnf = osm_vnfs[int(vnfd_cp_ref["member-vnf-index-ref"])-1]
+                    vnf_res = {
+                        "member-vnf-index": vnfd_cp_ref["member-vnf-index-ref"],
+                        "vdu": []
+                    }
+                    for vdur in vnf['vdur']:
+                        vdu_id = vdur["vdu-id-ref"]
+                        interfaces = []
+                        for interface in vdur["interfaces"]:
+                            if interface["ns-vld-id"] == vld_id:
+                                interfaces.append({
+                                    "name": interface["name"],
+                                    "floating-ip-required": True})
+                        vnf_res["vdu"].append({
+                            "id": vdu_id,
+                            "interface": interfaces
+                        })
+
+                    res_vnf.append(vnf_res)
+        return res_vnf
 
     def _cpinfo_converter(self, osm_vnf: Dict) -> List[Dict]:
         cp_info = []
@@ -440,6 +510,24 @@ class OSM(Driver):
             url_query = urlencode(args['args'])
             return "{0}?{1}".format(base, url_query)
         return base
+
+    @staticmethod
+    def _extend_vnf_add_params(instantiate_payload, vnf_items):
+        if len(vnf_items) == 0:
+            return
+        if 'vnf' not in instantiate_payload:
+            instantiate_payload['vnf'] = []
+        for item_a in vnf_items:
+            mvi_a = item_a["member-vnf-index"]
+            found = False
+            for item_b in instantiate_payload['vnf']:
+                mvi_b = item_b["member-vnf-index"]
+                if mvi_a == mvi_b:
+                    item_b.update(item_a)
+                    found = True
+            if not found:
+                instantiate_payload['vnf'].append(item_a)
+        return instantiate_payload['vnf']
 
     def _build_headers(self, osm_headers):
         headers = {}

@@ -20,9 +20,9 @@ from celery import Celery
 from celery.utils.log import get_task_logger
 from requests import post, RequestException
 
-import iwf_repository
-from driver.osm import OSM
-from error_handler import ServerError, Error
+from adaptation_layer.driver.osm import OSM
+from adaptation_layer.error_handler import ServerError, Error
+from adaptation_layer.repository import iwf_repository
 
 IWFREPO = os.getenv('IWFREPO', 'false').lower()
 redis_host = os.getenv('REDIS_HOST') if os.getenv('REDIS_HOST') else 'redis'
@@ -37,11 +37,11 @@ celery = Celery('tasks',
 if IWFREPO == 'true':
     celery.conf.beat_schedule = {
         'add_post_osm_vims_periodic': {
-            'task': 'tasks.post_osm_vims',
+            'task': 'adaptation_layer.tasks.post_osm_vims',
             'schedule': iwf_repository.interval
         },
         'add_osm_notifications': {
-            'task': 'tasks.osm_notifications',
+            'task': 'adaptation_layer.tasks.osm_notifications',
             'schedule': 5.0
         }
     }
@@ -57,29 +57,28 @@ def post_osm_vims():
     osm_list = []
     try:
         osm_list = iwf_repository.find_nfvos_by_type('osm')
-    except (ServerError, HTTPError)as e:
-        logger.warning('error with iwf repository. skip post_osm_vims')
-        logger.debug(str(e))
+    except (ServerError, HTTPError) as e:
+        logger.error(f'error with iwf repository: {str(e)}')
+        logger.warning('skip post_osm_vims')
     for osm in osm_list:
         osm_vims = []
         if osm['credentials']:
             try:
-                driver = OSM(iwf_repository.convert_cred(osm))
+                driver = OSM(iwf_repository.convert_nfvo_cred(osm))
                 osm_vims, headers = driver.get_vim_list()
             except Error as e:
-                logger.warning(
-                    'error contacting osm {0}:{1}'.format(
-                        osm['credentials']['host'],
-                        osm['credentials']['port'],
-                    ))
-                logger.debug(str(e))
+                logger.error('error contacting OSM at {0}:{1}: {2}'.format(
+                    osm['credentials']['host'],
+                    osm['credentials']['port'],
+                    str(e)
+                ))
                 continue
         for v in osm_vims:
             try:
                 iwf_repository.post_vim_safe(v, osm['_links']['self']['href'])
             except (ServerError, HTTPError)as e:
-                logger.warning('error with iwf repository. skip vim')
-                logger.debug(str(e))
+                logger.error(f'error with iwf repository: {str(e)}')
+                logger.warning(f'skip vim: {v}')
 
 
 @celery.task
@@ -88,21 +87,20 @@ def osm_notifications():
     try:
         osm_list = iwf_repository.find_nfvos_by_type('osm')
     except (ServerError, HTTPError)as e:
-        logger.warning('error with iwf repository, skip osm_notifications')
-        logger.debug(str(e))
+        logger.error(f'error with iwf repository: {str(e)}')
+        logger.warning('skip osm notifications')
     for osm in osm_list:
         ops = []
         if osm['credentials']:
             try:
-                driver = OSM(iwf_repository.convert_cred(osm))
+                driver = OSM(iwf_repository.convert_nfvo_cred(osm))
                 ops, headers = driver.get_op_list({'args': {}})
             except Error as e:
-                logger.warning(
-                    'error contacting osm {0}:{1}'.format(
-                        osm['credentials']['host'],
-                        osm['credentials']['port'],
-                    ))
-                logger.debug(str(e))
+                logger.error('error contacting OSM at {0}:{1}: {2}'.format(
+                    osm['credentials']['host'],
+                    osm['credentials']['port'],
+                    str(e)
+                ))
                 continue
         for op in ops:
             last_s = redis_client.get(op['id'])
@@ -130,11 +128,11 @@ def forward_notification(notification: Dict):
         return None
     subs = []
     try:
-        subs = iwf_repository.search_subs_by_ns_instance(
-            notification['nsInstanceId'])
+        subs = iwf_repository.search_subs_by_ns_instance(notification['nsInstanceId'])
     except (ServerError, HTTPError)as e:
-        logger.warning('error with iwf repository. skip post_osm_vims')
-        logger.debug(str(e))
+        logger.error(f'error with iwf repository: {str(e)}')
+        logger.warning('skip forward_notification')
+        return
     if not subs:
         logger.warning('no subscriptions for nsInstanceId {0}'.format(
             notification['nsInstanceId']))
@@ -146,6 +144,5 @@ def forward_notification(notification: Dict):
                 logger.info(
                     'Notification sent to {0}'.format(s['callbackUri']))
         except RequestException as e:
-            logger.warning(
-                'Cannot send notification to {}'.format(s['callbackUri']))
-            logger.debug(str(e))
+            logger.error(
+                'Cannot send notification to {0}: {1}'.format(s['callbackUri'], str(e)))

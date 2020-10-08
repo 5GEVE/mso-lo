@@ -1,6 +1,7 @@
 {
 
   "additionalParamsForNs": {
-    "vnf": []
+    "vnf": [],
+    "vld": []
   }
 }

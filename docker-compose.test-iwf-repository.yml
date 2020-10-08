@@ -1,0 +1,41 @@
+version: '3.7'
+services:
+  iwf-repository-app:
+    image: 5geve/iwf-repository
+    depends_on:
+      - iwf-repository-db
+    networks:
+      iwf-repository-net:
+        aliases:
+          - iwf-repository-app
+  iwf-repository-db:
+    image: postgres:12-alpine
+    environment:
+      POSTGRES_USER: iwf-repository
+      POSTGRES_PASSWORD: iwf-repository
+    networks:
+      iwf-repository-net:
+        aliases:
+          - iwf-repository-db
+  test-iwf-repository:
+    build:
+      context: .
+      target: test
+      args:
+        DB_SEED_NFVO: adaptation_layer/seed/nfvo_mock.json
+        DB_SEED_NFVO_CRED: adaptation_layer/seed/nfvo_credentials_mock.json
+        DB_SEED_RANO: adaptation_layer/seed/rano_mock.json
+        DB_SEED_RANO_CRED: adaptation_layer/seed/rano_credentials_mock.json
+    depends_on:
+      - iwf-repository-app
+      - iwf-repository-db
+    environment:
+      IWFREPO: "True"
+      IWFREPO_HOST: "iwf-repository-app"
+    command: ["adaptation_layer/tests/wait-for-it.sh", "iwf-repository-app:8087", "--", "pytest", "-v", "adaptation_layer/tests/test_iwf_repository.py"]
+    networks:
+      iwf-repository-net:
+        aliases:
+          - iwf-repository-test
+networks:
+  iwf-repository-net:
