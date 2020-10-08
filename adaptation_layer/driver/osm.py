@@ -513,6 +513,8 @@ class OSM(Driver):
 
     @staticmethod
     def _extend_vnf_add_params(instantiate_payload, vnf_items):
+        if len(vnf_items) == 0:
+            return
         if 'vnf' not in instantiate_payload:
             instantiate_payload['vnf'] = []
         for item_a in vnf_items:
