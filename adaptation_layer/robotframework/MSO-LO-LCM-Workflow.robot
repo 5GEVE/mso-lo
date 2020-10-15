@@ -1,5 +1,5 @@
 *** Settings ***
-Resource    environment/variables.txt
+Resource    environment/variables.robot
 Variables   ${SCHEMAS_PATH}
 Resource   NSLCMOperationKeywords.robot
 Resource   NFVOOperationKeywords.robot
@@ -58,7 +58,7 @@ POST NS Instance Instantiate
     ...    Post-Conditions: status code 202
     Check resource existence
     Check resource not_instantiated
-    POST Instantiate nsInstance with vnf in additionalParamsForNs
+    POST Instantiate nsInstance with vnf/vld in additionalParamsForNs
     Check HTTP Response Status Code Is    202
     Check HTTP Response Header Contains    Location
     Check Operation Occurrence Id

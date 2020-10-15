@@ -1,15 +1,13 @@
 version: '3.7'
 services:
   iwf-repository-app:
-    image: 5geve/iwf-repository
+    image: 5geve/iwf-repository:latest
     depends_on:
       - iwf-repository-db
     networks:
       iwf-repository-net:
         aliases:
           - iwf-repository-app
-    ports:
-      - 8087:8087
   iwf-repository-db:
     image: postgres:12-alpine
     environment:

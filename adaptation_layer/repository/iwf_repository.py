@@ -21,7 +21,8 @@ from requests import get, ConnectionError, Timeout, \
 
 from adaptation_layer.error_handler import ServerError, NfvoNotFound, \
     NfvoCredentialsNotFound, Unauthorized, BadRequest, \
-    SubscriptionNotFound, Unprocessable, RanoNotFound, RanoCredentialsNotFound
+    SubscriptionNotFound, Unprocessable, RanoNotFound, RanoCredentialsNotFound, \
+    VimNetworkNotFound
 
 logger = logging.getLogger('app.iwf_repository')
 IWFREPO_HTTPS = os.getenv('IWFREPO_HTTPS', 'false').lower()
@@ -110,11 +111,16 @@ def _get_rano(rano_id) -> Dict:
 
 
 @_server_error
+def _get_site(site_href: str):
+    resp = get(site_href, headers=accept_h)
+    resp.raise_for_status()
+    return resp.json()
+
+
+@_server_error
 def _convert_nfvo(nfvo: Dict) -> Dict:
     try:
-        resp = get(nfvo['_links']['site']['href'], headers=accept_h)
-        resp.raise_for_status()
-        site = resp.json()['name']
+        site = _get_site(nfvo['_links']['site']['href'])['name']
     except HTTPError:
         site = None
     conv = {
@@ -135,9 +141,7 @@ def _convert_nfvo(nfvo: Dict) -> Dict:
 @_server_error
 def _convert_rano(rano: Dict) -> Dict:
     try:
-        resp = get(rano['_links']['site']['href'], headers=accept_h)
-        resp.raise_for_status()
-        site = resp.json()['name']
+        site = _get_site(rano['_links']['site']['href'])['name']
     except HTTPError:
         site = None
     conv = {
@@ -304,3 +308,19 @@ def add_orc_cred_test(orc_type: str, orc_id: int):
     if orc_type == 'rano':
         resp = patch(f'{url}/ranOrchestrators/{orc_id}', json=payload, headers=accept_h)
     resp.raise_for_status()
+
+
+@_server_error
+def get_site_network(vim_network_name: str, nfvo_id: int):
+    nfvo = _get_nfvo(nfvo_id)
+    site = _get_site(nfvo['_links']['site']['href'])
+    try:
+        resp = get(site['_links']['networks']['href'], headers=accept_h)
+        resp.raise_for_status()
+    except HTTPError:
+        raise
+    networks = resp.json()['_embedded']['networks']
+    try:
+        return next((n for n in networks if n['vim_network_name'] == vim_network_name))
+    except StopIteration:
+        raise VimNetworkNotFound(vim_network_name, site['name'])

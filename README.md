@@ -47,7 +47,7 @@ docker-compose up
 Edit [docker-compose.yaml](docker-compose.yml) and disable iwf repository support.
 ```yaml
 x-environment: &environment
-  IWFREPO: 'true'
+  IWFREPO: 'false'
 ```
 
 Deploy with:
@@ -128,10 +128,12 @@ git checkout development
 cd adaptation_layer
 pipenv install --dev
 # Create database with mock data
+export FLASK_APP=.
+export FLASK_ENV=development
 pipenv run flask db upgrade
 pipenv run flask seed
 # Run the flask app
-FLASK_ENV=development FLASK_APP=. pipenv run flask run
+pipenv run flask run
 ```
 
 Some features like notifications need [celery](https://docs.celeryproject.org/en/stable/index.html) and
@@ -145,7 +147,8 @@ celery -A tasks worker -B --loglevel=info
 ```
 
 A [docker-compose.dev.yml](docker-compose.dev.yml) is also available.
-Deploy it with
+Remember to copy the mock files as said above for a correct build.
+Deploy with:
 ```shell script
 docker-compose -f docker-compose.dev.yml up --build
 ```

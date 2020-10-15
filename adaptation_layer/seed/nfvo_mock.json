@@ -19,5 +19,12 @@
     "site": "Italy",
     "type": "EVER",
     "uri": "http://ever_italy.5g-eve.eu"
+  },
+  {
+    "id": 4,
+    "name": "madrid_5gr-so",
+    "site": "Spain",
+    "type": "5gr-so",
+    "uri": "http://madrid.5growth.eu"
   }
 ]
