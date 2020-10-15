@@ -1634,15 +1634,15 @@ definitions:
         properties:
           sapdId:
             type: string
-            description: Reference to the SAPD for this SAP.
+            description: ID reference to the SAPD for this SAP
             example: sap_ext_mobile
           sapName:
             type: string
-            description: Human readable name for the SAP.
+            description: Human readable name for the SAP
             example: External Mobile Sap
           description:
             type: string
-            description: Human readable description for the SAP.
+            description: Human readable description for the SAP
             example: Sap description
           radioSliceProfile:
             type: object
@@ -1651,25 +1651,35 @@ definitions:
               - sST
               - coverageArea
             properties:
-              sST:
+              site:
                 type: string
-                description: One of eMBB, URLLC and mMTC
-                example: eMBB
+                description: The target site
+                enum: [ ITALY_TURIN, SPAIN_5TONIC, FRANCE_PARIS, FRANCE_NICE, FRANCE_RENNES, GREECE_ATHENS ]
               coverageArea:
                 type: string
+                description: The radio coverage area
                 example: ITALY.TIM_LAB
+                # TODO define enum
+              radioAccessTechnology:
+                type: string
+                description: The radio access technology
+                enum: [ 4G, 5GNSA , 5GSA , NB-IoT , LTE-M ]
+              sST:
+                type: string
+                description: The Slice/Service Type
+                enum: [ eMBB, URLLC and mMTC ]
               latency:
                 type: integer
-                description: Desired latency in milliseconds
+                description: Desired latency in milliseconds (only for URLLC)
                 example: 10
               uLThptPerSlice:
                 type: integer
+                description: Up-Link throughput per slice in Mbps (only for eMBB)
                 example: 50
-                description: Up-Link throughput per slice in Mbps
               dLThptPerSlice:
                 type: integer
+                description: Down-Link throughput per slice in Mbps (only for eMBB)
                 example: 50
-                description: Down-Link throughput per slice in Mbps
       additionalParamsForNs:
         type: object
   NfvoNsInstancesScaleRequest:
