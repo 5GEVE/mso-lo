@@ -1651,8 +1651,9 @@ definitions:
               type: object
               description: Radio Slice Profile parameters
               required:
-                - sST
+                - site
                 - coverageArea
+                - sST
               properties:
                 site:
                   type: string
