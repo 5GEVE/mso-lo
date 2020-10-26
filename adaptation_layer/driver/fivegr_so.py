@@ -179,13 +179,9 @@ class FIVEGR_SO(Driver):
     _url = self._build_url_query(_url, args)
     try:
       nsInfoDict, resp_headers = self._exec_get(_url, headers=self._headers)
-      print(json.dumps(nsInfoDict, indent=2, sort_keys=True))
       nsInfoDict = nsInfoDict["queryNsResult"][0]
-      # status = nsInfoDict.pop('status', None)
-      # nsInfoDict['nsState'] = status
       nsInfo = IFA013NsInfo(**nsInfoDict)
       nsInstance = ifa013nsinfo_to_sol005nsinstance(nsInfo)
-      # nsInstance.id = nsId  # NSInfo does not contain the id of the NS instance
     except ResourceNotFound:
       raise NsNotFound(ns_id=nsId)
     headers = {}
@@ -202,7 +198,6 @@ class FIVEGR_SO(Driver):
     sol005InstantiateNsRequest = SOL005InstantiateNsRequest(**args['payload'])
     ifa013InstantiateNsRequest = sol005InstantiateNsRequest_to_ifa013InstantiateNsRequest(sol005InstantiateNsRequest)
     ifa013InstantiateNsRequestDict = to_dict(ifa013InstantiateNsRequest)
-    print(json.dumps(ifa013InstantiateNsRequestDict, indent=2, sort_keys=True))
     try:
       operationIdRaw, resp_headers = self._exec_put(
         _url, headers=self._headers, json=ifa013InstantiateNsRequestDict)
@@ -210,6 +205,7 @@ class FIVEGR_SO(Driver):
       raise NsNotFound(ns_id=nsId)
     operationId = operationIdRaw["operationId"]
     headers = self._build_lcm_op_occs_header(operationId)
+    print("[DEBUG] operationId:" + operationId)
     return None, headers
 
   def terminate_ns(self, nsId: str, args: Dict = None) -> Tuple[None, Headers]:
@@ -222,6 +218,7 @@ class FIVEGR_SO(Driver):
       raise NsNotFound(ns_id=nsId)
     operationId = operationIdRaw["operationId"]
     headers = self._build_lcm_op_occs_header(operationId)
+    print("[DEBUG] operationId:" + operationId)
     return None, headers
 
   def scale_ns(self, nsId: str, args: Dict = None) -> Tuple[None, Headers]:
@@ -231,7 +228,6 @@ class FIVEGR_SO(Driver):
     sol005ScaleNsRequest = SOL005ScaleNsRequest(**args['payload'])
     ifa013ScaleNsRequest = sol005ScaleNsRequest_to_ifa013ScaleNsRequest(nsId, sol005ScaleNsRequest)
     ifa013ScaleNsRequestDict = to_dict(ifa013ScaleNsRequest)
-    print(json.dumps(ifa013ScaleNsRequestDict, indent=2, sort_keys=True))
     try:
       operationIdRaw, resp_headers = self._exec_put(
         _url, json=ifa013ScaleNsRequestDict, headers=self._headers)
@@ -239,6 +235,7 @@ class FIVEGR_SO(Driver):
       raise NsNotFound(ns_id=id)
     operationId = operationIdRaw["operationId"]
     headers = self._build_lcm_op_occs_header(operationId)
+    print("[DEBUG] operationId:" + operationId)
     return None, headers
 
   def get_op_list(self, args: Dict = None) -> Tuple[BodyList, Headers]:
@@ -1426,7 +1423,7 @@ def ifa013OperationStatus_to_sol005NsLcmOpOcc(ifa013NSLCMOpId, ifa013OperationSt
   SOL: (1)PROCESSING, (2)COMPLETED, PARTIALLY_COMPLETED, FAILED_TEMP, (3)FAILED, ROLLING_BACK, ROLLED_BACK
   """
   sol005NsLcmOpOcc = SOL005NsLcmOpOcc()
-  if ifa013OperationStatus == "SUCCESFULLY_DONE":
+  if ifa013OperationStatus == "SUCCESSFULLY_DONE":
     sol005NsLcmOpOcc.operationState = "COMPLETED"
   elif ifa013OperationStatus == "PROCESSING":
     sol005NsLcmOpOcc.operationState = "PROCESSING"
