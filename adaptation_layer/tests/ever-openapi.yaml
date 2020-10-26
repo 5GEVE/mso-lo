@@ -119,19 +119,24 @@ paths:
           $ref: '#/components/responses/InternalServerError'
 # instantiate NS with given NsId
   '/instantiate/{ns_db_id}':
-    parameters:
-      - name: ns_db_id
-        in: path
-        required: true
-        description: NS Instance ID
-        schema:
-          type : string
     post:
       tags:
         - 'NS instances'
       summary: Instantiate NS with given NS ID
       description: Instantiate NS with given NS ID
       operationId: instantiateNS
+      parameters:
+      - name: ns_db_id
+        in: path
+        required: true
+        description: NS Instance ID
+        schema:
+          type : string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RanoNsInstantiateRequest'
       responses:
         '202':
           description: Accepted
@@ -172,17 +177,7 @@ paths:
       responses:
         '202':
           description: Accepted
-          headers:
-            Location:
-              description: link with nsLcmOpOccId of the instantiated NS
-              schema:
-                type: string
-                format: uri
-                example: /ns_lcm_op_occs/4e462039-e57b-44e4-8431-bc586f31b4cb
-            Content-Type:
-              schema:
-                type: string
-                example: text/html
+          headers: {}
         '400':
           $ref: '#/components/responses/BadRequest'
         '404':
@@ -352,6 +347,68 @@ components:
 # end of schemas in responses
 # END RESPONSES
   schemas:
+    RanoNsInstantiateRequest:
+      type: object
+      properties:
+        SapData:
+          type: array
+          items:
+            type: object
+            required:
+              - sapdId
+              - radioSliceProfile
+            properties:
+              sapdId:
+                type: string
+                description: ID reference to the SAPD for this SAP
+                example: sap_ext_mobile
+              sapName:
+                type: string
+                description: Human readable name for the SAP
+                example: External Mobile Sap
+              description:
+                type: string
+                description: Human readable description for the SAP
+                example: Sap description
+              radioSliceProfile:
+                type: object
+                description: Radio Slice Profile parameters
+                required:
+                  - site
+                  - coverageArea
+                  - sST
+                properties:
+                  site:
+                    type: string
+                    description: The target site
+                    enum: [ ITALY_TURIN, SPAIN_5TONIC, FRANCE_PARIS, FRANCE_NICE, FRANCE_RENNES, GREECE_ATHENS ]
+                  coverageArea:
+                    type: string
+                    description: The radio coverage area
+                    example: ITALY.TIM_LAB
+                    # TODO define enum
+                  radioAccessTechnology:
+                    type: string
+                    description: The radio access technology
+                    enum: [ 4G, 5GNSA , 5GSA , NB-IoT , LTE-M ]
+                  sST:
+                    type: string
+                    description: The Slice/Service Type
+                    enum: [ eMBB, URLLC and mMTC ]
+                  latency:
+                    type: integer
+                    description: Desired latency in milliseconds (only for URLLC)
+                    example: 10
+                  uLThptPerSlice:
+                    type: integer
+                    description: Up-Link throughput per slice in Mbps (only for eMBB)
+                    example: 50
+                  dLThptPerSlice:
+                    type: integer
+                    description: Down-Link throughput per slice in Mbps (only for eMBB)
+                    example: 50
+        additionalParamsForNs:
+          type: object
     createNsId:
       # description:
       type: object
@@ -465,7 +522,7 @@ components:
             id:
               type: string
               format: uuid
-              example: null #3fa85f64-5717-4562-b3fc-2c963f66afa6
+              example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
             vnfdId:
               type: string
               format: uuid
