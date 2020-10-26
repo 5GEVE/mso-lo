@@ -47,7 +47,7 @@ class FIVEGR_SO(Driver):
     self._port = nfvo_cred["port"] if "port" in nfvo_cred else 8080
     self._headers = {"Content-Type": "application/json",
                      "Accept": "application/json"}
-
+    print("[DEBUG] _host:{} _port:{}".format(self._host, self._port))
     if TESTING is False:
       self._base_path = 'http://{0}:{1}/5gt/so/v1'.format(self._host, self._port)
     else:
@@ -163,9 +163,11 @@ class FIVEGR_SO(Driver):
       nsIdRaw, resp_headers = self._exec_post(
         _url, json=args['payload'], headers=self._headers)
       nsId = nsIdRaw['nsId']
-      nsInstance, resp_headers = self.get_ns(nsId)
-      nsInstance["nsInstanceName"] = args['payload']['nsName']
-      nsInstance["nsInstanceDescription"] = args['payload']['nsDescription']
+      print("[DEBUG] nsId:" + nsId)
+      # nsInstance, resp_headers = self.get_ns(nsId)  # FIXME get_ns without instantiation does not work in 5gr-so
+      sol005NsInstance = SOL005NSInstance(id=nsId, nsInstanceName=args['payload']['nsName'], nsInstanceDescription=args['payload']['nsDescription'], nsState="NOT_INSTANTIATED")
+
+      nsInstance = to_dict(sol005NsInstance)
     except ResourceNotFound:
       nsd_Id = args['payload']['nsdId']
       raise NsdNotFound(nsd_id=nsd_Id)
@@ -177,11 +179,13 @@ class FIVEGR_SO(Driver):
     _url = self._build_url_query(_url, args)
     try:
       nsInfoDict, resp_headers = self._exec_get(_url, headers=self._headers)
-      status = nsInfoDict.pop('status', None)
-      nsInfoDict['nsState'] = status
+      print(json.dumps(nsInfoDict, indent=2, sort_keys=True))
+      nsInfoDict = nsInfoDict["queryNsResult"][0]
+      # status = nsInfoDict.pop('status', None)
+      # nsInfoDict['nsState'] = status
       nsInfo = IFA013NsInfo(**nsInfoDict)
       nsInstance = ifa013nsinfo_to_sol005nsinstance(nsInfo)
-      nsInstance.id = nsId  # NSInfo does not contain the id of the NS instance
+      # nsInstance.id = nsId  # NSInfo does not contain the id of the NS instance
     except ResourceNotFound:
       raise NsNotFound(ns_id=nsId)
     headers = {}
@@ -194,11 +198,11 @@ class FIVEGR_SO(Driver):
     _url = '{0}/ns/{1}/instantiate'.format(self._base_path, nsId)
     _url = self._build_url_query(_url, args)
     if 'payload' not in args:
-      raise BadRequest(ns_id=nsId)
+      raise BadRequest(description="Payload not found for id: {}".format(nsId))
     sol005InstantiateNsRequest = SOL005InstantiateNsRequest(**args['payload'])
     ifa013InstantiateNsRequest = sol005InstantiateNsRequest_to_ifa013InstantiateNsRequest(sol005InstantiateNsRequest)
     ifa013InstantiateNsRequestDict = to_dict(ifa013InstantiateNsRequest)
-    # print(json.dumps(ifa013InstantiateNsRequestDict, indent=4, sort_keys=True))
+    print(json.dumps(ifa013InstantiateNsRequestDict, indent=2, sort_keys=True))
     try:
       operationIdRaw, resp_headers = self._exec_put(
         _url, headers=self._headers, json=ifa013InstantiateNsRequestDict)
@@ -227,6 +231,7 @@ class FIVEGR_SO(Driver):
     sol005ScaleNsRequest = SOL005ScaleNsRequest(**args['payload'])
     ifa013ScaleNsRequest = sol005ScaleNsRequest_to_ifa013ScaleNsRequest(nsId, sol005ScaleNsRequest)
     ifa013ScaleNsRequestDict = to_dict(ifa013ScaleNsRequest)
+    print(json.dumps(ifa013ScaleNsRequestDict, indent=2, sort_keys=True))
     try:
       operationIdRaw, resp_headers = self._exec_put(
         _url, json=ifa013ScaleNsRequestDict, headers=self._headers)
@@ -337,13 +342,22 @@ class IFA013NsVirtualLinkInfo:
     [self.linkPort.append(IFA013NsLinkPort(**element)) for element in linkPort or []]
 
 
+class UserAccessInfo:
+  def __init__(self, address="", sapdId="", vnfdId=""):
+    self.address: str = address
+    self.sapdId: str = sapdId
+    self.vnfdId: str = vnfdId
+
+
 class IFA013SapInfo:
-  def __init__(self, sapInstanceId="", sapdId="", sapName="", description="", address=""):
+  def __init__(self, sapInstanceId="", sapdId="", sapName="", description="", address="", userAccessInfo=None):
     self.sapInstanceId: str = sapInstanceId
     self.sapdId: str = sapdId
     self.sapName: str = sapName
     self.description: str = description
     self.address: str = address
+    self.userAccessInfo: List[UserAccessInfo] = []
+    [self.userAccessInfo.append(UserAccessInfo(**element)) for element in userAccessInfo or []]
 
 
 class IFA013Nfp:
@@ -728,13 +742,15 @@ class SOL005CpProtocolInfo:
 
 
 class SOL005SapInfo:
-  def __init__(self, id="", sapdId="", sapName="", description="", sapProtocolInfo=None):
+  def __init__(self, id="", sapdId="", sapName="", description="", sapProtocolInfo=None, userAccessInfo=None):
     self.id: str = id
     self.sapdId: str = sapdId
     self.sapName: str = sapName
     self.description: str = description
     self.sapProtocolInfo: List[SOL005CpProtocolInfo] = []
     [self.sapProtocolInfo.append(element) for element in sapProtocolInfo or []]
+    self.userAccessInfo: List[UserAccessInfo] = []
+    [self.userAccessInfo.append(element) for element in userAccessInfo or []]
 
 
 class SOL005NsScaleInfo:
@@ -1254,6 +1270,7 @@ def ifa013SapInfo_to_sol005Sapinfo(ifaSapInfoArray: List[IFA013SapInfo]) -> List
     else:  # Mac address
       sol005cpProtocolInfo.ipOverEthernet.macAddress = ifaSapInfo.address
     sol005SapInfo.sapProtocolInfo.append(sol005cpProtocolInfo)
+    sol005SapInfo.userAccessInfo = ifaSapInfo.userAccessInfo
     sol005SapInfoArray.append(sol005SapInfo)
   return sol005SapInfoArray
 

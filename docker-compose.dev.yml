@@ -1,7 +1,7 @@
 version: '3.7'
 
 x-environment: &environment
-  IWFREPO: 'true'
+  IWFREPO: 'false'
   IWFREPO_HTTPS: 'false'
   IWFREPO_HOST: '192.168.1.75'
   IWFREPO_PORT: '8087'
