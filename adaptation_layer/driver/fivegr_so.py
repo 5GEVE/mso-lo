@@ -30,6 +30,9 @@ from .interface import Driver, Headers, BodyList, Body
 
 from urllib.parse import urlencode
 
+import logging
+logger = logging.getLogger('app.driver.fivergr_so')
+
 TESTING = os.environ.get("TESTING", False)
 PRISM_ALIAS = os.environ.get("PRISM_ALIAS", "prism-fivegr-so")
 
@@ -47,7 +50,7 @@ class FIVEGR_SO(Driver):
     self._port = nfvo_cred["port"] if "port" in nfvo_cred else 8080
     self._headers = {"Content-Type": "application/json",
                      "Accept": "application/json"}
-    print("[DEBUG] _host:{} _port:{}".format(self._host, self._port))
+    logger.debug("_host:{} _port:{}".format(self._host, self._port))
     if TESTING is False:
       self._base_path = 'http://{0}:{1}/5gt/so/v1'.format(self._host, self._port)
     else:
@@ -163,7 +166,7 @@ class FIVEGR_SO(Driver):
       nsIdRaw, resp_headers = self._exec_post(
         _url, json=args['payload'], headers=self._headers)
       nsId = nsIdRaw['nsId']
-      print("[DEBUG] nsId:" + nsId)
+      logger.debug("nsId:{}".format(nsId))
       # nsInstance, resp_headers = self.get_ns(nsId)  # FIXME get_ns without instantiation does not work in 5gr-so
       sol005NsInstance = SOL005NSInstance(id=nsId, nsInstanceName=args['payload']['nsName'], nsInstanceDescription=args['payload']['nsDescription'], nsState="NOT_INSTANTIATED")
 
@@ -205,7 +208,7 @@ class FIVEGR_SO(Driver):
       raise NsNotFound(ns_id=nsId)
     operationId = operationIdRaw["operationId"]
     headers = self._build_lcm_op_occs_header(operationId)
-    print("[DEBUG] operationId:" + operationId)
+    logger.debug("operationId:{}".format(operationId))
     return None, headers
 
   def terminate_ns(self, nsId: str, args: Dict = None) -> Tuple[None, Headers]:
@@ -218,7 +221,7 @@ class FIVEGR_SO(Driver):
       raise NsNotFound(ns_id=nsId)
     operationId = operationIdRaw["operationId"]
     headers = self._build_lcm_op_occs_header(operationId)
-    print("[DEBUG] operationId:" + operationId)
+    logger.debug("operationId:{}".format(operationId))
     return None, headers
 
   def scale_ns(self, nsId: str, args: Dict = None) -> Tuple[None, Headers]:
@@ -235,7 +238,7 @@ class FIVEGR_SO(Driver):
       raise NsNotFound(ns_id=id)
     operationId = operationIdRaw["operationId"]
     headers = self._build_lcm_op_occs_header(operationId)
-    print("[DEBUG] operationId:" + operationId)
+    logger.debug("operationId:{}".format(operationId))
     return None, headers
 
   def get_op_list(self, args: Dict = None) -> Tuple[BodyList, Headers]:
