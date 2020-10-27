@@ -158,14 +158,14 @@ class EVER(Driver):
     def instantiate_ns(self, nsId: str, args=None) -> Tuple[None, Headers]:
         _url = '{0}/instantiate/{1}'.format(self._base_path, nsId)
         _url = self._build_url_query(_url, args)
-		instantiate_payload = {}
-		try:
-            instantiated_payload['SapData'] = args['payload']['SapData']
+        instantiate_payload = {}
+        try:
+            instantiate_payload['SapData'] = args['payload']['SapData']
         except (TypeError, KeyError):
             logger.info('no SapData')
         try:
             empty_body, resp_headers = self._exec_post(
-                _url, json=instantiated_payload, headers={})
+                _url, json=instantiate_payload, headers={})
         except ResourceNotFound:
             raise NsNotFound(ns_id=nsId)
         headers = self._build_headers(resp_headers)
