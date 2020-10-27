@@ -47,7 +47,8 @@ class EVER(Driver):
             self._base_path = 'http://{0}:{1}'.format(PRISM_ALIAS, 9999)
 
     def _exec_delete(self, url=None, params=None, headers=None):
-
+        print('#############execute delete######')
+        print('url= ' + url)
         try:
             resp = requests.delete(url, params=params, verify=False, headers=headers)
         except Exception as e:
@@ -66,10 +67,14 @@ class EVER(Driver):
             raise ResourceNotFound()
         else:
             error = resp.json()
+            print('############')
+            print('error: ' + error)
+            print('###########')
             raise ServerError(error)
 
     def _exec_post(self, url=None, data=None, json=None, headers=None):
-
+        print('#############execute post######')
+        print('url= ' + url)
         try:
             resp = requests.post(url, data=data, json=json, verify=False, headers=headers)
         except Exception as e:
@@ -96,10 +101,14 @@ class EVER(Driver):
                 error = resp.json()
             else:
                 error = resp.text
+            print('############')
+            print('error: ' + error)
+            print('###########')
             raise ServerError(error)
 
     def _exec_get(self, url=None, params=None, headers=None):
-
+        print('#############execute get######')
+        print('url= ' + url)
         try:
             resp = requests.get(url, params=params, verify=False, headers=headers)
         except Exception as e:
@@ -118,6 +127,9 @@ class EVER(Driver):
             raise ResourceNotFound()
         else:
             error = resp.json()
+            print('############')
+            print('error: ' + error)
+            print('###########')
             raise ServerError(error)
 
     # all methods
