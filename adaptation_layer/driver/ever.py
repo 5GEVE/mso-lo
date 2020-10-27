@@ -12,6 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 import copy
+import logging
 import os
 import re
 from typing import Dict, Tuple
@@ -29,6 +30,7 @@ urllib3.disable_warnings(InsecureRequestWarning)
 TESTING = os.environ.get("TESTING", False)
 PRISM_ALIAS = os.environ.get("PRISM_ALIAS", "prism-ever")
 
+logger = logging.getLogger('app.driver.osm')
 
 class EVER(Driver):
 
