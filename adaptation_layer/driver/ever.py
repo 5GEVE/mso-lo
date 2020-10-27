@@ -76,7 +76,12 @@ class EVER(Driver):
             raise ServerError(str(e))
 
         if resp.status_code in (200, 201, 202, 206):
-            if 'application/json' in resp.headers['content-type']:
+            try:
+                ctype = resp.headers['content-type']
+            except KeyError:
+                # success but no content
+                return None, resp.headers
+            if 'application/json' in ctype:
                 return resp.json(), resp.headers
             else:
                 return resp.text, resp.headers
