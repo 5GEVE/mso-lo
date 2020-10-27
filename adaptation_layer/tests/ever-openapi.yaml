@@ -181,7 +181,14 @@ paths:
       responses:
         '202':
           description: Accepted
-          headers: {}
+          headers:
+            Location:
+              description: |
+                It must point to the new "NS Lifecycle Operation Occurrence"
+                resource, i.e. an URI like ".../ns_lcm_op_occs/{nsLcmOpOccId}"
+              schema:
+                type: string
+                example: /ns_lcm_op_occs/d4888b76-d741-4387-b7ac-37813d513a5a
         '400':
           $ref: '#/components/responses/BadRequest'
         '404':
