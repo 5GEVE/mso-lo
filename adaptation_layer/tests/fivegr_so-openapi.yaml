@@ -60,7 +60,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/NsInfo"
+                $ref: "#/components/schemas/QueryNsResult"
         "404":
           description: Not Found
           content:
@@ -567,26 +567,25 @@ components:
         nsdId: nsdId
         nsName: nsName
         nsDescription: nsDescription
-    NsInfo:
+    QueryNsResult:
       type: object
       properties:
-        status:
-          type: string
-        sapInfo:
+        queryNsResult:
           type: array
           items:
-            $ref: "#/components/schemas/SapInfo"
+            $ref: "#/components/schemas/NsInfo"
       example:
-        status: NOT_INSTANTIATED
-        sapInfo:
-          - sapInstanceId: sapInstanceId
-            sapName: sapName
-            description: description
-            address: 10.10.10.10
-          - sapInstanceId: sapInstanceId2
-            sapName: sapName2
-            description: description2
-            address: 10.10.10.11
+        queryNsResult:
+        - nsState: NOT_INSTANTIATED
+          sapInfo:
+            - sapInstanceId: sapInstanceId
+              sapName: sapName
+              description: description
+              address: 10.10.10.10
+            - sapInstanceId: sapInstanceId2
+              sapName: sapName2
+              description: description2
+              address: 10.10.10.11
     NsInstantiationRequest:
       type: object
       required:
@@ -1060,3 +1059,12 @@ components:
         sapName: sapName
         description: description
         address: 10.10.10.10
+    NsInfo:
+      type: object
+      properties:
+        nsState:
+          type: string
+        sapInfo:
+          type: array
+          items:
+            $ref: "#/components/schemas/SapInfo"
