@@ -30,7 +30,7 @@ urllib3.disable_warnings(InsecureRequestWarning)
 TESTING = os.environ.get("TESTING", False)
 PRISM_ALIAS = os.environ.get("PRISM_ALIAS", "prism-ever")
 
-logger = logging.getLogger('app.driver.osm')
+logger = logging.getLogger('app.driver.ever')
 
 class EVER(Driver):
 
@@ -47,8 +47,8 @@ class EVER(Driver):
             self._base_path = 'http://{0}:{1}'.format(PRISM_ALIAS, 9999)
 
     def _exec_delete(self, url=None, params=None, headers=None):
-        print('#############execute delete######')
-        print('url= ' + url)
+        logger.debug('#############execute delete######')
+        logger.debug('url= ' + url)
         try:
             resp = requests.delete(url, params=params, verify=False, headers=headers)
         except Exception as e:
@@ -67,14 +67,14 @@ class EVER(Driver):
             raise ResourceNotFound()
         else:
             error = resp.json()
-            print('############')
-            print('error: ' + error)
-            print('###########')
+            logger.debug('############')
+            logger.debug('error: ' + error)
+            logger.debug('###########')
             raise ServerError(error)
 
     def _exec_post(self, url=None, data=None, json=None, headers=None):
-        print('#############execute post######')
-        print('url= ' + url)
+        logger.debug('#############execute post######')
+        logger.debug('url= ' + url)
         try:
             resp = requests.post(url, data=data, json=json, verify=False, headers=headers)
         except Exception as e:
@@ -101,14 +101,14 @@ class EVER(Driver):
                 error = resp.json()
             else:
                 error = resp.text
-            print('############')
-            print('error: ' + error)
-            print('###########')
+            logger.debug('############')
+            logger.debug('error: ' + error)
+            logger.debug('###########')
             raise ServerError(error)
 
     def _exec_get(self, url=None, params=None, headers=None):
-        print('#############execute get######')
-        print('url= ' + url)
+        logger.debug('#############execute get######')
+        logger.debug('url= ' + url)
         try:
             resp = requests.get(url, params=params, verify=False, headers=headers)
         except Exception as e:
@@ -127,9 +127,9 @@ class EVER(Driver):
             raise ResourceNotFound()
         else:
             error = resp.json()
-            print('############')
-            print('error: ' + error)
-            print('###########')
+            logger.debug('############')
+            logger.debug('error: ' + error)
+            logger.debug('###########')
             raise ServerError(error)
 
     # all methods
