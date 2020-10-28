@@ -23,6 +23,7 @@ from .request_mock import mock_ns
 from .response_schemas import ns_lcm_op_occ_schema, \
     ns_list_schema, ns_schema, ns_lcm_op_occ_list_schema
 
+
 # AUTHORIZATION unsupported by EVER driver
 # scale a ns instance unsupported by EVER driver
 
