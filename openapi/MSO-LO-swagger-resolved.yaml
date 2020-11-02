@@ -1612,8 +1612,7 @@ definitions:
     type: object
     properties:
       nsdId:
-        type: object
-        properties: {}
+        type: string
       nsName:
         type: string
       nsDescription:
