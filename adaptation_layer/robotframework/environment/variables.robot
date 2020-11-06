@@ -17,7 +17,7 @@ ${AUTH_USAGE}     1
 ${WRONG_AUTHORIZATION}    Bearer    XXXXXWRONGXXXXX
 ${MAX_WAIT}   2 min
 ${INTERVAL_WAIT}    2 s
-${nsdId}    pingpong
+${nsdId}    5821d426-4c51-4be0-a849-5218a09f0d72
 ${nsInstanceId}       cc256072-2001-434c-8be9-0bd8609cef9f
 ${nsInstanceIdinexistent}       6fc3539c-e602-4afa-8e13-962fb5a7d81xxxxxxx
 ${ConflictNsInstanceId}    007c111c-e602-4afa-8e13-962fb5a7d81d
