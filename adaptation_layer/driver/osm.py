@@ -200,10 +200,6 @@ class OSM(Driver):
     def create_ns(self, args=None) -> Tuple[Body, Headers]:
         _url = "{0}/nslcm/v1/ns_instances".format(self._base_path)
         _url = self._build_url_query(_url, args)
-        osm_nsdpkg, headers_nsdpkg = self._get_nsdpkg(args={"args": {
-            "id": args["payload"]["nsdId"]}
-        })
-        args["payload"]["nsdId"] = osm_nsdpkg["_id"]
         args['payload']['vimAccountId'] = self._select_vim()
         osm_ns, osm_headers = self._request(
             post, _url, json=args['payload'], headers=self._headers)
