@@ -19,22 +19,21 @@ import os
 import re
 from datetime import datetime
 from functools import wraps
-from typing import Dict, Tuple, List
+from typing import Dict, List, Tuple
 from urllib.parse import urlencode
 
-import redis
 import urllib3
 import yaml as YAML
-from requests import ConnectionError, Timeout, TooManyRedirects, URLRequired, \
-    api, HTTPError, get, post, delete
+from requests import ConnectionError, HTTPError, Timeout, TooManyRedirects, URLRequired, api, delete, get, post
 from urllib3.exceptions import InsecureRequestWarning
 
-from adaptation_layer.error_handler import ResourceNotFound, NsNotFound, \
-    VnfNotFound, Unauthorized, ServerError, NsOpNotFound, VnfPkgNotFound, \
-    VimNotFound, NsdNotFound, BadRequest, Forbidden, MethodNotAllowed, \
-    Unprocessable, Conflict, VimNetworkNotFound
+import redis
+from adaptation_layer.error_handler import (BadRequest, Conflict, Forbidden, MethodNotAllowed, NsdNotFound, NsNotFound,
+                                            NsOpNotFound, ResourceNotFound, ServerError, Unauthorized, Unprocessable,
+                                            VimNetworkNotFound, VimNotFound, VnfNotFound, VnfPkgNotFound)
 from adaptation_layer.repository import iwf_repository
-from .interface import Driver, Headers, BodyList, Body
+
+from .interface import Body, BodyList, Driver, Headers
 
 urllib3.disable_warnings(InsecureRequestWarning)
 TESTING = os.getenv('TESTING', 'false').lower()
@@ -200,7 +199,11 @@ class OSM(Driver):
     def create_ns(self, args=None) -> Tuple[Body, Headers]:
         _url = "{0}/nslcm/v1/ns_instances".format(self._base_path)
         _url = self._build_url_query(_url, args)
-        args['payload']['vimAccountId'] = self._select_vim()
+        try:
+            args['payload']['vimAccountId']
+        except (KeyError):
+            logger.info('no vimAccountId set, select first in NFVO')
+            args['payload']['vimAccountId'] = self._select_vim()
         osm_ns, osm_headers = self._request(
             post, _url, json=args['payload'], headers=self._headers)
         # Get location header from OSM
@@ -262,7 +265,8 @@ class OSM(Driver):
         if additional_params:
             if 'vld' in additional_params:
                 instantiate_payload['vld'] = additional_params['vld']
-                vnf_items = self._force_float_ip(additional_params['vld'], ns_res)
+                vnf_items = self._force_float_ip(
+                    additional_params['vld'], ns_res)
                 self._extend_vnf_add_params(instantiate_payload, vnf_items)
             if 'vnf' in additional_params:
                 mapping = {v: str(i + 1) for i, v in

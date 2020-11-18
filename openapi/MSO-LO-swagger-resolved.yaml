@@ -2,7 +2,7 @@
 swagger: '2.0'
 info:
   description: 5G-EVE Adaptation Layer API spec.
-  version: '1.4.0'
+  version: '1.5.0'
   title: 5G-EVE Adaptation Layer API
   contact: {}
 host: example.com
@@ -1610,6 +1610,9 @@ definitions:
     title: ErrorResponse_details
   NfvoNsInstancesRequest:
     type: object
+    required:
+      - nsdId
+      - nsName
     properties:
       nsdId:
         type: string
@@ -1617,6 +1620,9 @@ definitions:
         type: string
       nsDescription:
         type: string
+      vimAccountId:
+        type: string
+        format: uuid
     title: NfvoNsInstancesRequest
   NfvoNsInstantiateRequest:
     type: object
