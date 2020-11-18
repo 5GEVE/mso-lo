@@ -50,6 +50,22 @@ class OSMTestCase(unittest.TestCase):
         except (ValidationError, SchemaError) as e:
             self.fail(msg=e.message)
 
+    # Check status codes 201, 401, 404, headers and payload for create_ns()
+    def test_create_ns_201_with_vim(self):
+        mock_ns_vim = mock_ns.copy()
+        mock_ns_vim['vimAccountId'] = '76782dbd-eaa1-48ba-bdc7-a6cbbe5d4e2e'
+        res = self.client().post('/nfvo/1/ns_instances?__code=201', json=mock_ns_vim)
+        self.assertEqual(201, res.status_code)
+
+        self.assertIn('Location', res.headers)
+        validate_url = urlparse(res.headers["Location"])
+        self.assertTrue(all([validate_url.scheme, validate_url.netloc, validate_url.path]))
+
+        try:
+            validate(res.json, ns_schema)
+        except (ValidationError, SchemaError) as e:
+            self.fail(msg=e.message)
+
     def test_create_ns_400(self):
         res = self.client().post('/nfvo/1/ns_instances?__code=400', json=mock_ns)
         self.assertEqual(400, res.status_code)
