@@ -1610,6 +1610,10 @@ definitions:
     title: ErrorResponse_details
   NfvoNsInstancesRequest:
     type: object
+    required:
+      - nsdId
+      - nsName
+      - nsDescription
     properties:
       nsdId:
         type: string
