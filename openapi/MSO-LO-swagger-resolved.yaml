@@ -1621,6 +1621,9 @@ definitions:
         type: string
       nsDescription:
         type: string
+      vimAccountId:
+        type: string
+        format: uuid
     title: NfvoNsInstancesRequest
   NfvoNsInstantiateRequest:
     type: object
