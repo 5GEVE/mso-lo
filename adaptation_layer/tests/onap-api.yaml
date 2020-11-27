@@ -1,15 +1,13 @@
 openapi: 3.0.0
 
 servers:
-  - description: ONAP Translation Component
-    url: https://github.com/chabimic/NS-InstantiationServer
   - description: Onap driver
-    url: https://github.com/TheWall89/adaptation-layer/tree/onap_driver
+    url: https://github.com/5GEVE/mso-lo
 
 info:
   description:
     ONAP Translation Component API
-    version with Celery and rabbitMQ with vnf info
+    version with Celery and rabbitMQ with vnf info and vims
   version: "2.1"
   title: ONAP Translation Component API
   contact:
@@ -25,8 +23,9 @@ tags:
     description: NS LCM Operations
   - name: 'IWL Catalogue API'
     description: API to retrieve the list of service specification and .csar archives
-
-# paths
+  - name: 'VIM configuration'
+    description: Information about configured VIM/tenant in ONAP TC (ns-server) tool
+#
 paths:
 # get all ns instances info
   '/instances':
@@ -60,10 +59,6 @@ paths:
           $ref: '#/components/responses/MethodNotAllowed'
         '500':
           $ref: '#/components/responses/InternalServerError'
-        # '5XX':
-        #   $ref: '#/components/responses/UnexpectedError'
-        # default:
-        #   $ref: '#/components/responses/UnexpectedError'
 # get ns instnce info
   '/instances/{ns_db_id}':
     parameters:
@@ -94,10 +89,6 @@ paths:
           $ref: '#/components/responses/MethodNotAllowed'
         '500':
           $ref: '#/components/responses/InternalServerError'
-        # '5XX':
-        #   $ref: '#/components/responses/UnexpectedError'
-        # default:
-        #   $ref: '#/components/responses/UnexpectedError'
 # create a ns instance ID
   '/create':
     post:
@@ -133,10 +124,6 @@ paths:
           $ref: '#/components/responses/MethodNotAllowed'
         '500':
           $ref: '#/components/responses/InternalServerError'
-        # '5XX':
-        #   $ref: '#/components/responses/UnexpectedError'
-        # default:
-        #   $ref: '#/components/responses/UnexpectedError'
 # instantiate NS with given NsId
   '/instantiate/{ns_db_id}':
     parameters:
@@ -174,10 +161,6 @@ paths:
           $ref: '#/components/responses/MethodNotAllowed'
         '500':
           $ref: '#/components/responses/InternalServerError'
-        # '5XX':
-        #   $ref: '#/components/responses/UnexpectedError'
-        # default:
-        #   $ref: '#/components/responses/UnexpectedError'
 # terminate NS
   '/terminate/{ns_db_id}':
     parameters:
@@ -215,10 +198,6 @@ paths:
           $ref: '#/components/responses/MethodNotAllowed'
         '500':
           $ref: '#/components/responses/InternalServerError'
-        # '5XX':
-        #   $ref: '#/components/responses/UnexpectedError'
-        # default:
-        #   $ref: '#/components/responses/UnexpectedError'
 # delete NS Instance
   '/delete/{ns_db_id}':
     parameters:
@@ -245,10 +224,6 @@ paths:
           $ref: '#/components/responses/MethodNotAllowed'
         '500':
           $ref: '#/components/responses/InternalServerError'
-        # '5XX':
-        #   $ref: '#/components/responses/UnexpectedError'
-        # default:
-        #   $ref: '#/components/responses/UnexpectedError'
 # get list of oll ns_lcm_op_occs
   '/ns_lcm_op_occs':
     get:
@@ -270,10 +245,6 @@ paths:
           $ref: '#/components/responses/MethodNotAllowed'
         '500':
           $ref: '#/components/responses/InternalServerError'
-        # '5XX':
-        #   $ref: '#/components/responses/UnexpectedError'
-        # default:
-        #   $ref: '#/components/responses/UnexpectedError'
 #  get a info lcm op occs with given ID
   '/ns_lcm_op_occs/{lcm_id}':
     parameters:
@@ -304,10 +275,6 @@ paths:
           $ref: '#/components/responses/MethodNotAllowed'
         '500':
           $ref: '#/components/responses/InternalServerError'
-        # '5XX':
-        #   $ref: '#/components/responses/UnexpectedError'
-        # default:
-        #   $ref: '#/components/responses/UnexpectedError'
 #  get a info lcm op occs for given ns_Id
   '/ns_lcm_op_occs/ns_id/{ns_db_id}':
     parameters:
@@ -338,10 +305,6 @@ paths:
           $ref: '#/components/responses/MethodNotAllowed'
         '500':
           $ref: '#/components/responses/InternalServerError'
-        # '5XX':
-        #   $ref: '#/components/responses/UnexpectedError'
-        # default:
-        #   $ref: '#/components/responses/UnexpectedError'
 #  get a list of service specifications
   '/service_specification':
     get:
@@ -365,10 +328,6 @@ paths:
           $ref: '#/components/responses/MethodNotAllowed'
         '500':
           $ref: '#/components/responses/InternalServerError'
-        # '5XX':
-        #   $ref: '#/components/responses/UnexpectedError'
-        # default:
-        #   $ref: '#/components/responses/UnexpectedError'
 #  get a list of service specifications
   '/service_specification/{service_uuid}':
     parameters:
@@ -386,11 +345,11 @@ paths:
       operationId: serviceSpecArchive
       responses:
         '200':
-          description: .csar archive
-          # content:
-          #   application/pdf:
-              # schema:
-              #   $ref: '#/components/schemas/ListServiceSpec'
+          description: .csar archive with service specification in TOSCA
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
         '400':
           $ref: '#/components/responses/BadRequest'
         '404':
@@ -399,10 +358,27 @@ paths:
           $ref: '#/components/responses/MethodNotAllowed'
         '500':
           $ref: '#/components/responses/InternalServerError'
-        # '5XX':
-        #   $ref: '#/components/responses/UnexpectedError'
-        # default:
-        #   $ref: '#/components/responses/UnexpectedError'
+# get list of configured VIM tenants
+  '/vims':
+    get:
+      tags:
+        - 'VIM configuration'
+      summary: retrieve a list of all configured VIM in tool
+      description: retrieve a list of all configured VIM in ONAP TC (ns-server) tool
+      operationId: vimList
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListConfVims'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 # components responses
 components:
   responses:
@@ -486,6 +462,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ListServiceSpec'
+    ListVim:
+      description: list of configured vim in tc (ns-server)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ListConfVims'
 # end of schemas in responses
 # END RESPONSES
   schemas:
@@ -496,12 +478,16 @@ components:
         nsdId:
           type: string
           format: uuid
+          example: c418cc62-f3b4-43c6-b684-d38bfbd2d7f6
         nsName:
           # description:
           type: string
         nsDescription:
           # description:
           type: string
+        vimShortId:
+          type: integer
+          example: 1
       required:
         - nsdId
         - nsName
@@ -564,13 +550,13 @@ components:
         vnfdId:
           type: string
           format: uuid
-          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+          example: 8a585f64-5717-4562-b3fc-2c963f66afa6
         vnfProductName:
           type: string
         vimId:
           type: string
-          format: uuid
-          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+          # format: uuid
+          example: 	5e7c35e86c1a40bd89b6a61d34b9c21e
         instantiationState:
           type: string
           enum:
@@ -586,6 +572,7 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/VnfExtCpInfo'
+              example: []
 #
     vnfInstanceCreated:
           type: object
@@ -593,7 +580,7 @@ components:
             id:
               type: string
               format: uuid
-              example: null #3fa85f64-5717-4562-b3fc-2c963f66afa6
+              example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
             vnfdId:
               type: string
               format: uuid
@@ -602,79 +589,15 @@ components:
               type: string
             vimId:
               type: string
-              format: uuid
-              example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              # format: uuid
+              example: ""
             instantiationState:
               type: string
               enum:
-                #- INSTANTIATED
                 - NOT_INSTANTIATED
-#            instantiatedVnfInfo:
-#              type: object
 #
     VnfExtCpInfo:
-#      nullable: true
       type: object
-    #   properties:
-    #     id:
-    #       type: string
-    #       format: uuid
-    #       example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-    #     cpdId:
-    #       type: string
-    #       format: uuid
-    #       example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-    #     cpProtocolInfo:
-    #       type: array
-    #       items:
-    #         $ref: '#/components/schemas/CpProtocolInfo'
-#
-#     CpProtocolInfo:
-#       type: object
-#       required:
-#       - ipOverEthernet
-#       - layerProtocol
-#       properties:
-#         layerProtocol:
-#           type: string
-#           enum:
-#             - IP_OVER_ETHERNET
-#         ipOverEthernet:
-#           allOf:
-#           - $ref: '#/components/schemas/IpOverEthernetAddressInfo'
-# # #
-#     IpOverEthernetAddressInfo:
-#       type: object
-#       required:
-#       - ipAddresses
-#       - macAddress
-#       properties:
-#         macAddress:
-#           type: string
-#           format: MAC
-#         ipAddresses:
-#           type: array
-#           items:
-#               $ref: '#/components/schemas/IpOverEthernetAddressInfo_ipAddresses'
-#
-    # IpOverEthernetAddressInfo_ipAddresses:
-    #   type: object
-    #   required:
-    #   - type
-    #   properties:
-    #     type:
-    #       type: string
-    #       enum:
-    #       - IPV4
-    #       - IPV6
-    #     addresses:
-    #       type: array
-    #       items:
-    #         $ref: '#/components/schemas/IpAddress'
-#
-    # IpAddress:
-    #   type: string
-    #   format: IP
 #
     NsInstanceIdCreated:
       type: object
@@ -754,6 +677,35 @@ components:
           example: 1de0e9c3-b238-44da-b01b-b249a7784b03
         name:
           type: string
+    ListConfVims:
+      type: array
+      items:
+        $ref: '#/components/schemas/confVims'
+#
+    confVims:
+      type: object
+      properties:
+        vimShortId:
+          type: integer
+          example: 1
+        vimInfo:
+          $ref: '#/components/schemas/confVim'
+#
+    confVim:
+      type: object
+      properties:
+        cloud_owner:
+          type: string
+        region_id:
+          type: string
+        tenant_name:
+          type: string
+        tenant_id:
+          type: string
+        type:
+          type: string
+          example: openstack
+#
   # END SCHEMAS
   # start request bodies
   requestBodies:
@@ -763,9 +715,3 @@ components:
           schema:
             $ref: '#/components/schemas/createNsId'
   # END REQUEST BODIES
-#
-# # commented
-#   securitySchemes:
-#     bearerAuth:
-#       type: http
-#       scheme: bearer
