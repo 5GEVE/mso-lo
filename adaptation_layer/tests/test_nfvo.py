@@ -24,11 +24,12 @@ from .response_schemas import nfvo_schema, nfvo_list_schema
 
 
 class NFVOTestCase(unittest.TestCase):
+    client = None
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         """Define test variables and initialize app."""
-        self.app = create_app()
-        self.client = self.app.test_client
+        cls.client = create_app().test_client
 
     def tearDown(self):
         """teardown all initialized variables."""
