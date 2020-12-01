@@ -20,7 +20,7 @@ from adaptation_layer.repository.iwf_repository import get_nfvo_by_id, \
     get_rano_list, create_subscription, delete_subscription, get_subscription, \
     get_subscription_list, \
     search_subs_by_ns_instance, find_nfvos_by_type, post_vim_safe, \
-    get_site_network
+    get_site_network, add_network_test
 
 
 class TestIwfRepository(unittest.TestCase):
@@ -31,33 +31,44 @@ class TestIwfRepository(unittest.TestCase):
     and have a iwf-repository instance running locally.
     """
 
-    def setUp(self) -> None:
-        self.nfvo_id = 1
-        add_orc_cred_test('nfvo', self.nfvo_id)
-        self.rano_id = 1
-        add_orc_cred_test('rano', self.rano_id)
-        self.ns_instance = "45f95003-4dd1-4e20-87cf-4373c9f4e946"
-        payload = {
+    nfvo_id = 1
+    rano_id = 1
+    ns_instance = "45f95003-4dd1-4e20-87cf-4373c9f4e946"
+    sub_id = ""
+    net_name = "osm-external"
+    net_site = 1
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        add_orc_cred_test('nfvo', cls.nfvo_id)
+        add_orc_cred_test('rano', cls.rano_id)
+        sub = {
             "callbackUri": "http://127.0.0.1:8082/",
-            "nsInstanceId": self.ns_instance,
+            "nsInstanceId": cls.ns_instance,
             "notificationTypes": [
                 "NsLcmOperationOccurrenceNotification",
                 "NsIdentifierDeletionNotification",
                 "NsIdentifierCreationNotification"
             ]
         }
-        self.sub_id = create_subscription(self.nfvo_id, payload)['id']
-
-    def tearDown(self) -> None:
-        delete_subscription(self.sub_id)
+        cls.sub_id = create_subscription(cls.nfvo_id, sub)['id']
+        site_network = {
+            "vim_network_name": cls.net_name,
+            "floating_ip": True,
+            "mgmt_net": False,
+            "external_net": True,
+            "cidr": "10.100.1.0/24",
+            "ip_mapping": None,
+        }
+        add_network_test(site_network, cls.net_site)
 
     def test_get_nfvo_by_id(self):
-        nfvo = get_nfvo_by_id(self.nfvo_id)
+        nfvo = get_nfvo_by_id(TestIwfRepository.nfvo_id)
         self.assertEqual({'id': 1, 'name': 'ITALY_TURIN', 'site': 'ITALY_TURIN', 'type': 'OSM'}, nfvo)
 
     def test_get_rano_by_id(self):
         rano = get_rano_by_id(self.rano_id)
-        self.assertEqual({'id': 1, 'name': 'italian_ever', 'site': 'ITALY_TURIN', 'type': 'EVER'}, rano)
+        self.assertEqual({'id': 1, 'name': 'ITALY_EVER', 'site': 'ITALY_TURIN', 'type': 'EVER'}, rano)
 
     def test_get_nfvo_cred(self):
         cred = get_nfvo_cred(self.nfvo_id)
@@ -79,7 +90,7 @@ class TestIwfRepository(unittest.TestCase):
 
     def test_get_nfvo_list(self):
         length = len(get_nfvo_list())
-        self.assertEqual(6, length)
+        self.assertEqual(8, length)
 
     def test_get_rano_list(self):
         length = len(get_rano_list())
@@ -153,14 +164,14 @@ class TestIwfRepository(unittest.TestCase):
         post_vim_safe(osm_vim, f'http://localhost:8087/nfvOrchestrators/{self.nfvo_id}')
 
     def test_get_site_network(self):
-        net = get_site_network('floating', self.nfvo_id)
+        net = get_site_network(self.net_name, self.nfvo_id)
         self.assertDictEqual({
             "id": 1,
-            "vim_network_name": "floating",
+            "vim_network_name": self.net_name,
             "floating_ip": True,
             "mgmt_net": False,
             "external_net": True,
-            "cidr": "10.50.160.0/24",
+            "cidr": "10.100.1.0/24",
             "ip_mapping": None,
             "_links": {
                 "self": {

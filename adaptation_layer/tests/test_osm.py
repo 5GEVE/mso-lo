@@ -27,14 +27,12 @@ from .response_schemas import ns_lcm_op_occ_schema, ns_list_schema, ns_schema, \
 
 
 class OSMTestCase(unittest.TestCase):
+    client = None
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         """Define test variables and initialize app."""
-        self.app = create_app()
-        self.client = self.app.test_client
-
-    def tearDown(self):
-        """teardown all initialized variables."""
+        cls.client = create_app().test_client
 
     # Check status codes 201, 401, 404, headers and payload for create_ns()
     def test_create_ns_201(self):

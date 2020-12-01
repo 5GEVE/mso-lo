@@ -310,6 +310,15 @@ def add_orc_cred_test(orc_type: str, orc_id: int):
     resp.raise_for_status()
 
 
+def add_network_test(json: Dict, site: int):
+    post_resp = post(f"{url}/networks", json=json)
+    post_resp.raise_for_status()
+    put_resp = put(post_resp.json()["_links"]["site"]["href"],
+                   f"{url}/sites/{site}",
+                   headers={"Content-Type": "text/uri-list"})
+    put_resp.raise_for_status()
+
+
 @_server_error
 def get_site_network(vim_network_name: str, nfvo_id: int):
     nfvo = _get_nfvo(nfvo_id)
