@@ -184,14 +184,20 @@ POST Instantiate nsInstance with vnf/vld in additionalParamsForNs
     Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
     ${body}=    Load JSON From File    jsons/InstantiateNsRequest.json
-    ${vnf}=    set variable    []
-    ${vnf}=    evaluate    [{"vnfInstanceId": vnfId,"vimAccountId": random.choice(${vimAccountIds})} for vnfId in ${vnfInstanceIds}]    random
-    Log    ${vnf}
-    ${body}=    Update Value To Json    ${body}    $.additionalParamsForNs.vnf    ${vnf}
-    ${vld}=    evaluate     [{'name': ${vldName}, 'vim-network-name': ${vimNetworkName}}]
-    Log    ${vld}
-    ${body}=    Update Value To Json    ${body}    $.additionalParamsForNs.vld    ${vld}
-    Log    ${body}
+    ${vimAccountIds}=    Get Variable Value    ${vimAccountIds}
+    Run Keyword If  "${vimAccountIds}" != "None"
+    ...  Log  ${vimAccountIds}
+    ...  ${vnf}=    set variable    []
+    ...  ${vnf}=    evaluate    [{"vnfInstanceId": vnfId,"vimAccountId": random.choice(${vimAccountIds})} for vnfId in ${vnfInstanceIds}]    random
+    ...  Log    ${vnf}
+    ...  ${body}=    Update Value To Json    ${body}    $.additionalParamsForNs.vnf    ${vnf}
+    ${vimNetworkName}=    Get Variable Value    ${vimNetworkName}
+    Run Keyword If  "${vimNetworkName}" != "None"
+    ...  Log  "${vimNetworkName}"
+    ...  ${vld}=    evaluate     [{'name': ${vldName}, 'vim-network-name': ${vimNetworkName}}]
+    ...  Log    ${vld}
+    ...  ${body}=    Update Value To Json    ${body}    $.additionalParamsForNs.vld    ${vld}
+    ...  Log    ${body}
     Post    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/instantiate    ${body}
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
