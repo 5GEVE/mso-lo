@@ -7,12 +7,12 @@ ${MSO-LO_BASE_API}  ${HTTP}://${MSO-LO_HOST}:${MSO-LO_PORT}
 ${apiRoot}        nfvo
 ${nfvoId}         1
 
-${nsdId}    5821d426-4c51-4be0-a849-5218a09f0d72
+${nsdId}    4125ae83-6614-4bf6-be1a-b8aa16e7e42c
 
-${vimNetworkName}   'test'
-${vldName}          'mgmt_vl'
+#${vimNetworkName}   'test'
+#${vldName}          'mgmt_vl'
 
-${vimAccountIds}    ['c25ce403-b664-48e3-b790-9ed7635feffc']
+#${vimAccountIds}    ['c25ce403-b664-48e3-b790-9ed7635feffc']
 
 ${notificationUri}   http://192.168.18.14:8083/
 
