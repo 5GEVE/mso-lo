@@ -1,23 +1,61 @@
-## Tests with Robot Framework
+# Tests with Robot Framework
 
 The `.robot` scripts in this folder perform integration tests of the `mso-lo` application
-against a real instance of a NFVO.
+against a real instance of a NFVO or RANO.
 
 To execute the tests you need:
 
 - An instance of `mso-lo` up and running
-- An instance of a real NFVO
-- Correct communication between the two above (check your database)
+- An instance of a real NFVO or RANO
+- An instante of the [IWF Repository](https://github.com/5GEVE/iwf-repository)
+- Correct communication between the components above
+
+## Configuration
 
 Check the file [variables.robot](./environment/variables.robot) and change the variables according
-to your setup. The important variables to change are:
+to your setup.
 
-- `${MSO-LO_HOST}`
-- `${MSO-LO_PORT}`
-- `${nfvoId}`
-- `${nsdId}` (this is the NSD to be instantiated during the tests, pick something simple)
+Setup the protocol, host and port where mso-lo application is listening.
 
-Example of execution:
+```
+${MSO-LO_HOST}      localhost
+${MSO-LO_PORT}      80
+${HTTP}    http
+```
+
+Choose if you want to test a `rano` or a `nfvo` and set its id.
+
+```
+${apiRoot}        nfvo
+${nfvoId}         1
+```
+
+Select the id of the NSD you want to deploy for the test.
+It must be available in your NFVO or RANO catalog.
+
+```
+${nsdId}    5821d426-4c51-4be0-a849-5218a09f0d72
+```
+
+Select the name of the VIM Network and the name of the VLD to be associated to it.
+
+```
+${vimNetworkName}   'test'
+${vldName}          'mgmt_vl'
+```
+
+```
+${vnfInstanceIds}    []
+${vimAccountIds}    ['c25ce403-b664-48e3-b790-9ed7635feffc']
+```
+
+Script [MSO-LO-LCM-Workflow.robot](./MSO-LO-LCM-Workflow.robot) contains a workflow that
+instantiates and terminates a Network Service on the configured NFVO.
+Some test cases include features to wait for the NS to be deployed. Maximum waiting time is set to
+2 minutes. You can increase it if it is not enough by changing `${MAXIMUM_WAIT}` variable in
+[variables.robot](./environment/variables.robot).
+
+## Execution:
 
 ```shell script
 $ cd {project-dir}/adaptation_layer
@@ -28,9 +66,3 @@ $ cd ./robotframework
 $ export OPENAPI_PATH=../../openapi/MSO-LO-swagger-resolved.yaml
 $ robot --outputdir output MSO-LO-LCM-Workflow.robot MSO-LO-NFVO-Workflow.robot
 ```
-
-Script [MSO-LO-LCM-Workflow.robot](./MSO-LO-LCM-Workflow.robot) contains a workflow that
-instantiates and terminates a Network Service on the configured NFVO.
-Some test cases include features to wait for the NS to be deployed. Maximum waiting time is set to
-2 minutes. You can increase it if it is not enough by changing `${MAXIMUM_WAIT}` variable in
-[variables.robot](./environment/variables.robot).
