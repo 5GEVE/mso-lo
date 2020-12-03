@@ -75,7 +75,7 @@ The following setting is used to deploy the VNFs of your service on multiple VIM
 Please provide the UUIDs as shown below or **remove/comment the line**.
 
 ```
-${vimAccountIds}    ['c25ce403-b664-48e3-b790-9ed7635feffc']
+${vimAccountIds}    ['64690905-0fe0-4dc4-967c-292eb497e46f', '444bd22e-dd1a-4672-b12b-2604f21f50e6']
 ```
 
 Script [MSO-LO-LCM-Workflow.robot](./MSO-LO-LCM-Workflow.robot) contains a workflow that
