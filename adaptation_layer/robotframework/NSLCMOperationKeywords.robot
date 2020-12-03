@@ -184,25 +184,37 @@ POST Instantiate nsInstance with vnf/vld in additionalParamsForNs
     Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
     ${body}=    Load JSON From File    jsons/InstantiateNsRequest.json
+
     ${vimAccountIds}=    Get Variable Value    ${vimAccountIds}
-    Run Keyword If  "${vimAccountIds}" != "None"
-    ...  Log  ${vimAccountIds}
-    ...  ${vnf}=    set variable    []
-    ...  ${vnf}=    evaluate    [{"vnfInstanceId": vnfId,"vimAccountId": random.choice(${vimAccountIds})} for vnfId in ${vnfInstanceIds}]    random
-    ...  Log    ${vnf}
-    ...  ${body}=    Update Value To Json    ${body}    $.additionalParamsForNs.vnf    ${vnf}
+    Log  "${vimAccountIds}"
+    ${vnf}=  Run Keyword If  "${vimAccountIds}" != "None"
+    ...    Evaluate    [{"vnfInstanceId": vnfId,"vimAccountId": random.choice(${vimAccountIds})} for vnfId in ${vnfInstanceIds}]    random
+    ...    ELSE
+    ...    Set Variable    None
+    Log    "${vnf}"
+    Log    ${body}
+    ${body}=    Run Keyword If  "${vnf}" != "None"
+    ...    Update Value To Json    ${body}    $.additionalParamsForNs.vnf    ${vnf}
+    ...    ELSE
+    ...    Delete Object From Json    ${body}    $.additionalParamsForNs.vnf
+    Log    ${body}
 
     ${vimNetworkName}=    Get Variable Value    ${vimNetworkName}
     Log  "${vimNetworkName}"
     ${vldName}=    Get Variable Value    ${vldName}
     Log  "${vldName}"
-    ${vld}=    Evaluate    { 'vld': [{'name': '${vldName}', 'vim-network-name': '${vimNetworkName}'}]}
-    Log    ${body}
-    ${body}=    Run Keyword If    "${vimNetworkName}" != "None"
-    ...    Add Object To Json    ${body}    $.additionalParamsForNs    ${vld}
+    ${vld}=    Run Keyword If    "${vimNetworkName}" != "None" and "${vldName}" != None
+    ...    Evaluate    [{'name': '${vldName}', 'vim-network-name': '${vimNetworkName}'}]
     ...    ELSE
-    ...    Set Variable    ${body}
+    ...    Set Variable    None
+    Log    ${vld}
     Log    ${body}
+    ${body}=    Run Keyword If    "${vld}" != "None"
+    ...    Update Value To Json    ${body}    $.additionalParamsForNs.vld    ${vld}
+    ...    ELSE
+    ...    Delete Object From Json    ${body}    $.additionalParamsForNs.vld
+    Log    ${body}
+
     Post    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/instantiate    ${body}
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}

@@ -12,7 +12,7 @@ ${nsdId}    4125ae83-6614-4bf6-be1a-b8aa16e7e42c
 #${vimNetworkName}   test
 #${vldName}          mgmt_vl
 
-#${vimAccountIds}    ['c25ce403-b664-48e3-b790-9ed7635feffc']
+#${vimAccountIds}    ['64690905-0fe0-4dc4-967c-292eb497e46f', '444bd22e-dd1a-4672-b12b-2604f21f50e6']
 
 ${notificationUri}   http://192.168.18.14:8083/
 
