@@ -12,8 +12,10 @@ To execute the tests you need:
 
 ## Configuration
 
-Check the file [variables.robot](./environment/variables.robot) and change the variables according
-to your setup.
+Check the file [variables.robot](./environment/variables.robot).
+Variables that can be customized are provided at the beginning of the file.
+
+> Note: use at least 4 spaces between variable name and value, or use tabs
 
 Setup the protocol, host and port where mso-lo application is listening.
 
@@ -23,19 +25,40 @@ ${MSO-LO_PORT}      80
 ${HTTP}    http
 ```
 
-Choose if you want to test a `rano` or a `nfvo` and set its id.
+Choose what type of orchestrator you want to test, `nfvo` or `rano`, and provide its ID.
+The ID comes from the IWF Repository.
 
 ```
 ${apiRoot}        nfvo
 ${nfvoId}         1
 ```
 
-Select the id of the NSD you want to deploy for the test.
+In the IWF Repository, set the credentials for your orchestrator.
+Assuming the values above, and that the IWF Repository is hosted at `localhost:8087`:
+
+```
+curl --request PATCH \
+  --url http://localhost:8087/nfvOrchestrators/1 \
+  --header 'Content-Type: application/json' \
+  --data '{
+	"credentials": {
+		"host": "192.168.100.2",
+		"port": 9999,
+		"username": "admin",
+		"password": "admin",
+		"project": "admin"
+	}
+}'
+```
+
+Select the UUID of the NSD you want to deploy for the test.
 It must be available in your NFVO or RANO catalog.
 
 ```
 ${nsdId}    5821d426-4c51-4be0-a849-5218a09f0d72
 ```
+
+### Optional
 
 The following settings can be used to associate a Virtual Link of your NSD to a network existing on your VIM.
 Please provide both names or **remove/comment the two lines**.
@@ -44,8 +67,8 @@ Please provide both names or **remove/comment the two lines**.
 > IWF repository.
 
 ```
-${vimNetworkName}   'test'
-${vldName}          'mgmt_vl'
+${vimNetworkName}   test
+${vldName}          mgmt_vl
 ```
 
 The following setting is used to deploy the VNFs of your service on multiple VIMs available in your NFVO/RANO.
@@ -57,9 +80,20 @@ ${vimAccountIds}    ['c25ce403-b664-48e3-b790-9ed7635feffc']
 
 Script [MSO-LO-LCM-Workflow.robot](./MSO-LO-LCM-Workflow.robot) contains a workflow that
 instantiates and terminates a Network Service on the configured NFVO.
-Some test cases include features to wait for the NS to be deployed. Maximum waiting time is set to
-2 minutes. You can increase it if it is not enough by changing `${MAXIMUM_WAIT}` variable in
-[variables.robot](./environment/variables.robot).
+Some test cases include features to wait for the NS to be deployed.
+Maximum waiting time is set to 2 minutes.
+You can increase it if it is not enough:
+
+```
+${MAX_WAIT}   2 min
+```
+
+MSO-LO can send notifications about the operation status to an endpoint.
+You can set it with:
+
+```
+${notificationUri}   http://192.168.18.14:8083/
+```
 
 ## Execution:
 
