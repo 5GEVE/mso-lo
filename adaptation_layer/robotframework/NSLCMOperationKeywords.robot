@@ -197,8 +197,11 @@ POST Instantiate nsInstance with vnf/vld in additionalParamsForNs
     ${vldName}=    Get Variable Value    ${vldName}
     Log  "${vldName}"
     ${vld}=    Evaluate    { 'vld': [{'name': '${vldName}', 'vim-network-name': '${vimNetworkName}'}]}
-    ${body}=    Run Keyword If    "${vimNetworkName}" != "None" and "${vldName}" != "None"
+    Log    ${body}
+    ${body}=    Run Keyword If    "${vimNetworkName}" != "None"
     ...    Add Object To Json    ${body}    $.additionalParamsForNs    ${vld}
+    ...    ELSE
+    ...    Set Variable    ${body}
     Log    ${body}
     Post    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/instantiate    ${body}
     ${outputResponse}=    Output    response
