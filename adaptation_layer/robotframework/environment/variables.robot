@@ -9,8 +9,8 @@ ${nfvoId}         1
 
 ${nsdId}    4125ae83-6614-4bf6-be1a-b8aa16e7e42c
 
-#${vimNetworkName}   'test'
-#${vldName}          'mgmt_vl'
+#${vimNetworkName}   test
+#${vldName}          mgmt_vl
 
 #${vimAccountIds}    ['c25ce403-b664-48e3-b790-9ed7635feffc']
 
