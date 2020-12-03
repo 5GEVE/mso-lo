@@ -191,13 +191,15 @@ POST Instantiate nsInstance with vnf/vld in additionalParamsForNs
     ...  ${vnf}=    evaluate    [{"vnfInstanceId": vnfId,"vimAccountId": random.choice(${vimAccountIds})} for vnfId in ${vnfInstanceIds}]    random
     ...  Log    ${vnf}
     ...  ${body}=    Update Value To Json    ${body}    $.additionalParamsForNs.vnf    ${vnf}
+
     ${vimNetworkName}=    Get Variable Value    ${vimNetworkName}
-    Run Keyword If  "${vimNetworkName}" != "None"
-    ...  Log  "${vimNetworkName}"
-    ...  ${vld}=    evaluate     [{'name': ${vldName}, 'vim-network-name': ${vimNetworkName}}]
-    ...  Log    ${vld}
-    ...  ${body}=    Update Value To Json    ${body}    $.additionalParamsForNs.vld    ${vld}
-    ...  Log    ${body}
+    Log  "${vimNetworkName}"
+    ${vldName}=    Get Variable Value    ${vldName}
+    Log  "${vldName}"
+    ${vld}=    Evaluate    { 'vld': [{'name': ${vldName}, 'vim-network-name': ${vimNetworkName}}]}
+    ${body}=    Run Keyword If    "${vimNetworkName}" != "None" and "${vldName}" != "None"
+    ...    Add Object To Json    ${body}    $.additionalParamsForNs    ${vld}
+    Log    ${body}
     Post    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/instantiate    ${body}
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
