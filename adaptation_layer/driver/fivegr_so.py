@@ -158,6 +158,7 @@ class FIVEGR_SO(Driver):
     raise NotImplementedError('get_ns_list is not implemented: 5gr-so does not support retrieving multiple NS')
 
   def create_ns(self, args: Dict = None) -> Tuple[Body, Headers]:
+    logger.info("creating_ns")
     _url = '{0}/ns'.format(self._base_path)
     _url = self._build_url_query(_url, args)
     if 'payload' not in args:
@@ -175,9 +176,11 @@ class FIVEGR_SO(Driver):
       nsd_Id = args['payload']['nsdId']
       raise NsdNotFound(nsd_id=nsd_Id)
     headers = self._build_instance_header(nsId)
+    logger.info("created_ns")
     return nsInstance, headers
 
   def get_ns(self, nsId: str, args: Dict = None) -> Tuple[Body, Headers]:
+    logger.info("retrieving_ns")
     _url = '{0}/ns/{1}'.format(self._base_path, nsId)
     _url = self._build_url_query(_url, args)
     try:
@@ -188,12 +191,14 @@ class FIVEGR_SO(Driver):
     except ResourceNotFound:
       raise NsNotFound(ns_id=nsId)
     headers = {}
+    logger.info("retrieved_ns")
     return to_dict(nsInstance), headers
 
   def delete_ns(self, nsId: str, args: Dict = None) -> Tuple[None, Headers]:
     raise NotImplementedError('delete_ns is not implemented: 5gr-so does not support deleting NS')
 
   def instantiate_ns(self, nsId: str, args: Dict = None) -> Tuple[None, Headers]:
+    logger.info("instantiating_ns")
     _url = '{0}/ns/{1}/instantiate'.format(self._base_path, nsId)
     _url = self._build_url_query(_url, args)
     if 'payload' not in args:
@@ -209,9 +214,11 @@ class FIVEGR_SO(Driver):
     operationId = operationIdRaw["operationId"]
     headers = self._build_lcm_op_occs_header(operationId)
     logger.debug("operationId:{}".format(operationId))
+    logger.info("instantiating_ns operation submitted")
     return None, headers
 
   def terminate_ns(self, nsId: str, args: Dict = None) -> Tuple[None, Headers]:
+    logger.info("terminating_ns")
     _url = '{0}/ns/{1}/terminate'.format(self._base_path, nsId)
     _url = self._build_url_query(_url, args)
     try:
@@ -222,9 +229,11 @@ class FIVEGR_SO(Driver):
     operationId = operationIdRaw["operationId"]
     headers = self._build_lcm_op_occs_header(operationId)
     logger.debug("operationId:{}".format(operationId))
+    logger.info("terminating_ns operation submitted")
     return None, headers
 
   def scale_ns(self, nsId: str, args: Dict = None) -> Tuple[None, Headers]:
+    logger.info("scaling_ns")
     _url = "{0}/ns/{1}/scale".format(
       self._base_path, nsId)
     _url = self._build_url_query(_url, args)
@@ -239,6 +248,7 @@ class FIVEGR_SO(Driver):
     operationId = operationIdRaw["operationId"]
     headers = self._build_lcm_op_occs_header(operationId)
     logger.debug("operationId:{}".format(operationId))
+    logger.info("scaling_ns operation submitted")
     return None, headers
 
   def get_op_list(self, args: Dict = None) -> Tuple[BodyList, Headers]:

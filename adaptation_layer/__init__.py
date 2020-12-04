@@ -35,8 +35,8 @@ def create_app(test_config=None):
 
     # import blueprints
     from . import app as mso_lo_app
-
-    logging.basicConfig(level=logging.INFO)
+    FORMAT = '%(asctime)-15s %(message)s'
+    logging.basicConfig(level=logging.INFO, format=FORMAT)
 
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
