@@ -22,7 +22,12 @@ POST NS Instance Creation
     Check HTTP Response Header Contains    Location
     Check HTTP Response Body Json Schema Is   ${ns_schema}
     Check NS Id
-    Check VNF Ids
+    Run Keyword If    "${apiRoot}" == "nfvo"
+    ...    Check VNF Ids
+    ...    ELSE IF    "${apiRoot}" == "rano"
+    ...    Log    No vnfInstance with rano
+    ...    ELSE
+    ...    Fatal Error    Unknown value for variable apiRoot
     Check resource not_instantiated
     POST New Subscription Good
     Check Sub Id
