@@ -58,7 +58,12 @@ POST NS Instance Instantiate
     ...    Post-Conditions: status code 202
     Check resource existence
     Check resource not_instantiated
-    POST Instantiate nsInstance with vnf/vld in additionalParamsForNs
+    Run Keyword If    "${apiRoot}" == "nfvo"
+    ...    POST Instantiate nsInstance with vnf/vld in additionalParamsForNs
+    ...    ELSE IF    "${apiRoot}" == "rano"
+    ...    POST Instantiate nsInstance with SapData
+    ...    ELSE
+    ...    Fatal Error    Unknown value for variable apiRoot
     Check HTTP Response Status Code Is    202
     Check HTTP Response Header Contains    Location
     Check Operation Occurrence Id

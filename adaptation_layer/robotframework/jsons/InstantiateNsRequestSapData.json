@@ -1,0 +1,18 @@
+{
+  "SapData": [
+    {
+      "sapdId": "sap_test_mobile",
+      "sapName": "External Test Mobile Sap",
+      "description": "Sap Test description",
+      "radioSliceProfile": {
+        "site": "ITALY_TURIN",
+        "coverageArea": "ITALY.TIM_LAB",
+        "radioAccessTechnology": "5GNSA",
+        "sST": "URLLC",
+        "latency": 10,
+        "uLThptPerSlice": 50,
+        "dLThptPerSlice": 50
+      }
+    }
+  ]
+}
