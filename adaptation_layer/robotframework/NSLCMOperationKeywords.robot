@@ -22,7 +22,7 @@ Check VNF Ids
 Check Operation Occurrence Id
     ${nsLcmOpOcc}=    set variable    ${response[0]['headers']['Location']}
     # using a basic regex, it can be improved
-    ${nsLcmOpOcc}=    evaluate    re.search(r'(/nfvo/.*/ns_lcm_op_occs/(.*))', '''${nsLcmOpOcc}''').group(2)    re
+    ${nsLcmOpOcc}=    evaluate    re.search(r'(/${apiRoot}/.*/ns_lcm_op_occs/(.*))', '''${nsLcmOpOcc}''').group(2)    re
     Set Global Variable    ${nsLcmOpOccId}    ${nsLcmOpOcc}
     Should Not Be Empty    ${nsLcmOpOccId}
     Log    ${nsLcmOpOccId}
