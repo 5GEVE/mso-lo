@@ -22,7 +22,7 @@ Check VNF Ids
 Check Operation Occurrence Id
     ${nsLcmOpOcc}=    set variable    ${response[0]['headers']['Location']}
     # using a basic regex, it can be improved
-    ${nsLcmOpOcc}=    evaluate    re.search(r'(/nfvo/.*/ns_lcm_op_occs/(.*))', '''${nsLcmOpOcc}''').group(2)    re
+    ${nsLcmOpOcc}=    evaluate    re.search(r'(/${apiRoot}/.*/ns_lcm_op_occs/(.*))', '''${nsLcmOpOcc}''').group(2)    re
     Set Global Variable    ${nsLcmOpOccId}    ${nsLcmOpOcc}
     Should Not Be Empty    ${nsLcmOpOccId}
     Log    ${nsLcmOpOccId}
@@ -216,6 +216,16 @@ POST Instantiate nsInstance with vnf/vld in additionalParamsForNs
     Log    ${body}
 
     Post    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/instantiate    ${body}
+    ${outputResponse}=    Output    response
+	Set Global Variable    @{response}    ${outputResponse}
+
+POST Instantiate nsInstance with SapData
+    Log    Trying to Instantiate a ns Instance with SapData
+    Set Headers  {"Accept":"${ACCEPT}"}
+    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
+    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
+    ${body}=    Load JSON From File    jsons/InstantiateNsRequestSapData.json
+    Post    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/instantiate    ${body}    timeout=300
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 

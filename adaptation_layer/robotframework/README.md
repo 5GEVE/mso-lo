@@ -3,12 +3,21 @@
 The `.robot` scripts in this folder perform integration tests of the `mso-lo` application
 against a real instance of a NFVO or RANO.
 
+The test suites included are:
+
+- [MSO-LO-NFVO-Workflow](MSO-LO-NFVO-Workflow.robot): tests the retrieval of information about NFVOs
+- [MSO-LO-LCM-Workflow](MSO-LO-LCM-Workflow.robot): tests the complete LCM of a Network Service in a NFVO (includes subscriptions to notifications)
+- [MSO-LO-LCM-RANO-Workflow](MSO-LO-LCM-RANO-Workflow.robot): tests the complete LCM of slice in a RANO
+- [MSO-LO-SUBS](MSO-LO-SUBS.robot): tests the retrieval of information about subscriptions.
+
+## Prerequisites
+
 To execute the tests you need:
 
-- An instance of `mso-lo` up and running
-- An instance of a real NFVO or RANO
-- An instante of the [IWF Repository](https://github.com/5GEVE/iwf-repository)
-- Correct communication between the components above
+-   An instance of `mso-lo` up and running
+-   An instance of a real NFVO or RANO
+-   An instante of the [IWF Repository](https://github.com/5GEVE/iwf-repository)
+-   Correct communication between the components above
 
 ## Configuration
 
