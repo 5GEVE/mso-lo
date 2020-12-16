@@ -29,8 +29,6 @@ POST NS Instance Creation
     ...    ELSE
     ...    Fatal Error    Unknown value for variable apiRoot
     Check resource not_instantiated
-    POST New Subscription Good
-    Check Sub Id
 
 GET NS Instance List
     [Tags]    instantiate-terminate-workflow
@@ -119,7 +117,6 @@ POST NS Instance Delete
     Check resource not_instantiated
     DELETE IndividualNSInstance
     Check HTTP Response Status Code Is    204
-    DELETE Individual Subscription Good
 
 POST NS Instance Creation Bad Request
     [Tags]    standalone
