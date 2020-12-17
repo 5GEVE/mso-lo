@@ -12,6 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 import copy
+import logging
 import os
 import re
 from typing import Dict, Tuple
@@ -29,6 +30,7 @@ urllib3.disable_warnings(InsecureRequestWarning)
 TESTING = os.environ.get("TESTING", False)
 PRISM_ALIAS = os.environ.get("PRISM_ALIAS", "prism-ever")
 
+logger = logging.getLogger('app.driver.ever')
 
 class EVER(Driver):
 
@@ -45,7 +47,8 @@ class EVER(Driver):
             self._base_path = 'http://{0}:{1}'.format(PRISM_ALIAS, 9999)
 
     def _exec_delete(self, url=None, params=None, headers=None):
-
+        logger.debug('#############execute delete######')
+        logger.debug('url= ' + url)
         try:
             resp = requests.delete(url, params=params, verify=False, headers=headers)
         except Exception as e:
@@ -64,17 +67,26 @@ class EVER(Driver):
             raise ResourceNotFound()
         else:
             error = resp.json()
+            logger.debug('############')
+            logger.debug('error: ' + error)
+            logger.debug('###########')
             raise ServerError(error)
 
     def _exec_post(self, url=None, data=None, json=None, headers=None):
-
+        logger.debug('#############execute post######')
+        logger.debug('url= ' + url)
         try:
             resp = requests.post(url, data=data, json=json, verify=False, headers=headers)
         except Exception as e:
             raise ServerError(str(e))
 
         if resp.status_code in (200, 201, 202, 206):
-            if 'application/json' in resp.headers['content-type']:
+            try:
+                ctype = resp.headers['content-type']
+            except KeyError:
+                # success but no content
+                return None, resp.headers
+            if 'application/json' in ctype:
                 return resp.json(), resp.headers
             else:
                 return resp.text, resp.headers
@@ -89,10 +101,14 @@ class EVER(Driver):
                 error = resp.json()
             else:
                 error = resp.text
+            logger.debug('############')
+            logger.debug('error: ' + error)
+            logger.debug('###########')
             raise ServerError(error)
 
     def _exec_get(self, url=None, params=None, headers=None):
-
+        logger.debug('#############execute get######')
+        logger.debug('url= ' + url)
         try:
             resp = requests.get(url, params=params, verify=False, headers=headers)
         except Exception as e:
@@ -111,6 +127,9 @@ class EVER(Driver):
             raise ResourceNotFound()
         else:
             error = resp.json()
+            logger.debug('############')
+            logger.debug('error: ' + error)
+            logger.debug('###########')
             raise ServerError(error)
 
     # all methods
@@ -158,9 +177,14 @@ class EVER(Driver):
     def instantiate_ns(self, nsId: str, args=None) -> Tuple[None, Headers]:
         _url = '{0}/instantiate/{1}'.format(self._base_path, nsId)
         _url = self._build_url_query(_url, args)
+        instantiate_payload = {}
+        try:
+            instantiate_payload['SapData'] = args['payload']['SapData']
+        except (TypeError, KeyError):
+            logger.info('no SapData')
         try:
             empty_body, resp_headers = self._exec_post(
-                _url, headers={})
+                _url, json=instantiate_payload, headers={})
         except ResourceNotFound:
             raise NsNotFound(ns_id=nsId)
         headers = self._build_headers(resp_headers)

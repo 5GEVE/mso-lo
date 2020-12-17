@@ -22,7 +22,7 @@ Check VNF Ids
 Check Operation Occurrence Id
     ${nsLcmOpOcc}=    set variable    ${response[0]['headers']['Location']}
     # using a basic regex, it can be improved
-    ${nsLcmOpOcc}=    evaluate    re.search(r'(/nfvo/.*/ns_lcm_op_occs/(.*))', '''${nsLcmOpOcc}''').group(2)    re
+    ${nsLcmOpOcc}=    evaluate    re.search(r'(/${apiRoot}/.*/ns_lcm_op_occs/(.*))', '''${nsLcmOpOcc}''').group(2)    re
     Set Global Variable    ${nsLcmOpOccId}    ${nsLcmOpOcc}
     Should Not Be Empty    ${nsLcmOpOccId}
     Log    ${nsLcmOpOccId}
@@ -184,15 +184,48 @@ POST Instantiate nsInstance with vnf/vld in additionalParamsForNs
     Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
     Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
     ${body}=    Load JSON From File    jsons/InstantiateNsRequest.json
-    ${vnf}=    set variable    []
-    ${vnf}=    evaluate    [{"vnfInstanceId": vnfId,"vimAccountId": random.choice(${vimAccountIds})} for vnfId in ${vnfInstanceIds}]    random
-    Log    ${vnf}
-    ${body}=    Update Value To Json    ${body}    $.additionalParamsForNs.vnf    ${vnf}
-    ${vld}=    evaluate     [{'name': ${vldName}, 'vim-network-name': ${vimNetworkName}}]
-    Log    ${vld}
-    ${body}=    Update Value To Json    ${body}    $.additionalParamsForNs.vld    ${vld}
+
+    ${vimAccountIds}=    Get Variable Value    ${vimAccountIds}
+    Log  "${vimAccountIds}"
+    ${vnf}=  Run Keyword If  "${vimAccountIds}" != "None"
+    ...    Evaluate    [{"vnfInstanceId": vnfId,"vimAccountId": random.choice(${vimAccountIds})} for vnfId in ${vnfInstanceIds}]    random
+    ...    ELSE
+    ...    Set Variable    None
+    Log    "${vnf}"
     Log    ${body}
+    ${body}=    Run Keyword If  "${vnf}" != "None"
+    ...    Update Value To Json    ${body}    $.additionalParamsForNs.vnf    ${vnf}
+    ...    ELSE
+    ...    Delete Object From Json    ${body}    $.additionalParamsForNs.vnf
+    Log    ${body}
+
+    ${vimNetworkName}=    Get Variable Value    ${vimNetworkName}
+    Log  "${vimNetworkName}"
+    ${vldName}=    Get Variable Value    ${vldName}
+    Log  "${vldName}"
+    ${vld}=    Run Keyword If    "${vimNetworkName}" != "None" and "${vldName}" != None
+    ...    Evaluate    [{'name': '${vldName}', 'vim-network-name': '${vimNetworkName}'}]
+    ...    ELSE
+    ...    Set Variable    None
+    Log    ${vld}
+    Log    ${body}
+    ${body}=    Run Keyword If    "${vld}" != "None"
+    ...    Update Value To Json    ${body}    $.additionalParamsForNs.vld    ${vld}
+    ...    ELSE
+    ...    Delete Object From Json    ${body}    $.additionalParamsForNs.vld
+    Log    ${body}
+
     Post    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/instantiate    ${body}
+    ${outputResponse}=    Output    response
+	Set Global Variable    @{response}    ${outputResponse}
+
+POST Instantiate nsInstance with SapData
+    Log    Trying to Instantiate a ns Instance with SapData
+    Set Headers  {"Accept":"${ACCEPT}"}
+    Set Headers  {"Content-Type": "${CONTENT_TYPE}"}
+    Run Keyword If    ${AUTH_USAGE} == 1    Set Headers    {"Authorization":"${AUTHORIZATION}"}
+    ${body}=    Load JSON From File    jsons/InstantiateNsRequestSapData.json
+    Post    ${apiRoot}/${nfvoId}/ns_instances/${nsInstanceId}/instantiate    ${body}    timeout=300
     ${outputResponse}=    Output    response
 	Set Global Variable    @{response}    ${outputResponse}
 

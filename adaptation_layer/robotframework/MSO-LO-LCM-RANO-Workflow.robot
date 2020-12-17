@@ -29,8 +29,6 @@ POST NS Instance Creation
     ...    ELSE
     ...    Fatal Error    Unknown value for variable apiRoot
     Check resource not_instantiated
-    POST New Subscription Good
-    Check Sub Id
 
 GET NS Instance List
     [Tags]    instantiate-terminate-workflow
@@ -73,19 +71,6 @@ POST NS Instance Instantiate
     Check HTTP Response Header Contains    Location
     Check Operation Occurrence Id
 
-GET NS LCM OP Occurrence Instantiate PROCESSING
-    [Tags]    instantiate-terminate-workflow
-    [Documentation]    Test ID: mso-lo-test-3.5
-    ...    Test title: GET NS LCM OP Occurrence Instantiate PROCESSING
-    ...    Test objective: The objective is to test the workflow for retrive NS LCM OP Occurrence
-    ...    Pre-conditions: none
-    ...    Post-Conditions: status code 200
-    GET Individual NS LCM OP Occurrence
-    Check HTTP Response Status Code Is    200
-    Check HTTP Response Body Json Schema Is  ${ns_lcm_op_occ_schema}
-    Check resource lcmOperationType is  INSTANTIATE
-    Check resource operationState is    PROCESSING
-
 GET NS LCM OP Occurrence Instantiate COMPLETED
     [Tags]    instantiate-terminate-workflow
     [Documentation]    Test ID: mso-lo-test-3.6
@@ -121,30 +106,6 @@ POST NS Instance Terminate
     Check HTTP Response Status Code Is    202
     Check Operation Occurrence Id
 
-GET NS LCM OP Occurrence Terminate PROCESSING
-    [Tags]    instantiate-terminate-workflow
-    [Documentation]    Test ID: mso-lo-test-3.5
-    ...    Test title: GET NS LCM OP Occurrence Terminate PROCESSING
-    ...    Test objective: The objective is to test the workflow for retrive NS LCM OP Occurrence
-    ...    Pre-conditions: none
-    ...    Post-Conditions: status code 200
-    GET Individual NS LCM OP Occurrence
-    Check HTTP Response Status Code Is    200
-    Check HTTP Response Body Json Schema Is  ${ns_lcm_op_occ_schema}
-    Check resource lcmOperationType is  TERMINATE
-    Check resource operationState is    PROCESSING
-
-GET NS LCM OP Occurrence Terminate COMPLETED
-    [Tags]    instantiate-terminate-workflow
-    [Documentation]    Test ID: mso-lo-test-3.5
-    ...    Test title: GET NS LCM OP Occurrence Terminate COMPLETED
-    ...    Test objective: The objective is to test the workflow for retrive NS LCM OP Occurrence
-    ...    Pre-conditions: none
-    ...    Post-Conditions: status code 200
-    Wait Until Keyword Succeeds    ${MAX_WAIT}    ${INTERVAL_WAIT}    Run Keywords
-    ...   GET Individual NS LCM OP Occurrence
-    ...   AND   Check resource operationState is    COMPLETED
-
 POST NS Instance Delete
     [Tags]    instantiate-terminate-workflow
     [Documentation]    Test ID: mso-lo-test-3.6
@@ -156,7 +117,6 @@ POST NS Instance Delete
     Check resource not_instantiated
     DELETE IndividualNSInstance
     Check HTTP Response Status Code Is    204
-    DELETE Individual Subscription Good
 
 POST NS Instance Creation Bad Request
     [Tags]    standalone

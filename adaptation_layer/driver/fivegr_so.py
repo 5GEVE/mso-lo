@@ -30,6 +30,9 @@ from .interface import Driver, Headers, BodyList, Body
 
 from urllib.parse import urlencode
 
+import logging
+logger = logging.getLogger('app.driver.fivegr_so')
+
 TESTING = os.environ.get("TESTING", False)
 PRISM_ALIAS = os.environ.get("PRISM_ALIAS", "prism-fivegr-so")
 
@@ -47,7 +50,7 @@ class FIVEGR_SO(Driver):
     self._port = nfvo_cred["port"] if "port" in nfvo_cred else 8080
     self._headers = {"Content-Type": "application/json",
                      "Accept": "application/json"}
-
+    logger.debug("_host:{} _port:{}".format(self._host, self._port))
     if TESTING is False:
       self._base_path = 'http://{0}:{1}/5gt/so/v1'.format(self._host, self._port)
     else:
@@ -163,9 +166,11 @@ class FIVEGR_SO(Driver):
       nsIdRaw, resp_headers = self._exec_post(
         _url, json=args['payload'], headers=self._headers)
       nsId = nsIdRaw['nsId']
-      nsInstance, resp_headers = self.get_ns(nsId)
-      nsInstance["nsInstanceName"] = args['payload']['nsName']
-      nsInstance["nsInstanceDescription"] = args['payload']['nsDescription']
+      logger.debug("nsId:{}".format(nsId))
+      # nsInstance, resp_headers = self.get_ns(nsId)  # FIXME get_ns without instantiation does not work in 5gr-so
+      sol005NsInstance = SOL005NSInstance(id=nsId, nsInstanceName=args['payload']['nsName'], nsInstanceDescription=args['payload']['nsDescription'], nsState="NOT_INSTANTIATED")
+
+      nsInstance = to_dict(sol005NsInstance)
     except ResourceNotFound:
       nsd_Id = args['payload']['nsdId']
       raise NsdNotFound(nsd_id=nsd_Id)
@@ -177,11 +182,9 @@ class FIVEGR_SO(Driver):
     _url = self._build_url_query(_url, args)
     try:
       nsInfoDict, resp_headers = self._exec_get(_url, headers=self._headers)
-      status = nsInfoDict.pop('status', None)
-      nsInfoDict['nsState'] = status
+      nsInfoDict = nsInfoDict["queryNsResult"][0]
       nsInfo = IFA013NsInfo(**nsInfoDict)
       nsInstance = ifa013nsinfo_to_sol005nsinstance(nsInfo)
-      nsInstance.id = nsId  # NSInfo does not contain the id of the NS instance
     except ResourceNotFound:
       raise NsNotFound(ns_id=nsId)
     headers = {}
@@ -194,11 +197,10 @@ class FIVEGR_SO(Driver):
     _url = '{0}/ns/{1}/instantiate'.format(self._base_path, nsId)
     _url = self._build_url_query(_url, args)
     if 'payload' not in args:
-      raise BadRequest(ns_id=nsId)
+      raise BadRequest(description="Payload not found for id: {}".format(nsId))
     sol005InstantiateNsRequest = SOL005InstantiateNsRequest(**args['payload'])
     ifa013InstantiateNsRequest = sol005InstantiateNsRequest_to_ifa013InstantiateNsRequest(sol005InstantiateNsRequest)
     ifa013InstantiateNsRequestDict = to_dict(ifa013InstantiateNsRequest)
-    # print(json.dumps(ifa013InstantiateNsRequestDict, indent=4, sort_keys=True))
     try:
       operationIdRaw, resp_headers = self._exec_put(
         _url, headers=self._headers, json=ifa013InstantiateNsRequestDict)
@@ -206,6 +208,7 @@ class FIVEGR_SO(Driver):
       raise NsNotFound(ns_id=nsId)
     operationId = operationIdRaw["operationId"]
     headers = self._build_lcm_op_occs_header(operationId)
+    logger.debug("operationId:{}".format(operationId))
     return None, headers
 
   def terminate_ns(self, nsId: str, args: Dict = None) -> Tuple[None, Headers]:
@@ -218,6 +221,7 @@ class FIVEGR_SO(Driver):
       raise NsNotFound(ns_id=nsId)
     operationId = operationIdRaw["operationId"]
     headers = self._build_lcm_op_occs_header(operationId)
+    logger.debug("operationId:{}".format(operationId))
     return None, headers
 
   def scale_ns(self, nsId: str, args: Dict = None) -> Tuple[None, Headers]:
@@ -234,6 +238,7 @@ class FIVEGR_SO(Driver):
       raise NsNotFound(ns_id=id)
     operationId = operationIdRaw["operationId"]
     headers = self._build_lcm_op_occs_header(operationId)
+    logger.debug("operationId:{}".format(operationId))
     return None, headers
 
   def get_op_list(self, args: Dict = None) -> Tuple[BodyList, Headers]:
@@ -337,13 +342,22 @@ class IFA013NsVirtualLinkInfo:
     [self.linkPort.append(IFA013NsLinkPort(**element)) for element in linkPort or []]
 
 
+class UserAccessInfo:
+  def __init__(self, address="", sapdId="", vnfdId=""):
+    self.address: str = address
+    self.sapdId: str = sapdId
+    self.vnfdId: str = vnfdId
+
+
 class IFA013SapInfo:
-  def __init__(self, sapInstanceId="", sapdId="", sapName="", description="", address=""):
+  def __init__(self, sapInstanceId="", sapdId="", sapName="", description="", address="", userAccessInfo=None):
     self.sapInstanceId: str = sapInstanceId
     self.sapdId: str = sapdId
     self.sapName: str = sapName
     self.description: str = description
     self.address: str = address
+    self.userAccessInfo: List[UserAccessInfo] = []
+    [self.userAccessInfo.append(UserAccessInfo(**element)) for element in userAccessInfo or []]
 
 
 class IFA013Nfp:
@@ -728,13 +742,15 @@ class SOL005CpProtocolInfo:
 
 
 class SOL005SapInfo:
-  def __init__(self, id="", sapdId="", sapName="", description="", sapProtocolInfo=None):
+  def __init__(self, id="", sapdId="", sapName="", description="", sapProtocolInfo=None, userAccessInfo=None):
     self.id: str = id
     self.sapdId: str = sapdId
     self.sapName: str = sapName
     self.description: str = description
     self.sapProtocolInfo: List[SOL005CpProtocolInfo] = []
     [self.sapProtocolInfo.append(element) for element in sapProtocolInfo or []]
+    self.userAccessInfo: List[UserAccessInfo] = []
+    [self.userAccessInfo.append(element) for element in userAccessInfo or []]
 
 
 class SOL005NsScaleInfo:
@@ -1254,6 +1270,7 @@ def ifa013SapInfo_to_sol005Sapinfo(ifaSapInfoArray: List[IFA013SapInfo]) -> List
     else:  # Mac address
       sol005cpProtocolInfo.ipOverEthernet.macAddress = ifaSapInfo.address
     sol005SapInfo.sapProtocolInfo.append(sol005cpProtocolInfo)
+    sol005SapInfo.userAccessInfo = ifaSapInfo.userAccessInfo
     sol005SapInfoArray.append(sol005SapInfo)
   return sol005SapInfoArray
 
@@ -1409,7 +1426,7 @@ def ifa013OperationStatus_to_sol005NsLcmOpOcc(ifa013NSLCMOpId, ifa013OperationSt
   SOL: (1)PROCESSING, (2)COMPLETED, PARTIALLY_COMPLETED, FAILED_TEMP, (3)FAILED, ROLLING_BACK, ROLLED_BACK
   """
   sol005NsLcmOpOcc = SOL005NsLcmOpOcc()
-  if ifa013OperationStatus == "SUCCESFULLY_DONE":
+  if ifa013OperationStatus == "SUCCESSFULLY_DONE":
     sol005NsLcmOpOcc.operationState = "COMPLETED"
   elif ifa013OperationStatus == "PROCESSING":
     sol005NsLcmOpOcc.operationState = "PROCESSING"
