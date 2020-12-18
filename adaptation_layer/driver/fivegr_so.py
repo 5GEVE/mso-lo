@@ -280,7 +280,7 @@ class FIVEGR_SO(Driver):
 # IFA 013 - Information Model
 
 class IFA013SapData:
-  def __init__(self, sapdId="", sapName="", description="", address=""):
+  def __init__(self, sapdId="", sapName="", description="", address="", **kwargs):
     self.sapdId: str = sapdId
     self.sapName: str = sapName
     self.description: str = description
@@ -288,13 +288,13 @@ class IFA013SapData:
 
 
 class IFA013PnfExtCpInfo:
-  def __init__(self, cpdId="", address=""):
+  def __init__(self, cpdId="", address="", **kwargs):
     self.cpdId: str = cpdId
     self.address: str = address
 
 
 class IFA013PnfInfo:
-  def __init__(self, pnfName="", pnfdinfoId="", cpInfo=None):
+  def __init__(self, pnfName="", pnfdinfoId="", cpInfo=None, **kwargs):
     self.pnfName: str = pnfName
     self.pnfdinfoId: str = pnfdinfoId
     self.cpInfo: List[IFA013PnfExtCpInfo] = []
@@ -302,26 +302,26 @@ class IFA013PnfInfo:
 
 
 class IFA013VnfInstanceData:
-  def __init__(self, vnfInstanceId="", vnfProfileId=""):
+  def __init__(self, vnfInstanceId="", vnfProfileId="", **kwargs):
     self.vnfInstanceId: str = vnfInstanceId
     self.vnfProfileId: str = vnfProfileId
 
 
 class IFA013VnfLocationConstraint:
-  def __init__(self, vnfProfileId="", locationConstraints=""):
+  def __init__(self, vnfProfileId="", locationConstraints="", **kwargs):
     self.vnfProfileId: str = vnfProfileId
     self.locationConstraints: str = locationConstraints
 
 
 class IFA013ParamsForVnf:
-  def __init__(self, vnfProfileId="", additionalParam=None):
+  def __init__(self, vnfProfileId="", additionalParam=None, **kwargs):
     self.vnfProfileId: str = vnfProfileId
     self.additionalParam: Dict = {}
     if additionalParam is not None: self.additionalParam = additionalParam
 
 
 class IFA013AffinityOrAntiAffinityRule:
-  def __init__(self, descriptorId="", vnfInstanceId="", affinityOrAntiAffinity=True, scope=""):
+  def __init__(self, descriptorId="", vnfInstanceId="", affinityOrAntiAffinity=True, scope="", **kwargs):
     self.descriptorId: str = descriptorId
     self.vnfInstanceId: str = vnfInstanceId
     self.affinityOrAntiAffinity: bool = affinityOrAntiAffinity
@@ -329,14 +329,14 @@ class IFA013AffinityOrAntiAffinityRule:
 
 
 class IFA013ResourceHandle:
-  def __init__(self, vimId="", resourceProviderId="", resourceId=""):
+  def __init__(self, vimId="", resourceProviderId="", resourceId="", **kwargs):
     self.vimId: str = vimId
     self.resourceProviderId: str = resourceProviderId
     self.resourceId: str = resourceId
 
 
 class IFA013NsLinkPort:
-  def __init__(self, resourceHandle=None, cpId=""):
+  def __init__(self, resourceHandle=None, cpId="", **kwargs):
     self.resourceHandle: IFA013ResourceHandle = IFA013ResourceHandle()
     if resourceHandle is not None:
       self.resourceHandle: IFA013ResourceHandle = IFA013ResourceHandle(**resourceHandle)
@@ -344,7 +344,7 @@ class IFA013NsLinkPort:
 
 
 class IFA013NsVirtualLinkInfo:
-  def __init__(self, nsVirtualLinkDescId="", resourceHandle=None, linkPort=None):
+  def __init__(self, nsVirtualLinkDescId="", resourceHandle=None, linkPort=None, **kwargs):
     self.nsVirtualLinkDescId: str = nsVirtualLinkDescId
     self.resourceHandle: List[IFA013ResourceHandle] = []  # IFA013ResourceHandle
     [self.resourceHandle.append(IFA013ResourceHandle(**element)) for element in resourceHandle or []]
@@ -353,14 +353,14 @@ class IFA013NsVirtualLinkInfo:
 
 
 class UserAccessInfo:
-  def __init__(self, address="", sapdId="", vnfdId=""):
+  def __init__(self, address="", sapdId="", vnfdId="", **kwargs):
     self.address: str = address
     self.sapdId: str = sapdId
     self.vnfdId: str = vnfdId
 
 
 class IFA013SapInfo:
-  def __init__(self, sapInstanceId="", sapdId="", sapName="", description="", address="", userAccessInfo=None):
+  def __init__(self, sapInstanceId="", sapdId="", sapName="", description="", address="", userAccessInfo=None, **kwargs):
     self.sapInstanceId: str = sapInstanceId
     self.sapdId: str = sapdId
     self.sapName: str = sapName
@@ -371,7 +371,7 @@ class IFA013SapInfo:
 
 
 class IFA013Nfp:
-  def __init__(self, nfpId="", cpId=None, totalCp=0, nfpRule="", nfpState=""):
+  def __init__(self, nfpId="", cpId=None, totalCp=0, nfpRule="", nfpState="", **kwargs):
     self.nfpId: str = nfpId
     self.cpId: List[str] = cpId  # String
     self.totalCp: int = totalCp
@@ -380,7 +380,7 @@ class IFA013Nfp:
 
 
 class IFA013VnffgInfo:
-  def __init__(self, vnffgId="", vnffgdId="", vnfId=None, pnfId=None, virtualLinkId=None, cpId=None, nfp=None):
+  def __init__(self, vnffgId="", vnffgdId="", vnfId=None, pnfId=None, virtualLinkId=None, cpId=None, nfp=None, **kwargs):
     self.vnffgId: str = vnffgId
     self.vnffgdId: str = vnffgdId
     self.vnfId: List[str] = []  # String
@@ -396,20 +396,20 @@ class IFA013VnffgInfo:
 
 
 class IFA013NsScaleInfo:
-  def __init__(self, nsScalingAspectId="", nsScaleLevelId=""):
+  def __init__(self, nsScalingAspectId="", nsScaleLevelId="", **kwargs):
     self.nsScalingAspectId: str = nsScalingAspectId
     self.nsScaleLevelId: str = nsScaleLevelId
 
 
 class IFA013ScaleNsByStepsData:
-  def __init__(self, scalingDirection="", aspectId="", numberOfSteps=1):
+  def __init__(self, scalingDirection="", aspectId="", numberOfSteps=1, **kwargs):
     self.scalingDirection: str = scalingDirection
     self.aspectId: str = aspectId
     self.numberOfSteps: int = numberOfSteps
 
 
 class IFA013ScaleNsToLevelData:
-  def __init__(self, nsInstantiationLevel="", nsScaleInfo=None):
+  def __init__(self, nsInstantiationLevel="", nsScaleInfo=None, **kwargs):
     self.nsInstantiationLevel: str = nsInstantiationLevel
     self.nsScaleInfo: List[IFA013NsScaleInfo] = []  # NsScaleInfo
     [self.nsScaleInfo.append(IFA013NsScaleInfo(**element)) for element in nsScaleInfo or []]
@@ -417,7 +417,7 @@ class IFA013ScaleNsToLevelData:
 
 class IFA013ScaleNsData:
   def __init__(self, vnfInstanceToBeAdded=None, vnfInstanceToBeRemoved=None, scaleNsByStepsData=None,
-               scaleNsToLevelData=None, additionalParamForNs=None):
+               scaleNsToLevelData=None, additionalParamForNs=None, **kwargs):
     self.vnfInstanceToBeAdded: List[IFA013VnfInstanceData] = []  # VnfInstanceData
     [self.vnfInstanceToBeAdded.append(IFA013VnfInstanceData(**element)) for element in vnfInstanceToBeAdded or []]
     self.vnfInstanceToBeRemoved: List[str] = []  # String
@@ -433,13 +433,13 @@ class IFA013ScaleNsData:
 
 
 class IFA013ScaleInfo:
-  def __init__(self, aspectId="", scaleLevel=0):
+  def __init__(self, aspectId="", scaleLevel=0, **kwargs):
     self.aspectId: str = aspectId
     self.scaleLevel: int = scaleLevel
 
 
 class IFA013ScaleToLevelData:
-  def __init__(self, instantiationLevelId="", scaleInfo=None, additionalParam=None):
+  def __init__(self, instantiationLevelId="", scaleInfo=None, additionalParam=None, **kwargs):
     self.instantiationLevelId: str = instantiationLevelId
     self.scaleInfo: List[IFA013ScaleInfo] = []  # ScaleInfo
     [self.scaleInfo.append(IFA013ScaleInfo(**element)) for element in scaleInfo or []]
@@ -448,7 +448,7 @@ class IFA013ScaleToLevelData:
 
 
 class IFA013ScaleByStepData:
-  def __init__(self, type="", aspectId="", numberOfSteps=1, additionalParam=None):
+  def __init__(self, type="", aspectId="", numberOfSteps=1, additionalParam=None, **kwargs):
     self.type: str = type
     self.aspectId: str = aspectId
     self.numberOfSteps: int = numberOfSteps
@@ -457,7 +457,7 @@ class IFA013ScaleByStepData:
 
 
 class IFA013ScaleVnfData:
-  def __init__(self, vnfInstanceId="", type="", scaleToLevelData=None, scaleByStepData=None):
+  def __init__(self, vnfInstanceId="", type="", scaleToLevelData=None, scaleByStepData=None, **kwargs):
     self.vnfInstanceId: str = vnfInstanceId
     self.type: str = type
     if scaleToLevelData is not None:
@@ -467,7 +467,7 @@ class IFA013ScaleVnfData:
 
 
 class IFA013ScaleNsRequest:
-  def __init__(self, nsInstanceId="", scaleType="", scaleNsData=None, scaleVnfData=None, scaleTime=None):
+  def __init__(self, nsInstanceId="", scaleType="", scaleNsData=None, scaleVnfData=None, scaleTime=None, **kwargs):
     self.nsInstanceId: str = nsInstanceId
     self.scaleType: str = scaleType
     if scaleNsData is not None:
@@ -481,7 +481,7 @@ class IFA013ScaleNsRequest:
 class IFA013NsInfo:
   def __init__(self, nsInstanceId="", nsName="", description="", nsdId="", flavourId="", vnfInfoId=None, pnfInfo=None,
                virtualLinkInfo=None, vnffgInfo=None, sapInfo=None, nestedNsInfoId=None, nsState="", nsScaleStatus=None,
-               additionalAffinityOrAntiAffinityRule=None):
+               additionalAffinityOrAntiAffinityRule=None, **kwargs):
     self.nsInstanceId: str = nsInstanceId
     self.nsName: str = nsName
     self.description: str = description
@@ -508,20 +508,20 @@ class IFA013NsInfo:
 
 
 class IFA013QueryNsRequest:
-  def __init__(self, filter="", attributeSelector=None):
+  def __init__(self, filter="", attributeSelector=None, **kwargs):
     self.filter: str = filter
     self.attributeSelector: List[str] = []  # String
     [self.attributeSelector.append(element) for element in attributeSelector or []]
 
 
 class IFA013QueryNsResponse:
-  def __init__(self, queryNsResult=None):
+  def __init__(self, queryNsResult=None, **kwargs):
     self.queryNsResult: List[IFA013NsInfo] = []  # NsInfo
     [self.queryNsResult.append(IFA013NsInfo(**element)) for element in queryNsResult or []]
 
 
 class IFA013CreateNsIdentifierRequest:
-  def __init__(self, nsdId="", nsName="", nsDescription=""):
+  def __init__(self, nsdId="", nsName="", nsDescription="", **kwargs):
     self.nsdId: str = nsdId
     self.nsName: str = nsName
     self.nsDescription: str = nsDescription
@@ -530,7 +530,7 @@ class IFA013CreateNsIdentifierRequest:
 class IFA013InstantiateNsRequest:
   def __init__(self, nsInstanceId="", flavourId="", sapData=None, pnfInfo=None, vnfInstanceData=None,
                nestedNsInstanceId="", locationConstraints=None, additionalParamForNs=None, additionalParamForVnf=None,
-               startTime="", nsInstantiationLevelId="", additionalAffinityOrAntiAffiniityRule=None):
+               startTime="", nsInstantiationLevelId="", additionalAffinityOrAntiAffiniityRule=None, **kwargs):
     self.nsInstanceId: str = nsInstanceId
     self.flavourId: str = flavourId
     self.sapData: List[IFA013SapData] = []
@@ -557,21 +557,21 @@ class IFA013InstantiateNsRequest:
 
 
 class SOL005CreateNsIdentifierRequest:
-  def __init__(self, nsdId="", nsName="", nsDescription=""):
+  def __init__(self, nsdId="", nsName="", nsDescription="", **kwargs):
     self.nsdId: str = nsdId
     self.nsName: str = nsName
     self.nsDescription: str = nsDescription
 
 
 class SOL005IpOverEthernetAddressData:
-  def __init__(self, macAddress="", ipAddresses=None):
+  def __init__(self, macAddress="", ipAddresses=None, **kwargs):
     self.macAddress: str = macAddress
     self.ipAddresses: List[str] = []
     [self.ipAddresses.append(element) for element in ipAddresses or []]
 
 
 class SOL005CpProtocolData:
-  def __init__(self, layerProtocol="", ipOverEthernet=None):
+  def __init__(self, layerProtocol="", ipOverEthernet=None, **kwargs):
     self.layerProtocol: str = layerProtocol
     self.ipOverEthernet: SOL005IpOverEthernetAddressData = SOL005IpOverEthernetAddressData()
     if ipOverEthernet is not None:
@@ -579,7 +579,7 @@ class SOL005CpProtocolData:
 
 
 class SOL005PnfExtCpInfo:
-  def __init__(self, cpInstanceId="", cpdId="", cpProtocolData=""):
+  def __init__(self, cpInstanceId="", cpdId="", cpProtocolData="", **kwargs):
     self.cpInstanceId: str = cpInstanceId
     self.cpdId: str = cpdId
     self.cpProtocolData: List[SOL005CpProtocolData] = []  # CpProtocolData
@@ -587,7 +587,7 @@ class SOL005PnfExtCpInfo:
 
 
 class SOL005PnfInfo:
-  def __init__(self, pnfId="", pnfName="", pnfdId="", pnfdInfoId="", pnfProfileId="", cpInfo=None):
+  def __init__(self, pnfId="", pnfName="", pnfdId="", pnfdInfoId="", pnfProfileId="", cpInfo=None, **kwargs):
     self.pnfId: str = pnfId
     self.pnfName: str = pnfName
     self.pnfdId: str = pnfdId
@@ -600,7 +600,7 @@ class SOL005PnfInfo:
 class SOL005VnfInstance:
   def __init__(self, id="", vnfInstanceName="", vnfInstanceDescription="", vnfdId="", vnfProvider="", vnfProductName="",
                vnfSoftwareVersion="", vnfdVersion="", vnfPkgId="", vnfConfigurableProperties=None, vimId="",
-               instantiationState="", instantiatedVnfInfo=""):
+               instantiationState="", instantiatedVnfInfo="", **kwargs):
     self.id: str = id
     self.vnfInstanceName: str = vnfInstanceName
     self.vnfInstanceDescription: str = vnfInstanceDescription
@@ -618,7 +618,7 @@ class SOL005VnfInstance:
 
 
 class SOL005ResourceHandle:
-  def __init__(self, vimId="", resourceProviderId="", resourceId="", vimLevelResourceType=""):
+  def __init__(self, vimId="", resourceProviderId="", resourceId="", vimLevelResourceType="", **kwargs):
     self.vimId: str = vimId
     self.resourceProviderId: str = resourceProviderId
     self.resourceId: str = resourceId
@@ -627,7 +627,7 @@ class SOL005ResourceHandle:
 
 class SOL005NsCpHandle:
   def __init__(self, vnfInstanceId="", vnfExtCpInstanceId="", pnfInfoId="", pnfExtCpInstanceId="", nsInstanceId="",
-               nsSapInstanceId=""):
+               nsSapInstanceId="", **kwargs):
     self.vnfInstanceId: str = vnfInstanceId
     self.vnfExtCpInstanceId: str = vnfExtCpInstanceId
     self.pnfInfoId: str = pnfInfoId
@@ -637,7 +637,7 @@ class SOL005NsCpHandle:
 
 
 class SOL005NsLinkPortInfo:
-  def __init__(self, id="", resourceHandle=None, nsCpHandle=None):
+  def __init__(self, id="", resourceHandle=None, nsCpHandle=None, **kwargs):
     self.id: str = id
     self.resourceHandle: SOL005ResourceHandle = SOL005ResourceHandle()
     if resourceHandle is not None:
@@ -648,7 +648,7 @@ class SOL005NsLinkPortInfo:
 
 
 class SOL005NsVirtualLinkInfo:
-  def __init__(self, id="", nsVirtualLinkDescId="", nsVirtualLinkProfileId="", resourceHandle=None, linkPort=None):
+  def __init__(self, id="", nsVirtualLinkDescId="", nsVirtualLinkProfileId="", resourceHandle=None, linkPort=None, **kwargs):
     self.id: str = id
     self.nsVirtualLinkDescId: str = nsVirtualLinkDescId
     self.nsVirtualLinkProfileId: str = nsVirtualLinkProfileId
@@ -659,7 +659,7 @@ class SOL005NsVirtualLinkInfo:
 
 
 class SOL005CpPairInfo:
-  def __init__(self, vnfExtCpIds=None, pnfExtCpIds=None, sapIds=None):
+  def __init__(self, vnfExtCpIds=None, pnfExtCpIds=None, sapIds=None, **kwargs):
     self.vnfExtCpIds: List[str] = []
     [self.vnfExtCpIds.append(element) for element in vnfExtCpIds or []]
     self.pnfExtCpIds: List[str] = []
@@ -669,14 +669,14 @@ class SOL005CpPairInfo:
 
 
 class SOL005ForwardingBehaviourInputParameters:
-  def __init__(self, algortihmName="", algorithmWeights=None):
+  def __init__(self, algortihmName="", algorithmWeights=None, **kwargs):
     self.algortihmName: str = algortihmName
     self.algorithmWeights: List[int] = []
     [self.algorithmWeights.append(element) for element in algorithmWeights or []]
 
 
 class SOL005CpGroupInfo:
-  def __init__(self, cpPairInfo=None, forwardingBehaviour="", forwardingBehaviourInputParameters=None):
+  def __init__(self, cpPairInfo=None, forwardingBehaviour="", forwardingBehaviourInputParameters=None, **kwargs):
     self.cpPairInfo: SOL005CpPairInfo = SOL005CpPairInfo()
     if cpPairInfo is not None:
       self.cpPairInfo: SOL005CpPairInfo = SOL005CpPairInfo(**cpPairInfo)
@@ -690,7 +690,7 @@ class SOL005CpGroupInfo:
 class SOL005NfpRule:
   def __init__(self, etherDestinationAddress="", etherSourceAddress="", etherType="", vlanTag="", protocol="", dscp="",
                sourcePortRange="", destinationPortRange="", sourceIpAddressPrefix="", destinationIpAddressPrefix="",
-               extendedCriteria=""):
+               extendedCriteria="", **kwargs):
     self.etherDestinationAddress: str = etherDestinationAddress
     self.etherSourceAddress: str = etherSourceAddress
     self.etherType: str = etherType
@@ -705,7 +705,7 @@ class SOL005NfpRule:
 
 
 class SOL005NfpInfo:
-  def __init__(self, id="", nfpdId="", nfpName="", description="", cpGroup=None, totalCp="", nfpRule=None, nfpState=""):
+  def __init__(self, id="", nfpdId="", nfpName="", description="", cpGroup=None, totalCp="", nfpRule=None, nfpState="", **kwargs):
     self.id: str = id
     self.nfpdId: str = nfpdId
     self.nfpName: str = nfpName
@@ -722,7 +722,7 @@ class SOL005NfpInfo:
 
 class SOL005VnffgInfo:
   def __init__(self, id="", vnffgdId="", vnfInstanceId="", pnfInfoId="", nsVirtualLinkInfoId="", nsCpHandle=None,
-               nfpInfo=None):
+               nfpInfo=None, **kwargs):
     self.id: str = id
     self.vnffgdId: str = vnffgdId
     self.vnfInstanceId: str = vnfInstanceId
@@ -737,14 +737,14 @@ class SOL005VnffgInfo:
 
 
 class SOL005IpOverEthernetAddressInfo:
-  def __init__(self, macAddress="", ipAddresses=None):
+  def __init__(self, macAddress="", ipAddresses=None, **kwargs):
     self.macAddress: str = macAddress
     self.ipAddresses: List[str] = []
     [self.ipAddresses.append(element) for element in ipAddresses or []]
 
 
 class SOL005CpProtocolInfo:
-  def __init__(self, layerProtocol="IP_OVER_ETHERNET", ipOverEthernet=None):
+  def __init__(self, layerProtocol="IP_OVER_ETHERNET", ipOverEthernet=None, **kwargs):
     self.layerProtocol: str = layerProtocol
     self.ipOverEthernet: SOL005IpOverEthernetAddressInfo = SOL005IpOverEthernetAddressInfo()
     if ipOverEthernet is not None:
@@ -752,7 +752,7 @@ class SOL005CpProtocolInfo:
 
 
 class SOL005SapInfo:
-  def __init__(self, id="", sapdId="", sapName="", description="", sapProtocolInfo=None, userAccessInfo=None):
+  def __init__(self, id="", sapdId="", sapName="", description="", sapProtocolInfo=None, userAccessInfo=None, **kwargs):
     self.id: str = id
     self.sapdId: str = sapdId
     self.sapName: str = sapName
@@ -764,13 +764,13 @@ class SOL005SapInfo:
 
 
 class SOL005NsScaleInfo:
-  def __init__(self, nsScalingAspectId="", nsScaleLevelId=""):
+  def __init__(self, nsScalingAspectId="", nsScaleLevelId="", **kwargs):
     self.nsScalingAspectId: str = nsScalingAspectId
     self.nsScaleLevelId: str = nsScaleLevelId
 
 
 class SOL005AffinityOrAntiAffinityRule:
-  def __init__(self, vnfdId="", vnfProfileId="", vnfInstanceId="", affinityOrAntiAffinity="", scope=""):
+  def __init__(self, vnfdId="", vnfProfileId="", vnfInstanceId="", affinityOrAntiAffinity="", scope="", **kwargs):
     self.vnfdId: str = vnfdId
     self.vnfProfileId: str = vnfProfileId
     self.vnfInstanceId: str = vnfInstanceId
@@ -782,7 +782,7 @@ class SOL005NSInstance:
   def __init__(self, id="", nsInstanceName="", nsInstanceDescription="", nsdId="", nsdInfoId="", flavourId="",
                vnfInstance=None, pnfInfo=None, virtualLinkInfo=None, vnffgInfo=None, sapInfo=None,
                nestedNsInstanceId="", nsState="", monitoringParameter=None, nsScaleStatus=None,
-               additionalAffinityOrAntiAffinityRule=None):
+               additionalAffinityOrAntiAffinityRule=None, **kwargs):
     self.id: str = id
     self.nsInstanceName: str = nsInstanceName
     self.nsInstanceDescription: str = nsInstanceDescription
@@ -812,7 +812,7 @@ class SOL005NSInstance:
 
 
 class SOL005SapData:
-  def __init__(self, sapdId="", sapName="", description="", sapProtocolData=None):
+  def __init__(self, sapdId="", sapName="", description="", sapProtocolData=None, **kwargs):
     self.sapdId: str = sapdId
     self.sapName: str = sapName
     self.description: str = description
@@ -821,7 +821,7 @@ class SOL005SapData:
 
 
 class SOL005PnfExtCpData:
-  def __init__(self, cpInstanceI16, cpdId, cpProtocolData=None):
+  def __init__(self, cpInstanceI16, cpdId, cpProtocolData=None, **kwargs):
     self.cpInstanceI16: str = cpInstanceI16
     self.cpdId: str = cpdId
     self.cpProtocolData: List[SOL005CpProtocolData] = []
@@ -829,7 +829,7 @@ class SOL005PnfExtCpData:
 
 
 class SOL005AddPnfData:
-  def __init__(self, pnfId="", pnfName="", pnfdId="", pnfProfileId="", cpData=None):
+  def __init__(self, pnfId="", pnfName="", pnfdId="", pnfProfileId="", cpData=None, **kwargs):
     self.pnfId: str = pnfId
     self.pnfName: str = pnfName
     self.pnfdId: str = pnfdId
@@ -839,25 +839,25 @@ class SOL005AddPnfData:
 
 
 class SOL005VnfInstanceData:
-  def __init__(self, vnfInstanceId="", vnfProfileId=""):
+  def __init__(self, vnfInstanceId="", vnfProfileId="", **kwargs):
     self.vnfInstanceId: str = vnfInstanceId
     self.vnfProfileId: str = vnfProfileId
 
 
 class SOL005NestedNsInstanceData:
-  def __init__(self, nestedNsInstanceId="", nsProfileId=""):
+  def __init__(self, nestedNsInstanceId="", nsProfileId="", **kwargs):
     self.nestedNsInstanceId: str = nestedNsInstanceId
     self.nsProfileId: str = nsProfileId
 
 
 class SOL005LocationConstraints:
-  def __init__(self, countryCode="", civicAddressElement=""):
+  def __init__(self, countryCode="", civicAddressElement="", **kwargs):
     self.countryCode: str = countryCode
     self.civicAddressElement: str = civicAddressElement
 
 
 class SOL005VnfLocationConstraint:
-  def __init__(self, vnfProfileId="", locationConstraints=None):
+  def __init__(self, vnfProfileId="", locationConstraints=None, **kwargs):
     self.vnfProfileId: str = vnfProfileId
     self.locationConstraints: SOL005LocationConstraints = SOL005LocationConstraints()
     if locationConstraints is not None:
@@ -865,14 +865,14 @@ class SOL005VnfLocationConstraint:
 
 
 class SOL005ParamForNestedNs:
-  def __init__(self, nsProfileId="", additionalParam=None):
+  def __init__(self, nsProfileId="", additionalParam=None, **kwargs):
     self.nsProfileId: str = nsProfileId
     self.additionalParam: Dict = {}
     if additionalParam is not None: self.additionalParam = additionalParam
 
 
 class SOL005ParamsForVnf:
-  def __init__(self, vnfProfileId="", additionalParams=None):
+  def __init__(self, vnfProfileId="", additionalParams=None, **kwargs):
     self.vnfProfileId: str = vnfProfileId
     self.additionalParams: Dict = {}
     if additionalParams is not None: self.additionalParams = additionalParams
@@ -882,7 +882,7 @@ class SOL005InstantiateNsRequest:
   def __init__(self, nsFlavourId="", sapData=None, addpnfData=None, vnfInstanceData=None, nestedNsInstanceData=None,
                locationConstraints=None, additionalParamsForNs=None, additionalParamForNestedNs=None,
                additionalParamsForVnf=None, startTime="", nsInstantiationLevelId=None,
-               additionalAffinityOrAntiAffinityRule=None):
+               additionalAffinityOrAntiAffinityRule=None, **kwargs):
     self.nsFlavourId: str = nsFlavourId
     self.sapData: List[SOL005SapData] = []
     [self.sapData.append(SOL005SapData(**element)) for element in sapData or []]
@@ -909,14 +909,14 @@ class SOL005InstantiateNsRequest:
 
 
 class SOL005ScaleNsByStepsData:
-  def __init__(self, scalingDirection="", aspectId="", numberOfSteps=1):
+  def __init__(self, scalingDirection="", aspectId="", numberOfSteps=1, **kwargs):
     self.scalingDirection: str = scalingDirection
     self.aspectId: str = aspectId
     self.numberOfSteps: int = numberOfSteps
 
 
 class SOL005ScaleNsToLevelData:
-  def __init__(self, nsInstantiationLevel="", nsScaleInfo=None):
+  def __init__(self, nsInstantiationLevel="", nsScaleInfo=None, **kwargs):
     self.nsInstantiationLevel: str = nsInstantiationLevel
     self.nsScaleInfo: List[SOL005NsScaleInfo] = []
     [self.nsScaleInfo.append(SOL005NsScaleInfo(**element)) for element in nsScaleInfo or []]
@@ -925,7 +925,7 @@ class SOL005ScaleNsToLevelData:
 class SOL005ScaleNsData:
   def __init__(self, vnfInstanceToBeAdded=None, vnfInstanceToBeRemoved=None, scaleNsByStepsData=None,
                scaleNsToLevelData=None, additionalParamsForNs=None, additionalParamsForVnf=None,
-               locationConstraints=None):
+               locationConstraints=None, **kwargs):
     self.vnfInstanceToBeAdded: List[SOL005VnfInstanceData] = []
     [self.vnfInstanceToBeAdded.append(SOL005VnfInstanceData(**element)) for element in vnfInstanceToBeAdded or []]
     self.vnfInstanceToBeRemoved: List[str] = []
@@ -945,13 +945,13 @@ class SOL005ScaleNsData:
 
 
 class SOL005VnfScaleInfo:
-  def __init__(self, aspectlId="", scaleLevel=0):
+  def __init__(self, aspectlId="", scaleLevel=0, **kwargs):
     self.aspectlId: str = aspectlId
     self.scaleLevel: int = scaleLevel
 
 
 class SOL005ScaleToLevelData:
-  def __init__(self, vnfInstantiationLevelId="", vnfScaleInfo=None, additionalParams=None):
+  def __init__(self, vnfInstantiationLevelId="", vnfScaleInfo=None, additionalParams=None, **kwargs):
     self.vnfInstantiationLevelId: str = vnfInstantiationLevelId
     self.vnfScaleInfo: List[SOL005VnfScaleInfo] = []
     [self.vnfScaleInfo.append(SOL005VnfScaleInfo(**element)) for element in vnfScaleInfo or []]
@@ -960,7 +960,7 @@ class SOL005ScaleToLevelData:
 
 
 class SOL005ScaleByStepData:
-  def __init__(self, aspectId="", numberOfSteps=1, additionalParams=None):
+  def __init__(self, aspectId="", numberOfSteps=1, additionalParams=None, **kwargs):
     self.aspectId: str = aspectId
     self.numberOfSteps: int = numberOfSteps
     self.additionalParams: Dict = {}
@@ -968,7 +968,7 @@ class SOL005ScaleByStepData:
 
 
 class SOL005ScaleVnfData:
-  def __init__(self, vnfInstanceid="", scaleVnfType="", scaleToLevelData=None, scaleByStepData=None):
+  def __init__(self, vnfInstanceid="", scaleVnfType="", scaleToLevelData=None, scaleByStepData=None, **kwargs):
     self.vnfInstanceid: str = vnfInstanceid
     self.scaleVnfType: str = scaleVnfType
     if scaleToLevelData is not None:
@@ -978,7 +978,7 @@ class SOL005ScaleVnfData:
 
 
 class SOL005ScaleNsRequest:
-  def __init__(self, scaleType="", scaleNsData=None, scaleVnfData=None, scaleTime=""):
+  def __init__(self, scaleType="", scaleNsData=None, scaleVnfData=None, scaleTime="", **kwargs):
     self.scaleType: str = scaleType
     if scaleNsData is not None:
       self.scaleNsData: SOL005ScaleNsData = SOL005ScaleNsData(**scaleNsData)
@@ -989,7 +989,7 @@ class SOL005ScaleNsRequest:
 
 
 class SOL005NsLcmOpOcc:
-  def __init__(self, id="", operationState="", stateEnteredTime="", nsInstanceId="", lcmOperationType="", startTime="", isAutomaticInvocation=False, operationParams=None, isCancelPending=False, cancelMode="", error=None, resourceChanges=""):
+  def __init__(self, id="", operationState="", stateEnteredTime="", nsInstanceId="", lcmOperationType="", startTime="", isAutomaticInvocation=False, operationParams=None, isCancelPending=False, cancelMode="", error=None, resourceChanges="", **kwargs):
     self.id = id
     self.operationState = operationState
     self.stateEnteredTime = stateEnteredTime  # Not fully compliant with SOL005 specification "statusEnteredTime"
