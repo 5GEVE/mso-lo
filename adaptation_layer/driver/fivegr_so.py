@@ -781,7 +781,7 @@ class SOL005AffinityOrAntiAffinityRule:
 class SOL005NSInstance:
   def __init__(self, id="", nsInstanceName="", nsInstanceDescription="", nsdId="", nsdInfoId="", flavourId="",
                vnfInstance=None, pnfInfo=None, virtualLinkInfo=None, vnffgInfo=None, sapInfo=None,
-               nestedNsInstanceId="", nsState="", monitoringParameter=None, nsScaleStatus=None,
+               nestedNsInstanceId=None, nsState="", monitoringParameter=None, nsScaleStatus=None,
                additionalAffinityOrAntiAffinityRule=None, **kwargs):
     self.id: str = id
     self.nsInstanceName: str = nsInstanceName
@@ -799,16 +799,14 @@ class SOL005NSInstance:
     [self.vnffgInfo.append(SOL005VnffgInfo(**element)) for element in vnffgInfo or []]
     self.sapInfo: List[SOL005SapInfo] = []
     [self.sapInfo.append(SOL005SapInfo(**element)) for element in sapInfo or []]
-    self.nestedNsInstanceId: str = nestedNsInstanceId
+    self.nestedNsInstanceId: List[str] = []
+    [self.nestedNsInstanceId.append(element) for element in nestedNsInstanceId or []]
     self.nsState: str = nsState
     self.monitoringParameter = monitoringParameter
-    self.nsScaleStatus: SOL005NsScaleInfo = SOL005NsScaleInfo()
-    if nsScaleStatus is not None:
-      self.nsScaleStatus: SOL005NsScaleInfo = SOL005NsScaleInfo(**nsScaleStatus)
-    self.additionalAffinityOrAntiAffinityRule: SOL005AffinityOrAntiAffinityRule = SOL005AffinityOrAntiAffinityRule()
-    if additionalAffinityOrAntiAffinityRule is not None:
-      self.additionalAffinityOrAntiAffinityRule: SOL005AffinityOrAntiAffinityRule = SOL005AffinityOrAntiAffinityRule(
-        **additionalAffinityOrAntiAffinityRule)
+    self.nsScaleStatus: List[SOL005NsScaleInfo] = []
+    [self.nsScaleStatus.append(SOL005NsScaleInfo(**element)) for element in nsScaleStatus or []]
+    self.additionalAffinityOrAntiAffinityRule: List[SOL005AffinityOrAntiAffinityRule] = []
+    [self.additionalAffinityOrAntiAffinityRule.append(SOL005AffinityOrAntiAffinityRule(**element)) for element in additionalAffinityOrAntiAffinityRule or []]
 
 
 class SOL005SapData:
