@@ -987,7 +987,7 @@ class SOL005ScaleNsRequest:
 
 
 class SOL005NsLcmOpOcc:
-  def __init__(self, id="", operationState="", stateEnteredTime="", nsInstanceId="", lcmOperationType="", startTime="", isAutomaticInvocation=False, operationParams=None, isCancelPending=False, cancelMode="", error=None, resourceChanges="", **kwargs):
+  def __init__(self, id="", operationState="", stateEnteredTime="", nsInstanceId="", lcmOperationType="", startTime="", isAutomaticInvocation=False, operationParams=None, isCancelPending=False, cancelMode="", error=None, resourceChanges=None, **kwargs):
     self.id = id
     self.operationState = operationState
     self.stateEnteredTime = stateEnteredTime  # Not fully compliant with SOL005 specification "statusEnteredTime"
@@ -999,7 +999,8 @@ class SOL005NsLcmOpOcc:
     self.isCancelPending = isCancelPending
     self.cancelMode = cancelMode
     self.error = error
-    self.resourceChanges = resourceChanges
+    self.resourceChanges: Dict = {}
+    if resourceChanges is not None: self.resourceChanges = resourceChanges
 
 
 # SOL005 to IFA 013 Translator functions
