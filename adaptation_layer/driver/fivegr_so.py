@@ -752,15 +752,15 @@ class SOL005CpProtocolInfo:
 
 
 class SOL005SapInfo:
-  def __init__(self, id="", sapdId="", sapName="", description="", sapProtocolInfo=None, userAccessInfo=None, **kwargs):
+  def __init__(self, id="", sapdId="", sapName="", description="", sapProtocolInfo=None, **kwargs):
     self.id: str = id
     self.sapdId: str = sapdId
     self.sapName: str = sapName
     self.description: str = description
     self.sapProtocolInfo: List[SOL005CpProtocolInfo] = []
     [self.sapProtocolInfo.append(element) for element in sapProtocolInfo or []]
-    self.userAccessInfo: List[UserAccessInfo] = []
-    [self.userAccessInfo.append(element) for element in userAccessInfo or []]
+    #self.userAccessInfo: List[UserAccessInfo] = []
+    #[self.userAccessInfo.append(element) for element in userAccessInfo or []]
 
 
 class SOL005NsScaleInfo:
@@ -1279,7 +1279,7 @@ def ifa013SapInfo_to_sol005Sapinfo(ifaSapInfoArray: List[IFA013SapInfo]) -> List
     else:  # Mac address
       sol005cpProtocolInfo.ipOverEthernet.macAddress = ifaSapInfo.address
     sol005SapInfo.sapProtocolInfo.append(sol005cpProtocolInfo)
-    sol005SapInfo.userAccessInfo = ifaSapInfo.userAccessInfo
+    #sol005SapInfo.userAccessInfo = ifaSapInfo.userAccessInfo
     sol005SapInfoArray.append(sol005SapInfo)
   return sol005SapInfoArray
 
