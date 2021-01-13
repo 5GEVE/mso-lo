@@ -2,7 +2,7 @@
 swagger: '2.0'
 info:
   description: 5G-EVE Adaptation Layer API spec.
-  version: '1.4.0'
+  version: '1.5.0'
   title: 5G-EVE Adaptation Layer API
   contact: {}
 host: example.com
@@ -1034,7 +1034,7 @@ paths:
           description: Instantiate NS request body
           required: false
           schema:
-            $ref: '#/definitions/NfvoNsInstantiateRequest'
+            $ref: '#/definitions/RanoNsInstantiateRequest'
       responses:
         "202":
           description: |
@@ -1610,20 +1610,87 @@ definitions:
     title: ErrorResponse_details
   NfvoNsInstancesRequest:
     type: object
+    required:
+      - nsdId
+      - nsName
     properties:
       nsdId:
-        type: object
-        properties: {}
+        type: string
       nsName:
         type: string
       nsDescription:
         type: string
+      vimAccountId:
+        type: string
+        format: uuid
     title: NfvoNsInstancesRequest
   NfvoNsInstantiateRequest:
     type: object
     properties:
       additionalParamsForNs:
         $ref: '#/definitions/NfvoNsInstantiateRequest_additionalParamsForNs'
+  RanoNsInstantiateRequest:
+    type: object
+    properties:
+      SapData:
+        type: array
+        items:
+          type: object
+          required:
+            - sapdId
+            - radioSliceProfile
+          properties:
+            sapdId:
+              type: string
+              description: ID reference to the SAPD for this SAP
+              example: sap_ext_mobile
+            sapName:
+              type: string
+              description: Human readable name for the SAP
+              example: External Mobile Sap
+            description:
+              type: string
+              description: Human readable description for the SAP
+              example: Sap description
+            radioSliceProfile:
+              type: object
+              description: Radio Slice Profile parameters
+              required:
+                - site
+                - coverageArea
+                - sST
+              properties:
+                site:
+                  type: string
+                  description: The target site
+                  enum: [ ITALY_TURIN, SPAIN_5TONIC, FRANCE_PARIS, FRANCE_NICE, FRANCE_RENNES, GREECE_ATHENS ]
+                coverageArea:
+                  type: string
+                  description: The radio coverage area
+                  example: ITALY.TIM_LAB
+                  # TODO define enum
+                radioAccessTechnology:
+                  type: string
+                  description: The radio access technology
+                  enum: [ 4G, 5GNSA , 5GSA , NB-IoT , LTE-M ]
+                sST:
+                  type: string
+                  description: The Slice/Service Type
+                  enum: [ eMBB, URLLC and mMTC ]
+                latency:
+                  type: integer
+                  description: Desired latency in milliseconds (only for URLLC)
+                  example: 10
+                uLThptPerSlice:
+                  type: integer
+                  description: Up-Link throughput per slice in Mbps (only for eMBB)
+                  example: 50
+                dLThptPerSlice:
+                  type: integer
+                  description: Down-Link throughput per slice in Mbps (only for eMBB)
+                  example: 50
+      additionalParamsForNs:
+        type: object
   NfvoNsInstancesScaleRequest:
     type: object
     properties:

@@ -28,7 +28,7 @@ IWFREPO = os.getenv('IWFREPO', 'false').lower()
 redis_host = os.getenv('REDIS_HOST') if os.getenv('REDIS_HOST') else 'redis'
 redis_port = int(os.getenv('REDIS_PORT')) if os.getenv('REDIS_PORT') else 6379
 # TTL for key in redis
-KEY_TTL = 86400
+KEY_TTL = 21600  # 6 hours
 
 celery = Celery('tasks',
                 broker='redis://{0}:{1}/0'.format(redis_host, redis_port),

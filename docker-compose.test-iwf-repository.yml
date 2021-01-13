@@ -1,14 +1,23 @@
-version: '3.7'
+---
+version: "3.7"
 services:
-  iwf-repository-app:
+  iwf-repository-app-test:
     image: 5geve/iwf-repository:latest
     depends_on:
-      - iwf-repository-db
+      - iwf-repository-db-test
     networks:
       iwf-repository-net:
         aliases:
           - iwf-repository-app
-  iwf-repository-db:
+    command:
+      [
+        "java",
+        "-Dspring.profiles.active=dev",
+        "-Dspring.datasource.url=jdbc:postgresql://iwf-repository-db:5432/iwf-repository",
+        "-jar",
+        "app.jar",
+      ]
+  iwf-repository-db-test:
     image: postgres:12-alpine
     environment:
       POSTGRES_USER: iwf-repository
@@ -27,12 +36,20 @@ services:
         DB_SEED_RANO: adaptation_layer/seed/rano_mock.json
         DB_SEED_RANO_CRED: adaptation_layer/seed/rano_credentials_mock.json
     depends_on:
-      - iwf-repository-app
-      - iwf-repository-db
+      - iwf-repository-app-test
+      - iwf-repository-db-test
     environment:
       IWFREPO: "True"
       IWFREPO_HOST: "iwf-repository-app"
-    command: ["adaptation_layer/tests/wait-for-it.sh", "iwf-repository-app:8087", "--", "pytest", "-v", "adaptation_layer/tests/test_iwf_repository.py"]
+    command:
+      [
+        "adaptation_layer/tests/wait-for-it.sh",
+        "iwf-repository-app:8087",
+        "--",
+        "pytest",
+        "-v",
+        "adaptation_layer/tests/test_iwf_repository.py",
+      ]
     networks:
       iwf-repository-net:
         aliases:

@@ -23,19 +23,18 @@ from .request_mock import mock_ns
 from .response_schemas import ns_lcm_op_occ_schema, \
     ns_list_schema, ns_schema, ns_lcm_op_occ_list_schema
 
+
 # AUTHORIZATION unsupported by EVER driver
 # scale a ns instance unsupported by EVER driver
 
 
 class EverTestCase(unittest.TestCase):
+    client = None
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         """Define test variables and initialize app."""
-        self.app = create_app()
-        self.client = self.app.test_client
-
-    def tearDown(self):
-        """teardown all initialized variables."""
+        cls.client = create_app().test_client
 
     # Check status codes 200, 404, headers and payload for get_ns_list()
     def test_get_ns_list_200(self):

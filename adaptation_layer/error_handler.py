@@ -82,7 +82,7 @@ class VimNotFound(Error):
 
 class VimNetworkNotFound(Error):
     def __init__(self, vim_network_name: str, site_name: str):
-        super().__init__(description=f'{vim_network_name} not found on site {site_name}.')
+        super().__init__(description=f'Network {vim_network_name} not found on site {site_name}.')
 
 
 class NsOpNotFound(Error):

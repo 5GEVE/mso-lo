@@ -31,7 +31,7 @@ from .interface import Driver, Headers, BodyList, Body
 from urllib.parse import urlencode
 
 import logging
-logger = logging.getLogger('app.driver.fivergr_so')
+logger = logging.getLogger('app.driver.fivegr_so')
 
 TESTING = os.environ.get("TESTING", False)
 PRISM_ALIAS = os.environ.get("PRISM_ALIAS", "prism-fivegr-so")

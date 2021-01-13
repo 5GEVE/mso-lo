@@ -125,9 +125,13 @@ class ONAP(Driver):
     def create_ns(self, args=None) -> Tuple[Body, Headers]:
         _url = '{0}/create'.format(self._base_path)
         _url = self._build_url_query(_url, args)
+
+        request_body = args['payload']
+        request_body["vimShortId"] = self._nfvoId
+
         try:
             created_ns, resp_headers = self._exec_post(
-                _url, json=args['payload'], headers=self._headers)
+                _url, json=request_body, headers=self._headers)
         except ResourceNotFound:
             nsd_Id = args['payload']['nsdId']
             raise NsdNotFound(nsd_id=nsd_Id)
