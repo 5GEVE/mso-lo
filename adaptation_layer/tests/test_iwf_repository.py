@@ -90,7 +90,7 @@ class TestIwfRepository(unittest.TestCase):
 
     def test_get_nfvo_list(self):
         length = len(get_nfvo_list())
-        self.assertEqual(8, length)
+        self.assertEqual(10, length)
 
     def test_get_rano_list(self):
         length = len(get_rano_list())
