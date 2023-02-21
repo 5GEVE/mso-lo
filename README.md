@@ -3,6 +3,8 @@
 
 ![Unit Tests](https://github.com/5GEVE/mso-lo/workflows/Unit%20Tests/badge.svg)
 
+:warning: This repo is not maintained. If you want to fork it, check the security warnings for the dependencies. :warning:
+
 MSO-LO is a REST API application to provide an
 [ETSI SOL 005 v2.6.1](https://www.etsi.org/deliver/etsi_gs/NFV-SOL/001_099/001/02.06.01_60/gs_NFV-SOL001v020601p.pdf)
 compliant interface towards various NFV orchestrators.
